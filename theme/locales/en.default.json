@@ -4,6 +4,36 @@
     "not_found": "Page not found.",
     "back_to_shopping": "Back to shopping"
   },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "announcements": "Announcements"
+  },
+  "general": {
+    "close": "Close",
+    "back_to": "Back: {{ title }}",
+    "shop_all": "Shop all {{ title }}",
+    "pagination": "Pagination",
+    "previous_page": "Previous page",
+    "next_page": "Next page",
+    "page_n": "Page {{ number }}"
+  },
+  "header": {
+    "menu": "Menu",
+    "search": "Search",
+    "search_placeholder": "Search products",
+    "account": "Account",
+    "primary_navigation": "Primary",
+    "show_submenu": "Show {{ title }} menu",
+    "cart_count": {
+      "one": "Cart, {{ count }} item",
+      "other": "Cart, {{ count }} items"
+    }
+  },
+  "footer": {
+    "follow": "Follow",
+    "payment_methods": "Payment methods",
+    "social_setup": "Add social profile links in Theme settings › Social media."
+  },
   "blog": {
     "article_comments": "Comments",
     "article_metadata_html": "{{ date }} by {{ author }}",
@@ -14,10 +44,73 @@
     "comment_form_title": "Add a comment"
   },
   "cart": {
-    "checkout": "Checkout",
     "title": "Cart",
+    "checkout": "Checkout",
     "update": "Update",
-    "remove": "Remove"
+    "remove": "Remove",
+    "empty": "Your cart is empty",
+    "continue_shopping": "Continue shopping",
+    "view_cart": "View cart",
+    "subtotal": "Subtotal",
+    "note": "Order note",
+    "taxes_included": "Taxes included. Shipping calculated at checkout.",
+    "taxes_excluded": "Taxes and shipping calculated at checkout.",
+    "quantity_for": "Quantity for {{ title }}",
+    "decrease": "Decrease quantity for {{ title }}",
+    "increase": "Increase quantity for {{ title }}",
+    "item_count": {
+      "one": "{{ count }} item",
+      "other": "{{ count }} items"
+    },
+    "added": "Added to cart",
+    "removed": "Item removed from cart",
+    "error": "Something went wrong. Please review your cart and try again.",
+    "add_unconfirmed": "We couldn't confirm whether the item was added. Please check your cart before trying again.",
+    "add_not_applied": "The item wasn't added. Please try again."
+  },
+  "collection": {
+    "product_count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "categories": "Categories",
+    "empty": "This collection is empty right now.",
+    "shop_all": "Shop all products",
+    "view_all": "View all",
+    "placeholder_product": "Product name"
+  },
+  "collections": {
+    "title": "Collections"
+  },
+  "product": {
+    "add_to_cart": "Add to cart",
+    "adding": "Adding…",
+    "sold_out": "Sold out",
+    "unavailable": "Unavailable",
+    "sale": "Sale",
+    "price_from_html": "From {{ price }}",
+    "regular_price": "Regular price",
+    "choose_option": "Choose one",
+    "choose_named_option": "Choose a {{ option }}",
+    "selection_failed": "This selection couldn't be updated.",
+    "reload_selection": "Reload the page with this selection",
+    "value_sold_out": "sold out",
+    "value_unavailable": "unavailable",
+    "size_guide": "Size guide",
+    "size_table": "Size table, scrolls sideways",
+    "size": "Size",
+    "sizes_label": "Sizes",
+    "low_stock": {
+      "one": "Only {{ count }} left",
+      "other": "Only {{ count }} left"
+    },
+    "quantity": "Quantity",
+    "details": "Details",
+    "gallery": "Product media",
+    "previous_media": "Previous image",
+    "next_media": "Next image",
+    "media_position": "{{ index }} / {{ count }}",
+    "no_image": "No image"
   },
   "customers": {
     "login": {
@@ -26,9 +119,6 @@
       "submit": "Sign in",
       "title": "Login"
     }
-  },
-  "collections": {
-    "title": "Collections"
   },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
@@ -44,7 +134,7 @@
   },
   "search": {
     "title": "Search",
-    "placeholder": "Search articles, pages, or products",
+    "placeholder": "Search products",
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"

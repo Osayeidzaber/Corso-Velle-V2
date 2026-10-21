@@ -1,0 +1,150 @@
+/* Cart lines shared by drawer and page (CA-04). */
+.cart-lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cart-line {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--nk-color-line);
+}
+
+.cart-line[aria-busy='true'] {
+  opacity: 0.6;
+}
+
+.cart-line__media {
+  display: block;
+  aspect-ratio: 4 / 5;
+  background: var(--nk-color-surface);
+}
+
+.cart-line__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cart-line__info {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+}
+
+.cart-line__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cart-line__title {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cart-line__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.cart-line__remove {
+  min-height: var(--nk-tap);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.cart-line__error {
+  color: var(--nk-color-error);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.cart-empty {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+  padding: 48px 16px;
+}
+
+.cart-empty__title {
+  font-size: 1.375rem;
+}
+
+.cart-summary {
+  display: grid;
+  gap: 10px;
+}
+
+.cart-summary__row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+nk-cart-drawer[data-pending] [name='checkout'] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Cart page */
+.cart-page {
+  display: grid;
+  gap: 32px;
+}
+
+.cart-page .cart-line {
+  padding-inline: 0;
+}
+
+@media (min-width: 990px) {
+  .cart-page {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+  }
+
+  .cart-page__summary {
+    position: sticky;
+    top: calc(var(--nk-header-h) + 16px);
+    padding: 18px;
+    border: 1px solid var(--nk-color-line);
+  }
+}
+
+.cart-note textarea {
+  width: 100%;
+  min-height: 72px;
+  padding: 8px;
+  border: 1px solid var(--nk-color-line);
+  background: transparent;
+}
+
+/* Drawer: list scrolls, summary stays pinned. */
+.cart-drawer__items,
+.cart-drawer__form {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.cart-drawer__view {
+  display: inline-flex;
+  justify-content: center;
+  min-height: var(--nk-tap);
+  align-items: center;
+}
+
+.js .no-js-only {
+  display: none;
+}

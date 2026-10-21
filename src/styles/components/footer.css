@@ -1,0 +1,107 @@
+/* Footer (CS-08) and disclosure rows. */
+.footer {
+  display: grid;
+  gap: 24px;
+  padding-block: 40px calc(24px + env(safe-area-inset-bottom));
+}
+
+.footer__columns {
+  display: grid;
+  gap: 8px 32px;
+}
+
+@media (min-width: 750px) {
+  .footer__columns {
+    grid-template-columns: 2fr repeat(auto-fit, minmax(160px, 1fr));
+  }
+}
+
+.footer__brand {
+  display: grid;
+  gap: 8px;
+  max-width: 36ch;
+}
+
+.footer__menu ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer__menu a {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  text-decoration: none;
+}
+
+.footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--nk-color-line);
+  font-size: 0.8125rem;
+}
+
+.footer__payments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer__payments svg {
+  width: 38px;
+  height: 24px;
+}
+
+/* Disclosure row (accordion) used in footer, product info, FAQ. */
+.disclosure > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  border-top: 1px solid var(--nk-color-line);
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  list-style: none;
+  cursor: pointer;
+}
+
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure > summary::after {
+  content: '+';
+  font-family: var(--nk-font-spec);
+  font-size: 1.125rem;
+}
+
+.disclosure[open] > summary::after {
+  content: '−';
+}
+
+.disclosure__content {
+  padding: 0 0 16px;
+}
+
+@media (min-width: 750px) {
+  .footer__menu .disclosure > summary {
+    pointer-events: none;
+    border-top: 0;
+    min-height: 32px;
+  }
+
+  .footer__menu .disclosure > summary::after {
+    content: none;
+  }
+}

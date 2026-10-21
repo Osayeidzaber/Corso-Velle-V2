@@ -1,0 +1,54 @@
+{%- comment -%}
+  Announcement bar (master-plan/06 N-02). Static messages for P0; the moving ticker
+  (nk-marquee) is a P1 setting on top of this same markup.
+{%- endcomment -%}
+{%- liquid
+  assign live = 0
+  for block in section.blocks
+    if block.settings.text != blank
+      assign live = live | plus: 1
+    endif
+  endfor
+-%}
+{%- if live > 0 -%}
+  <div class="announcement full-width color-{{ section.settings.color_scheme }}" role="region" aria-label="{{ 'accessibility.announcements' | t }}">
+    {%- for block in section.blocks -%}
+      {%- if block.settings.text != blank -%}
+        <p {{ block.shopify_attributes }}>
+          {%- if block.settings.link != blank -%}
+            <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
+          {%- else -%}
+            {{ block.settings.text }}
+          {%- endif -%}
+        </p>
+        {%- # Static mode shows the first message only; the editor shows the selected one. -%}
+        {%- unless request.design_mode -%}{%- break -%}{%- endunless -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "class": "announcement-section",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Announce something here" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Announcement bar", "blocks": [{ "type": "message" }] }
+  ],
+  "enabled_on": { "groups": ["header"] }
+}
+{% endschema %}

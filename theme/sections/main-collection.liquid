@@ -1,0 +1,76 @@
+{%- comment -%}
+  Collection page (master-plan/07 DC-01). P0 slice: header, merchandising pills, product grid
+  and real pagination links. Storefront filters/sort (DC-02) arrive with nk-facets next.
+{%- endcomment -%}
+{%- paginate collection.products by section.settings.products_per_page -%}
+  <div class="section-spacing">
+    <div class="collection-header">
+      <h1>{{ collection.title | escape }}</h1>
+      <p class="spec text-muted">{{ 'collection.product_count' | t: count: collection.products_count }}</p>
+    </div>
+
+    {%- if section.settings.show_description and collection.description != blank -%}
+      <div class="rte text-muted" style="max-width: 70ch; margin-bottom: 20px;">{{ collection.description }}</div>
+    {%- endif -%}
+
+    {%- assign pills = section.settings.pills_menu -%}
+    {%- if pills.links.size > 0 -%}
+      <nav aria-label="{{ 'collection.categories' | t }}">
+        <ul class="collection-pills" role="list">
+          {%- for link in pills.links -%}
+            <li><a href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>{{ link.title | escape }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+
+    {%- if collection.products.size > 0 -%}
+      <ul
+        class="product-grid"
+        role="list"
+        style="--nk-cols-mobile: {{ section.settings.columns_mobile }}; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
+      >
+        {%- for product in collection.products -%}
+          <li>
+            {%- assign eager = false -%}
+            {%- if forloop.index <= 4 and paginate.current_page == 1 -%}{%- assign eager = true -%}{%- endif -%}
+            {% render 'product-card', product: product, eager: eager, heading_tag: 'h2' %}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <div class="cart-empty">
+        <p class="cart-empty__title">{{ 'collection.empty' | t }}</p>
+        <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'collection.shop_all' | t }}</a>
+      </div>
+    {%- endif -%}
+
+    {%- if paginate.pages > 1 -%}
+      {% render 'pagination', paginate: paginate %}
+    {%- endif -%}
+  </div>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Product grid",
+  "class": "main-collection-section",
+  "settings": [
+    { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 8, "max": 48, "step": 4, "default": 24 },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on phones",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 3, "max": 5, "step": 1, "default": 4 },
+    { "type": "link_list", "id": "pills_menu", "label": "Category links menu", "info": "Optional row of links to related collections." },
+    { "type": "checkbox", "id": "show_description", "label": "Show collection description", "default": true }
+  ],
+  "enabled_on": { "templates": ["collection"] }
+}
+{% endschema %}
