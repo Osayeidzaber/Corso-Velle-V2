@@ -6,15 +6,16 @@
 {%- if featured.products.size > 0 or request.design_mode -%}
   <div class="section-spacing color-{{ section.settings.color_scheme }} full-width">
     <div style="width: var(--content-width); margin-inline: auto;">
-      <div class="collection-header">
+      <div class="section-head">
         {%- if section.settings.heading != blank -%}
-          <h2>{{ section.settings.heading | escape }}</h2>
+          {% render 'reveal-heading', text: section.settings.heading, entrance: 'rise', hover: 'lift', class: 'display' %}
         {%- endif -%}
         {%- if featured != blank and section.settings.show_view_all -%}
-          <a class="spec" href="{{ featured.url }}">{{ 'collection.view_all' | t }}</a>
+          <a class="spec link-underline" href="{{ featured.url }}">{{ 'collection.view_all' | t }}</a>
         {%- endif -%}
       </div>
 
+      <nk-stagger>
       <ul
         class="product-grid"
         role="list"
@@ -22,7 +23,7 @@
       >
         {%- if featured.products.size > 0 -%}
           {%- for product in featured.products limit: section.settings.limit -%}
-            <li>{% render 'product-card', product: product %}</li>
+            <li data-stagger-item>{% render 'product-card', product: product %}</li>
           {%- endfor -%}
         {%- else -%}
           {%- for i in (1..4) -%}
@@ -35,6 +36,7 @@
           {%- endfor -%}
         {%- endif -%}
       </ul>
+      </nk-stagger>
     </div>
   </div>
 {%- endif -%}

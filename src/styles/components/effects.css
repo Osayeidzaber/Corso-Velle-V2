@@ -13,16 +13,17 @@
 }
 
 .nk-text-shine {
+  --nk-shine-base: color-mix(in oklab, currentColor 62%, transparent);
   background-image: linear-gradient(
     110deg,
-    currentColor 0 calc(var(--nk-shine-x) - 12%),
-    color-mix(in oklab, currentColor 45%, #fff) var(--nk-shine-x),
-    currentColor calc(var(--nk-shine-x) + 12%) 100%
+    var(--nk-shine-base) 0 calc(var(--nk-shine-x) - 18%),
+    #fff var(--nk-shine-x),
+    var(--nk-shine-base) calc(var(--nk-shine-x) + 18%) 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: nk-shine 2.8s var(--nk-ease-out) 1s infinite;
+  animation: nk-shine 3s cubic-bezier(0.45, 0, 0.25, 1) 0.8s infinite;
 }
 
 @keyframes nk-shine {
@@ -39,17 +40,23 @@
    Text). Opt-in; check contrast against the section background before using it. */
 .nk-text-gradient {
   background-image: linear-gradient(
-    90deg,
+    100deg,
     var(--nk-color-accent),
-    color-mix(in oklab, var(--nk-color-accent) 50%, var(--nk-color-text)),
+    color-mix(in oklab, var(--nk-color-accent) 40%, #f6d9a8),
     var(--nk-color-text),
+    color-mix(in oklab, var(--nk-color-accent) 70%, #c98a5a),
     var(--nk-color-accent)
   );
   background-size: 300% 100%;
+  padding-inline-end: 0.08em;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: nk-gradient 8s ease-in-out infinite alternate;
+}
+
+.nk-text-gradient--glow {
+  filter: drop-shadow(0 0 0.18em color-mix(in oklab, var(--nk-color-accent) 45%, transparent));
 }
 
 @keyframes nk-gradient {
@@ -109,6 +116,54 @@
 
 :is(a, button, summary):is(:hover, :focus-visible) .swap > span + span {
   translate: 0 0;
+}
+
+/* Letter swap (snippets/letter-swap.liquid): letters roll up one after another on hover/focus. */
+.ls__row {
+  display: inline-flex;
+  vertical-align: top;
+}
+
+.ls__c {
+  display: inline-flex;
+  flex-direction: column;
+  height: 1.2em;
+  line-height: 1.2;
+  overflow: hidden;
+}
+
+.ls__c > span {
+  display: block;
+  transition: translate 520ms cubic-bezier(0.76, 0, 0.24, 1) calc(var(--i, 0) * 22ms);
+}
+
+.ls__c > span + span {
+  font-style: italic;
+}
+
+:is(a, button, summary):is(:hover, :focus-visible) .ls__c > span {
+  translate: 0 -100%;
+}
+
+/* Motion pre-hide: html.nk-anim is set in <head> only when decorative motion will run. Text and
+   grid items start hidden so they reveal once instead of flashing; CSS shows them after 3s if a
+   script never arrives. */
+@keyframes nk-failsafe {
+  to {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+html.nk-anim nk-text:not([data-ready]) {
+  visibility: hidden;
+  animation: nk-failsafe 0s linear 3s forwards;
+}
+
+html.nk-anim nk-stagger:not([data-ready]) [data-stagger-item],
+html.nk-anim nk-reveal:not([data-armed]):not([data-done]) {
+  opacity: 0;
+  animation: nk-failsafe 0s linear 3s forwards;
 }
 
 /* Blur scrim — progressive blur behind captions on images (progresivebasicblur). Two layers,
@@ -193,7 +248,8 @@ nk-elastic-line svg {
     -webkit-text-fill-color: currentColor;
   }
 
-  .swap > span {
+  .swap > span,
+  .ls__c > span {
     transition: none;
   }
 }
@@ -206,12 +262,12 @@ html.nk-motion-off .nk-text-wave {
   -webkit-text-fill-color: currentColor;
 }
 
-/* Hero headings that play on load stay hidden only until <nk-reveal> is defined; if the module
-   never arrives the failsafe shows them after 2s. Reduced motion never hides them. */
+/* Hero headings that play on load stay hidden until GSAP has armed them (or decided not to); if
+   the module never arrives the failsafe shows them after 2.5s. Reduced motion never hides them. */
 @media (prefers-reduced-motion: no-preference) {
-  html.js:not(.nk-motion-off) nk-reveal[play-on-load]:not(:defined) {
+  html.js:not(.nk-motion-off) nk-reveal[play-on-load]:not([data-armed]):not([data-done]) {
     opacity: 0;
-    animation: nk-reveal-failsafe 0s linear 2s forwards;
+    animation: nk-reveal-failsafe 0s linear 2.5s forwards;
   }
 }
 

@@ -6,6 +6,8 @@
       document.documentElement.classList.replace('no-js', 'js');
       {%- if settings.motion_level == 'off' %}
         document.documentElement.classList.add('nk-motion-off');
+      {%- elsif settings.motion_level == 'standard' and request.design_mode == false %}
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('nk-anim');
       {%- endif %}
     </script>
 

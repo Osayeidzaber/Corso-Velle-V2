@@ -11,6 +11,11 @@
   if template.name == 'index'
     assign is_home = true
   endif
+  # Search links open the predictive search dialog with JS; without JS they go to the search page.
+  assign search_trigger = ''
+  if section.settings.predictive_search
+    assign search_trigger = 'data-nk-open="SearchModal" aria-haspopup="dialog" aria-expanded="false"'
+  endif
 -%}
 
 <nk-header
@@ -34,7 +39,7 @@
         {% render 'icon', name: 'menu' %}
       </button>
       {%- if section.settings.search_style == 'pill' -%}
-        <a class="icon-button header__search-icon--phone" href="{{ routes.search_url }}" aria-label="{{ 'header.search' | t }}">
+        <a class="icon-button header__search-icon--phone" href="{{ routes.search_url }}" {{ search_trigger }} aria-label="{{ 'header.search' | t }}">
           {% render 'icon', name: 'search' %}
         </a>
         {%- # Expanding search field (gooeyinput). The goo filter applies to background blobs only. -%}
@@ -52,7 +57,7 @@
           </form>
         </nk-search-pill>
       {%- else -%}
-        <a class="icon-button" href="{{ routes.search_url }}" aria-label="{{ 'header.search' | t }}">
+        <a class="icon-button" href="{{ routes.search_url }}" {{ search_trigger }} aria-label="{{ 'header.search' | t }}">
           {% render 'icon', name: 'search' %}
         </a>
       {%- endif -%}
@@ -64,7 +69,7 @@
               <li class="nav__item">
                 <a class="nav__link" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>
                   {%- if section.settings.link_hover == 'swap' -%}
-                    <span class="swap"><span>{{ link.title | escape }}</span><span aria-hidden="true">{{ link.title | escape }}</span></span>
+                    {% render 'letter-swap', text: link.title %}
                   {%- else -%}
                     {{- link.title | escape -}}
                   {%- endif -%}
@@ -151,6 +156,10 @@
 
 {% render 'nav-drawer', menu: menu, section: section %}
 
+{%- if section.settings.predictive_search -%}
+  {% render 'search-modal', collections: section.settings.search_collections %}
+{%- endif -%}
+
 {% schema %}
 {
   "name": "Header",
@@ -220,6 +229,8 @@
       ],
       "default": "icon"
     },
+    { "type": "checkbox", "id": "predictive_search", "label": "Show search suggestions as you type", "default": true, "info": "Search opens a panel with products, collections and suggested queries." },
+    { "type": "collection_list", "id": "search_collections", "label": "Collections suggested in search", "limit": 8 },
     { "type": "checkbox", "id": "overlay_home", "label": "Overlay the homepage hero", "default": false, "info": "Only applies when the first homepage section supports overlay (for example the campaign hero)." },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
   ],

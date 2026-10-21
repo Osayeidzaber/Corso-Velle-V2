@@ -8,45 +8,107 @@
  * ------------------------------------------------------------
  */
 {
-  "current": "Signal",
+  "current": {
+    "logo": "shopify://shop_images/CV_Neck_label-Photoroom.png",
+    "logo_width": 150,
+    "logo_width_mobile": 120,
+    "type_heading_font": "newsreader_n4",
+    "type_body_font": "inter_n4",
+    "type_spec_font": "inter_n5",
+    "heading_case": "none",
+    "body_size": "15",
+    "page_width": "1440px",
+    "section_spacing": "112",
+    "corner_radius": "0",
+    "card_image_ratio": "1 / 1",
+    "card_show_sizes": true,
+    "motion_level": "standard",
+    "cart_after_add": "drawer",
+    "color_schemes": {
+      "scheme-1": {
+        "settings": {
+          "background": "#FAF8F5",
+          "surface": "#EDE6DA",
+          "text": "#1E1915",
+          "text_muted": "#6B6157",
+          "line": "#DED5C8",
+          "accent": "#1F3A5C",
+          "accent_text": "#FAF8F5"
+        }
+      },
+      "scheme-2": {
+        "settings": {
+          "background": "#1E1915",
+          "surface": "#2B241F",
+          "text": "#F2EBE0",
+          "text_muted": "#B6AA9C",
+          "line": "#3A322B",
+          "accent": "#E7C9A0",
+          "accent_text": "#1E1915"
+        }
+      },
+      "scheme-3": {
+        "settings": {
+          "background": "#14213D",
+          "surface": "#1F3A5C",
+          "text": "#F2EBE0",
+          "text_muted": "#B9C2D3",
+          "line": "#2C3D5E",
+          "accent": "#E7C9A0",
+          "accent_text": "#14213D"
+        }
+      }
+    }
+  },
   "presets": {
-    "Signal": {
-      "heading_case": "uppercase",
-      "corner_radius": "2",
-      "card_image_ratio": "4 / 5",
+    "Riviera": {
+      "logo": "shopify://shop_images/CV_Neck_label-Photoroom.png",
+      "logo_width": 150,
+      "logo_width_mobile": 120,
+      "type_heading_font": "newsreader_n4",
+      "type_body_font": "inter_n4",
+      "type_spec_font": "inter_n5",
+      "heading_case": "none",
+      "body_size": "15",
+      "page_width": "1440px",
+      "section_spacing": "112",
+      "corner_radius": "0",
+      "card_image_ratio": "1 / 1",
+      "card_show_sizes": true,
       "motion_level": "standard",
+      "cart_after_add": "drawer",
       "color_schemes": {
         "scheme-1": {
           "settings": {
-            "background": "#F3F2EE",
-            "surface": "#E7E4DE",
-            "text": "#121212",
-            "text_muted": "#55534E",
-            "line": "#D9D6CF",
-            "accent": "#2338E0",
-            "accent_text": "#FFFFFF"
+            "background": "#FAF8F5",
+            "surface": "#EDE6DA",
+            "text": "#1E1915",
+            "text_muted": "#6B6157",
+            "line": "#DED5C8",
+            "accent": "#1F3A5C",
+            "accent_text": "#FAF8F5"
           }
         },
         "scheme-2": {
           "settings": {
-            "background": "#0E0E0E",
-            "surface": "#1C1C1B",
-            "text": "#F3F2EE",
-            "text_muted": "#BDB8AE",
-            "line": "#3A3A37",
-            "accent": "#9AA5FF",
-            "accent_text": "#0E0E0E"
+            "background": "#1E1915",
+            "surface": "#2B241F",
+            "text": "#F2EBE0",
+            "text_muted": "#B6AA9C",
+            "line": "#3A322B",
+            "accent": "#E7C9A0",
+            "accent_text": "#1E1915"
           }
         },
         "scheme-3": {
           "settings": {
-            "background": "#FFFFFF",
-            "surface": "#F3F2EE",
-            "text": "#121212",
-            "text_muted": "#55534E",
-            "line": "#D9D6CF",
-            "accent": "#2338E0",
-            "accent_text": "#FFFFFF"
+            "background": "#14213D",
+            "surface": "#1F3A5C",
+            "text": "#F2EBE0",
+            "text_muted": "#B9C2D3",
+            "line": "#2C3D5E",
+            "accent": "#E7C9A0",
+            "accent_text": "#14213D"
           }
         }
       }
@@ -54,7 +116,7 @@
     "Quiet": {
       "heading_case": "none",
       "corner_radius": "0",
-      "card_image_ratio": "3 / 4",
+      "card_image_ratio": "1 / 1",
       "card_show_sizes": false,
       "motion_level": "minimal",
       "section_spacing": "112",

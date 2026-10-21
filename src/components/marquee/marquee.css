@@ -102,3 +102,8 @@ nk-marquee[fade-edges][direction='up'],
 nk-marquee[fade-edges][direction='down'] {
   mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
 }
+
+/* Scroll Velocity skew (scroll-react): items lean with scroll speed; the variable decays to 0. */
+nk-marquee[scroll-react] .marquee__item {
+  transform: skewX(var(--nk-marquee-skew, 0deg));
+}

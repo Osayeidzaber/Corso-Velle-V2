@@ -10,7 +10,13 @@
         {%- case block.type -%}
           {%- when 'brand' -%}
             <div class="footer__brand" {{ block.shopify_attributes }}>
-              <p class="header__logo">{{ shop.name | escape }}</p>
+              <p class="header__logo">
+                {%- if settings.logo -%}
+                  {{ settings.logo | image_url: width: 600 | image_tag: loading: 'lazy', alt: shop.name }}
+                {%- else -%}
+                  {{ shop.name | escape }}
+                {%- endif -%}
+              </p>
               {%- if block.settings.text != blank -%}
                 <div class="text-muted">{{ block.settings.text }}</div>
               {%- endif -%}

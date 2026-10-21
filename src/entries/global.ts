@@ -26,9 +26,19 @@ define('nk-disclosure', NkDisclosure);
 
 // Rewrites of the supplied example components (master-plan/05).
 registerLazy('nk-reveal', () => import('../components/reveal/reveal'));
+registerLazy('nk-text', () => import('../components/text/text'));
 registerLazy('nk-marquee', () => import('../components/marquee/marquee'));
 registerLazy('nk-tabs', () => import('../components/tabs/tabs'));
 registerLazy('nk-expand-media', () => import('../components/expand-media/expand-media'));
 registerLazy('nk-elastic-line', () => import('../components/elastic-line/elastic-line'));
 registerLazy('nk-search-pill', () => import('../components/search-pill/search-pill'));
+registerLazy('nk-parallax', () => import('../components/motion/parallax'));
+registerLazy('nk-stagger', () => import('../components/motion/stagger'));
+registerLazy('nk-size-guide', () => import('../components/size-guide/size-guide'));
+registerLazy('nk-recommendations', () => import('../components/recommendations/recommendations'));
 installLazyLoader();
+
+// Desktop "View" cursor + magnetic buttons (GSAP), only where the page uses them.
+if (document.querySelector('[data-cursor], [data-magnetic]')) {
+  void import('../components/motion/cursor').then((module) => module.installCursor());
+}

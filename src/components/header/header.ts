@@ -36,7 +36,10 @@ export class NkHeader extends NkElement {
       this.#setHidden(false);
     });
     this.on(document, 'nk:overlay:closed', () => delete this.dataset.forcedSolid);
-    this.dispose(() => cancelAnimationFrame(this.#frame));
+    this.dispose(() => {
+      cancelAnimationFrame(this.#frame);
+      this.#frame = 0; // a stale id would block #schedule after reconnection
+    });
 
     this.on(document, 'nk:cart:updated', (event) => {
       const count = (event as CustomEvent<{ cart: { item_count: number } }>).detail.cart.item_count;

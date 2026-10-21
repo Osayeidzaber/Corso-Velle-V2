@@ -32,7 +32,7 @@
   assign size_names = settings.card_size_option_names | downcase | split: ','
 -%}
 <article class="card{% if sold_out %} card--sold-out{% endif %}">
-  <a class="card__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+  <a class="card__media{% if second_media and second_media.media_type == 'image' and settings.card_show_secondary %} card__media--has-second{% endif %}" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
     {%- if first_media -%}
       {{
         first_media
@@ -56,12 +56,34 @@
     {%- if settings.card_show_badges -%}
       <span class="card__badges">
         {%- if sold_out -%}
-          <span class="badge">{{ 'product.sold_out' | t }}</span>
+          <span class="badge badge--sold-out"><span class="badge__dot" aria-hidden="true"></span>{{ 'product.sold_out' | t }}</span>
         {%- elsif on_sale -%}
           <span class="badge badge--sale">{{ 'product.sale' | t }}</span>
         {%- endif -%}
       </span>
     {%- endif -%}
+    {%- comment -%} Hover tray: available sizes slide up over the image (pointer devices). {%- endcomment -%}
+    {%- unless sold_out -%}
+      {%- for option in product.options_with_values -%}
+        {%- assign option_name = option.name | downcase | strip -%}
+        {%- assign tray_size = false -%}
+        {%- for size_name in size_names -%}
+          {%- assign clean = size_name | strip -%}
+          {%- if option_name == clean -%}{%- assign tray_size = true -%}{%- endif -%}
+        {%- endfor -%}
+        {%- if tray_size -%}
+          <span class="card__tray">
+            <span class="card__tray-label">{{ 'product.sizes_label' | t }}</span>
+            <span class="card__tray-values">
+              {%- for value in option.values -%}
+                <span{% unless value.available %} class="is-out"{% endunless %}>{{ value | escape }}</span>
+              {%- endfor -%}
+            </span>
+          </span>
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endunless -%}
   </a>
 
   <{{ heading_tag }} class="card__heading">
@@ -91,7 +113,5 @@
         {%- break -%}
       {%- endif -%}
     {%- endfor -%}
-  {%- elsif sold_out -%}
-    <p class="card__sizes spec">{{ 'product.sold_out' | t }}</p>
   {%- endif -%}
 </article>

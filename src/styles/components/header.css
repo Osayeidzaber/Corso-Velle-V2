@@ -27,10 +27,17 @@ nk-header {
     color var(--nk-dur-small);
 }
 
-nk-header[data-sticky='always'],
-nk-header[data-sticky='reveal'] {
+/* Sticky lives on the section wrapper: nk-header's own parent is only as tall as the header. */
+.header-section:has(> nk-header[data-sticky='always']),
+.header-section:has(> nk-header[data-sticky='reveal']) {
   position: sticky;
   top: 0;
+  z-index: 20;
+}
+
+/* Overlay: the first section slides up under the (transparent) header. */
+.header-section:has(> nk-header[data-overlay]) {
+  margin-bottom: calc(-1 * var(--nk-header-h));
 }
 
 nk-header[data-hidden] {
@@ -38,8 +45,6 @@ nk-header[data-hidden] {
 }
 
 nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]) {
-  position: fixed;
-  inset: 0 0 auto;
   background: transparent;
   color: var(--nk-overlay-text, #fff);
   border-bottom-color: transparent;

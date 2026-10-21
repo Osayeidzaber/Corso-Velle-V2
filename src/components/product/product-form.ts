@@ -23,6 +23,10 @@ export class NkProductForm extends NkElement {
       event.preventDefault();
       void this.#submit(form, event.submitter as HTMLButtonElement | null);
     });
+    this.on(this, 'click', (event) => {
+      const step = (event.target as Element).closest<HTMLButtonElement>('[data-qty-step]');
+      if (step) this.#stepQuantity(step);
+    });
     const section = this.closest('[data-product-section]');
     if (section) {
       this.on(section, 'nk:variant:changed', (event) => {
@@ -31,6 +35,20 @@ export class NkProductForm extends NkElement {
       const picker = this.#picker();
       if (picker) this.#reflectState(picker.state);
     }
+  }
+
+  /** ± buttons honour the quantity rule (min / max / increment) rendered on the input. */
+  #stepQuantity(button: HTMLButtonElement): void {
+    const input = button.closest('.quantity')?.querySelector<HTMLInputElement>('input[name="quantity"]');
+    if (!input) return;
+    const step = Number(input.step) || 1;
+    const min = Number(input.min) || 1;
+    const max = input.max ? Number(input.max) : Number.POSITIVE_INFINITY;
+    const current = Number(input.value) || min;
+    const next = Math.min(max, Math.max(min, current + step * Number(button.dataset.qtyStep)));
+    if (next === current) return;
+    input.value = String(next);
+    input.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
   /** Button label/disabled for states Liquid can't express (explicit choice, missing combination). */

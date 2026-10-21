@@ -1,3 +1,4 @@
+@import './tailwind.css';
 @import './base.css';
 @import './components/controls.css';
 @import './components/dialog.css';
@@ -6,3 +7,4 @@
 @import './components/card.css';
 @import './components/footer.css';
 @import './components/effects.css';
+@import './components/riviera.css';

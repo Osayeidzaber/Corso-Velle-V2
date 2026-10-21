@@ -1,0 +1,19 @@
+/* nk-text — split pieces. Pre-hide + failsafe live in effects.css (needed before this loads). */
+nk-text {
+  display: block;
+}
+
+nk-text .nk-w {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+nk-text .nk-c {
+  display: inline-block;
+  will-change: auto;
+}
+
+/* Italic letters lean past their box: a little room so neighbours do not overlap mid-motion. */
+nk-text em .nk-c:last-child {
+  padding-inline-end: 0.06em;
+}

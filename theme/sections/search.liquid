@@ -1,70 +1,108 @@
-{% comment %}
-  This section is used in the search template to render search results for
-  products, articles, and pages.
+{%- comment -%}
+  Search results page (master-plan/06 N-05 "main search"): search form, filters + sort for
+  product results (snippets/facets.liquid + <nk-facets>), the shared product card grid, simple
+  cards for articles and pages, and real pagination links. Works without JavaScript.
+{%- endcomment -%}
+{%- assign terms = search.terms -%}
+{%- capture results_url -%}{{ routes.search_url }}?q={{ terms | url_encode }}&options%5Bprefix%5D=last{%- endcapture -%}
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/search
-{% endcomment %}
-
-<h1>{{ 'search.title' | t }}</h1>
-
-<form action="{{ routes.search_url }}" method="get" role="search">
-  <input
-    type="search"
-    size="50"
-    name="q"
-    value="{{ search.terms | escape }}"
-    placeholder="{{ 'search.placeholder' | t }}"
-  >
-  <button type="submit">{{ 'search.submit' | t }}</button>
-</form>
-
-{% if search.performed %}
-  {% if search.results_count == 0 %}
-    <p>{{ 'search.no_results_html' | t: terms: search.terms }}</p>
-  {% else %}
-    <p>{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}</p>
-
-    <div class="search-results">
-      {% paginate search.results by 20 %}
-        {% # Search result items may be an article, a page, or a product. %}
-        {% for result in search.results %}
-          <div class="search-result">
-            {% assign featured_image = result.featured_image | default: result.image %}
-            {% if featured_image %}
-              {% render 'image', class: 'search-result__image', image: featured_image, url: result.url, width: 400 %}
-            {% endif %}
-            <div class="search-result__content">
-              <p>
-                {{ result.title | link_to: result.url }}
-                {% if result.price %}
-                  {{ result.price | money_with_currency }}
-                {% endif %}
-              </p>
-            </div>
-          </div>
-        {% endfor %}
-
-        {{ paginate | default_pagination }}
-      {% endpaginate %}
+{%- paginate search.results by section.settings.per_page -%}
+  <div class="section-spacing search-page">
+    <div class="collection-header">
+      <h1 class="display">{{ 'search.title' | t }}</h1>
     </div>
-  {% endif %}
-{% endif %}
 
-{% stylesheet %}
-  .search-results {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
-  .search-results .prev,
-  .search-results .page,
-  .search-results .next {
-    grid-column: 1 / -1;
-  }
-{% endstylesheet %}
+    <form class="search-page__form" action="{{ routes.search_url }}" method="get" role="search">
+      <label class="visually-hidden" for="SearchPageInput-{{ section.id }}">{{ 'search.placeholder' | t }}</label>
+      <input
+        id="SearchPageInput-{{ section.id }}"
+        type="search"
+        name="q"
+        value="{{ terms | escape }}"
+        placeholder="{{ 'search.placeholder' | t }}"
+        enterkeyhint="search"
+      >
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="submit" class="button">{{ 'search.submit' | t }}</button>
+    </form>
+
+    {%- if search.performed -%}
+      <nk-facets data-section-id="{{ section.id }}">
+        {% render 'facets',
+          results: search,
+          section_id: section.id,
+          results_url: results_url,
+          count: search.results_count,
+          terms: terms,
+          show_filters: section.settings.show_filters,
+          show_sort: section.settings.show_sort
+        %}
+
+        <div class="facets__results-grid" data-facets-results>
+          {%- if search.results_count == 0 -%}
+            <div class="cart-empty">
+              <p class="cart-empty__title">{{ 'search.no_results' | t: terms: terms }}</p>
+              <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'collection.shop_all' | t }}</a>
+            </div>
+          {%- else -%}
+            <ul
+              class="product-grid"
+              role="list"
+              style="--nk-cols-mobile: {{ section.settings.columns_mobile }}; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
+            >
+              {%- for item in search.results -%}
+                <li>
+                  {%- if item.object_type == 'product' -%}
+                    {%- assign eager = false -%}
+                    {%- if forloop.index <= 4 and paginate.current_page == 1 -%}{%- assign eager = true -%}{%- endif -%}
+                    {% render 'product-card', product: item, eager: eager, heading_tag: 'h2' %}
+                  {%- else -%}
+                    <article class="card search-card">
+                      {%- assign item_image = item.image | default: item.featured_image -%}
+                      {%- if item_image -%}
+                        <a class="card__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                          {{ item_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300, 450, 600', sizes: '(min-width: 750px) 25vw, 50vw', alt: '' }}
+                        </a>
+                      {%- endif -%}
+                      <p class="spec text-muted">{{ 'search.type_' | append: item.object_type | t }}</p>
+                      <h2 class="card__heading"><a class="card__title" href="{{ item.url }}">{{ item.title | escape }}</a></h2>
+                      {%- assign excerpt = item.excerpt | default: item.content | strip_html | truncatewords: 20 -%}
+                      {%- if excerpt != blank -%}<p class="text-muted">{{ excerpt }}</p>{%- endif -%}
+                    </article>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+
+          {%- if paginate.pages > 1 -%}
+            {% render 'pagination', paginate: paginate %}
+          {%- endif -%}
+        </div>
+      </nk-facets>
+    {%- endif -%}
+  </div>
+{%- endpaginate -%}
 
 {% schema %}
 {
   "name": "t:general.search",
-  "settings": []
+  "settings": [
+    { "type": "range", "id": "per_page", "label": "Results per page", "min": 8, "max": 48, "step": 4, "default": 24 },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on phones",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 3, "max": 5, "step": 1, "default": 4 },
+    { "type": "checkbox", "id": "show_filters", "label": "Show filters", "default": true, "info": "Filters apply to product results." },
+    { "type": "checkbox", "id": "show_sort", "label": "Show sort", "default": true }
+  ],
+  "enabled_on": { "templates": ["search"] }
 }
 {% endschema %}

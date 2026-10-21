@@ -21,9 +21,6 @@ const smoothstep = (edge0: number, edge1: number, x: number) => {
 };
 
 export class NkExpandMedia extends NkElement {
-  #current = 0;
-  #target = 0;
-  #frame = 0;
 
   protected mount(): void {
     const video = this.querySelector<HTMLVideoElement>('video');
@@ -34,37 +31,30 @@ export class NkExpandMedia extends NkElement {
       return;
     }
 
-    this.#target = this.#progress();
-    this.#current = this.#target;
-    this.#apply(this.#current);
-    this.on(window, 'scroll', () => this.#schedule(), { passive: true });
-    this.on(window, 'resize', () => this.#schedule());
-    this.dispose(() => cancelAnimationFrame(this.#frame));
+    this.#apply(0);
+    void this.#startScrollTrigger();
     this.#wireVideo(video, true);
+  }
+
+  /** GSAP ScrollTrigger drives progress with scrubbed smoothing; opens fully at 75% of the track. */
+  async #startScrollTrigger(): Promise<void> {
+    const { gsap } = await import('../../motion/gsap');
+    if (!this.isConnected) return;
+    const track = this.ref('track') ?? this;
+    const proxy = { p: 0 };
+    const context = gsap.context(() => {
+      gsap.to(proxy, {
+        p: 1,
+        ease: 'none',
+        scrollTrigger: { trigger: track, start: 'top top', end: 'bottom bottom', scrub: 0.8 },
+        onUpdate: () => this.#apply(Math.min(1, proxy.p / 0.75)),
+      });
+    }, this);
+    this.dispose(() => context.revert());
   }
 
   override onEditorSelect(): void {
     this.#apply(1);
-  }
-
-  #progress(): number {
-    const track = this.ref('track') ?? this;
-    const rect = track.getBoundingClientRect();
-    const span = Math.max(1, rect.height - window.innerHeight);
-    // The last ~25% of the track holds the open state before the section scrolls away.
-    return Math.min(1, Math.max(0, -rect.top / (span * 0.75)));
-  }
-
-  #schedule(): void {
-    this.#target = this.#progress();
-    if (this.#frame) return;
-    const tick = () => {
-      this.#current += (this.#target - this.#current) * 0.18;
-      if (Math.abs(this.#target - this.#current) < 0.001) this.#current = this.#target;
-      this.#apply(this.#current);
-      this.#frame = this.#current === this.#target ? 0 : requestAnimationFrame(tick);
-    };
-    this.#frame = requestAnimationFrame(tick);
   }
 
   #apply(p: number): void {

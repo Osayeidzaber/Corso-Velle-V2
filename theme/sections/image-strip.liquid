@@ -4,7 +4,8 @@
   motion.
 {%- endcomment -%}
 {%- assign items = section.blocks | where: 'type', 'image' -%}
-{%- if items.size > 0 -%}
+{%- assign source = section.settings.collection -%}
+{%- if items.size > 0 or source.products.size > 0 -%}
   <div class="image-strip full-width section-spacing color-{{ section.settings.color_scheme }}">
     {%- if section.settings.heading != blank -%}
       <h2 class="image-strip__heading spec">{{ section.settings.heading | escape }}</h2>
@@ -12,6 +13,18 @@
     <nk-marquee speed="{{ section.settings.speed }}" hover-speed="0.2" {% if section.settings.reverse %}direction="right"{% endif %} fade-edges style="--nk-marquee-gap: {{ section.settings.gap | divided_by: 2 }}px; --strip-h: {{ section.settings.height }}px;">
       <div class="marquee__track" data-ref="track">
         <ul class="marquee__list" data-ref="list" role="list">
+          {%- if source.products.size > 0 -%}
+            {%- for product in source.products limit: section.settings.limit -%}
+              {%- if product.featured_media -%}
+                <li class="marquee__item image-strip__item">
+                  <a href="{{ product.url }}" data-cursor="view">
+                    {%- assign alt = product.title | escape -%}
+                    {{ product.featured_media | image_url: height: 600 | image_tag: loading: 'lazy', alt: alt, height: section.settings.height }}
+                  </a>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
           {%- for block in items -%}
             <li class="marquee__item image-strip__item" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
               {%- capture media -%}
@@ -31,7 +44,6 @@
           {%- endfor -%}
         </ul>
       </div>
-      <button type="button" class="marquee__pause" data-ref="pause" aria-pressed="false" aria-label="{{ 'marquee.pause' | t }}" hidden>❚❚</button>
     </nk-marquee>
   </div>
 {%- endif -%}
@@ -55,6 +67,8 @@
   "max_blocks": 20,
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "collection", "id": "collection", "label": "Show products from collection", "info": "Uses each product's main image. Image blocks are added after these." },
+    { "type": "range", "id": "limit", "label": "Products to show", "min": 4, "max": 20, "step": 1, "default": 12 },
     { "type": "range", "id": "height", "label": "Image height", "min": 40, "max": 300, "step": 10, "unit": "px", "default": 140 },
     { "type": "range", "id": "gap", "label": "Gap", "min": 0, "max": 64, "step": 4, "unit": "px", "default": 24 },
     { "type": "range", "id": "speed", "label": "Speed", "min": 10, "max": 120, "step": 10, "unit": "px", "default": 40 },

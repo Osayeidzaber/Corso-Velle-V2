@@ -171,12 +171,17 @@ export class NkMarquee extends NkElement {
   #reactToScroll(): void {
     let lastY = window.scrollY;
     let lastTime = performance.now();
+    let skew = 0;
+    const setSkew = () => this.style.setProperty('--nk-marquee-skew', `${skew.toFixed(2)}deg`);
     const decay = () => {
       this.#frame = 0;
       this.#scrollBoost += (1 - this.#scrollBoost) * 0.08;
       if (Math.abs(this.#scrollBoost - 1) < 0.01) this.#scrollBoost = 1;
+      skew *= 0.88;
+      if (Math.abs(skew) < 0.05) skew = 0;
+      setSkew();
       if (!this.#hovered) this.#animation?.updatePlaybackRate(this.#scrollBoost);
-      if (this.#scrollBoost !== 1) this.#frame = requestAnimationFrame(decay);
+      if (this.#scrollBoost !== 1 || skew !== 0) this.#frame = requestAnimationFrame(decay);
     };
     this.on(
       window,
@@ -184,8 +189,12 @@ export class NkMarquee extends NkElement {
       () => {
         if (!this.#visible) return;
         const now = performance.now();
-        const velocity = Math.abs(window.scrollY - lastY) / Math.max(16, now - lastTime); // px/ms
+        const signed = (window.scrollY - lastY) / Math.max(16, now - lastTime); // px/ms
+        const velocity = Math.abs(signed);
         lastY = window.scrollY;
+        // Scroll Velocity "skewWithVelocity": letters lean into the scroll, capped at 16deg.
+        skew = Math.max(-16, Math.min(16, skew * 0.6 + signed * -6));
+        setSkew();
         lastTime = now;
         this.#scrollBoost = Math.min(3, Math.max(this.#scrollBoost, 1 + velocity * 1.5));
         if (!this.#hovered) this.#animation?.updatePlaybackRate(this.#scrollBoost);

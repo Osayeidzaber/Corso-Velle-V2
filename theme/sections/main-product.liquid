@@ -35,7 +35,7 @@
   endif
 -%}
 
-<div class="section-spacing" data-product-section data-section-id="{{ section.id }}">
+<div class="section-spacing product-section" data-product-section data-section-id="{{ section.id }}">
   <div class="product">
     {% render 'product-media', product: product %}
 
@@ -45,8 +45,33 @@
           {%- when '@app' -%}
             {% render block %}
 
+          {%- when 'eyebrow' -%}
+            {%- liquid
+              assign eyebrow = block.settings.text
+              if eyebrow == blank
+                assign eyebrow = product.type
+              endif
+              if eyebrow == blank
+                for c in product.collections
+                  unless c.handle contains 'all'
+                    assign eyebrow = c.title
+                    break
+                  endunless
+                endfor
+              endif
+            -%}
+            {%- if eyebrow != blank -%}
+              <p class="product__eyebrow eyebrow" {{ block.shopify_attributes }}><span class="nk-text-shine">{{ eyebrow | escape }}</span></p>
+            {%- endif -%}
+
           {%- when 'title' -%}
-            <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
+            {%- if request.design_mode -%}
+              <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
+            {%- else -%}
+              <nk-text effect="rise" split="chars" hover="lift" stagger="0.022" play-on-load {{ block.shopify_attributes }}>
+                <h1 class="product__title" data-text-target>{{ product.title | escape }}</h1>
+              </nk-text>
+            {%- endif -%}
 
           {%- when 'price' -%}
             <div class="product__price" data-region="price" {{ block.shopify_attributes }}>
@@ -124,7 +149,7 @@
                     </div>
                     {%- if option_name == size_names -%}
                       {%- assign has_chart = product.metafields.custom.size_chart.value -%}
-                      {%- if has_chart or block.settings.size_guide_page != blank -%}
+                      {%- if has_chart or block.settings.size_guide_page != blank or block.settings.size_table != blank -%}
                         <button type="button" class="size-guide-link spec" data-nk-open="SizeGuide-{{ section.id }}" aria-haspopup="dialog">
                           {{- 'product.size_guide' | t -}}
                         </button>
@@ -138,7 +163,7 @@
                 </p>
               </nk-variant-picker>
 
-              {%- if block.settings.size_guide_page != blank or product.metafields.custom.size_chart.value -%}
+              {%- if block.settings.size_guide_page != blank or block.settings.size_table != blank or product.metafields.custom.size_chart.value -%}
                 <nk-modal id="SizeGuide-{{ section.id }}">
                   <dialog class="drawer drawer--right" aria-labelledby="SizeGuideTitle-{{ section.id }}">
                     <div class="drawer__header">
@@ -147,8 +172,9 @@
                         {% render 'icon', name: 'close' %}
                       </button>
                     </div>
-                    <div class="drawer__body" style="padding: 16px;">
-                      {% render 'size-chart', product: product, page: block.settings.size_guide_page %}
+                    <div class="drawer__body size-guide__body">
+                      {%- if block.settings.size_heading != blank -%}<p class="size-guide__heading">{{ block.settings.size_heading | escape }}</p>{%- endif -%}
+                      {% render 'size-chart', product: product, page: block.settings.size_guide_page, table_csv: block.settings.size_table, unit: block.settings.size_unit, note: block.settings.size_note, option: block.settings.size_guide_option %}
                     </div>
                   </dialog>
                 </nk-modal>
@@ -217,7 +243,9 @@
                 {%- if block.settings.show_quantity -%}
                   <label class="spec" for="Quantity-{{ section.id }}">{{ 'product.quantity' | t }}</label>
                   <div class="quantity">
-                    <span></span>
+                    <button type="button" class="icon-button" data-qty-step="-1" aria-label="{{ 'product.decrease_quantity' | t }}">
+                      {% render 'icon', name: 'minus', size: 16 %}
+                    </button>
                     <input
                       id="Quantity-{{ section.id }}"
                       type="number"
@@ -228,7 +256,9 @@
                       {% if variant.quantity_rule.max %}max="{{ variant.quantity_rule.max }}"{% endif %}
                       step="{{ variant.quantity_rule.increment | default: 1 }}"
                     >
-                    <span></span>
+                    <button type="button" class="icon-button" data-qty-step="1" aria-label="{{ 'product.increase_quantity' | t }}">
+                      {% render 'icon', name: 'plus', size: 16 %}
+                    </button>
                   </div>
                 {%- endif -%}
 
@@ -278,6 +308,14 @@
   "settings": [],
   "blocks": [
     { "type": "@app" },
+    {
+      "type": "eyebrow",
+      "name": "Eyebrow",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "info": "Leave empty to show the product type, or its first collection." }
+      ]
+    },
     { "type": "title", "name": "Title", "limit": 1 },
     { "type": "price", "name": "Price", "limit": 1 },
     {
@@ -286,7 +324,26 @@
       "limit": 1,
       "settings": [
         { "type": "text", "id": "size_guide_option", "label": "Show size guide next to option", "default": "Size" },
-        { "type": "page", "id": "size_guide_page", "label": "Size guide page (fallback)", "info": "Used when a product has no size_chart metafield." }
+        { "type": "page", "id": "size_guide_page", "label": "Size guide page (fallback)", "info": "Used when a product has no size_chart metafield." },
+        { "type": "text", "id": "size_heading", "label": "Size guide heading", "default": "Measured flat, garment in hand" },
+        {
+          "type": "textarea",
+          "id": "size_table",
+          "label": "Size table",
+          "info": "Used when there is no size_chart metafield or page. First line is the headings, then one size per line, comma separated.",
+          "default": "Size,Chest,Length,Shoulder,Sleeves\nS,40,27,17.5,24.5\nM,42,28,18,25\nL,44,29,18.5,25.5\nXL,46,30,19,26"
+        },
+        {
+          "type": "select",
+          "id": "size_unit",
+          "label": "Table is written in",
+          "options": [
+            { "value": "in", "label": "Inches" },
+            { "value": "cm", "label": "Centimetres" }
+          ],
+          "default": "in"
+        },
+        { "type": "text", "id": "size_note", "label": "Note under the table" }
       ]
     },
     { "type": "inventory", "name": "Inventory status", "limit": 1 },

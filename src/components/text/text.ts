@@ -1,0 +1,317 @@
+import './text.css';
+
+import { define } from '../../core/define';
+import { NkElement } from '../../core/element';
+import { decorativeMotionAllowed } from '../../core/motion';
+
+type Effect = 'rise' | 'blur' | 'flip' | 'pop' | 'skew' | 'fold' | 'fade';
+type SplitBy = 'chars' | 'words' | 'lines';
+type Hover = 'none' | 'lift' | 'refold';
+
+/** Spring constants for the hover lift (per letter, critically damped-ish). */
+const STIFFNESS = 180;
+const DAMPING = 19;
+
+/**
+ * <nk-text effect split hover stagger-from play-on-load> — animated headings, rebuilt from the
+ * supplied Split Text (rise / blur / flip / pop / skew + hover lift), Fold Text (paper fold from
+ * a top hinge with crease shading + hover refold) and Text Effect (per-character blur fade).
+ *
+ * - The heading is real text in the HTML. With motion on, CSS hides it before first paint
+ *   (html.nk-anim) and this element reveals it already split, so it never flashes in twice.
+ *   A CSS failsafe shows it after 3s if scripts fail.
+ * - Splitting wraps each word in a no-wrap inline-block (words never break mid-word, nothing is
+ *   clipped by masks) and, for chars/fold, each letter in its own inline-block. <em>, <br> and
+ *   gradient/shine spans are kept; gradient/shine spans animate as one piece so background-clip
+ *   text keeps painting.
+ * - Screen readers get one visually hidden copy of the text; the pieces are aria-hidden.
+ */
+export class NkText extends NkElement {
+  #revert: (() => void) | null = null;
+  #frame = 0;
+
+  protected mount(): void {
+    if (!decorativeMotionAllowed() || this.hasAttribute('data-done')) {
+      this.#show();
+      return;
+    }
+    void this.#start().catch((error: unknown) => {
+      console.error(error);
+      this.#show();
+    });
+  }
+
+  protected override unmount(): void {
+    cancelAnimationFrame(this.#frame);
+    this.#revert?.();
+    this.#revert = null;
+  }
+
+  override onEditorSelect(): void {
+    this.#revert?.();
+    this.#show();
+  }
+
+  #show(): void {
+    this.setAttribute('data-ready', '');
+    this.setAttribute('data-done', '');
+  }
+
+  async #start(): Promise<void> {
+    const { gsap, ScrollTrigger } = await import('../../motion/gsap');
+    if (!this.isConnected) return;
+    if (document.fonts && document.fonts.status !== 'loaded') {
+      await Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, 1200))]);
+    }
+    if (!this.isConnected) return;
+
+    const target = this.querySelector<HTMLElement>('[data-text-target]') ?? (this.firstElementChild as HTMLElement | null);
+    if (!target) return this.#show();
+
+    const effect = (this.getAttribute('effect') ?? 'rise') as Effect;
+    const by = (this.getAttribute('split') ?? (effect === 'fold' ? 'chars' : 'words')) as SplitBy;
+    const hover = (this.getAttribute('hover') ?? 'none') as Hover;
+    const from = (this.getAttribute('stagger-from') ?? 'start') as 'start' | 'center' | 'end';
+
+    const label = target.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+    const { words, chars } = splitText(target, by !== 'words');
+    if (label) {
+      // Pieces are aria-hidden; one plain copy keeps the text whole for screen readers.
+      const spoken = document.createElement('span');
+      spoken.className = 'visually-hidden';
+      spoken.textContent = label;
+      target.prepend(spoken);
+    }
+
+    const em = Number.parseFloat(getComputedStyle(target).fontSize) || 16;
+    const pieces = by === 'chars' ? chars : words;
+    const look = effectVars(effect, em);
+    const each = Number(this.getAttribute('stagger')) || (by === 'chars' ? (effect === 'fold' ? 0.045 : 0.03) : 0.08);
+    const duration = Number(this.getAttribute('duration')) || look.duration;
+
+    const context = gsap.context(() => {
+      gsap.set(pieces, look.from);
+      this.setAttribute('data-ready', '');
+
+      const timeline = gsap.timeline({
+        paused: true,
+        delay: Number(this.getAttribute('delay')) || 0,
+        onComplete: () => {
+          gsap.set(pieces, { clearProps: 'transform,filter,opacity,willChange' });
+          this.setAttribute('data-done', '');
+          if (hover !== 'none') this.#enableHover(hover, by === 'words' ? words : chars, em);
+        },
+      });
+
+      if (by === 'lines') {
+        // Words that share a line move together; lines follow each other.
+        lineGroups(words).forEach((line, index) => {
+          timeline.to(line, { ...look.to, duration, ease: look.ease }, index * each * 1.6);
+        });
+      } else {
+        timeline.to(pieces, { ...look.to, duration, ease: look.ease, stagger: { each, from } }, 0);
+      }
+
+      if (this.hasAttribute('play-on-load')) {
+        timeline.play(0);
+      } else {
+        ScrollTrigger.create({ trigger: this, start: 'top 88%', once: true, onEnter: () => timeline.play(0) });
+      }
+    }, this);
+    this.#revert = () => context.revert();
+  }
+
+  /** Split Text "lift" (letters spring up around the pointer) or Fold Text "refold". */
+  #enableHover(mode: Hover, pieces: HTMLElement[], em: number): void {
+    if (!matchMedia('(hover: hover) and (pointer: fine)').matches || !pieces.length) return;
+    const springs = pieces.map(() => ({ value: 0, velocity: 0 }));
+    const pointer = { x: 0, y: 0, inside: false };
+    let centers: Array<{ x: number; y: number }> = [];
+    let last = 0;
+
+    const measure = (): void => {
+      centers = pieces.map((piece) => {
+        const rect = piece.getBoundingClientRect();
+        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      });
+    };
+
+    const step = (now: number): void => {
+      const dt = Math.min(0.032, (now - (last || now)) / 1000 || 0.016);
+      last = now;
+      let moving = false;
+      pieces.forEach((piece, index) => {
+        const spring = springs[index]!;
+        const center = centers[index];
+        let target = 0;
+        if (pointer.inside && center) {
+          const dx = (center.x - pointer.x) / (em * 0.9);
+          const dy = (center.y - pointer.y) / (em * 1.2);
+          const falloff = Math.exp(-(dx * dx + dy * dy) * 0.5);
+          target = mode === 'lift' ? -em * 0.2 * falloff : -45 * falloff;
+        }
+        spring.velocity += (STIFFNESS * (target - spring.value) - DAMPING * spring.velocity) * dt;
+        spring.value += spring.velocity * dt;
+        if (Math.abs(target - spring.value) < 0.02 && Math.abs(spring.velocity) < 0.05) {
+          spring.value = target;
+          spring.velocity = 0;
+        } else {
+          moving = true;
+        }
+        if (mode === 'lift') {
+          piece.style.translate = Math.abs(spring.value) > 0.01 ? `0 ${spring.value.toFixed(2)}px` : '';
+        } else {
+          piece.style.transform =
+            Math.abs(spring.value) > 0.05 ? `perspective(700px) rotateX(${spring.value.toFixed(2)}deg)` : '';
+        }
+      });
+      this.#frame = moving || pointer.inside ? requestAnimationFrame(step) : 0;
+      if (!this.#frame) last = 0;
+    };
+
+    const wake = (): void => {
+      if (!this.#frame) this.#frame = requestAnimationFrame(step);
+    };
+
+    this.on(this, 'pointerenter', (event) => {
+      measure();
+      pointer.inside = true;
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+      wake();
+    });
+    this.on(this, 'pointermove', (event) => {
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+      wake();
+    });
+    this.on(this, 'pointerleave', () => {
+      pointer.inside = false;
+      wake();
+    });
+    this.on(window, 'scroll', () => pointer.inside && measure(), { passive: true });
+  }
+}
+
+interface Look {
+  from: gsap.TweenVars;
+  to: gsap.TweenVars;
+  ease: string;
+  duration: number;
+}
+
+function effectVars(effect: Effect, em: number): Look {
+  switch (effect) {
+    case 'fade':
+      return { from: { opacity: 0 }, to: { opacity: 1 }, ease: 'power2.inOut', duration: 0.9 };
+    case 'blur':
+      return {
+        from: { opacity: 0, filter: `blur(${Math.round(em * 1.4) / 10}px)`, y: em * 0.12 },
+        to: { opacity: 1, filter: 'blur(0px)', y: 0 },
+        ease: 'power2.out',
+        duration: 1.1,
+      };
+    case 'flip':
+      return {
+        from: { opacity: 0, rotationX: -90, transformPerspective: em * 6, transformOrigin: '50% 100%' },
+        to: { opacity: 1, rotationX: 0 },
+        ease: 'power3.out',
+        duration: 1,
+      };
+    case 'pop':
+      return { from: { opacity: 0, scale: 0 }, to: { opacity: 1, scale: 1 }, ease: 'back.out(1.6)', duration: 0.8 };
+    case 'skew':
+      return {
+        from: { opacity: 0, x: -em * 0.4, skewX: -24, transformOrigin: '50% 100%' },
+        to: { opacity: 1, x: 0, skewX: 0 },
+        ease: 'expo.out',
+        duration: 1.2,
+      };
+    case 'fold':
+      // Paper fold on a top hinge; the crease is darker until the letter lies flat.
+      return {
+        from: { rotationX: -92, transformPerspective: 700, transformOrigin: '50% 0%', filter: 'brightness(0.45)', opacity: 0 },
+        to: { rotationX: 0, filter: 'brightness(1)', opacity: 1 },
+        ease: 'power3.out',
+        duration: 0.65,
+      };
+    default:
+      return {
+        from: { opacity: 0, y: em * 0.55 },
+        to: { opacity: 1, y: 0 },
+        ease: 'power3.out',
+        duration: 1.1,
+      };
+  }
+}
+
+const WHOLE = '.nk-text-shine, .nk-text-gradient';
+
+/** Wrap words (and optionally letters) in inline-blocks, keeping inline markup. */
+function splitText(root: HTMLElement, letters: boolean): { words: HTMLElement[]; chars: HTMLElement[] } {
+  const words: HTMLElement[] = [];
+  const chars: HTMLElement[] = [];
+
+  const visit = (node: Node): void => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent ?? '';
+      if (!text.trim()) return;
+      const fragment = document.createDocumentFragment();
+      for (const part of text.split(/(\s+)/)) {
+        if (!part) continue;
+        if (/^\s+$/.test(part)) {
+          fragment.append(document.createTextNode(' '));
+          continue;
+        }
+        const word = document.createElement('span');
+        word.className = 'nk-w';
+        word.setAttribute('aria-hidden', 'true');
+        if (letters) {
+          for (const glyph of Array.from(part)) {
+            const char = document.createElement('span');
+            char.className = 'nk-c';
+            char.textContent = glyph;
+            word.append(char);
+            chars.push(char);
+          }
+        } else {
+          word.textContent = part;
+        }
+        words.push(word);
+        fragment.append(word);
+      }
+      node.parentNode?.replaceChild(fragment, node);
+      return;
+    }
+    if (node instanceof HTMLElement) {
+      if (node.matches(WHOLE)) {
+        // background-clip:text does not paint into transformed children: move it as one piece.
+        node.classList.add('nk-w');
+        node.setAttribute('aria-hidden', 'true');
+        words.push(node);
+        chars.push(node);
+        return;
+      }
+      for (const child of [...node.childNodes]) visit(child);
+    }
+  };
+
+  for (const child of [...root.childNodes]) visit(child);
+  return { words, chars };
+}
+
+function lineGroups(words: HTMLElement[]): HTMLElement[][] {
+  const lines: HTMLElement[][] = [];
+  let top = Number.NaN;
+  for (const word of words) {
+    const offset = Math.round(word.getBoundingClientRect().top);
+    if (Number.isNaN(top) || Math.abs(offset - top) > 4) {
+      lines.push([]);
+      top = offset;
+    }
+    lines[lines.length - 1]!.push(word);
+  }
+  return lines;
+}
+
+define('nk-text', NkText);

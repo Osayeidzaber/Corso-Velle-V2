@@ -35,9 +35,6 @@
             {%- endfor -%}
           </ul>
         </div>
-        {%- if row == 1 -%}
-          <button type="button" class="marquee__pause" data-ref="pause" aria-pressed="false" aria-label="{{ 'marquee.pause' | t }}" hidden>❚❚</button>
-        {%- endif -%}
       </nk-marquee>
     {%- endfor -%}
   </div>
@@ -47,14 +44,15 @@
   .message-band { padding-block: 18px; overflow: hidden; display: grid; gap: 4px; }
   .message-band__item {
     font-family: var(--nk-font-heading);
-    font-weight: 900;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.02em;
     font-size: var(--band-size, 72px);
     line-height: 1;
-    text-transform: uppercase;
-    --nk-marquee-gap: 0.4em;
+    --nk-marquee-gap: 0.45em;
   }
   .message-band__item a { text-decoration: none; }
-  .message-band__item--outline { color: transparent; -webkit-text-stroke: max(1px, 0.02em) var(--nk-color-text); }
+  .message-band__item--outline { font-style: normal; color: transparent; -webkit-text-stroke: max(1px, 0.02em) var(--nk-color-text); }
   @media (max-width: 749px) {
     .message-band__item { font-size: calc(var(--band-size, 72px) * 0.55); }
     .message-band__row--second { display: none; }

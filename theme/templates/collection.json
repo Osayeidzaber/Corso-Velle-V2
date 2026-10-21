@@ -15,9 +15,22 @@
         "products_per_page": 24,
         "columns_mobile": "2",
         "columns_desktop": 4,
-        "show_description": true
+        "show_description": true,
+        "show_header": false,
+        "show_filters": true
+      }
+    },
+    "banner": {
+      "type": "collection-banner",
+      "settings": {
+        "show_description": true,
+        "use_product_image": false,
+        "color_scheme": "scheme-2"
       }
     }
   },
-  "order": ["main"]
+  "order": [
+    "banner",
+    "main"
+  ]
 }

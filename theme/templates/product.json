@@ -12,18 +12,79 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "title": { "type": "title", "settings": {} },
-        "price": { "type": "price", "settings": {} },
-        "picker": { "type": "variant_picker", "settings": { "size_guide_option": "Size" } },
-        "inventory": { "type": "inventory", "settings": {} },
-        "buy": { "type": "buy_buttons", "settings": { "show_quantity": false, "show_dynamic_checkout": true } },
-        "description": { "type": "description", "settings": { "heading": "", "open": true } },
-        "care": { "type": "accordion", "settings": { "heading": "Fabric & care", "content": "" } },
-        "delivery": { "type": "accordion", "settings": { "heading": "Delivery & returns", "content": "" } }
+        "eyebrow": {
+          "type": "eyebrow",
+          "settings": {
+            "text": ""
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "picker": {
+          "type": "variant_picker",
+          "settings": {
+            "size_guide_option": "Size",
+            "size_unit": "in"
+          }
+        },
+        "inventory": {
+          "type": "inventory",
+          "settings": {}
+        },
+        "buy": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_quantity": false,
+            "show_dynamic_checkout": true
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {
+            "heading": "Details",
+            "open": true
+          }
+        },
+        "delivery": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Shipping + exchange",
+            "content": "<p>Delivery times and exchange terms are confirmed at checkout. Contact us with your order number for any size exchange.</p>"
+          }
+        }
       },
-      "block_order": ["title", "price", "picker", "inventory", "buy", "description", "care", "delivery"],
+      "block_order": [
+        "eyebrow",
+        "title",
+        "price",
+        "picker",
+        "inventory",
+        "buy",
+        "description",
+        "delivery"
+      ],
       "settings": {}
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "heading": "You might",
+        "heading_italic": "also like",
+        "intent": "related",
+        "limit": 4,
+        "columns_desktop": 4,
+        "color_scheme": "scheme-1"
+      }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main",
+    "recommendations"
+  ]
 }
