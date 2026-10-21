@@ -1,4 +1,27 @@
-import { a as captureFocus, c as CartError, f as NkElement, g as define, h as t, l as cart, m as config, o as parseHTML, p as announce, r as renderSections, s as restoreFocus, u as cartSectionIds } from "./nk-chunk-sections-j2U5gO06.js";
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./nk-reveal.css","./nk-marquee.css","./nk-tabs.css","./nk-expand-media.css","./nk-search-pill.css"])))=>i.map(i=>d[i]);
+import { _ as NkElement, a as captureFocus, b as t, c as animate, d as easing, h as cartSectionIds, l as decorativeMotionAllowed, m as cart, o as parseHTML, p as CartError, r as renderSections, s as restoreFocus, u as durations, v as announce, x as define, y as config } from "./nk-chunk-sections-CYB9cWhh.js";
+// src/core/lazy.ts
+var loaders = /* @__PURE__ */ new Map();
+var started = /* @__PURE__ */ new Set();
+function registerLazy(tag, loader) {
+	loaders.set(tag, loader);
+}
+function loadFor(root = document) {
+	for (const [tag, loader] of loaders) {
+		if (started.has(tag) || customElements.get(tag)) continue;
+		if (!root.querySelector(tag)) continue;
+		started.add(tag);
+		loader().catch((error) => {
+			started.delete(tag);
+			console.error(`Failed to load <${tag}>`, error);
+		});
+	}
+}
+function installLazyLoader() {
+	loadFor(document);
+	document.addEventListener("shopify:section:load", (event) => loadFor(event.target));
+	document.addEventListener("nk:section:replaced", (event) => loadFor(event.target));
+}
 // src/services/overlay.ts
 var active = null;
 var savedScroll = 0;
@@ -300,6 +323,22 @@ var NkHeader = class extends NkElement {
 		});
 		this.#enhanceDisclosureNav();
 	}
+	/** Floating panel style: the newly opened panel grows from where the previous one was (FLIP). */
+	#morph(panel, from) {
+		if (!panel) return;
+		const to = panel.getBoundingClientRect();
+		if (!to.width || !to.height) return;
+		animate(panel, [{
+			transformOrigin: "top left",
+			transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width}, ${from.height / to.height})`
+		}, {
+			transformOrigin: "top left",
+			transform: "none"
+		}], {
+			duration: durations.overlayOut + 40,
+			easing: easing.out
+		});
+	}
 	#updateCartCount(count) {
 		const bubble = this.querySelector("[data-cart-count]");
 		if (bubble) {
@@ -317,11 +356,27 @@ var NkHeader = class extends NkElement {
 	#enhanceDisclosureNav() {
 		const panels = [...this.querySelectorAll(".nav__disclosure")];
 		if (!panels.length) return;
+		const floating = this.querySelector(".header--panel-floating") !== null;
 		for (const details of panels) this.on(details, "toggle", () => {
 			if (!details.open) return;
+			const fromRect = panels.find((other) => other !== details && other.open)?.querySelector(".nav__panel")?.getBoundingClientRect();
 			for (const other of panels) if (other !== details) other.open = false;
 			this.#setHidden(false);
+			if (floating && fromRect) this.#morph(details.querySelector(".nav__panel"), fromRect);
 		});
+		if (matchMedia("(hover: hover) and (pointer: fine)").matches) for (const details of panels) {
+			const item = details.closest(".nav__item") ?? details;
+			let timer = 0;
+			this.on(item, "pointerenter", () => {
+				window.clearTimeout(timer);
+				timer = window.setTimeout(() => details.open = true, 150);
+			});
+			this.on(item, "pointerleave", () => {
+				window.clearTimeout(timer);
+				timer = window.setTimeout(() => details.open = false, 250);
+			});
+			this.dispose(() => window.clearTimeout(timer));
+		}
 		this.on(this, "keydown", (event) => {
 			if (event.key !== "Escape") return;
 			const open = panels.find((details) => details.open);
@@ -407,6 +462,45 @@ var NkNavDrawer = class extends NkModal {
 			opener: null
 		}];
 		this.#show("root");
+		this.#entrance();
+	}
+	/**
+	* Style-specific entrance (decorative, skipped under reduced motion / Motion off):
+	* - editorial (menu.md / StaggeredMenu): two colour layers sweep across, rows rise in sequence;
+	* - cards (cardnav): cards rise in sequence.
+	*/
+	#entrance() {
+		if (!decorativeMotionAllowed()) return;
+		[...this.dialog.querySelectorAll(".menu-drawer__layer")].forEach((layer, i) => {
+			animate(layer, [
+				{ translate: "-100% 0" },
+				{
+					translate: "0 0",
+					offset: .45
+				},
+				{ translate: "100% 0" }
+			], {
+				duration: 700,
+				delay: i * 70,
+				easing: easing.out
+			}, { decorative: true });
+		});
+		const items = [...this.dialog.querySelectorAll("[data-level-panel=\"root\"] > .menu-drawer__list > li, [data-level-panel=\"root\"] .menu-card")].slice(0, 6);
+		if (!this.dialog.matches(".menu-drawer--editorial, .menu-drawer--cards")) return;
+		items.forEach((item, i) => {
+			animate(item, [{
+				opacity: 0,
+				transform: "translateY(24px)"
+			}, {
+				opacity: 1,
+				transform: "none"
+			}], {
+				duration: durations.overlayIn + 120,
+				delay: 120 + i * durations.stagger,
+				easing: easing.out,
+				fill: "backwards"
+			}, { decorative: true });
+		});
 	}
 	onClosed() {
 		this.#stack = [];
@@ -531,6 +625,103 @@ function installEditorAdapter() {
 		for (const component of componentsIn(event.target)) component.onEditorDeselect?.();
 	});
 }
+// \0vite/preload-helper.js
+var scriptRel = /* @__PURE__ */ (function detectScriptRel() {
+	const relList = typeof document !== "undefined" && document.createElement("link").relList;
+	return relList && relList.supports && relList.supports("modulepreload") ? "modulepreload" : "preload";
+})();
+var assetsURL = function(dep, importerUrl) {
+	return new URL(dep, importerUrl).href;
+};
+var seen = {};
+var isCssPreloadUrl = function isCssPreloadUrl(url) {
+	return url.pathname.endsWith(".css");
+};
+var preloadOnce = function preloadOnce(seen, href, preload) {
+	if (href in seen) return seen[href];
+	const promise = preload();
+	if (!promise) {
+		seen[href] = void 0;
+		return;
+	}
+	const preloadPromise = promise.then(() => {
+		seen[href] = void 0;
+	}, (err) => {
+		seen[href] = void 0;
+		throw err;
+	});
+	seen[href] = preloadPromise;
+	return preloadPromise;
+};
+var __vitePreload = function preload(baseModule, deps, importerUrl) {
+	let promise = Promise.resolve();
+	if (deps && deps.length > 0) {
+		let preloadedHrefs;
+		const cspNonceMeta = document.querySelector("meta[property=csp-nonce]");
+		const cspNonce = cspNonceMeta?.nonce || cspNonceMeta?.getAttribute("nonce");
+		function allSettled(promises) {
+			return Promise.all(promises.map((p) => Promise.resolve(p).then((value) => ({
+				status: "fulfilled",
+				value
+			}), (reason) => ({
+				status: "rejected",
+				reason
+			}))));
+		}
+		function importMetaResolve(specifier) {
+			if (import.meta.resolve) return new URL(import.meta.resolve(specifier));
+			return new URL(
+				specifier,
+				/** #__KEEP__ */
+				import.meta.url
+			);
+		}
+		promise = allSettled(deps.map((depString) => {
+			depString = assetsURL(depString, importerUrl);
+			const dep = importMetaResolve(depString);
+			const isCss = isCssPreloadUrl(dep);
+			return preloadOnce(seen, dep.href, () => {
+				if (preloadedHrefs === void 0) {
+					preloadedHrefs = {
+						all: /* @__PURE__ */ new Set(),
+						styles: /* @__PURE__ */ new Set()
+					};
+					const links = document.getElementsByTagName("link");
+					for (let i = links.length - 1; i >= 0; i--) {
+						const link = links[i];
+						preloadedHrefs.all.add(link.href);
+						if (link.rel === "stylesheet") preloadedHrefs.styles.add(link.href);
+					}
+				}
+				if ((isCss ? preloadedHrefs.styles : preloadedHrefs.all).has(dep.href)) return;
+				const link = document.createElement("link");
+				link.rel = isCss ? "stylesheet" : scriptRel;
+				if (!isCss) link.as = "script";
+				link.crossOrigin = "";
+				link.href = dep.href;
+				if (cspNonce) link.setAttribute("nonce", cspNonce);
+				document.head.appendChild(link);
+				if (isCss) return new Promise((res, rej) => {
+					link.addEventListener("load", res);
+					link.addEventListener("error", () => rej(/* @__PURE__ */ new Error(`Unable to preload CSS for ${dep}`)));
+				});
+			});
+		}).filter((p) => p !== void 0));
+	}
+	function handlePreloadError(err) {
+		const e = new Event("vite:preloadError", { cancelable: true });
+		e.payload = err;
+		window.dispatchEvent(e);
+		if (!e.defaultPrevented) throw err;
+	}
+	return promise.then((res) => {
+		for (const item of res || []) {
+			if (item.status !== "rejected") continue;
+			handlePreloadError(item.reason);
+		}
+		return baseModule().catch(handlePreloadError);
+	});
+};
 // src/entries/global.ts
 installEditorAdapter();
 installCartRenderer();
@@ -541,3 +732,10 @@ define("nk-nav-drawer", NkNavDrawer);
 define("nk-cart-drawer", NkCartDrawer);
 define("nk-cart-items", NkCartItems);
 define("nk-disclosure", NkDisclosure);
+registerLazy("nk-reveal", () => __vitePreload(() => import("./nk-chunk-reveal-Nh2pZLd2.js"), __vite__mapDeps([0]), import.meta.url));
+registerLazy("nk-marquee", () => __vitePreload(() => import("./nk-chunk-marquee-C1Dv4wly.js"), __vite__mapDeps([1]), import.meta.url));
+registerLazy("nk-tabs", () => __vitePreload(() => import("./nk-chunk-tabs-Cs0NEdgZ.js"), __vite__mapDeps([2]), import.meta.url));
+registerLazy("nk-expand-media", () => __vitePreload(() => import("./nk-chunk-expand-media-TmvWNLEY.js"), __vite__mapDeps([3]), import.meta.url));
+registerLazy("nk-elastic-line", () => __vitePreload(() => import("./nk-chunk-elastic-line-Ccf4lPj8.js"), [], import.meta.url));
+registerLazy("nk-search-pill", () => __vitePreload(() => import("./nk-chunk-search-pill-CDiLYkI3.js"), __vite__mapDeps([4]), import.meta.url));
+installLazyLoader();

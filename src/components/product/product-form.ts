@@ -38,7 +38,10 @@ export class NkProductForm extends NkElement {
     const button = this.querySelector<HTMLButtonElement>('[data-region="buy"] button[type="submit"]');
     const label = button?.querySelector<HTMLElement>('[data-button-label]');
     if (!button || !label) return;
-    if (state === 'incomplete') {
+    label.classList.toggle('nk-text-wave', state === 'resolving');
+    if (state === 'resolving') {
+      label.textContent = t('product.updating');
+    } else if (state === 'incomplete') {
       const name = this.#picker()?.firstIncomplete()?.dataset.optionName ?? '';
       label.textContent = t('product.choose_named_option', { option: name });
       button.disabled = false; // clicking explains what is missing

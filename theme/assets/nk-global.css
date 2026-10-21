@@ -777,6 +777,150 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]) {
   min-height: var(--nk-tap);
 }
 
+/* ---------- Navigation styles from the supplied examples ---------- */
+
+/* Floating mega-menu panel (navbar2 / navbatmain): a card under the item, morphing between items. */
+.header--panel-floating .nav__item {
+  position: relative;
+}
+
+.header--panel-floating .nav__panel {
+  inset: calc(100% + 8px) auto auto 50%;
+  translate: -50% 0;
+  width: max-content;
+  min-width: 260px;
+  max-width: min(720px, 90vw);
+  border: 1px solid var(--nk-color-line);
+  border-radius: var(--nk-radius);
+  box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.35);
+  padding: 20px 24px;
+}
+
+.header--panel-floating .menu-promo {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.menu-promo {
+  display: grid;
+  gap: 6px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+}
+
+.menu-promo img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.header--panel-floating .menu-promo img {
+  aspect-ratio: 2 / 1;
+}
+
+/* Editorial drawer (menu.md / StaggeredMenu): big numbered rows, coloured layers slide first. */
+.menu-drawer--editorial .menu-drawer__list {
+  counter-reset: nk-menu;
+}
+
+.menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row {
+  min-height: 64px;
+  border-top: 0;
+  font-size: clamp(2rem, 9vw, 3.25rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row::before {
+  counter-increment: nk-menu;
+  content: counter(nk-menu, decimal-leading-zero);
+  align-self: flex-start;
+  margin-top: 10px;
+  margin-right: 10px;
+  order: 2;
+  font-family: var(--nk-font-spec);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--nk-color-accent);
+}
+
+.menu-drawer__layers {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.menu-drawer__layer {
+  position: absolute;
+  inset: 0;
+  translate: -100% 0;
+}
+
+.menu-drawer__layer:nth-child(1) {
+  background: var(--nk-color-accent);
+}
+
+.menu-drawer__layer:nth-child(2) {
+  background: var(--nk-color-surface);
+}
+
+/* Cards drawer (cardnav): level-1 groups as cards with their links inside. */
+.menu-drawer__cards {
+  display: grid;
+  gap: 8px;
+  padding: 8px 16px 16px;
+}
+
+.menu-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--nk-radius);
+  background: var(--nk-color-surface);
+}
+
+.menu-card__title {
+  font-family: var(--nk-font-heading);
+  font-weight: 700;
+  font-size: 1.125rem;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.menu-card__description {
+  color: var(--nk-color-text-muted);
+  font-size: 0.875rem;
+}
+
+.menu-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-card__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.menu-card__links a::before {
+  content: '↗';
+  font-size: 0.75rem;
+  color: var(--nk-color-accent);
+}
+
 /* Cart lines shared by drawer and page (CA-04). */
 .cart-lines {
   margin: 0;
@@ -1200,4 +1344,212 @@ nk-cart-drawer[data-pending] [name='checkout'] {
   .footer__menu .disclosure > summary::after {
     content: none;
   }
+}
+
+/*
+ * Text and surface effects — CSS-only rewrites of the supplied examples (master-plan/05).
+ * Every effect is opt-in per section/block, stops under reduced motion / Motion off, and keeps
+ * text as real text (selectable, translatable, read once by screen readers).
+ */
+
+/* Shine — a highlight band sweeps across the text (Shiny Text). The base colour is the scheme
+   text colour, so contrast holds outside the narrow band. */
+@property --nk-shine-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 150%;
+}
+
+.nk-text-shine {
+  background-image: linear-gradient(
+    110deg,
+    currentColor 0 calc(var(--nk-shine-x) - 12%),
+    color-mix(in oklab, currentColor 45%, #fff) var(--nk-shine-x),
+    currentColor calc(var(--nk-shine-x) + 12%) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: nk-shine 2.8s var(--nk-ease-out) 1s infinite;
+}
+
+@keyframes nk-shine {
+  from {
+    --nk-shine-x: 150%;
+  }
+  60%,
+  to {
+    --nk-shine-x: -50%;
+  }
+}
+
+/* Gradient — slow flowing gradient fill from the scheme's accent and text colours (Gradient
+   Text). Opt-in; check contrast against the section background before using it. */
+.nk-text-gradient {
+  background-image: linear-gradient(
+    90deg,
+    var(--nk-color-accent),
+    color-mix(in oklab, var(--nk-color-accent) 50%, var(--nk-color-text)),
+    var(--nk-color-text),
+    var(--nk-color-accent)
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: nk-gradient 8s ease-in-out infinite alternate;
+}
+
+@keyframes nk-gradient {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+/* Wave — loading label shimmer (textloading / TextShimmerWave). Used for "Updating…". */
+.nk-text-wave {
+  background-image: linear-gradient(
+    90deg,
+    currentColor 0 40%,
+    color-mix(in oklab, currentColor 35%, transparent) 50%,
+    currentColor 60% 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: nk-wave 1s linear infinite;
+}
+
+@keyframes nk-wave {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+/* Swap — link label rolls up and a copy rolls in, on hover AND keyboard focus (letterswap).
+   Markup: <span class="swap"><span>Label</span><span aria-hidden="true">Label</span></span> */
+.swap {
+  position: relative;
+  display: inline-grid;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.swap > span {
+  grid-area: 1 / 1;
+  transition: translate var(--nk-dur-small) var(--nk-ease-out);
+}
+
+.swap > span + span {
+  translate: 0 105%;
+}
+
+:is(a, button, summary):is(:hover, :focus-visible) .swap > span:first-child {
+  translate: 0 -105%;
+}
+
+:is(a, button, summary):is(:hover, :focus-visible) .swap > span + span {
+  translate: 0 0;
+}
+
+/* Blur scrim — progressive blur behind captions on images (progresivebasicblur). Two layers,
+   stronger toward the bottom; falls back to a solid gradient without backdrop-filter. */
+.nk-scrim-blur {
+  position: absolute;
+  inset: auto 0 0;
+  height: var(--nk-scrim-height, 55%);
+  pointer-events: none;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.55), rgb(0 0 0 / 0));
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .nk-scrim-blur {
+    background: linear-gradient(to top, rgb(0 0 0 / 0.35), rgb(0 0 0 / 0));
+  }
+
+  .nk-scrim-blur::before,
+  .nk-scrim-blur::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .nk-scrim-blur::before {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    mask-image: linear-gradient(to top, #000 30%, transparent);
+  }
+
+  .nk-scrim-blur::after {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    mask-image: linear-gradient(to top, #000 0%, transparent 55%);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .nk-scrim-blur,
+  .nk-scrim-blur::before,
+  .nk-scrim-blur::after {
+    backdrop-filter: none;
+    background: rgb(0 0 0 / 0.6);
+  }
+}
+
+/* Reveal footer — page content scrolls away to uncover the footer (stickeyfootor). Desktop only
+   and only while the footer fits the viewport (body[data-footer-reveal] set by Liquid). */
+@media (min-width: 990px) and (min-height: 700px) {
+  body[data-footer-reveal] main {
+    position: relative;
+    z-index: 1;
+    background: var(--nk-color-bg);
+  }
+
+  body[data-footer-reveal] .footer-section-group {
+    position: sticky;
+    bottom: 0;
+    z-index: 0;
+  }
+}
+
+/* Elastic line — decorative divider (elasticline). */
+nk-elastic-line {
+  display: block;
+  height: 48px;
+  color: var(--nk-color-line);
+}
+
+nk-elastic-line svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nk-text-shine,
+  .nk-text-gradient,
+  .nk-text-wave {
+    animation: none;
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+  }
+
+  .swap > span {
+    transition: none;
+  }
+}
+
+html.nk-motion-off .nk-text-shine,
+html.nk-motion-off .nk-text-gradient,
+html.nk-motion-off .nk-text-wave {
+  animation: none;
+  background-image: none;
+  -webkit-text-fill-color: currentColor;
 }

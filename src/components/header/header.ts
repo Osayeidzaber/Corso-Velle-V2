@@ -1,4 +1,5 @@
 import { NkElement } from '../../core/element';
+import { animate, durations, easing } from '../../core/motion';
 import { overlay } from '../../services/overlay';
 
 /**
@@ -44,6 +45,24 @@ export class NkHeader extends NkElement {
     this.#enhanceDisclosureNav();
   }
 
+  /** Floating panel style: the newly opened panel grows from where the previous one was (FLIP). */
+  #morph(panel: HTMLElement | null, from: DOMRect): void {
+    if (!panel) return;
+    const to = panel.getBoundingClientRect();
+    if (!to.width || !to.height) return;
+    animate(
+      panel,
+      [
+        {
+          transformOrigin: 'top left',
+          transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width}, ${from.height / to.height})`,
+        },
+        { transformOrigin: 'top left', transform: 'none' },
+      ],
+      { duration: durations.overlayOut + 40, easing: easing.out },
+    );
+  }
+
   #updateCartCount(count: number): void {
     const bubble = this.querySelector<HTMLElement>('[data-cart-count]');
     if (bubble) {
@@ -62,12 +81,32 @@ export class NkHeader extends NkElement {
   #enhanceDisclosureNav(): void {
     const panels = [...this.querySelectorAll<HTMLDetailsElement>('.nav__disclosure')];
     if (!panels.length) return;
+    const floating = this.querySelector('.header--panel-floating') !== null;
     for (const details of panels) {
       this.on(details, 'toggle', () => {
         if (!details.open) return;
+        const previous = panels.find((other) => other !== details && other.open);
+        const fromRect = previous?.querySelector('.nav__panel')?.getBoundingClientRect();
         for (const other of panels) if (other !== details) other.open = false;
         this.#setHidden(false);
+        if (floating && fromRect) this.#morph(details.querySelector<HTMLElement>('.nav__panel'), fromRect);
       });
+    }
+    // Hover intent opens panels on pointer-fine devices (click/keyboard always work).
+    if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      for (const details of panels) {
+        const item = details.closest('.nav__item') ?? details;
+        let timer = 0;
+        this.on(item, 'pointerenter', () => {
+          window.clearTimeout(timer);
+          timer = window.setTimeout(() => (details.open = true), 150);
+        });
+        this.on(item, 'pointerleave', () => {
+          window.clearTimeout(timer);
+          timer = window.setTimeout(() => (details.open = false), 250);
+        });
+        this.dispose(() => window.clearTimeout(timer));
+      }
     }
     this.on(this, 'keydown', (event) => {
       if (event.key !== 'Escape') return;

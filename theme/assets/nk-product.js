@@ -1,13 +1,4 @@
-import { c as CartError, d as Sequencer, f as NkElement, g as define, h as t, i as replaceRegions, l as cart, m as config, n as renderSection, p as announce, t as MissingFragmentError } from "./nk-chunk-sections-j2U5gO06.js";
-// src/core/motion.ts
-var reducedQuery = typeof matchMedia === "function" ? matchMedia("(prefers-reduced-motion: reduce)") : null;
-function prefersReducedMotion() {
-	return reducedQuery?.matches ?? false;
-}
-/** True when functional transitions (drawer slide) may use travel; otherwise use a short fade. */
-function transitionsAllowed() {
-	return config().motion !== "off" && !prefersReducedMotion();
-}
+import { _ as NkElement, b as t, f as transitionsAllowed, g as Sequencer, i as replaceRegions, m as cart, n as renderSection, p as CartError, t as MissingFragmentError, v as announce, x as define } from "./nk-chunk-sections-CYB9cWhh.js";
 // src/components/product/gallery.ts
 /**
 * <nk-gallery> (master-plan/08 PR-01). A native horizontal scroll-snap track, so vertical page
@@ -105,7 +96,9 @@ var NkProductForm = class extends NkElement {
 		const button = this.querySelector("[data-region=\"buy\"] button[type=\"submit\"]");
 		const label = button?.querySelector("[data-button-label]");
 		if (!button || !label) return;
-		if (state === "incomplete") {
+		label.classList.toggle("nk-text-wave", state === "resolving");
+		if (state === "resolving") label.textContent = t("product.updating");
+		else if (state === "incomplete") {
 			const name = this.#picker()?.firstIncomplete()?.dataset.optionName ?? "";
 			label.textContent = t("product.choose_named_option", { option: name });
 			button.disabled = false;

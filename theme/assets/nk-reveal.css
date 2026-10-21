@@ -1,0 +1,104 @@
+/* nk-reveal — start states apply only while [data-armed] (set by JS below the fold). */
+nk-reveal {
+  display: block;
+  --nk-reveal-dur: 380ms;
+  --nk-reveal-stagger: 40ms;
+}
+
+.nk-pieces {
+  display: inline;
+}
+
+.nk-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.nk-line {
+  display: block;
+  overflow: hidden;
+}
+
+.nk-line > .nk-piece {
+  display: inline-block;
+}
+
+/* cut — clip from the top edge down */
+nk-reveal[mode='cut'][data-armed] {
+  clip-path: inset(0 0 100% 0);
+}
+
+/* fade — short rise */
+nk-reveal[mode='fade'][data-armed] {
+  opacity: 0;
+  translate: 0 12px;
+}
+
+/* wipe — left to right (or right to left) */
+nk-reveal[mode='wipe'][data-armed] {
+  clip-path: inset(0 100% 0 0);
+}
+
+nk-reveal[mode='wipe'][direction='left'][data-armed] {
+  clip-path: inset(0 0 0 100%);
+}
+
+nk-reveal[data-armed][data-play] {
+  clip-path: inset(0 0 0 0);
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    clip-path var(--nk-reveal-dur) var(--nk-ease-out),
+    opacity 300ms var(--nk-ease-out),
+    translate 300ms var(--nk-ease-out);
+}
+
+nk-reveal[mode='wipe'][data-play] {
+  --nk-reveal-dur: 520ms;
+}
+
+/* split — pieces rise from their line box */
+nk-reveal[mode='split'][data-armed] .nk-piece {
+  translate: 0 105%;
+  opacity: 0;
+}
+
+nk-reveal[mode='split'][by='char'][data-armed] .nk-piece {
+  translate: 0 0;
+}
+
+/* fold — words hinge down from their top edge */
+nk-reveal[mode='fold'][data-armed] .nk-piece {
+  transform-origin: 50% 0;
+  transform: perspective(700px) rotateX(-90deg);
+  opacity: 0;
+}
+
+nk-reveal[data-armed][data-play] .nk-piece {
+  translate: 0 0;
+  transform: perspective(700px) rotateX(0deg);
+  opacity: 1;
+  transition:
+    translate 560ms var(--nk-ease-out),
+    transform 520ms var(--nk-ease-out),
+    opacity 300ms linear;
+  transition-delay: calc(min(var(--i, 0), 12) * var(--nk-reveal-stagger));
+}
+
+nk-reveal[by='char'] {
+  --nk-reveal-stagger: 30ms;
+}
+
+nk-reveal[data-done] .nk-piece {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  nk-reveal[data-armed],
+  nk-reveal[data-armed] .nk-piece {
+    clip-path: none !important;
+    opacity: 1 !important;
+    translate: none !important;
+    transform: none !important;
+  }
+}

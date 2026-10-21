@@ -1,0 +1,49 @@
+{%- doc -%}
+  A heading with an optional entrance (<nk-reveal>) and text style. The text is always real,
+  visible HTML; the reveal is an enhancement (see src/components/reveal).
+
+  @param {string} text - Heading text (plain text; line breaks with <br> allowed)
+  @param {string} [tag] - h1, h2 or h3 (default h2)
+  @param {string} [entrance] - none, cut, fade, wipe, split-lines, split-chars, fold
+  @param {string} [style] - none, shine, gradient
+  @param {string} [class] - Extra classes for the heading
+  @param {boolean} [play_on_load] - Play immediately when already in view (hero headings)
+
+  @example
+  {% render 'reveal-heading', text: section.settings.heading, tag: 'h2', entrance: section.settings.entrance %}
+{%- enddoc -%}
+{%- liquid
+  assign tag = tag | default: 'h2'
+  assign entrance = entrance | default: 'none'
+  assign text_class = ''
+  case style
+    when 'shine'
+      assign text_class = 'nk-text-shine'
+    when 'gradient'
+      assign text_class = 'nk-text-gradient'
+  endcase
+  case entrance
+    when 'split-lines'
+      assign mode = 'split'
+      assign by = 'line'
+    when 'split-chars'
+      assign mode = 'split'
+      assign by = 'char'
+    when 'fold'
+      assign mode = 'fold'
+      assign by = 'word'
+    else
+      assign mode = entrance
+      assign by = ''
+  endcase
+-%}
+{%- capture heading -%}
+  <{{ tag }} class="{{ class }}" data-reveal-target>
+    {%- if text_class != blank -%}<span class="{{ text_class }}">{{ text }}</span>{%- else -%}{{ text }}{%- endif -%}
+  </{{ tag }}>
+{%- endcapture -%}
+{%- if entrance == 'none' or request.design_mode -%}
+  {{ heading }}
+{%- else -%}
+  <nk-reveal mode="{{ mode }}"{% if by != blank %} by="{{ by }}"{% endif %}{% if play_on_load %} play-on-load{% endif %}>{{ heading }}</nk-reveal>
+{%- endif -%}
