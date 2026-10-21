@@ -4,6 +4,9 @@
     {%- # Flag JS support before first paint; motion/reveal styles key off these classes. -%}
     <script>
       document.documentElement.classList.replace('no-js', 'js');
+      {%- if settings.motion_level == 'off' %}
+        document.documentElement.classList.add('nk-motion-off');
+      {%- endif %}
     </script>
 
     {% render 'meta-tags' %}

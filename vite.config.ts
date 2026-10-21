@@ -31,7 +31,12 @@ export default defineConfig({
       output: {
         entryFileNames: 'nk-[name].js',
         chunkFileNames: 'nk-chunk-[name]-[hash].js',
-        assetFileNames: 'nk-[name][extname]',
+        // Entry CSS keeps a stable name (asset_url adds ?v=); CSS of lazy chunks is fetched by
+        // relative URL without ?v=, so it carries a content hash for cache-busting.
+        assetFileNames: (info) =>
+          ['global.css', 'product.css'].some((name) => info.names.includes(name))
+            ? 'nk-[name][extname]'
+            : 'nk-[name]-[hash][extname]',
       },
     },
   },

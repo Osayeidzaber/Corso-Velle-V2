@@ -1,6 +1,7 @@
 {%- comment -%}
-  Announcement bar (master-plan/06 N-02). Static messages for P0; the moving ticker
-  (nk-marquee) is a P1 setting on top of this same markup.
+  Announcement bar (master-plan/06 N-02). Static by default; "Scrolling ticker" uses
+  <nk-marquee> (rewrite of the supplied marquee example) with a pause button, and falls back to
+  a static, scrollable list under reduced motion.
 {%- endcomment -%}
 {%- liquid
   assign live = 0
@@ -12,19 +13,40 @@
 -%}
 {%- if live > 0 -%}
   <div class="announcement full-width color-{{ section.settings.color_scheme }}" role="region" aria-label="{{ 'accessibility.announcements' | t }}">
-    {%- for block in section.blocks -%}
-      {%- if block.settings.text != blank -%}
-        <p {{ block.shopify_attributes }}>
-          {%- if block.settings.link != blank -%}
-            <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
-          {%- else -%}
-            {{ block.settings.text }}
-          {%- endif -%}
-        </p>
-        {%- # Static mode shows the first message only; the editor shows the selected one. -%}
-        {%- unless request.design_mode -%}{%- break -%}{%- endunless -%}
-      {%- endif -%}
-    {%- endfor -%}
+    {%- if section.settings.mode == 'ticker' -%}
+      <nk-marquee class="announcement__ticker" speed="{{ section.settings.speed }}" hover-speed="0" style="--nk-marquee-gap: 28px;">
+        <div class="marquee__track" data-ref="track">
+          <ul class="marquee__list" data-ref="list" role="list">
+            {%- for block in section.blocks -%}
+              {%- if block.settings.text != blank -%}
+                <li class="marquee__item" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
+                  {%- if block.settings.link != blank -%}
+                    <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
+                  {%- else -%}
+                    {{ block.settings.text }}
+                  {%- endif -%}
+                  <span aria-hidden="true" style="margin-inline-start: 28px;">✳</span>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </div>
+        <button type="button" class="marquee__pause" data-ref="pause" aria-pressed="false" aria-label="{{ 'marquee.pause' | t }}" hidden>❚❚</button>
+      </nk-marquee>
+    {%- else -%}
+      {%- for block in section.blocks -%}
+        {%- if block.settings.text != blank -%}
+          <p {{ block.shopify_attributes }}>
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
+            {%- else -%}
+              {{ block.settings.text }}
+            {%- endif -%}
+          </p>
+          {%- unless request.design_mode -%}{%- break -%}{%- endunless -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
   </div>
 {%- endif -%}
 
@@ -34,6 +56,17 @@
   "class": "announcement-section",
   "max_blocks": 6,
   "settings": [
+    {
+      "type": "select",
+      "id": "mode",
+      "label": "Display",
+      "options": [
+        { "value": "static", "label": "Static (first message)" },
+        { "value": "ticker", "label": "Scrolling ticker" }
+      ],
+      "default": "static"
+    },
+    { "type": "range", "id": "speed", "label": "Ticker speed", "min": 20, "max": 120, "step": 10, "unit": "px", "default": 40, "info": "Pixels per second." },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" }
   ],
   "blocks": [

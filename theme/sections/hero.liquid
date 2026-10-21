@@ -1,0 +1,243 @@
+{%- comment -%}
+  Campaign hero (master-plan/10 CS-01). Desktop + optional phone image, optional Shopify video
+  with poster, heading entrance (<nk-reveal>) and text style (shine/gradient), scrim options
+  including the progressive blur from the supplied example. Marked overlay-eligible so the
+  header can sit transparently on top when it is the first section.
+{%- endcomment -%}
+{%- liquid
+  assign desktop = section.settings.image
+  assign mobile = section.settings.image_mobile | default: desktop
+  assign video = section.settings.video
+  assign is_first = false
+  if section.index == 1
+    assign is_first = true
+  endif
+-%}
+<div
+  class="hero full-width color-{{ section.settings.color_scheme }} hero--{{ section.settings.height }} hero--{{ section.settings.position }}"
+  data-overlay-eligible
+  style="--nk-scrim: {{ section.settings.scrim | divided_by: 100.0 }};"
+>
+  <div class="hero__media">
+    {%- if video -%}
+      {{ video | video_tag: autoplay: true, muted: true, loop: true, playsinline: true, controls: false, preload: 'none', image_size: '1600x', class: 'hero__video' }}
+    {%- elsif desktop -%}
+      {%- liquid
+        assign loading = 'lazy'
+        assign priority = 'auto'
+        if is_first
+          assign loading = 'eager'
+          assign priority = 'high'
+        endif
+        assign alt = desktop.alt | escape
+      -%}
+      <picture>
+        {%- if section.settings.image_mobile -%}
+          <source media="(max-width: 749px)" srcset="{{ mobile | image_url: width: 750 }} 750w, {{ mobile | image_url: width: 1100 }} 1100w, {{ mobile | image_url: width: 1500 }} 1500w" sizes="100vw">
+        {%- endif -%}
+        {{ desktop | image_url: width: 2880 | image_tag: loading: loading, fetchpriority: priority, widths: '750, 1100, 1500, 1920, 2400, 2880', sizes: '100vw', alt: alt }}
+      </picture>
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'hero__placeholder' }}
+    {%- endif -%}
+    {%- case section.settings.scrim_style -%}
+      {%- when 'solid' -%}<span class="hero__scrim" aria-hidden="true"></span>
+      {%- when 'blur' -%}<span class="nk-scrim-blur" aria-hidden="true"></span>
+    {%- endcase -%}
+  </div>
+
+  <div class="hero__content">
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'eyebrow' -%}
+          <p class="spec hero__eyebrow" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</p>
+        {%- when 'heading' -%}
+          <div {{ block.shopify_attributes }}>
+            {%- liquid
+              assign heading_tag = 'h2'
+              if is_first
+                assign heading_tag = 'h1'
+              endif
+            -%}
+            {% render 'reveal-heading',
+              text: block.settings.heading,
+              tag: heading_tag,
+              entrance: block.settings.entrance,
+              style: block.settings.text_style,
+              class: 'hero__heading',
+              play_on_load: true
+            %}
+          </div>
+        {%- when 'text' -%}
+          <div class="hero__text rte" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+        {%- when 'buttons' -%}
+          <div class="hero__buttons" {{ block.shopify_attributes }}>
+            {%- if block.settings.label_1 != blank and block.settings.link_1 != blank -%}
+              <a class="button hero__button" href="{{ block.settings.link_1 }}">{{ block.settings.label_1 | escape }}</a>
+            {%- endif -%}
+            {%- if block.settings.label_2 != blank and block.settings.link_2 != blank -%}
+              <a class="button button--secondary hero__button" href="{{ block.settings.link_2 }}">{{ block.settings.label_2 | escape }}</a>
+            {%- endif -%}
+          </div>
+      {%- endcase -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .hero {
+    position: relative;
+    display: grid;
+    min-height: 60svh;
+    overflow: hidden;
+    color: var(--nk-color-text);
+  }
+  .hero--medium { min-height: min(70svh, 720px); }
+  .hero--full { min-height: min(calc(100svh - var(--nk-header-h, 64px)), 920px); }
+  .hero--adapt { min-height: 0; }
+  .hero__media,
+  .hero__content { grid-area: 1 / 1; }
+  .hero__media { position: relative; }
+  .hero__media img,
+  .hero__media video,
+  .hero__placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero--adapt .hero__media img { position: static; height: auto; }
+  .hero__scrim { position: absolute; inset: 0; background: rgb(0 0 0 / var(--nk-scrim, 0.3)); }
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: min(640px, 100%);
+    padding: 32px var(--nk-gutter) 40px;
+    align-self: end;
+  }
+  .hero--center .hero__content { align-self: center; justify-self: center; text-align: center; align-items: center; }
+  .hero--bottom-left .hero__content { align-self: end; justify-self: start; }
+  .hero__heading { font-size: clamp(2.5rem, 9vw, 6.5rem); line-height: 0.92; }
+  .hero__buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+  @media (min-width: 990px) {
+    .hero__content { padding: 56px var(--nk-gutter) 64px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Campaign hero",
+  "class": "hero-section",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "image_picker", "id": "image_mobile", "label": "Phone image", "info": "Optional crop for phones (portrait works best)." },
+    { "type": "video", "id": "video", "label": "Video", "info": "Shopify-hosted video. Plays muted; the image is not shown when a video is set." },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Height",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "full", "label": "Full screen" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Content position",
+      "options": [
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "bottom-left"
+    },
+    {
+      "type": "select",
+      "id": "scrim_style",
+      "label": "Text backdrop",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "solid", "label": "Tint" },
+        { "value": "blur", "label": "Progressive blur" }
+      ],
+      "default": "solid"
+    },
+    { "type": "range", "id": "scrim", "label": "Tint strength", "min": 0, "max": 80, "step": 5, "unit": "%", "default": 30 },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" }
+  ],
+  "blocks": [
+    {
+      "type": "eyebrow",
+      "name": "Eyebrow",
+      "limit": 1,
+      "settings": [{ "type": "text", "id": "text", "label": "Text", "default": "New drop" }]
+    },
+    {
+      "type": "heading",
+      "name": "Heading",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Campaign headline" },
+        {
+          "type": "select",
+          "id": "entrance",
+          "label": "Entrance",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "cut", "label": "Cut" },
+            { "value": "fade", "label": "Fade up" },
+            { "value": "wipe", "label": "Wipe" },
+            { "value": "split-lines", "label": "Split lines" },
+            { "value": "split-chars", "label": "Letters (short headings)" },
+            { "value": "fold", "label": "Fold" }
+          ],
+          "default": "cut",
+          "info": "Plays once when scrolled into view. Not shown to visitors who prefer reduced motion."
+        },
+        {
+          "type": "select",
+          "id": "text_style",
+          "label": "Text effect",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "shine", "label": "Shine" },
+            { "value": "gradient", "label": "Gradient" }
+          ],
+          "default": "none"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "limit": 1,
+      "settings": [{ "type": "richtext", "id": "text", "label": "Text" }]
+    },
+    {
+      "type": "buttons",
+      "name": "Buttons",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "label_1", "label": "First button label", "default": "Shop now" },
+        { "type": "url", "id": "link_1", "label": "First button link" },
+        { "type": "text", "id": "label_2", "label": "Second button label" },
+        { "type": "url", "id": "link_2", "label": "Second button link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Campaign hero",
+      "blocks": [{ "type": "eyebrow" }, { "type": "heading" }, { "type": "buttons" }]
+    }
+  ],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

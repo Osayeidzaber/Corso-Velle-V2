@@ -1,0 +1,64 @@
+nk-tabs {
+  display: block;
+}
+
+.tabs__list {
+  position: relative;
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--nk-color-line);
+}
+
+.tabs__list::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs__tab {
+  flex: none;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  background: transparent;
+  color: var(--nk-color-text-muted);
+  font-family: var(--nk-font-spec);
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.tabs__tab[aria-selected='true'] {
+  color: var(--nk-color-text);
+}
+
+.tabs__indicator {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--nk-color-accent);
+  transition:
+    transform var(--nk-dur-small) var(--nk-ease-out),
+    width var(--nk-dur-small) var(--nk-ease-out);
+}
+
+/* Without JS every panel shows with its own heading; enhanced tabs hide the headings. */
+.tabs__panel-heading {
+  margin: 24px 0 12px;
+  font-size: 1.25rem;
+}
+
+nk-tabs[data-enhanced] .tabs__panel-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+nk-tabs[data-enhanced] [role='tabpanel']:focus-visible {
+  outline-offset: 4px;
+}

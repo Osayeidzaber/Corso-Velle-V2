@@ -488,6 +488,46 @@ var CartService = class {
 	}
 };
 var cart = new CartService();
+// src/core/motion.ts
+/**
+* Motion policy (master-plan/12 §4). Reduced-motion preference and editor selection always win
+* over the merchant setting; purchase-path UI only ever uses the "instant" and "overlay" tokens.
+*/
+var durations = {
+	instant: 120,
+	small: 200,
+	overlayIn: 280,
+	overlayOut: 200,
+	reveal: 380,
+	stagger: 40
+};
+var easing = {
+	out: "cubic-bezier(.2,.7,.2,1)",
+	in: "cubic-bezier(.4,0,1,1)"
+};
+var reducedQuery = typeof matchMedia === "function" ? matchMedia("(prefers-reduced-motion: reduce)") : null;
+function prefersReducedMotion() {
+	return reducedQuery?.matches ?? false;
+}
+/** True when decorative motion (reveals, stagger, tickers) may run. */
+function decorativeMotionAllowed() {
+	return config().motion === "standard" && !prefersReducedMotion() && !window.Shopify?.designMode;
+}
+/** True when functional transitions (drawer slide) may use travel; otherwise use a short fade. */
+function transitionsAllowed() {
+	return config().motion !== "off" && !prefersReducedMotion();
+}
+/**
+* Web Animations wrapper returning a handle that can always be finished. Resolves immediately
+* (and applies the end state) when motion is not allowed.
+*/
+function animate(element, keyframes, options, { decorative = false } = {}) {
+	if (!(decorative ? decorativeMotionAllowed() : transitionsAllowed()) || typeof element.animate !== "function") return null;
+	return element.animate(keyframes, {
+		fill: "none",
+		...options
+	});
+}
 // src/core/dom.ts
 /** Parse an HTML string (from Section Rendering) into a detached document. */
 function parseHTML(html) {
@@ -546,4 +586,4 @@ function replaceRegions(scope, html, regions) {
 		detail: { regions }
 	}));
 }
-export { captureFocus as a, CartError as c, Sequencer as d, NkElement as f, define as g, t as h, replaceRegions as i, cart as l, config as m, renderSection as n, parseHTML as o, announce as p, renderSections as r, restoreFocus as s, MissingFragmentError as t, cartSectionIds as u };
+export { NkElement as _, captureFocus as a, t as b, animate as c, easing as d, transitionsAllowed as f, Sequencer as g, cartSectionIds as h, replaceRegions as i, decorativeMotionAllowed as l, cart as m, renderSection as n, parseHTML as o, CartError as p, renderSections as r, restoreFocus as s, MissingFragmentError as t, durations as u, announce as v, define as x, config as y };

@@ -1,3 +1,4 @@
+import { animate, decorativeMotionAllowed, durations, easing } from '../../core/motion';
 import { NkModal } from '../modal/modal';
 
 /**
@@ -35,6 +36,42 @@ export class NkNavDrawer extends NkModal {
   protected override onOpened(): void {
     this.#stack = [{ id: 'root', scroll: 0, opener: null }];
     this.#show('root');
+    this.#entrance();
+  }
+
+  /**
+   * Style-specific entrance (decorative, skipped under reduced motion / Motion off):
+   * - editorial (menu.md / StaggeredMenu): two colour layers sweep across, rows rise in sequence;
+   * - cards (cardnav): cards rise in sequence.
+   */
+  #entrance(): void {
+    if (!decorativeMotionAllowed()) return;
+    const layers = [...this.dialog.querySelectorAll<HTMLElement>('.menu-drawer__layer')];
+    layers.forEach((layer, i) => {
+      animate(
+        layer,
+        [{ translate: '-100% 0' }, { translate: '0 0', offset: 0.45 }, { translate: '100% 0' }],
+        { duration: 700, delay: i * 70, easing: easing.out },
+        { decorative: true },
+      );
+    });
+    const items = [
+      ...this.dialog.querySelectorAll<HTMLElement>(
+        '[data-level-panel="root"] > .menu-drawer__list > li, [data-level-panel="root"] .menu-card',
+      ),
+    ].slice(0, 6);
+    if (!this.dialog.matches('.menu-drawer--editorial, .menu-drawer--cards')) return;
+    items.forEach((item, i) => {
+      animate(
+        item,
+        [
+          { opacity: 0, transform: 'translateY(24px)' },
+          { opacity: 1, transform: 'none' },
+        ],
+        { duration: durations.overlayIn + 120, delay: 120 + i * durations.stagger, easing: easing.out, fill: 'backwards' },
+        { decorative: true },
+      );
+    });
   }
 
   protected override onClosed(): void {
