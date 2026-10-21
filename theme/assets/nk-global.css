@@ -786,7 +786,7 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]) {
 
 .header--panel-floating .nav__panel {
   inset: calc(100% + 8px) auto auto 50%;
-  translate: -50% 0;
+  translate: calc(-50% + var(--nk-panel-shift, 0px)) 0;
   width: max-content;
   min-width: 260px;
   max-width: min(720px, 90vw);
@@ -939,6 +939,25 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]) {
   }
 }
 
+.menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row {
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row::before {
+  order: 1;
+  margin: 8px 0 0;
+}
+
+.menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row > svg {
+  order: 2;
+  margin-inline-start: auto;
+}
+
+/* Drawer headings receive focus only so screen readers start there; no visible ring needed. */
+.drawer__title:focus {
+  outline: none;
+}
 /* Cart lines shared by drawer and page (CA-04). */
 .cart-lines {
   margin: 0;

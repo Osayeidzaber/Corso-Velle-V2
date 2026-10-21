@@ -45,6 +45,19 @@ export class NkHeader extends NkElement {
     this.#enhanceDisclosureNav();
   }
 
+  /** Floating panels are centred under their item; shift them back inside the page gutters. */
+  #keepInViewport(panel: HTMLElement | null): void {
+    if (!panel) return;
+    panel.style.removeProperty('--nk-panel-shift');
+    const rect = panel.getBoundingClientRect();
+    const gutter = 16;
+    const right = document.documentElement.clientWidth - gutter;
+    let shift = 0;
+    if (rect.left < gutter) shift = gutter - rect.left;
+    else if (rect.right > right) shift = right - rect.right;
+    if (shift) panel.style.setProperty('--nk-panel-shift', `${Math.round(shift)}px`);
+  }
+
   /** Floating panel style: the newly opened panel grows from where the previous one was (FLIP). */
   #morph(panel: HTMLElement | null, from: DOMRect): void {
     if (!panel) return;
@@ -89,7 +102,9 @@ export class NkHeader extends NkElement {
         const fromRect = previous?.querySelector('.nav__panel')?.getBoundingClientRect();
         for (const other of panels) if (other !== details) other.open = false;
         this.#setHidden(false);
-        if (floating && fromRect) this.#morph(details.querySelector<HTMLElement>('.nav__panel'), fromRect);
+        const panel = details.querySelector<HTMLElement>('.nav__panel');
+        if (floating) this.#keepInViewport(panel);
+        if (floating && fromRect) this.#morph(panel, fromRect);
       });
     }
     // Hover intent opens panels on pointer-fine devices (click/keyboard always work).
