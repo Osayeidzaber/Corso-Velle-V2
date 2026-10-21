@@ -9,8 +9,14 @@
   @example
   {% render 'nav-drawer', menu: section.settings.menu, section: section %}
 {%- enddoc -%}
+{%- assign drawer_style = section.settings.drawer_style | default: 'standard' -%}
 <nk-nav-drawer id="MenuDrawer">
-  <dialog class="drawer" aria-labelledby="MenuDrawerTitle">
+  <dialog class="drawer menu-drawer--{{ drawer_style }}" aria-labelledby="MenuDrawerTitle">
+    {%- if drawer_style == 'editorial' -%}
+      <div class="menu-drawer__layers" aria-hidden="true">
+        <span class="menu-drawer__layer"></span><span class="menu-drawer__layer"></span>
+      </div>
+    {%- endif -%}
     <div class="drawer__header">
       <h2 class="drawer__title spec" id="MenuDrawerTitle" tabindex="-1" data-autofocus>{{ 'header.menu' | t }}</h2>
       <button type="button" class="icon-button" data-nk-close aria-label="{{ 'general.close' | t }}">
@@ -26,6 +32,28 @@
           <input id="MenuDrawerSearch" type="search" name="q" placeholder="{{ 'header.search_placeholder' | t }}">
         </form>
 
+        {%- if drawer_style == 'cards' -%}
+          {%- # Cards style (cardnav): each top-level item is a card with its links inside. -%}
+          <div class="menu-drawer__cards">
+            {%- for link in menu.links -%}
+              <div class="menu-card">
+                <a class="menu-card__title" href="{{ link.url }}">{{ link.title | escape }}</a>
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'group_description' and block.settings.menu_item == link.title -%}
+                    <p class="menu-card__description" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</p>
+                  {%- endif -%}
+                {%- endfor -%}
+                {%- if link.links.size > 0 -%}
+                  <ul class="menu-card__links" role="list">
+                    {%- for child in link.links -%}
+                      <li><a href="{{ child.url }}" {% if child.current %}aria-current="page"{% endif %}>{{ child.title | escape }}</a></li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- else -%}
         <ul class="menu-drawer__list" role="list">
           {%- for link in menu.links -%}
             <li>
@@ -40,6 +68,7 @@
             </li>
           {%- endfor -%}
         </ul>
+        {%- endif -%}
 
         {%- assign promos = section.blocks | where: 'type', 'promo' -%}
         {%- if promos.size > 0 -%}

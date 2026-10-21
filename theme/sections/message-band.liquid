@@ -1,0 +1,101 @@
+{%- comment -%}
+  Message band (rewrite of the supplied Scroll Velocity example): one or two rows of large
+  condensed text moving in opposite directions; optional speed-up while the page scrolls.
+  Phones show one row. Static, scrollable list under reduced motion.
+{%- endcomment -%}
+{%- assign messages = section.blocks | where: 'type', 'message' -%}
+{%- if messages.size > 0 -%}
+  <div class="message-band full-width color-{{ section.settings.color_scheme }}" style="--band-size: {{ section.settings.size }}px;">
+    {%- assign rows = section.settings.rows | plus: 0 -%}
+    {%- for row in (1..rows) -%}
+      {%- liquid
+        assign direction = 'left'
+        if row == 2
+          assign direction = 'right'
+        endif
+      -%}
+      <nk-marquee
+        class="message-band__row{% if row == 2 %} message-band__row--second{% endif %}"
+        direction="{{ direction }}"
+        speed="{{ section.settings.speed }}"
+        hover-speed="0.3"
+        {% if section.settings.scroll_react %}scroll-react{% endif %}
+        {% if row == 2 %}aria-hidden="true"{% endif %}
+      >
+        <div class="marquee__track" data-ref="track">
+          <ul class="marquee__list" data-ref="list" role="list">
+            {%- for block in messages -%}
+              <li class="marquee__item message-band__item{% if row == 2 and section.settings.outline_second %} message-band__item--outline{% endif %}" {% if row == 1 %}data-block-id="{{ block.id }}" {{ block.shopify_attributes }}{% endif %}>
+                {%- if block.settings.link != blank and row == 1 -%}
+                  <a href="{{ block.settings.link }}">{{ block.settings.text | escape }}</a>
+                {%- else -%}
+                  {{ block.settings.text | escape }}
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+        {%- if row == 1 -%}
+          <button type="button" class="marquee__pause" data-ref="pause" aria-pressed="false" aria-label="{{ 'marquee.pause' | t }}" hidden>❚❚</button>
+        {%- endif -%}
+      </nk-marquee>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .message-band { padding-block: 18px; overflow: hidden; display: grid; gap: 4px; }
+  .message-band__item {
+    font-family: var(--nk-font-heading);
+    font-weight: 900;
+    font-size: var(--band-size, 72px);
+    line-height: 1;
+    text-transform: uppercase;
+    --nk-marquee-gap: 0.4em;
+  }
+  .message-band__item a { text-decoration: none; }
+  .message-band__item--outline { color: transparent; -webkit-text-stroke: max(1px, 0.02em) var(--nk-color-text); }
+  @media (max-width: 749px) {
+    .message-band__item { font-size: calc(var(--band-size, 72px) * 0.55); }
+    .message-band__row--second { display: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Message band",
+  "class": "message-band-section",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "select",
+      "id": "rows",
+      "label": "Rows",
+      "options": [
+        { "value": "1", "label": "One" },
+        { "value": "2", "label": "Two (opposite directions, desktop)" }
+      ],
+      "default": "2"
+    },
+    { "type": "range", "id": "size", "label": "Text size", "min": 32, "max": 140, "step": 4, "unit": "px", "default": 80 },
+    { "type": "range", "id": "speed", "label": "Speed", "min": 20, "max": 160, "step": 10, "unit": "px", "default": 50, "info": "Pixels per second." },
+    { "type": "checkbox", "id": "scroll_react", "label": "Speed up while scrolling", "default": true },
+    { "type": "checkbox", "id": "outline_second", "label": "Outline text on second row", "default": true },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "New drop" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Message band", "blocks": [{ "type": "message" }, { "type": "message" }, { "type": "message" }] }
+  ],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

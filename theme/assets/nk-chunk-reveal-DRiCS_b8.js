@@ -97,7 +97,9 @@ var NkReveal = class extends NkElement {
 	#restore = null;
 	mount() {
 		if (!decorativeMotionAllowed()) return;
-		if (this.getBoundingClientRect().top < window.innerHeight * .9) return;
+		const rect = this.getBoundingClientRect();
+		const playOnLoad = this.hasAttribute("play-on-load");
+		if (rect.top < window.innerHeight * .9 && !playOnLoad) return;
 		const mode = this.getAttribute("mode") ?? "fade";
 		if (mode === "split" || mode === "fold") {
 			const target = this.querySelector("[data-reveal-target]") ?? this.firstElementChild;
@@ -121,6 +123,10 @@ var NkReveal = class extends NkElement {
 			}
 		}
 		this.setAttribute("data-armed", "");
+		if (playOnLoad && rect.top < window.innerHeight) {
+			requestAnimationFrame(() => requestAnimationFrame(() => this.#play()));
+			return;
+		}
 		this.observeIntersection(this, (entry, observer) => {
 			if (!entry.isIntersecting) return;
 			observer.disconnect();

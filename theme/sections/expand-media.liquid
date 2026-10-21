@@ -1,0 +1,99 @@
+{%- comment -%}
+  Expanding media (rewrite of the supplied Scroll Expand example) — see
+  src/components/expand-media. Native scrolling only; static full-bleed block under reduced
+  motion, Motion off and in the theme editor.
+{%- endcomment -%}
+<nk-expand-media
+  class="full-width color-{{ section.settings.color_scheme }}"
+  style="--start-w: {{ section.settings.start_width }}; --start-h: {{ section.settings.start_height }}; --nk-scrim: {{ section.settings.scrim | divided_by: 100.0 }};"
+  {% if request.design_mode %}data-static{% endif %}
+>
+  <div class="expand__track expand__track--{{ section.settings.length }}" data-ref="track">
+    <div class="expand__stage">
+      <div class="expand__frame">
+        <div class="expand__media">
+          {%- if section.settings.video -%}
+            {{ section.settings.video | video_tag: muted: true, loop: true, playsinline: true, preload: 'none', image_size: '1600x' }}
+          {%- elsif section.settings.image -%}
+            {%- assign alt = section.settings.image.alt | escape -%}
+            {{ section.settings.image | image_url: width: 2400 | image_tag: loading: 'lazy', widths: '750, 1100, 1500, 1920, 2400', sizes: '100vw', alt: alt }}
+          {%- else -%}
+            {{ 'lifestyle-1' | placeholder_svg_tag }}
+          {%- endif -%}
+        </div>
+        <div class="expand__scrim" aria-hidden="true"></div>
+        <div class="expand__overlay">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'heading' -%}
+                <h2 class="expand__overlay-heading" {{ block.shopify_attributes }}>{{ block.settings.heading | escape }}</h2>
+              {%- when 'text' -%}
+                <div class="rte" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+              {%- when 'button' -%}
+                {%- if block.settings.label != blank and block.settings.link != blank -%}
+                  <a class="button" href="{{ block.settings.link }}" {{ block.shopify_attributes }}>{{ block.settings.label | escape }}</a>
+                {%- endif -%}
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+        {%- if section.settings.video -%}
+          <button type="button" class="icon-button expand__video-toggle" data-ref="video-toggle" aria-pressed="false" aria-label="{{ 'media.play' | t }}" hidden>❚❚</button>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.title != blank -%}
+        <p class="expand__title" aria-hidden="true">{{ section.settings.title | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.hint != blank -%}
+        <p class="expand__hint spec" aria-hidden="true">{{ section.settings.hint | escape }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</nk-expand-media>
+
+{% stylesheet %}
+  .expand__track.expand__track--short { height: 170svh; }
+  .expand__overlay-heading { font-size: clamp(2rem, 6vw, 4.5rem); }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Expanding media",
+  "class": "expand-media-section",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "video", "id": "video", "label": "Video", "info": "Plays muted while on screen; visitors can pause it." },
+    { "type": "text", "id": "title", "label": "Title over the closed frame", "default": "Built to move", "info": "Decorative; repeat important words in the heading block." },
+    { "type": "text", "id": "hint", "label": "Scroll hint", "default": "Scroll" },
+    { "type": "range", "id": "start_width", "label": "Starting width", "min": 30, "max": 90, "step": 2, "unit": "%", "default": 42 },
+    { "type": "range", "id": "start_height", "label": "Starting height", "min": 30, "max": 90, "step": 2, "unit": "%", "default": 58 },
+    {
+      "type": "select",
+      "id": "length",
+      "label": "Scroll length",
+      "options": [
+        { "value": "short", "label": "Short" },
+        { "value": "long", "label": "Long" }
+      ],
+      "default": "long"
+    },
+    { "type": "range", "id": "scrim", "label": "Tint when open", "min": 0, "max": 80, "step": 5, "unit": "%", "default": 45 },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" }
+  ],
+  "blocks": [
+    { "type": "heading", "name": "Heading", "limit": 1, "settings": [{ "type": "text", "id": "heading", "label": "Heading", "default": "Every detail, full frame" }] },
+    { "type": "text", "name": "Text", "limit": 1, "settings": [{ "type": "richtext", "id": "text", "label": "Text" }] },
+    {
+      "type": "button",
+      "name": "Button",
+      "limit": 2,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Shop the drop" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Expanding media", "blocks": [{ "type": "heading" }, { "type": "button" }] }],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

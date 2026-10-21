@@ -9,6 +9,26 @@
  */
 {
   "sections": {
+    "hero": {
+      "type": "hero",
+      "blocks": {
+        "eyebrow": { "type": "eyebrow", "settings": { "text": "New drop" } },
+        "heading": { "type": "heading", "settings": { "heading": "Timeless basics", "entrance": "cut", "text_style": "none" } },
+        "buttons": { "type": "buttons", "settings": { "label_1": "Shop now", "link_1": "shopify://collections/all", "label_2": "", "link_2": "" } }
+      },
+      "block_order": ["eyebrow", "heading", "buttons"],
+      "settings": { "height": "full", "position": "bottom-left", "scrim_style": "blur", "scrim": 30, "color_scheme": "scheme-2" }
+    },
+    "band": {
+      "type": "message-band",
+      "blocks": {
+        "m1": { "type": "message", "settings": { "text": "Shirts", "link": "" } },
+        "m2": { "type": "message", "settings": { "text": "Bottoms", "link": "" } },
+        "m3": { "type": "message", "settings": { "text": "Footwear", "link": "" } }
+      },
+      "block_order": ["m1", "m2", "m3"],
+      "settings": { "rows": "2", "size": 80, "speed": 50, "scroll_react": true, "outline_second": true, "color_scheme": "scheme-2" }
+    },
     "featured": {
       "type": "featured-collection",
       "settings": {
@@ -20,7 +40,46 @@
         "show_view_all": true,
         "color_scheme": "scheme-1"
       }
+    },
+    "divider": {
+      "type": "divider",
+      "settings": { "style": "elastic", "grab": 14, "spacing": 24, "color_scheme": "scheme-1" }
+    },
+    "story": {
+      "type": "media-text",
+      "settings": {
+        "layout": "split",
+        "media_right": false,
+        "text_first_mobile": false,
+        "blur_scrim": true,
+        "index": "01 / Fit",
+        "heading": "Made to be worn every day",
+        "text": "<p>Use this section to tell customers about fit, fabric or the story behind the collection.</p>",
+        "link_label": "",
+        "link": "",
+        "heading_entrance": "split-lines",
+        "entrance": "fade",
+        "text_style": "none",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "tabs": {
+      "type": "collection-tabs",
+      "blocks": {
+        "t1": { "type": "tab", "settings": { "collection": "all", "label": "All" } }
+      },
+      "block_order": ["t1"],
+      "settings": { "heading": "Shop the edit", "entrance": "cut", "limit": 8, "columns_desktop": 4, "color_scheme": "scheme-1" }
+    },
+    "expand": {
+      "type": "expand-media",
+      "blocks": {
+        "heading": { "type": "heading", "settings": { "heading": "Every detail, full frame" } },
+        "button": { "type": "button", "settings": { "label": "Shop the drop", "link": "shopify://collections/all" } }
+      },
+      "block_order": ["heading", "button"],
+      "settings": { "title": "Built to move", "hint": "Scroll", "start_width": 42, "start_height": 58, "length": "long", "scrim": 45, "color_scheme": "scheme-2" }
     }
   },
-  "order": ["featured"]
+  "order": ["hero", "band", "featured", "divider", "story", "tabs", "expand"]
 }

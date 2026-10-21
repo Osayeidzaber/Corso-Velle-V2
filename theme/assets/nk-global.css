@@ -921,6 +921,24 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]) {
   color: var(--nk-color-accent);
 }
 
+.header--swap .nav__link {
+  text-decoration: none;
+}
+
+.header__search-pill {
+  display: none;
+}
+
+@media (min-width: 990px) {
+  .header__search-pill {
+    display: inline-flex;
+  }
+
+  .header__search-icon--phone {
+    display: none;
+  }
+}
+
 /* Cart lines shared by drawer and page (CA-04). */
 .cart-lines {
   margin: 0;
@@ -1503,16 +1521,16 @@ nk-cart-drawer[data-pending] [name='checkout'] {
   }
 }
 
-/* Reveal footer — page content scrolls away to uncover the footer (stickeyfootor). Desktop only
-   and only while the footer fits the viewport (body[data-footer-reveal] set by Liquid). */
+/* Reveal footer — page content scrolls away to uncover the footer (stickeyfootor). Desktop only,
+   tall viewports only (footer must fit), switched on by the footer section's "reveal" setting. */
 @media (min-width: 990px) and (min-height: 700px) {
-  body[data-footer-reveal] main {
+  body:has(.footer[data-reveal]) main {
     position: relative;
     z-index: 1;
     background: var(--nk-color-bg);
   }
 
-  body[data-footer-reveal] .footer-section-group {
+  body:has(.footer[data-reveal]) .shopify-section-group-footer-group {
     position: sticky;
     bottom: 0;
     z-index: 0;
@@ -1552,4 +1570,19 @@ html.nk-motion-off .nk-text-wave {
   animation: none;
   background-image: none;
   -webkit-text-fill-color: currentColor;
+}
+
+/* Hero headings that play on load stay hidden only until <nk-reveal> is defined; if the module
+   never arrives the failsafe shows them after 2s. Reduced motion never hides them. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js:not(.nk-motion-off) nk-reveal[play-on-load]:not(:defined) {
+    opacity: 0;
+    animation: nk-reveal-failsafe 0s linear 2s forwards;
+  }
+}
+
+@keyframes nk-reveal-failsafe {
+  to {
+    opacity: 1;
+  }
 }

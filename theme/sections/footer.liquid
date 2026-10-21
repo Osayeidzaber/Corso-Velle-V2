@@ -3,7 +3,7 @@
   desktop. Social links, policies and payment icons come from store configuration; anything
   without a destination is omitted.
 {%- endcomment -%}
-<footer class="footer color-{{ section.settings.color_scheme }} full-width">
+<footer class="footer color-{{ section.settings.color_scheme }} full-width"{% if section.settings.reveal %} data-reveal{% endif %}>
   <div class="footer__inner" style="width: var(--content-width); margin-inline: auto;">
     <div class="footer__columns">
       {%- for block in section.blocks -%}
@@ -90,6 +90,7 @@
   "class": "footer-section",
   "settings": [
     { "type": "checkbox", "id": "show_payment_icons", "label": "Show payment icons", "default": true },
+    { "type": "checkbox", "id": "reveal", "label": "Reveal footer on scroll (desktop)", "default": false, "info": "Page content scrolls away to uncover the footer. Desktop only." },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" }
   ],
   "blocks": [
