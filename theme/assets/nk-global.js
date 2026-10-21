@@ -323,6 +323,18 @@ var NkHeader = class extends NkElement {
 		});
 		this.#enhanceDisclosureNav();
 	}
+	/** Floating panels are centred under their item; shift them back inside the page gutters. */
+	#keepInViewport(panel) {
+		if (!panel) return;
+		panel.style.removeProperty("--nk-panel-shift");
+		const rect = panel.getBoundingClientRect();
+		const gutter = 16;
+		const right = document.documentElement.clientWidth - gutter;
+		let shift = 0;
+		if (rect.left < gutter) shift = gutter - rect.left;
+		else if (rect.right > right) shift = right - rect.right;
+		if (shift) panel.style.setProperty("--nk-panel-shift", `${Math.round(shift)}px`);
+	}
 	/** Floating panel style: the newly opened panel grows from where the previous one was (FLIP). */
 	#morph(panel, from) {
 		if (!panel) return;
@@ -362,7 +374,9 @@ var NkHeader = class extends NkElement {
 			const fromRect = panels.find((other) => other !== details && other.open)?.querySelector(".nav__panel")?.getBoundingClientRect();
 			for (const other of panels) if (other !== details) other.open = false;
 			this.#setHidden(false);
-			if (floating && fromRect) this.#morph(details.querySelector(".nav__panel"), fromRect);
+			const panel = details.querySelector(".nav__panel");
+			if (floating) this.#keepInViewport(panel);
+			if (floating && fromRect) this.#morph(panel, fromRect);
 		});
 		if (matchMedia("(hover: hover) and (pointer: fine)").matches) for (const details of panels) {
 			const item = details.closest(".nav__item") ?? details;
