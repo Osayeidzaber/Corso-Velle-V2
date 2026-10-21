@@ -118,6 +118,29 @@ describe('CartService queue', () => {
   });
 });
 
+describe('Shopify response quirks', () => {
+  it('parses /cart.js served as text/javascript (as Shopify does)', async () => {
+    installFetch((url) => {
+      if (url.startsWith('/cart.js')) {
+        return new Response(JSON.stringify(cartWith([{ key: 'k:1', variant_id: 1, quantity: 1 }])), {
+          status: 200,
+          headers: { 'Content-Type': 'text/javascript; charset=utf-8' },
+        });
+      }
+      if (url.startsWith('/cart/add.js')) {
+        return new Response(JSON.stringify({ items: [], sections: { 'cart-drawer': '<div></div>' } }), {
+          status: 200,
+          headers: { 'Content-Type': 'text/javascript; charset=utf-8' },
+        });
+      }
+      throw new Error(`unexpected ${url}`);
+    });
+    const result = await new CartService().add([{ id: 1, quantity: 1 }], 'test');
+    expect(result.cart.item_count).toBe(1);
+    expect(result.sections['cart-drawer']).toBe('<div></div>');
+  });
+});
+
 describe('CartService add outcomes', () => {
   it('reports a rejected add (422) without re-sending', async () => {
     installFetch((url) => {

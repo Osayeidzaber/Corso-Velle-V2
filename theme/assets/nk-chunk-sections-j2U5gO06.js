@@ -167,6 +167,9 @@ var HttpError = class extends Error {
 var AbortedError = class extends Error {
 	name = "AbortedError";
 };
+var ParseError = class extends Error {
+	name = "ParseError";
+};
 async function send(url, { timeoutMs = 15e3, signal, ...init }) {
 	const timeout = new AbortController();
 	const timer = setTimeout(() => timeout.abort(new TimeoutError(`Timed out after ${timeoutMs}ms`)), timeoutMs);
@@ -202,7 +205,14 @@ async function fetchJSON(url, options = {}) {
 			...options.headers ?? {}
 		}
 	});
-	const body = await readBody(response);
+	const text = await response.text().catch(() => "");
+	let body = null;
+	try {
+		body = text ? JSON.parse(text) : null;
+	} catch {
+		if (response.ok) throw new ParseError(`Expected JSON from ${url}`);
+		body = text;
+	}
 	if (!response.ok) {
 		const message = body?.description ?? body?.message;
 		throw new HttpError(response.status, body, message ?? `HTTP ${response.status}`);

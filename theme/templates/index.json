@@ -13,7 +13,7 @@
       "type": "featured-collection",
       "settings": {
         "heading": "New in",
-        "collection": "",
+        "collection": "all",
         "limit": 8,
         "columns_mobile": "2",
         "columns_desktop": 4,

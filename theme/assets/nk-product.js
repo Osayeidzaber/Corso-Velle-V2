@@ -1,4 +1,4 @@
-import { c as CartError, d as Sequencer, f as NkElement, g as define, h as t, i as replaceRegions, l as cart, m as config, n as renderSection, p as announce, t as MissingFragmentError } from "./nk-chunk-sections-BXbPwMMJ.js";
+import { c as CartError, d as Sequencer, f as NkElement, g as define, h as t, i as replaceRegions, l as cart, m as config, n as renderSection, p as announce, t as MissingFragmentError } from "./nk-chunk-sections-j2U5gO06.js";
 // src/core/motion.ts
 var reducedQuery = typeof matchMedia === "function" ? matchMedia("(prefers-reduced-motion: reduce)") : null;
 function prefersReducedMotion() {

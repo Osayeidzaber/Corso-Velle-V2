@@ -496,7 +496,7 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]) {
 
 .header {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   min-height: 56px;
   max-width: var(--nk-page-width, 1440px);
@@ -577,7 +577,7 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]) {
   }
 
   .header--left {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 32px;
   }
 

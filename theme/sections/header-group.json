@@ -17,7 +17,7 @@
         "message-1": {
           "type": "message",
           "settings": {
-            "text": "Announce something here",
+            "text": "",
             "link": ""
           }
         }
