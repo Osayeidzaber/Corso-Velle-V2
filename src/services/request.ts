@@ -21,6 +21,9 @@ export class HttpError extends Error {
 export class AbortedError extends Error {
   override name = 'AbortedError';
 }
+export class ParseError extends Error {
+  override name = 'ParseError';
+}
 
 export interface RequestOptions extends Omit<RequestInit, 'signal'> {
   timeoutMs?: number;
@@ -59,7 +62,16 @@ export async function fetchJSON<T>(url: string, options: RequestOptions = {}): P
     ...options,
     headers: { Accept: 'application/json', ...(options.headers ?? {}) },
   });
-  const body = await readBody(response);
+  // Shopify serves the Ajax cart endpoints (/cart.js, /cart/add.js…) as text/javascript, so the
+  // body is parsed as JSON regardless of content-type.
+  const text = await response.text().catch(() => '');
+  let body: unknown = null;
+  try {
+    body = text ? JSON.parse(text) : null;
+  } catch {
+    if (response.ok) throw new ParseError(`Expected JSON from ${url}`);
+    body = text;
+  }
   if (!response.ok) {
     const message =
       (body as { description?: string; message?: string } | null)?.description ??

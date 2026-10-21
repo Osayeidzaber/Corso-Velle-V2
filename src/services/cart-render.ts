@@ -7,7 +7,8 @@ import { renderSections } from './sections';
  * `<div data-cart-section="{{ section.id }}">…</div>`; only its children are swapped so the
  * surrounding dialog/shell (and its focus management) stays intact.
  */
-function apply(sections: Record<string, string | null>): string[] {
+function apply(sections: Record<string, string | null> | null | undefined): string[] {
+  if (!sections || typeof sections !== 'object') return cartSectionIds();
   const missing: string[] = [];
   for (const id of cartSectionIds()) {
     if (!(id in sections)) continue;

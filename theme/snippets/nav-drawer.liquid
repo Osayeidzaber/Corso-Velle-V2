@@ -12,7 +12,7 @@
 <nk-nav-drawer id="MenuDrawer">
   <dialog class="drawer" aria-labelledby="MenuDrawerTitle">
     <div class="drawer__header">
-      <h2 class="drawer__title spec" id="MenuDrawerTitle">{{ 'header.menu' | t }}</h2>
+      <h2 class="drawer__title spec" id="MenuDrawerTitle" tabindex="-1" data-autofocus>{{ 'header.menu' | t }}</h2>
       <button type="button" class="icon-button" data-nk-close aria-label="{{ 'general.close' | t }}">
         {% render 'icon', name: 'close' %}
       </button>
@@ -23,7 +23,7 @@
       <div class="menu-drawer__panel" data-level-panel="root">
         <form class="menu-drawer__search" action="{{ routes.search_url }}" method="get" role="search">
           <label class="visually-hidden" for="MenuDrawerSearch">{{ 'header.search' | t }}</label>
-          <input id="MenuDrawerSearch" type="search" name="q" placeholder="{{ 'header.search_placeholder' | t }}" data-autofocus>
+          <input id="MenuDrawerSearch" type="search" name="q" placeholder="{{ 'header.search_placeholder' | t }}">
         </form>
 
         <ul class="menu-drawer__list" role="list">

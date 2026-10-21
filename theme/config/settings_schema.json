@@ -54,7 +54,7 @@
     "settings": [
       { "type": "font_picker", "id": "type_heading_font", "label": "Headings", "default": "work_sans_n7" },
       { "type": "font_picker", "id": "type_body_font", "label": "Body", "default": "work_sans_n4" },
-      { "type": "font_picker", "id": "type_spec_font", "label": "Labels (sizes, prices, details)", "default": "monospace_n4", "info": "A monospaced or compact font gives sizes and availability a precise label look." },
+      { "type": "font_picker", "id": "type_spec_font", "label": "Labels (sizes, prices, details)", "default": "courier_new_n4", "info": "A monospaced or compact font gives sizes and availability a precise label look." },
       {
         "type": "select",
         "id": "heading_case",

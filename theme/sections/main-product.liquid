@@ -191,6 +191,13 @@
                   <button type="submit" name="add" class="button button--full" {% if availability != 'available' %}disabled{% endif %}>
                     <span data-button-label>{{ label }}</span>
                   </button>
+                  {%- comment -%}
+                    Accelerated checkout buys whatever variant the form holds, so it only appears once
+                    a real, available variant is chosen. Inside the buy region so a re-render adds it.
+                  {%- endcomment -%}
+                  {%- if block.settings.show_dynamic_checkout and availability == 'available' and needs_choice == false -%}
+                    {{ form | payment_button }}
+                  {%- endif -%}
                 </div>
 
                 {%- if needs_choice -%}
@@ -225,9 +232,6 @@
                   </div>
                 {%- endif -%}
 
-                {%- if block.settings.show_dynamic_checkout and availability == 'available' -%}
-                  {{ form | payment_button }}
-                {%- endif -%}
               {%- endform -%}
               <p class="message message--error" data-form-error role="alert" hidden></p>
             </nk-product-form>

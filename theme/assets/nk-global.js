@@ -1,4 +1,4 @@
-import { a as captureFocus, c as CartError, f as NkElement, g as define, h as t, l as cart, m as config, o as parseHTML, p as announce, r as renderSections, s as restoreFocus, u as cartSectionIds } from "./nk-chunk-sections-BXbPwMMJ.js";
+import { a as captureFocus, c as CartError, f as NkElement, g as define, h as t, l as cart, m as config, o as parseHTML, p as announce, r as renderSections, s as restoreFocus, u as cartSectionIds } from "./nk-chunk-sections-j2U5gO06.js";
 // src/services/overlay.ts
 var active = null;
 var savedScroll = 0;
@@ -460,6 +460,7 @@ var NkNavDrawer = class extends NkModal {
 * surrounding dialog/shell (and its focus management) stays intact.
 */
 function apply(sections) {
+	if (!sections || typeof sections !== "object") return cartSectionIds();
 	const missing = [];
 	for (const id of cartSectionIds()) {
 		if (!(id in sections)) continue;
