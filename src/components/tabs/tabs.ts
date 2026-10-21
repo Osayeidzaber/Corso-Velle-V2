@@ -2,7 +2,7 @@ import './tabs.css';
 
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
-import { animate, durations, easing } from '../../core/motion';
+import { animate } from '../../core/motion';
 
 /**
  * <nk-tabs> — accessible tabs with a sliding indicator and panel transition (master-plan/05 T4).
@@ -77,14 +77,30 @@ export class NkTabs extends NkElement {
     });
     this.#moveIndicator(animated);
     if (animated && previous !== index) {
+      // Transition panel: the new panel blurs/slides in, then its cards follow one by one.
+      const panel = this.#panels[index]!;
+      const direction = index > previous ? 1 : -1;
       animate(
-        this.#panels[index]!,
+        panel,
         [
-          { opacity: 0, transform: `translateX(${index > previous ? 8 : -8}px)` },
-          { opacity: 1, transform: 'none' },
+          { opacity: 0, transform: `translateX(${direction * 24}px)`, filter: 'blur(6px)' },
+          { opacity: 1, transform: 'none', filter: 'blur(0)' },
         ],
-        { duration: durations.instant, easing: easing.out },
+        { duration: 520, easing: 'cubic-bezier(.2,.7,.2,1)' },
+        { decorative: true },
       );
+      panel.querySelectorAll<HTMLElement>('[data-stagger-item], [data-tab-item]').forEach((item, i) => {
+        if (i > 11) return;
+        animate(
+          item,
+          [
+            { opacity: 0, transform: 'translateY(28px)' },
+            { opacity: 1, transform: 'none' },
+          ],
+          { duration: 700, delay: 80 + i * 55, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards' },
+          { decorative: true },
+        );
+      });
     }
     this.emit('nk:tabs:change', { index });
   }

@@ -245,3 +245,128 @@ nk-gallery {
   background: var(--nk-color-surface);
   font-weight: 500;
 }
+
+/* Riviera product page: sticky editorial info column, quiet labels, size guide. */
+.product-section {
+  width: var(--content-width);
+  margin-inline: auto;
+}
+
+@media (min-width: 990px) {
+  .product {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: clamp(48px, 6vw, 112px);
+  }
+
+  .product__info {
+    padding-top: 32px;
+  }
+}
+
+.product__info {
+  gap: 20px;
+}
+
+.product__eyebrow {
+  margin: 0;
+}
+
+.product__title {
+  margin: 0;
+  font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+  line-height: 1;
+}
+
+.product__price {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--nk-color-line);
+}
+
+.product__info nk-product-form {
+  display: grid;
+  gap: 12px;
+}
+
+.product__info .buy .button {
+  min-height: 56px;
+}
+
+.option__values {
+  gap: 6px;
+}
+
+.option__value label {
+  min-width: 56px;
+}
+
+.size-guide-link {
+  justify-self: start;
+  text-underline-offset: 4px;
+}
+
+.size-guide__body {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  padding: 24px;
+}
+
+.size-guide__heading {
+  margin: 0;
+  font-family: var(--nk-font-heading);
+  font-style: italic;
+  font-size: 1.75rem;
+  line-height: 1.1;
+}
+
+nk-size-guide {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.size-guide__units {
+  display: inline-flex;
+  justify-self: start;
+  border: 1px solid var(--nk-color-text);
+}
+
+.size-guide__unit {
+  min-width: 56px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: var(--nk-font-spec);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.size-guide__unit[aria-pressed='true'] {
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+}
+
+.size-table {
+  width: 100%;
+}
+
+.size-table tbody tr {
+  transition: background-color var(--nk-dur-instant);
+}
+
+.size-table tr[data-current] {
+  background: var(--nk-color-surface);
+}
+
+.size-table tr[data-current] th {
+  box-shadow: inset 3px 0 0 var(--nk-color-accent);
+}
+
+.size-guide__note {
+  margin: 0;
+  font-size: 0.8125rem;
+}

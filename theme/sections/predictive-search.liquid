@@ -1,0 +1,110 @@
+{%- comment -%}
+  Predictive search render target (master-plan/06 N-05). Not placed in templates: <nk-predictive-search>
+  requests it with `section_id=predictive-search` from routes.predictive_search_url and swaps
+  [data-predictive-results] into the search dialog.
+
+  One listbox; groups are role="group", rows are role="option" holding a link (tabindex -1, the
+  input keeps focus and points at the active row with aria-activedescendant).
+{%- endcomment -%}
+{%- liquid
+  assign terms = predictive_search.terms
+  assign queries = predictive_search.resources.queries
+  assign products = predictive_search.resources.products
+  assign collections = predictive_search.resources.collections
+  assign pages = predictive_search.resources.pages
+  assign total = queries.size | plus: products.size | plus: collections.size | plus: pages.size
+  assign option = 0
+-%}
+{%- capture search_url -%}{{ routes.search_url }}?q={{ terms | url_encode }}&amp;options%5Bprefix%5D=last{%- endcapture -%}
+<div
+  data-predictive-results
+  data-results-count="{{ total }}"
+  data-results-label="{{ 'search.predictive_count' | t: count: products.size }}"
+>
+  {%- if total > 0 -%}
+    <ul id="PredictiveSearchListbox" class="predictive__list" role="listbox" aria-label="{{ 'header.search' | t }}">
+      {%- if queries.size > 0 -%}
+        <li role="presentation">
+          <p class="predictive__heading spec text-muted" id="PredictiveQueries">{{ 'search.suggestions' | t }}</p>
+          <ul class="predictive__group predictive__group--queries" role="group" aria-labelledby="PredictiveQueries">
+            {%- for query in queries -%}
+              {%- assign option = option | plus: 1 -%}
+              <li class="predictive__option" role="option" id="PredictiveOption-{{ option }}" aria-selected="false">
+                <a href="{{ query.url }}" tabindex="-1">{{ query.styled_text }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </li>
+      {%- endif -%}
+
+      {%- if products.size > 0 -%}
+        <li role="presentation">
+          <p class="predictive__heading spec text-muted" id="PredictiveProducts">{{ 'search.products' | t }}</p>
+          <ul class="predictive__group" role="group" aria-labelledby="PredictiveProducts">
+            {%- for product in products -%}
+              {%- assign option = option | plus: 1 -%}
+              <li class="predictive__option" role="option" id="PredictiveOption-{{ option }}" aria-selected="false">
+                <a class="predictive__product" href="{{ product.url }}" tabindex="-1">
+                  <span class="predictive__media">
+                    {%- if product.featured_media -%}
+                      {{ product.featured_media | image_url: width: 160 | image_tag: loading: 'lazy', sizes: '64px', alt: '' }}
+                    {%- endif -%}
+                  </span>
+                  <span class="predictive__text">
+                    <span class="predictive__title">{{ product.title | escape }}</span>
+                    {% render 'price', product: product %}
+                    {%- unless product.available -%}
+                      <span class="spec text-muted">{{ 'product.sold_out' | t }}</span>
+                    {%- endunless -%}
+                  </span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </li>
+      {%- endif -%}
+
+      {%- if collections.size > 0 -%}
+        <li role="presentation">
+          <p class="predictive__heading spec text-muted" id="PredictiveCollections">{{ 'search.collections' | t }}</p>
+          <ul class="predictive__group" role="group" aria-labelledby="PredictiveCollections">
+            {%- for collection in collections -%}
+              {%- assign option = option | plus: 1 -%}
+              <li class="predictive__option" role="option" id="PredictiveOption-{{ option }}" aria-selected="false">
+                <a href="{{ collection.url }}" tabindex="-1">{{ collection.title | escape }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </li>
+      {%- endif -%}
+
+      {%- if pages.size > 0 -%}
+        <li role="presentation">
+          <p class="predictive__heading spec text-muted" id="PredictivePages">{{ 'search.pages' | t }}</p>
+          <ul class="predictive__group" role="group" aria-labelledby="PredictivePages">
+            {%- for page in pages -%}
+              {%- assign option = option | plus: 1 -%}
+              <li class="predictive__option" role="option" id="PredictiveOption-{{ option }}" aria-selected="false">
+                <a href="{{ page.url }}" tabindex="-1">{{ page.title | escape }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </li>
+      {%- endif -%}
+
+      {%- assign option = option | plus: 1 -%}
+      <li class="predictive__option predictive__view-all" role="option" id="PredictiveOption-{{ option }}" aria-selected="false">
+        <a href="{{ search_url }}" tabindex="-1">{{ 'search.view_all' | t: terms: terms }}</a>
+      </li>
+    </ul>
+  {%- else -%}
+    <p class="predictive__empty">{{ 'search.predictive_none' | t: terms: terms }}</p>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Predictive search",
+  "settings": []
+}
+{% endschema %}

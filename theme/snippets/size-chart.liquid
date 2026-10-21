@@ -6,8 +6,15 @@
   table JSON: {"columns":[{"key":"chest","label":"Chest"}],"rows":[{"size":"S","values":{"chest":52}}]}
   Fallback: a page chosen in the block settings. Renders nothing when neither exists.
 
+  Second fallback: an inline table typed into the block (first line = headings, one size per
+  line, comma separated). Numbers switch between inches and centimetres in <nk-size-guide>.
+
   @param {object} product - The product
   @param {object} [page] - Fallback page
+  @param {string} [table_csv] - Inline table, e.g. "Size,Chest\nS,40"
+  @param {string} [unit] - Unit the inline table is written in: in or cm
+  @param {string} [note] - Line shown under the inline table
+  @param {string} [option] - Option name to highlight, e.g. Size
 
   @example
   {% render 'size-chart', product: product, page: block.settings.size_guide_page %}
@@ -52,6 +59,48 @@
       <div class="size-chart__notes">{{ chart.notes | metafield_tag }}</div>
     {%- endif -%}
   </div>
+{%- elsif table_csv != blank -%}
+  {%- liquid
+    assign base_unit = unit | default: 'in'
+    assign lines = table_csv | strip | newline_to_br | split: '<br />'
+    assign head = lines | first | strip | split: ','
+  -%}
+  <nk-size-guide class="size-chart" unit="{{ base_unit }}" option="{{ option | default: 'Size' | escape }}">
+    <div class="size-guide__units" role="group" aria-label="{{ 'product.units' | t }}">
+      <button type="button" class="size-guide__unit" data-ref="unit" value="in" aria-pressed="{% if base_unit == 'in' %}true{% else %}false{% endif %}" hidden>{{ 'product.inches' | t }}</button>
+      <button type="button" class="size-guide__unit" data-ref="unit" value="cm" aria-pressed="{% if base_unit == 'cm' %}true{% else %}false{% endif %}" hidden>{{ 'product.centimetres' | t }}</button>
+    </div>
+    <div class="size-table-wrap" tabindex="0" role="region" aria-label="{{ 'product.size_table' | t }}">
+      <table class="size-table">
+        <caption class="visually-hidden">{{ product.title | escape }}</caption>
+        <thead>
+          <tr>
+            {%- for cell in head -%}
+              <th scope="col">{{ cell | strip | escape }}</th>
+            {%- endfor -%}
+          </tr>
+        </thead>
+        <tbody>
+          {%- for line in lines offset: 1 -%}
+            {%- assign cells = line | strip | split: ',' -%}
+            {%- if cells.size > 0 -%}
+              <tr data-size-row="{{ cells.first | strip | escape }}">
+                {%- for cell in cells -%}
+                  {%- assign value = cell | strip -%}
+                  {%- if forloop.first -%}
+                    <th scope="row">{{ value | escape }}</th>
+                  {%- else -%}
+                    <td data-value="{{ value | escape }}">{{ value | escape }}</td>
+                  {%- endif -%}
+                {%- endfor -%}
+              </tr>
+            {%- endif -%}
+          {%- endfor -%}
+        </tbody>
+      </table>
+    </div>
+    {%- if note != blank -%}<p class="size-guide__note text-muted">{{ note | escape }}</p>{%- endif -%}
+  </nk-size-guide>
 {%- elsif page != blank -%}
   <div class="size-chart">{{ page.content }}</div>
 {%- endif -%}

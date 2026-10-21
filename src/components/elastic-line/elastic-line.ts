@@ -46,7 +46,10 @@ export class NkElasticLine extends NkElement {
       this.#target = 0;
       this.#run();
     });
-    this.dispose(() => cancelAnimationFrame(this.#frame));
+    this.dispose(() => {
+      cancelAnimationFrame(this.#frame);
+      this.#frame = 0; // a stale id would block #run after reconnection
+    });
   }
 
   #run(): void {

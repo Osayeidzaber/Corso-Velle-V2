@@ -1,7 +1,7 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "NK",
+    "theme_name": "NK — Corso Velle",
     "theme_version": "0.1.0",
     "theme_author": "NKIL",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
@@ -52,9 +52,9 @@
   {
     "name": "Typography",
     "settings": [
-      { "type": "font_picker", "id": "type_heading_font", "label": "Headings", "default": "work_sans_n7" },
-      { "type": "font_picker", "id": "type_body_font", "label": "Body", "default": "work_sans_n4" },
-      { "type": "font_picker", "id": "type_spec_font", "label": "Labels (sizes, prices, details)", "default": "courier_new_n4", "info": "A monospaced or compact font gives sizes and availability a precise label look." },
+      { "type": "font_picker", "id": "type_heading_font", "label": "Headings", "default": "newsreader_n4" },
+      { "type": "font_picker", "id": "type_body_font", "label": "Body", "default": "inter_n4" },
+      { "type": "font_picker", "id": "type_spec_font", "label": "Labels (sizes, prices, details)", "default": "inter_n5", "info": "Used for small uppercase labels, sizes and prices." },
       {
         "type": "select",
         "id": "heading_case",

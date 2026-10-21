@@ -163,3 +163,130 @@
   color: var(--nk-color-bg);
   border-color: var(--nk-color-text);
 }
+
+/* ---------- Product card v2: fill, hover, sold out ---------- */
+/* Product shots are square on white: the frame matches, so nothing is cropped or letterboxed. */
+.card__media {
+  background: #fff;
+}
+
+.card__media img {
+  transition:
+    opacity 600ms var(--nk-ease-out),
+    transform 1400ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    clip-path 800ms cubic-bezier(0.76, 0, 0.24, 1),
+    filter 600ms var(--nk-ease-out);
+}
+
+/* Second image wipes up like a curtain and settles from a slight zoom. */
+.card__media--has-second img + img {
+  opacity: 1;
+  clip-path: inset(100% 0 0 0);
+  transform: scale(1.08);
+}
+
+.card__tray {
+  position: absolute;
+  inset: auto 10px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: color-mix(in oklab, var(--nk-color-bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--nk-color-text);
+  font-family: var(--nk-font-spec);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  translate: 0 calc(100% + 14px);
+  opacity: 0;
+  transition:
+    translate 600ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 400ms var(--nk-ease-out);
+}
+
+.card__tray-values {
+  display: flex;
+  gap: 10px;
+}
+
+.card__tray-values .is-out {
+  color: var(--nk-color-disabled);
+  text-decoration: line-through;
+}
+
+.card__title {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 500ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .card__media img {
+    transform: scale(1.03);
+  }
+
+  .card:hover .card__media--has-second img + img,
+  .card:focus-within .card__media--has-second img + img {
+    clip-path: inset(0 0 0 0);
+    transform: scale(1);
+  }
+
+  .card:hover .card__tray,
+  .card:focus-within .card__tray {
+    translate: 0 0;
+    opacity: 1;
+  }
+
+  .card:hover .card__title {
+    background-size: 100% 1px;
+  }
+}
+
+/* Sold out: quiet, desaturated image; a clear ink label; colour returns on hover. */
+.card--sold-out .card__media img {
+  opacity: 1;
+  filter: grayscale(1) contrast(0.9) brightness(1.04);
+}
+
+.card--sold-out:hover .card__media img {
+  filter: grayscale(0.2);
+}
+
+.card--sold-out .card__title,
+.card--sold-out .price {
+  color: var(--nk-color-text-muted);
+}
+
+.card__badges {
+  top: 10px;
+  left: 10px;
+}
+
+.badge--sold-out {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 11px 6px 9px;
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+  border-radius: 999px;
+}
+
+.badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d9776a;
+  box-shadow: 0 0 0 3px color-mix(in oklab, #d9776a 30%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card__media img,
+  .card__tray,
+  .card__title {
+    transition: none;
+  }
+}

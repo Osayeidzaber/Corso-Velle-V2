@@ -12,11 +12,16 @@
     <div class="expand__stage">
       <div class="expand__frame">
         <div class="expand__media">
+          {%- assign still = section.settings.image | default: section.settings.collection.featured_image -%}
           {%- if section.settings.video -%}
             {{ section.settings.video | video_tag: muted: true, loop: true, playsinline: true, preload: 'none', image_size: '1600x' }}
-          {%- elsif section.settings.image -%}
-            {%- assign alt = section.settings.image.alt | escape -%}
-            {{ section.settings.image | image_url: width: 2400 | image_tag: loading: 'lazy', widths: '750, 1100, 1500, 1920, 2400', sizes: '100vw', alt: alt }}
+          {%- elsif section.settings.video_url != blank -%}
+            <video muted loop playsinline preload="none" {% if section.settings.poster_url != blank %}poster="{{ section.settings.poster_url }}"{% endif %}>
+              <source src="{{ section.settings.video_url }}" type="video/mp4">
+            </video>
+          {%- elsif still -%}
+            {%- assign alt = still.alt | escape -%}
+            {{ still | image_url: width: 2400 | image_tag: loading: 'lazy', widths: '750, 1100, 1500, 1920, 2400', sizes: '100vw', alt: alt }}
           {%- else -%}
             {{ 'lifestyle-1' | placeholder_svg_tag }}
           {%- endif -%}
@@ -36,7 +41,7 @@
             {%- endcase -%}
           {%- endfor -%}
         </div>
-        {%- if section.settings.video -%}
+        {%- if section.settings.video or section.settings.video_url != blank -%}
           <button type="button" class="icon-button expand__video-toggle" data-ref="video-toggle" aria-pressed="false" aria-label="{{ 'media.play' | t }}" hidden>❚❚</button>
         {%- endif -%}
       </div>
@@ -52,7 +57,8 @@
 
 {% stylesheet %}
   .expand__track.expand__track--short { height: 170svh; }
-  .expand__overlay-heading { font-size: clamp(2rem, 6vw, 4.5rem); }
+  .expand__overlay-heading { font-family: var(--nk-font-heading); font-style: italic; font-size: clamp(2.5rem, 8vw, 6.5rem); line-height: 0.95; }
+  .expand__title { font-style: italic; font-weight: 400; }
 {% endstylesheet %}
 
 {% schema %}
@@ -63,6 +69,9 @@
   "settings": [
     { "type": "image_picker", "id": "image", "label": "Image" },
     { "type": "video", "id": "video", "label": "Video", "info": "Plays muted while on screen; visitors can pause it." },
+    { "type": "url", "id": "video_url", "label": "Video file URL", "info": "Optional MP4 address, used when no video is picked above." },
+    { "type": "url", "id": "poster_url", "label": "Video poster image URL" },
+    { "type": "collection", "id": "collection", "label": "Use collection image", "info": "Shown when no video or image is set." },
     { "type": "text", "id": "title", "label": "Title over the closed frame", "default": "Built to move", "info": "Decorative; repeat important words in the heading block." },
     { "type": "text", "id": "hint", "label": "Scroll hint", "default": "Scroll" },
     { "type": "range", "id": "start_width", "label": "Starting width", "min": 30, "max": 90, "step": 2, "unit": "%", "default": 42 },

@@ -1,0 +1,28 @@
+{%- doc -%}
+  Letter swap label (rewrite of the supplied letterswap example): on hover or keyboard focus of
+  the enclosing link/button, each letter slides up and an identical copy follows from below,
+  one after another. Pure CSS (effects.css); screen readers read the plain text.
+
+  @param {string} text - Label text (plain, unescaped)
+  @param {string} [from] - Stagger origin: start (default) or center
+
+  @example
+  {% render 'letter-swap', text: block.settings.label_1 %}
+{%- enddoc -%}
+{%- liquid
+  assign letters = text | split: ''
+  assign mid = letters.size | minus: 1 | divided_by: 2
+-%}
+<span class="ls"><span class="visually-hidden">{{ text | escape }}</span><span class="ls__row" aria-hidden="true">
+  {%- for letter in letters -%}
+    {%- liquid
+      assign i = forloop.index0
+      if from == 'center'
+        assign i = forloop.index0 | minus: mid | abs
+      endif
+    -%}
+    <span class="ls__c" style="--i: {{ i }}">
+      {%- if letter == ' ' -%}<span>&nbsp;</span><span>&nbsp;</span>{%- else -%}<span>{{ letter | escape }}</span><span>{{ letter | escape }}</span>{%- endif -%}
+    </span>
+  {%- endfor -%}
+</span></span>

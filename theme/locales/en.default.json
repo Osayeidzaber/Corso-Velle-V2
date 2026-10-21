@@ -15,7 +15,8 @@
     "pagination": "Pagination",
     "previous_page": "Previous page",
     "next_page": "Next page",
-    "page_n": "Page {{ number }}"
+    "page_n": "Page {{ number }}",
+    "scroll": "Scroll"
   },
   "header": {
     "menu": "Menu",
@@ -112,7 +113,12 @@
     "next_media": "Next image",
     "media_position": "{{ index }} / {{ count }}",
     "no_image": "No image",
-    "updating": "Updating…"
+    "updating": "Updating…",
+    "units": "Units",
+    "inches": "in",
+    "centimetres": "cm",
+    "decrease_quantity": "Decrease quantity",
+    "increase_quantity": "Increase quantity"
   },
   "customers": {
     "login": {
@@ -138,8 +144,23 @@
     "title": "Search",
     "placeholder": "Search products",
     "submit": "Search",
-    "no_results_html": "No results found for {{ terms }}",
-    "results_for_html": "{{ count }} results found for {{ terms }}"
+    "no_results": "No results for “{{ terms }}”",
+    "clear": "Clear search",
+    "retry": "Try again",
+    "suggestions": "Suggestions",
+    "products": "Products",
+    "collections": "Collections",
+    "pages": "Pages",
+    "popular_collections": "Popular collections",
+    "view_all": "View all results for “{{ terms }}”",
+    "predictive_none": "No results for “{{ terms }}”",
+    "predictive_error": "Suggestions aren't available right now. You can still search.",
+    "predictive_count": {
+      "one": "{{ count }} product found",
+      "other": "{{ count }} products found"
+    },
+    "type_article": "Article",
+    "type_page": "Page"
   },
   "marquee": {
     "pause": "Pause moving content",
@@ -148,5 +169,22 @@
   "media": {
     "play": "Play video",
     "pause": "Pause video"
+  },
+  "cursor": {
+    "view": "View"
+  },
+  "facets": {
+    "filter": "Filter",
+    "sort_by": "Sort by",
+    "apply": "Apply",
+    "show_results": "Show results",
+    "clear_all": "Clear all",
+    "remove": "Remove filter",
+    "from": "From",
+    "to": "To",
+    "active": "Active filters",
+    "no_matches": "No products match these filters.",
+    "update_failed": "The results couldn't be updated.",
+    "reload": "Load the page with these filters"
   }
 }

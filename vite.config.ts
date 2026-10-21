@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import { readdirSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
 // Every file in src/entries becomes one page-level module: src/entries/product.ts -> nk-product.js.
@@ -15,6 +16,7 @@ export default defineConfig({
   // The theme serves assets from Shopify's CDN; relative imports between flat siblings resolve there.
   base: './',
   publicDir: false,
+  plugins: [tailwindcss()],
   build: {
     // Built into a staging folder; scripts/sync-assets.mjs copies owned files into theme/assets.
     outDir: '.build',
@@ -22,7 +24,7 @@ export default defineConfig({
     manifest: true,
     target: 'es2022',
     // Readable output (Shopify compresses on the CDN); keeps a future Theme Store path open.
-    minify: false,
+    minify: true,
     cssCodeSplit: true,
     modulePreload: false,
     assetsInlineLimit: 0,

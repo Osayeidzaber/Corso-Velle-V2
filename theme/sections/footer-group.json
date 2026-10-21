@@ -14,13 +14,14 @@
     "footer": {
       "type": "footer",
       "blocks": {
-        "brand": { "type": "brand", "settings": { "text": "" } },
+        "brand": { "type": "brand", "settings": { "text": "<p>Refined everyday essentials, designed for effortless, modern dressing.</p>" } },
         "menu-1": { "type": "menu", "settings": { "heading": "", "menu": "footer" } },
         "social": { "type": "social", "settings": {} }
       },
       "block_order": ["brand", "menu-1", "social"],
       "settings": {
         "show_payment_icons": true,
+        "reveal": true,
         "color_scheme": "scheme-2"
       }
     }

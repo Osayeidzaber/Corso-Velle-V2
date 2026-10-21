@@ -1,0 +1,119 @@
+{%- comment -%}
+  Collection banner (Riviera): the collection image full-bleed with GSAP parallax (<nk-parallax>),
+  the title in a paper fold with hover refold (<nk-text>, from Fold Text), product count with a
+  shiny eyebrow (Shiny Text), description, and a row of related collections with letter swap.
+  Collections without an image get a coloured band instead, so the page never looks empty.
+{%- endcomment -%}
+{%- liquid
+  assign image = collection.image | default: collection.featured_image
+  if section.settings.use_product_image == false
+    assign image = collection.image
+  endif
+  assign collection_title = collection.title | escape
+-%}
+<div class="collection-banner full-width color-{{ section.settings.color_scheme }}{% if image %} collection-banner--image{% endif %}">
+  {%- if image -%}
+    <nk-parallax class="collection-banner__media" strength="12">
+      <div class="collection-banner__media-inner" data-parallax-media>
+        {%- assign alt = image.alt | escape -%}
+        {{ image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750, 1100, 1500, 1920, 2400', sizes: '100vw', alt: alt }}
+      </div>
+    </nk-parallax>
+    <span class="collection-banner__scrim" aria-hidden="true"></span>
+  {%- endif -%}
+
+  <div class="collection-banner__content">
+    <p class="eyebrow collection-banner__count"><span class="nk-text-shine">{{ 'collection.product_count' | t: count: collection.all_products_count }}</span></p>
+    {% render 'reveal-heading', text: collection_title, entrance: 'fold', hover: 'refold', class: 'collection-banner__title display', tag: 'h1', play_on_load: true %}
+    {%- if section.settings.show_description and collection.description != blank -%}
+      <div class="collection-banner__description rte">{{ collection.description }}</div>
+    {%- endif -%}
+    {%- assign related = section.settings.menu -%}
+    {%- if related.links.size > 0 -%}
+      <nav class="collection-banner__nav" aria-label="{{ 'collection.categories' | t }}">
+        <ul role="list">
+          {%- for link in related.links -%}
+            <li>
+              <a href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>{% render 'letter-swap', text: link.title, from: 'center' %}</a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .collection-banner {
+    position: relative;
+    display: grid;
+    min-height: clamp(320px, 46svh, 520px);
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--nk-color-bg);
+    color: var(--nk-color-text);
+  }
+  .collection-banner--image { min-height: clamp(420px, 68svh, 760px); color: #faf8f5; }
+  .collection-banner__media,
+  .collection-banner__scrim,
+  .collection-banner__content { grid-area: 1 / 1; }
+  .collection-banner__media { position: relative; display: block; overflow: hidden; z-index: -2; }
+  .collection-banner__media-inner { position: absolute; inset: 0; }
+  .collection-banner__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .collection-banner__scrim {
+    z-index: -1;
+    background: linear-gradient(to top, rgb(20 16 12 / 0.72), rgb(20 16 12 / 0.12) 60%, rgb(20 16 12 / 0.28));
+  }
+  .collection-banner__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 18px;
+    width: var(--content-width);
+    margin-inline: auto;
+    padding: clamp(48px, 8vw, 96px) 0 clamp(28px, 5vw, 56px);
+  }
+  .collection-banner__count { margin: 0; color: inherit; }
+  .collection-banner__title {
+    margin: 0;
+    font-size: clamp(2.75rem, 10vw, 8.5rem);
+    line-height: 0.95;
+    overflow-wrap: anywhere;
+  }
+  .collection-banner__description { max-width: 52ch; margin: 0; opacity: 0.85; line-height: 1.7; }
+  .collection-banner__description p { margin: 0; }
+  .collection-banner__nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .collection-banner__nav a {
+    display: inline-flex;
+    padding-block: 6px;
+    font-family: var(--nk-font-spec);
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .collection-banner__nav a[aria-current='page'] { border-bottom-color: currentColor; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collection banner",
+  "class": "collection-banner-section",
+  "settings": [
+    { "type": "checkbox", "id": "show_description", "label": "Show collection description", "default": true },
+    { "type": "checkbox", "id": "use_product_image", "label": "Use the first product image when the collection has no image", "default": false },
+    { "type": "link_list", "id": "menu", "label": "Related collections menu", "info": "Optional row of links under the title." },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" }
+  ],
+  "presets": [{ "name": "Collection banner" }],
+  "enabled_on": { "templates": ["collection"] }
+}
+{% endschema %}

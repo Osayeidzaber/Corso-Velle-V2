@@ -3,90 +3,100 @@ import './reveal.css';
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
 import { decorativeMotionAllowed } from '../../core/motion';
-import { splitText, type SplitBy } from './split';
 
 /**
- * <nk-reveal mode="cut|fade|wipe|split|fold" by="line|word|char"> — in-view entrance for campaign
- * headings and editorial blocks (master-plan/05 T1). Clean-room rewrite of the behaviour of the
- * supplied Split Text, Animated Content, foldtext and textpercharacter examples:
+ * <nk-reveal mode="cut|fade|wipe|split|fold" by="line|word|char"> — GSAP entrance for headings
+ * and editorial blocks (master-plan/05 T1), now on GSAP + ScrollTrigger + SplitText as requested.
+ * Covers the supplied Split Text, Animated Content, foldtext and textpercharacter examples.
  *
- * - Content is visible in the HTML. JS "arms" the hidden start state only when motion is allowed,
- *   the element is below the fold, and the page is not in the theme editor.
- * - Plays once when 15% visible, then the observer disconnects.
- * - split/fold keep the original text for assistive tech (visually hidden copy; pieces aria-hidden).
- * - Editor selection or a reduced-motion preference jumps straight to the end state.
+ * - Content is in the HTML and visible without JS; GSAP sets the start state only once motion is
+ *   allowed (reduced motion / Motion off / theme editor never hide anything).
+ * - SplitText keeps an accessible label on the heading (aria: 'auto') and masks lines for the
+ *   rise effect; it re-splits on resize (autoSplit) and after fonts load.
+ * - Plays once on scroll; `play-on-load` (hero headings) plays immediately.
  */
 export class NkReveal extends NkElement {
-  #restore: (() => void) | null = null;
+  #context: { revert(): void } | null = null;
 
   protected mount(): void {
-    if (!decorativeMotionAllowed()) return;
-    const rect = this.getBoundingClientRect();
-    const playOnLoad = this.hasAttribute('play-on-load');
-    // Content already in the first viewport is not hidden — unless the section explicitly opts in
-    // (hero headings), in which case it plays right away instead of waiting for scroll.
-    if (rect.top < window.innerHeight * 0.9 && !playOnLoad) return;
-
-    const mode = this.getAttribute('mode') ?? 'fade';
-    if (mode === 'split' || mode === 'fold') {
-      const target = this.querySelector<HTMLElement>('[data-reveal-target]') ?? this.firstElementChild;
-      if (target instanceof HTMLElement) {
-        const by = (this.getAttribute('by') as SplitBy | null) ?? (mode === 'fold' ? 'word' : 'line');
-        this.#restore = splitText(target, by);
-        if (by === 'line') {
-          // Line breaks depend on width; re-split after fonts load and on resize.
-          let width = this.offsetWidth;
-          this.observeResize(this, () => {
-            if (this.hasAttribute('data-play') || Math.abs(this.offsetWidth - width) < 2) return;
-            width = this.offsetWidth;
-            this.#restore?.();
-            this.#restore = splitText(target, by);
-          });
-          void document.fonts?.ready.then(() => {
-            if (this.hasAttribute('data-play') || !this.isConnected) return;
-            this.#restore?.();
-            this.#restore = splitText(target, by);
-          });
-        }
-      }
-    }
-
-    this.setAttribute('data-armed', '');
-    if (playOnLoad && rect.top < window.innerHeight) {
-      // Two frames so the armed state paints before the transition starts.
-      requestAnimationFrame(() => requestAnimationFrame(() => this.#play()));
+    if (!decorativeMotionAllowed()) {
+      this.setAttribute('data-done', '');
       return;
     }
-    this.observeIntersection(
-      this,
-      (entry, observer) => {
-        if (!entry.isIntersecting) return;
-        observer.disconnect();
-        this.#play();
-      },
-      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' },
-    );
+    void this.#start();
   }
 
   protected override unmount(): void {
-    this.#restore?.();
-    this.#restore = null;
+    this.#context?.revert();
+    this.#context = null;
   }
 
   override onEditorSelect(): void {
-    this.#finish();
-  }
-
-  #play(): void {
-    this.setAttribute('data-play', '');
-    const pieces = this.querySelectorAll('.nk-piece').length;
-    const total = 600 + Math.min(pieces, 12) * 40;
-    this.later(() => this.#finish(), total);
-  }
-
-  #finish(): void {
-    this.removeAttribute('data-armed');
+    this.#context?.revert();
     this.setAttribute('data-done', '');
+  }
+
+  async #start(): Promise<void> {
+    const { gsap, SplitText } = await import('../../motion/gsap');
+    if (!this.isConnected) return;
+    await document.fonts?.ready;
+    if (!this.isConnected) return;
+
+    const mode = this.getAttribute('mode') ?? 'fade';
+    const by = this.getAttribute('by') ?? (mode === 'fold' ? 'word' : 'line');
+    const playOnLoad = this.hasAttribute('play-on-load');
+    const target = this.querySelector<HTMLElement>('[data-reveal-target]') ?? (this.firstElementChild as HTMLElement | null) ?? this;
+    const scrollTrigger = playOnLoad ? undefined : { trigger: this, start: 'top 85%', once: true };
+
+    this.#context = gsap.context(() => {
+      this.setAttribute('data-armed', '');
+      const done = () => {
+        this.removeAttribute('data-armed');
+        this.setAttribute('data-done', '');
+      };
+
+      if (mode === 'split' || mode === 'fold') {
+        const type = by === 'char' ? 'words,chars' : by === 'word' ? 'words' : 'lines';
+        SplitText.create(target, {
+          type,
+          mask: by === 'line' ? 'lines' : undefined,
+          aria: 'auto',
+          autoSplit: by === 'line',
+          onSplit: (split) => {
+            const pieces = by === 'char' ? split.chars : by === 'word' ? split.words : split.lines;
+            const from =
+              mode === 'fold'
+                ? { rotationX: -90, opacity: 0, transformOrigin: '50% 0%', transformPerspective: 700 }
+                : by === 'char'
+                  ? { opacity: 0, yPercent: 40 }
+                  : { yPercent: 110 };
+            return gsap.from(pieces, {
+              ...from,
+              duration: mode === 'fold' ? 0.8 : 1,
+              stagger: by === 'char' ? 0.025 : by === 'word' ? 0.06 : 0.1,
+              ease: mode === 'fold' ? 'power2.out' : 'expo.out',
+              scrollTrigger,
+              onComplete: done,
+            });
+          },
+        });
+        return;
+      }
+
+      const presets: Record<string, gsap.TweenVars> = {
+        cut: { clipPath: 'inset(0% 0% 100% 0%)' },
+        wipe: { clipPath: 'inset(0% 100% 0% 0%)' },
+        fade: { opacity: 0, y: 28 },
+      };
+      const to: gsap.TweenVars = mode === 'fade' ? { opacity: 1, y: 0 } : { clipPath: 'inset(0% 0% 0% 0%)' };
+      gsap.fromTo(this, presets[mode] ?? presets.fade!, {
+        ...to,
+        duration: mode === 'wipe' ? 1.2 : 1,
+        ease: 'expo.out',
+        scrollTrigger,
+        onComplete: done,
+      });
+    }, this);
   }
 }
 

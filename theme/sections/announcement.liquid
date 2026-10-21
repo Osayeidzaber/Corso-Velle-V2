@@ -1,7 +1,7 @@
 {%- comment -%}
   Announcement bar (master-plan/06 N-02). Static by default; "Scrolling ticker" uses
-  <nk-marquee> (rewrite of the supplied marquee example) with a pause button, and falls back to
-  a static, scrollable list under reduced motion.
+  <nk-marquee> (rewrite of the supplied marquee example). No pause button at the owner's request:
+  it stops while hovered or focused, and is a static, scrollable list under reduced motion.
 {%- endcomment -%}
 {%- liquid
   assign live = 0
@@ -31,7 +31,6 @@
             {%- endfor -%}
           </ul>
         </div>
-        <button type="button" class="marquee__pause" data-ref="pause" aria-pressed="false" aria-label="{{ 'marquee.pause' | t }}" hidden>❚❚</button>
       </nk-marquee>
     {%- else -%}
       {%- for block in section.blocks -%}

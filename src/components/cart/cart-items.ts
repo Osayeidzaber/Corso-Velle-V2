@@ -20,7 +20,9 @@ export class NkCartItems extends NkElement {
         event.preventDefault();
         const input = this.#inputFor(step);
         if (!input) return;
-        const next = Math.max(0, Number(input.value || 0) + Number(step.dataset.qtyStep));
+        // Steps follow the variant's quantity rule increment (rendered as the input's step).
+        const increment = Number(input.step) || 1;
+        const next = Math.max(0, Number(input.value || 0) + increment * Number(step.dataset.qtyStep));
         input.value = String(next);
         this.#change(step, next);
       } else if (remove) {

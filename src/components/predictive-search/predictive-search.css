@@ -1,0 +1,111 @@
+/* Predictive search results (N-05). The dialog shell lives in styles/components/dialog.css. */
+nk-predictive-search [data-ref='results'][aria-busy='true'] {
+  opacity: 0.5;
+  transition: opacity var(--nk-dur-instant) var(--nk-ease-out);
+}
+
+nk-predictive-search[data-state='loading'] .search-modal__field::after {
+  content: '';
+  position: absolute;
+  inset-inline-end: 96px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  border: 2px solid var(--nk-color-line);
+  border-top-color: var(--nk-color-text);
+  border-radius: 50%;
+  animation: nk-spin 0.7s linear infinite;
+}
+
+@keyframes nk-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+.predictive__list,
+.predictive__group {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.predictive__list {
+  display: grid;
+  gap: 20px;
+}
+
+.predictive__heading {
+  margin-bottom: 6px;
+}
+
+.predictive__option > a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--nk-tap);
+  padding: 6px 8px;
+  border-radius: var(--nk-radius);
+  text-decoration: none;
+}
+
+.predictive__option[aria-selected='true'] > a,
+.predictive__option > a:hover {
+  background: var(--nk-color-surface);
+}
+
+.predictive__option[aria-selected='true'] > a {
+  outline: 2px solid var(--nk-focus);
+  outline-offset: -2px;
+}
+
+.predictive__group--queries mark {
+  background: none;
+  color: inherit;
+  font-weight: 700;
+}
+
+.predictive__media {
+  flex: 0 0 56px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--nk-color-surface);
+}
+
+.predictive__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.predictive__text {
+  display: grid;
+  gap: 2px;
+}
+
+.predictive__title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.predictive__view-all > a {
+  justify-content: center;
+  border: 1px solid var(--nk-color-line);
+  font-weight: 600;
+}
+
+.predictive__empty {
+  padding: 8px 0;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 990px) {
+  .predictive__group:not(.predictive__group--queries) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 16px;
+  }
+}

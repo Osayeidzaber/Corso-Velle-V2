@@ -5,26 +5,33 @@
 {%- endcomment -%}
 <div class="media-text full-width section-spacing color-{{ section.settings.color_scheme }} media-text--{{ section.settings.layout }}{% if section.settings.media_right %} media-text--media-right{% endif %}{% if section.settings.text_first_mobile %} media-text--text-first{% endif %}">
   <div class="media-text__inner">
-    <div class="media-text__media">
-      {%- if section.settings.image -%}
-        {{ section.settings.image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 990px) 50vw, 100vw' }}
+    <nk-parallax class="media-text__media" strength="10">
+      {%- assign still = section.settings.image | default: section.settings.collection.featured_image -%}
+      {%- if still -%}
+        <div data-parallax-media style="position: absolute; inset: 0;">
+          {{ still | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 990px) 50vw, 100vw' }}
+        </div>
       {%- else -%}
         {{ 'lifestyle-2' | placeholder_svg_tag: 'media-text__placeholder' }}
       {%- endif -%}
       {%- if section.settings.layout == 'overlay' and section.settings.blur_scrim -%}
         <span class="nk-scrim-blur" aria-hidden="true"></span>
       {%- endif -%}
-    </div>
+    </nk-parallax>
 
     {%- capture column -%}
       <div class="media-text__content">
         {%- if section.settings.index != blank -%}<p class="spec text-muted">{{ section.settings.index | escape }}</p>{%- endif -%}
         {%- if section.settings.heading != blank -%}
-          {% render 'reveal-heading', text: section.settings.heading, entrance: section.settings.heading_entrance, style: section.settings.text_style, class: 'media-text__heading' %}
+          {%- liquid
+            assign heading_html = section.settings.heading | escape
+            assign italic = section.settings.heading_italic | escape
+          -%}
+          {% render 'reveal-heading', text: heading_html, italic: italic, entrance: section.settings.heading_entrance, style: section.settings.text_style, class: 'media-text__heading display' %}
         {%- endif -%}
         {%- if section.settings.text != blank -%}<div class="rte">{{ section.settings.text }}</div>{%- endif -%}
         {%- if section.settings.link_label != blank and section.settings.link != blank -%}
-          <a class="button button--secondary" href="{{ section.settings.link }}">{{ section.settings.link_label | escape }}</a>
+          <a class="spec link-underline" href="{{ section.settings.link }}">{{ section.settings.link_label | escape }}</a>
         {%- endif -%}
       </div>
     {%- endcapture -%}
@@ -43,10 +50,11 @@
     width: var(--content-width);
     margin-inline: auto;
   }
-  .media-text__media { position: relative; overflow: hidden; background: var(--nk-color-surface); }
-  .media-text__media img, .media-text__placeholder { width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4 / 5; }
+  .media-text__media { position: relative; display: block; overflow: hidden; background: var(--nk-color-surface); aspect-ratio: 4 / 5; }
+  .media-text__media img, .media-text__placeholder { width: 100%; height: 100%; object-fit: cover; }
   .media-text__content { display: grid; gap: 16px; align-content: center; justify-items: start; }
-  .media-text__heading { font-size: clamp(1.75rem, 5vw, 3.25rem); }
+  .media-text__heading { font-size: clamp(2.5rem, 5.5vw, 4.5rem); }
+  .media-text__content .rte { max-width: 46ch; line-height: 1.75; color: var(--nk-color-text-muted); }
   .media-text--text-first .media-text__media { order: 2; }
   @media (min-width: 990px) {
     .media-text__inner { grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
@@ -57,10 +65,10 @@
   .media-text--overlay .media-text__media,
   .media-text--overlay .media-text__reveal,
   .media-text--overlay .media-text__inner > .media-text__content { grid-area: 1 / 1; }
-  .media-text--overlay .media-text__media img { aspect-ratio: 16 / 9; }
+  .media-text--overlay .media-text__media { aspect-ratio: 16 / 9; }
   .media-text--overlay .media-text__content { position: relative; z-index: 1; align-self: end; padding: 32px; color: #fff; max-width: 640px; }
   @media (max-width: 749px) {
-    .media-text--overlay .media-text__media img { aspect-ratio: 4 / 5; }
+    .media-text--overlay .media-text__media { aspect-ratio: 4 / 5; }
   }
 {% endstylesheet %}
 
@@ -70,6 +78,7 @@
   "class": "media-text-section",
   "settings": [
     { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "collection", "id": "collection", "label": "Use collection image", "info": "Shown when no image is set." },
     {
       "type": "select",
       "id": "layout",
@@ -84,7 +93,8 @@
     { "type": "checkbox", "id": "text_first_mobile", "label": "Text first on phones", "default": false },
     { "type": "checkbox", "id": "blur_scrim", "label": "Progressive blur behind text (overlay layout)", "default": true },
     { "type": "text", "id": "index", "label": "Index label", "info": "Optional, e.g. 01 / Fit" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Tell the story" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Tell the" },
+    { "type": "text", "id": "heading_italic", "label": "Heading (italic part)", "default": "story" },
     { "type": "richtext", "id": "text", "label": "Text" },
     { "type": "text", "id": "link_label", "label": "Link label" },
     { "type": "url", "id": "link", "label": "Link" },
@@ -94,11 +104,15 @@
       "label": "Heading entrance",
       "options": [
         { "value": "none", "label": "None" },
-        { "value": "cut", "label": "Cut" },
-        { "value": "split-lines", "label": "Split lines" },
-        { "value": "fold", "label": "Fold" }
+        { "value": "rise", "label": "Rise letter by letter (Split Text)" },
+        { "value": "blur", "label": "Blur in word by word (Text Effect)" },
+        { "value": "fold", "label": "Paper fold (Fold Text)" },
+        { "value": "flip", "label": "Flip up" },
+        { "value": "skew", "label": "Skew in" },
+        { "value": "pop", "label": "Pop" },
+        { "value": "fade", "label": "Fade" }
       ],
-      "default": "split-lines"
+      "default": "flip"
     },
     {
       "type": "select",
