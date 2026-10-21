@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Campaign and editorial sections</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:#2338E0}
+.lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#55534E}
+.st{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:#121212;color:#FFF;padding:3px 8px;align-self:flex-start}
+.disp{font-family:Archivo;font-stretch:72%;font-weight:800;text-transform:uppercase;line-height:.92;margin:0}
+.btnw{height:52px;display:inline-flex;align-items:center;padding:0 22px;background:#FFF;color:#121212;font-weight:700;text-transform:uppercase;font-size:14px;letter-spacing:.04em;text-decoration:none}
+.note{font-size:13px;line-height:1.45;color:#55534E;margin:0}
+.tile{position:relative;aspect-ratio:3/4;background:#BDB8AE;display:flex;align-items:flex-end;padding:14px;text-decoration:none;color:#FFF}
+</style>
+</helmet>
+<div style="width:1440px;height:1640px;box-sizing:border-box;padding:56px 64px;background:#F3F2EE;color:#121212;font-family:Archivo,sans-serif;display:flex;flex-direction:column;gap:36px">
+
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;justify-content:space-between"><span class="st">S-01 Campaign hero · desktop + dedicated phone crop</span><span class="lbl">still / video+poster / ≤3 manual slides</span></div>
+    <div style="display:flex;gap:32px;align-items:flex-start">
+      <div style="width:890px;height:500px;position:relative;background:#2E2D2A;color:#FFF;overflow:hidden">
+        <span class="lbl" style="position:absolute;right:16px;top:16px;color:#BDB8AE">[DESKTOP CAMPAIGN 16:9 — focal point setting]</span>
+        <span class="lbl" style="position:absolute;left:40px;top:40px;color:#D9D6CF">01 / Drop</span>
+        <div style="position:absolute;left:40px;bottom:40px;display:flex;flex-direction:column;gap:18px;max-width:560px">
+          <span class="lbl" style="color:#FFF">[Eyebrow — season / drop]</span>
+          <h2 class="disp" style="font-size:96px">[Campaign<br>headline]</h2>
+          <div style="display:flex;gap:10px"><a class="btnw" href="#">[Shop the drop]</a><a href="#" style="height:52px;display:inline-flex;align-items:center;padding:0 18px;color:#FFF;font-weight:700;text-transform:uppercase;font-size:14px;border:1px solid #FFF;text-decoration:none">[Lookbook]</a></div>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:3px;background:#2338E0;width:22%"></div>
+      </div>
+      <div style="width:330px;display:flex;flex-direction:column;gap:10px">
+        <div style="width:330px;height:500px;position:relative;background:#3A3A37;color:#FFF">
+          <span class="lbl" style="position:absolute;left:14px;top:14px;color:#BDB8AE">[MOBILE CROP 4:5–9:16]</span>
+          <div style="position:absolute;left:18px;right:18px;bottom:22px;display:flex;flex-direction:column;gap:12px"><h2 class="disp" style="font-size:52px">[Campaign headline]</h2><a class="btnw" href="#" style="justify-content:center">[Shop the drop]</a></div>
+        </div>
+      </div>
+    </div>
+    <p class="note" style="max-width:1220px">Height = min(content, 100svh − header) so the CTA is never under browser chrome. Optional “cut” reveal: headline wipes in once (380ms clip-path) — text is in the HTML and fully visible before JS; reduced motion and editor selection show the end state. Video: muted, poster-first, playsinline, pause button, stops offscreen. Thin signal bar = optional slide progress, only with &gt;1 slide and paused on hover/focus/selection.</p>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <span class="st">S-02 Collection tiles · 4-up desktop, 2-up or rail on phone</span>
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px">
+      <a class="tile" href="#"><span style="font-weight:800;font-size:22px;text-transform:uppercase">Tees <span class="lbl" style="color:#FFF">→</span></span></a>
+      <a class="tile" href="#" style="background:#A9A397"><span style="font-weight:800;font-size:22px;text-transform:uppercase">Shirts</span></a>
+      <a class="tile" href="#" style="background:#8F897D"><span style="font-weight:800;font-size:22px;text-transform:uppercase">Denim</span></a>
+      <a class="tile" href="#" style="background:#77726A"><span style="font-weight:800;font-size:22px;text-transform:uppercase">Outerwear</span></a>
+    </div>
+    <p class="note">Tile = collection picker + optional image/title override; labels sit on a solid bottom band or gradient-free scrim tested for 4.5:1. Missing collection → editor placeholder, omitted on storefront.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span class="st">S-04 Media with text · split</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;background:#FFF;border:1px solid #D9D6CF">
+        <div style="aspect-ratio:4/5;background:#CFCBC2"></div>
+        <div style="padding:32px;display:flex;flex-direction:column;justify-content:center;gap:14px"><span class="lbl">[Eyebrow — fit]</span><h3 style="margin:0;font-weight:800;font-size:30px;text-transform:uppercase;line-height:1">[Cut for a boxy fit]</h3><p class="note" style="color:#121212;font-size:15px">[Merchant copy about fit, fabric or story.]</p><a href="#" style="font-weight:700;text-transform:uppercase;font-size:14px">[Explore the fit] →</a></div>
+      </div>
+      <p class="note">Modes: split / overlay / compact banner. DOM order = reading order; “media first on phone” is a setting, not a visual reversal.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span class="st">S-07 Newsletter · idle / pending / success / error</span>
+      <div style="background:#121212;color:#F3F2EE;padding:28px;display:flex;flex-direction:column;gap:14px">
+        <h3 style="margin:0;font-weight:800;font-size:28px;text-transform:uppercase">[Join the list]</h3>
+        <form style="display:flex;gap:0"><label style="flex:1;display:flex;flex-direction:column;gap:6px;font-size:13px">Email<input type="email" value="name@example.com" style="height:50px;border:1px solid #F3F2EE;background:#121212;color:#F3F2EE;font-size:16px;padding:0 12px;font-family:Archivo"></label><button style="align-self:flex-end;height:52px;border:0;background:#F3F2EE;color:#121212;font-weight:700;text-transform:uppercase;font-family:Archivo;padding:0 18px">Subscribe</button></form>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;font-size:13px"><span style="border:1px solid #55534E;padding:8px">Pending: “Subscribing…”, button disabled</span><span style="border:1px solid #9BE3B9;padding:8px;color:#9BE3B9">Success: Shopify customer form posted_successfully</span><span style="border:1px solid #FF9C94;padding:8px;color:#FF9C94">Error: form.errors next to field</span></div>
+        <a href="#" style="font-size:13px;color:#F3F2EE">[Privacy policy link — merchant destination]</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <span class="st">H-02 / S-09 Message band · ticker vs reduced motion</span>
+    <div style="display:flex;align-items:center;height:44px;background:#121212;color:#FFF;overflow:hidden">
+      <div style="flex:1;white-space:nowrap;font-family:'IBM Plex Mono';font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding-left:16px">[MESSAGE ONE] &#160;·&#160; [MESSAGE TWO] &#160;·&#160; [MESSAGE THREE] &#160;·&#160; <span aria-hidden="true">[MESSAGE ONE] &#160;·&#160; [MESSAGE TWO]</span></div>
+      <button aria-label="Pause moving messages" style="height:44px;width:44px;border:0;border-left:1px solid #55534E;background:#121212;color:#FFF">❚❚</button>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;height:44px;background:#121212;color:#FFF;font-family:'IBM Plex Mono';font-size:13px;letter-spacing:.06em;text-transform:uppercase">Reduced motion / paused: [MESSAGE ONE] — static, others reachable via ◀ ▶ buttons</div>
+    <p class="note">Messages are rendered once as a list for assistive tech; visual duplicates for the loop are aria-hidden and inert. Speed is a bounded setting. Only one moving band per screen by default.</p>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <span class="st">S-08 Footer · desktop columns, phone disclosures</span>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:24px;background:#121212;color:#F3F2EE;padding:28px">
+      <div style="display:flex;flex-direction:column;gap:8px"><span style="font-stretch:72%;font-weight:900;font-size:26px">[BRAND]</span><span style="font-size:13px;color:#BDB8AE">[Brand line — merchant]</span></div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:14px"><span class="lbl" style="color:#BDB8AE">Shop</span><a href="#">[Menu link]</a><a href="#">[Menu link]</a></div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:14px"><span class="lbl" style="color:#BDB8AE">Help</span><a href="#">[Shipping]</a><a href="#">[Returns]</a><a href="#">[Size guide]</a></div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:14px"><span class="lbl" style="color:#BDB8AE">Follow</span><a href="#">[Social — hidden if unset]</a><span class="lbl" style="color:#BDB8AE">[Payment icons from shop.enabled_payment_types]</span></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1640}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

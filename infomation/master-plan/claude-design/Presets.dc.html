@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Preset A and Preset B</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500&amp;family=Inter+Tight:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+.lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#55534E}
+.st{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:#121212;color:#FFF;padding:3px 8px;align-self:flex-start}
+.r{display:grid;grid-template-columns:200px 1fr 1fr;gap:16px;padding:9px 0;border-top:1px solid #D9D6CF;font-size:13px}
+</style>
+</helmet>
+<div style="width:1440px;height:1000px;box-sizing:border-box;padding:56px 64px;background:#E7E4DE;color:#121212;font-family:Archivo,sans-serif;display:flex;flex-direction:column;gap:24px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span class="st">Preset A · “Signal” — campaign streetwear</span>
+      <div style="background:#0E0E0E;color:#F3F2EE;display:flex;flex-direction:column">
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:60px;padding:0 20px;font-weight:700;font-size:13px;text-transform:uppercase"><span>Shop · New</span><span style="font-stretch:72%;font-weight:900;font-size:24px">[BRAND A]</span><span style="text-align:right">Cart 2</span></div>
+        <div style="height:220px;background:#2E2D2A;position:relative"><div style="position:absolute;left:20px;bottom:20px;font-stretch:72%;font-weight:800;font-size:60px;line-height:.9;text-transform:uppercase">[Drop<br>headline]</div></div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:14px">
+          <div style="display:flex;flex-direction:column;gap:5px"><div style="aspect-ratio:4/5;background:#2A2A28;position:relative"><span style="position:absolute;left:6px;top:6px;background:#9AA5FF;color:#0E0E0E;font-family:'IBM Plex Mono';font-size:10px;padding:2px 6px">SALE</span></div><span style="font-size:13px;font-weight:600">[Product]</span><span style="font-family:'IBM Plex Mono';font-size:11px;color:#BDB8AE">S M L XL</span></div>
+          <div style="display:flex;flex-direction:column;gap:5px"><div style="aspect-ratio:4/5;background:#2A2A28"></div><span style="font-size:13px;font-weight:600">[Product]</span><span style="font-family:'IBM Plex Mono';font-size:11px;color:#BDB8AE">S M L XL</span></div>
+          <div style="display:flex;flex-direction:column;gap:5px"><div style="aspect-ratio:4/5;background:#2A2A28"></div><span style="font-size:13px;font-weight:600">[Product]</span><span style="font-family:'IBM Plex Mono';font-size:11px;color:#BDB8AE">S M L XL</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span class="st">Preset B · “Quiet” — editorial, same code</span>
+      <div style="background:#EFEAE3;color:#2A2622;display:flex;flex-direction:column;font-family:'Inter Tight',sans-serif">
+        <div style="display:flex;justify-content:space-between;align-items:center;height:60px;padding:0 20px;font-size:13px"><span style="font-family:Newsreader;font-size:24px">[Brand B]</span><span>Shop · Journal · Bag (2)</span></div>
+        <div style="display:grid;grid-template-columns:1.2fr 1fr;height:220px"><div style="background:#CFC6B8"></div><div style="padding:24px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px"><span style="font-family:Newsreader;font-size:40px;line-height:1">[Editorial headline]</span><span style="font-size:13px;color:#6B5E52">[Short intro]</span></div></div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;padding:22px">
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="aspect-ratio:3/4;background:#DCD3C6"></div><span style="font-size:13px">[Product]</span><span style="font-size:13px;color:#6B5E52">[Price]</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="aspect-ratio:3/4;background:#DCD3C6"></div><span style="font-size:13px">[Product]</span><span style="font-size:13px;color:#6B5E52">[Price]</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="aspect-ratio:3/4;background:#DCD3C6"></div><span style="font-size:13px">[Product]</span><span style="font-size:13px;color:#6B5E52">[Price]</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column">
+    <div class="r lbl" style="color:#121212"><span>Setting (settings_schema)</span><span>Preset A</span><span>Preset B</span></div>
+    <div class="r"><span class="lbl" style="color:#121212">Colour schemes</span><span>scheme-1 light ground + scheme-2 dark campaign; signal #2338E0 / #9AA5FF</span><span>scheme-1 warm paper #EFEAE3, ink #2A2622, accent #6B4E3D</span></div>
+    <div class="r"><span class="lbl" style="color:#121212">Typography</span><span>Heading Archivo condensed 800 uppercase; body Archivo; spec font Plex Mono</span><span>Heading Newsreader 400 sentence case; body Inter Tight; spec font = body</span></div>
+    <div class="r"><span class="lbl" style="color:#121212">Header layout</span><span>centered logo, overlay on hero, sticky reveal</span><span>left logo, solid, sticky off</span></div>
+    <div class="r"><span class="lbl" style="color:#121212">Card</span><span>4:5, size row on, badges filled, quick add on</span><span>3:4, size row off, text badges, quick add off</span></div>
+    <div class="r"><span class="lbl" style="color:#121212">Density / radius</span><span>compact gaps, radius 2</span><span>airy gaps, radius 0</span></div>
+    <div class="r"><span class="lbl" style="color:#121212">Motion level</span><span>standard (cut reveals, optional ticker)</span><span>minimal (fades only, no ticker)</span></div>
+    <div class="r"><span class="lbl" style="color:#121212">Homepage template</span><span>hero → tiles → drop grid → spotlight → newsletter</span><span>split editorial → collection → story → newsletter</span></div>
+    <p style="margin:10px 0 0;font-size:13px;color:#55534E;line-height:1.45">Both are config/settings_data.json presets plus templates/*.json defaults. No Liquid/TS/CSS branch reads brand, domain or preset name; the design-token layer maps settings → CSS custom properties.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

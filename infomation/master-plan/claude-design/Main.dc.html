@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Direction and tokens</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2338E0}a:hover{color:#121212}
+.lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#55534E}
+.disp{font-family:Archivo,sans-serif;font-stretch:72%;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;line-height:.92;margin:0}
+.sw{display:flex;flex-direction:column;gap:6px}
+.chip{height:72px;border:1px solid #D9D6CF}
+.row{display:grid;grid-template-columns:160px 1fr 1fr 1.4fr;gap:16px;padding:10px 0;border-top:1px solid #D9D6CF;font-size:14px}
+</style>
+</helmet>
+<div style="width:1440px;height:1180px;box-sizing:border-box;padding:72px;background:#F3F2EE;color:#121212;font-family:Archivo,sans-serif;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;row-gap:48px;align-content:start">
+  <div style="grid-column:1 / span 7;display:flex;flex-direction:column;gap:20px">
+    <div class="lbl">Direction A · working name “Cut &amp; Label” · proposal, not owner-approved</div>
+    <h1 class="disp" style="font-size:112px">Campaign scale.<br>Garment-label precision.</h1>
+    <p style="margin:0;font-size:18px;line-height:1.5;max-width:640px">Big, unboxed campaign photography meets the calm, exact language of a care label. Shopping surfaces stay light and quiet; every size, price and availability fact is set in a mono “spec” voice so it reads as information, not decoration. Motion is a short, decisive cut — never a float.</p>
+  </div>
+  <div style="grid-column:8 / span 5;display:flex;flex-direction:column;gap:12px;border:1px solid #121212;padding:20px;background:#FFFFFF;align-self:start">
+    <div class="lbl" style="color:#121212">Spec voice — signature device</div>
+    <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:13px"><span>HEAVY JERSEY TEE</span><span>[PRICE]</span></div>
+    <div style="display:flex;gap:14px;font-family:'IBM Plex Mono',monospace;font-size:13px"><span>XS</span><span>S</span><span style="text-decoration:line-through;color:#8A877F">M</span><span>L</span><span>XL</span><span style="color:#55534E">· 3 COLOURS</span></div>
+    <div style="height:1px;background:#D9D6CF"></div>
+    <div style="font-size:13px;line-height:1.5;color:#55534E">Used on cards (size run), PDP (fit + measurements), cart lines (chosen options) and announcements. Strikethrough is always paired with text (“M — sold out”) for assistive tech and non-colour cues.</div>
+  </div>
+
+  <div style="grid-column:1 / span 6;display:flex;flex-direction:column;gap:14px">
+    <div class="lbl">Colour roles — Preset A (light scheme + campaign dark scheme)</div>
+    <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px">
+      <div class="sw"><div class="chip" style="background:#F3F2EE"></div><span class="lbl">ground #F3F2EE</span></div>
+      <div class="sw"><div class="chip" style="background:#FFFFFF"></div><span class="lbl">surface #FFF</span></div>
+      <div class="sw"><div class="chip" style="background:#121212"></div><span class="lbl">ink #121212</span></div>
+      <div class="sw"><div class="chip" style="background:#55534E"></div><span class="lbl">ink-2 #55534E</span></div>
+      <div class="sw"><div class="chip" style="background:#D9D6CF"></div><span class="lbl">line #D9D6CF</span></div>
+      <div class="sw"><div class="chip" style="background:#2338E0"></div><span class="lbl">signal #2338E0</span></div>
+      <div class="sw"><div class="chip" style="background:#0E0E0E"></div><span class="lbl">dark ground</span></div>
+      <div class="sw"><div class="chip" style="background:#1C1C1B"></div><span class="lbl">dark surface</span></div>
+      <div class="sw"><div class="chip" style="background:#9AA5FF"></div><span class="lbl">signal on dark</span></div>
+      <div class="sw"><div class="chip" style="background:#B42318"></div><span class="lbl">error</span></div>
+      <div class="sw"><div class="chip" style="background:#146C43"></div><span class="lbl">success</span></div>
+      <div class="sw"><div class="chip" style="background:#8A877F"></div><span class="lbl">disabled</span></div>
+    </div>
+    <p style="margin:0;font-size:13px;line-height:1.5;color:#55534E">One merchant accent (“signal”) used for focus rings, active filters and the primary CTA only. Body pairs checked ≥4.5:1 (ink-2 on ground ≈7:1). Disabled is never the only cue. Exact values become Shopify colour-scheme settings, not hardcoded CSS.</p>
+  </div>
+
+  <div style="grid-column:7 / span 6;display:flex;flex-direction:column;gap:14px">
+    <div class="lbl">Type — Archivo (variable width) + IBM Plex Mono; both OFL, self-hosted via Shopify font library or assets</div>
+    <div class="disp" style="font-size:64px">Display 64 / 40</div>
+    <div style="font-family:Archivo;font-weight:700;font-size:28px">Section heading 28 / 22</div>
+    <div style="font-size:16px;line-height:1.5">Body 16 / 15 — product descriptions, policies and editorial copy stay at normal width for reading.</div>
+    <div style="font-family:Archivo;font-weight:600;font-size:16px;font-variant-numeric:tabular-nums">Price 16 tabular · [PRICE] <span style="text-decoration:line-through;color:#55534E;font-weight:400">[COMPARE-AT]</span></div>
+    <div class="lbl" style="color:#121212;font-size:12px">Spec / label 11–12 mono uppercase · SIZE · FIT · CARE</div>
+    <p style="margin:0;font-size:13px;line-height:1.5;color:#55534E">Condensed uppercase is limited to display and short labels so translations and long titles still wrap. Preset B swaps display to Newsreader (serif) without code changes.</p>
+  </div>
+
+  <div style="grid-column:1 / span 5;display:flex;flex-direction:column;gap:14px">
+    <div class="lbl">Space · radius · controls</div>
+    <div style="display:flex;align-items:flex-end;gap:10px">
+      <div style="width:4px;height:4px;background:#121212"></div><div style="width:8px;height:8px;background:#121212"></div><div style="width:12px;height:12px;background:#121212"></div><div style="width:16px;height:16px;background:#121212"></div><div style="width:24px;height:24px;background:#121212"></div><div style="width:32px;height:32px;background:#121212"></div><div style="width:48px;height:48px;background:#121212"></div><div style="width:72px;height:72px;background:#121212"></div><div style="width:112px;height:112px;background:#121212"></div>
+    </div>
+    <div class="lbl">4 · 8 · 12 · 16 · 24 · 32 · 48 · 72 · 112 — section rhythm uses 48/72/112 only</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button style="height:48px;padding:0 24px;border:0;background:#121212;color:#FFF;font-family:Archivo;font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;border-radius:2px">Add to cart</button>
+      <button style="height:48px;padding:0 24px;border:1px solid #121212;background:transparent;color:#121212;font-family:Archivo;font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;border-radius:2px">Secondary</button>
+      <button style="height:48px;padding:0 24px;border:2px solid #2338E0;outline:2px solid #2338E0;outline-offset:2px;background:#121212;color:#FFF;font-family:Archivo;font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;border-radius:2px">Focus visible</button>
+      <button style="height:44px;min-width:44px;padding:0 14px;border:1px solid #D9D6CF;background:#FFF;color:#121212;font-family:'IBM Plex Mono';font-size:13px;border-radius:999px">Chip</button>
+    </div>
+    <p style="margin:0;font-size:13px;line-height:1.5;color:#55534E">Media: radius 0. Controls: 2px (Preset A) / 0 (B). Hit targets ≥44×44. Focus ring = 2px signal + 2px offset, never removed.</p>
+  </div>
+
+  <div style="grid-column:6 / span 7;display:flex;flex-direction:column;gap:6px">
+    <div class="lbl">Motion tokens — proposed starting values (from plan doc 08 ranges), tuned after device tests</div>
+    <div class="row lbl" style="color:#121212"><span>Token</span><span>Value</span><span>Reduced motion</span><span>Used for</span></div>
+    <div class="row"><span class="lbl" style="color:#121212">instant</span><span>120ms ease-out</span><span>same (no travel)</span><span>Press, swatch/size select, icon state</span></div>
+    <div class="row"><span class="lbl" style="color:#121212">small</span><span>200ms ease-out</span><span>opacity only</span><span>Accordion, image crossfade, header surface</span></div>
+    <div class="row"><span class="lbl" style="color:#121212">overlay</span><span>280ms in / 200ms out</span><span>120ms fade, no slide</span><span>Menu, search, filters, cart, quick add</span></div>
+    <div class="row"><span class="lbl" style="color:#121212">cut</span><span>380ms clip-path wipe</span><span>none — content shown</span><span>Campaign headline / image reveal, once</span></div>
+    <div class="row"><span class="lbl" style="color:#121212">stagger</span><span>40ms, max 6 items</span><span>none</span><span>Menu links, editorial lists — never grids</span></div>
+    <div class="row"><span class="lbl" style="color:#121212">ticker</span><span>~40px/s, pause control</span><span>static message</span><span>Announcement (optional)</span></div>
+    <p style="margin:8px 0 0;font-size:13px;line-height:1.5;color:#55534E">Ease-out cubic-bezier(.2,.7,.2,1); exit cubic-bezier(.4,0,1,1). The purchase path (options, add, cart) only ever uses “instant” and “overlay”. Editor selection forces every entrance to its end state.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

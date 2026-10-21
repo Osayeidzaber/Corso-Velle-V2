@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Collection and filter states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}a:hover{text-decoration:underline}
+.lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#55534E}
+.st{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:#121212;color:#FFF;padding:3px 8px;align-self:flex-start}
+.col{display:flex;flex-direction:column;gap:12px;width:390px}
+.ph{width:390px;height:800px;border:1px solid #121212;background:#FFF;overflow:hidden;display:flex;flex-direction:column;box-sizing:border-box;position:relative}
+.mh{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 12px;border-bottom:1px solid #D9D6CF;font-family:Archivo;font-stretch:72%;font-weight:900;font-size:20px}
+.pill{height:36px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid #D9D6CF;border-radius:999px;font-size:13px;white-space:nowrap}
+.tb{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid #D9D6CF;border-bottom:1px solid #D9D6CF}
+.tb button{height:48px;border:0;border-right:1px solid #D9D6CF;background:#FFF;font-family:Archivo;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.03em;color:#121212}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 8px;padding:12px 8px}
+.card{display:flex;flex-direction:column;gap:6px}
+.img{aspect-ratio:4/5;background:#E7E4DE;position:relative}
+.t{font-size:13px;font-weight:600;line-height:1.3}
+.p{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.sz{font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.04em;color:#55534E}
+.note{font-size:13px;line-height:1.45;color:#55534E;margin:0}
+.fh{display:flex;justify-content:space-between;align-items:center;min-height:52px;padding:0 16px;border-top:1px solid #E7E4DE;font-weight:700;font-size:14px;text-transform:uppercase}
+.opt{display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:44px;border:1px solid #D9D6CF;font-family:'IBM Plex Mono';font-size:13px;padding:0 10px}
+</style>
+</helmet>
+<div style="width:2206px;height:1000px;box-sizing:border-box;padding:56px 64px;background:#F3F2EE;color:#121212;font-family:Archivo,sans-serif;display:flex;gap:32px">
+
+  <div class="col">
+    <span class="st">1 · Default collection</span>
+    <div class="ph">
+      <div class="mh"><span>☰</span><span>[BRAND]</span><span style="font-family:Archivo;font-stretch:100%;font-size:13px;font-weight:700">CART 0</span></div>
+      <div style="padding:14px 12px 8px;display:flex;flex-direction:column;gap:4px"><span class="lbl">Home / Tops</span><div style="display:flex;justify-content:space-between;align-items:baseline"><h1 style="margin:0;font-stretch:72%;font-weight:800;font-size:34px;text-transform:uppercase">T-shirts</h1><span class="lbl">48 products</span></div></div>
+      <div style="display:flex;gap:8px;padding:6px 12px 12px;overflow:hidden"><a class="pill" href="#" style="background:#121212;color:#FFF;border-color:#121212" aria-current="page">T-shirts</a><a class="pill" href="#">Shirts</a><a class="pill" href="#">Knitwear</a><a class="pill" href="#">Hoodies</a><span class="pill" style="border:0;padding:0;color:#55534E">→</span></div>
+      <div class="tb"><button>Filter</button><button>Sort ▾</button><button style="border-right:0" aria-pressed="false">View: Model</button></div>
+      <div class="grid">
+        <a class="card" href="#"><div class="img"><span class="lbl" style="position:absolute;left:6px;top:6px;background:#FFF;color:#121212;padding:2px 6px">New</span></div><span class="t">[Heavy jersey tee]</span><span class="p">[PRICE]</span><span class="sz">XS S M L XL · 3 colours</span></a>
+        <a class="card" href="#"><div class="img"><span class="lbl" style="position:absolute;left:6px;top:6px;background:#2338E0;color:#FFF;padding:2px 6px">−20%</span></div><span class="t">[Boxy pocket tee with a long product title that wraps]</span><span class="p">[PRICE] <span style="text-decoration:line-through;color:#55534E;font-weight:400">[WAS]</span></span><span class="sz">S M <s>L</s> XL</span></a>
+        <a class="card" href="#"><div class="img" style="background:#DCD8D0"></div><span class="t">[Ringer tee]</span><span class="p">From [PRICE]</span><span class="sz">XS–2XL</span></a>
+        <a class="card" href="#"><div class="img" style="opacity:.6"><span class="lbl" style="position:absolute;left:6px;top:6px;background:#FFF;color:#121212;padding:2px 6px">Sold out</span></div><span class="t">[Graphic tee]</span><span class="p">[PRICE]</span><span class="sz">Sold out</span></a>
+      </div>
+    </div>
+    <p class="note">Pills = merchandising links from a chosen menu (navigation), separate from filters. View toggle only shows when the model/packshot feature is enabled and data exists. Default paging: numbered links; “Load more” is a section option.</p>
+  </div>
+
+  <div class="col">
+    <span class="st">2 · Filter drawer (draft)</span>
+    <div class="ph">
+      <div style="position:absolute;inset:0;background:rgba(18,18,18,.45)"></div>
+      <div style="position:absolute;inset:0 0 0 0;background:#FFF;display:flex;flex-direction:column" role="dialog" aria-label="Filter and sort">
+        <div style="display:flex;justify-content:space-between;align-items:center;height:56px;padding:0 6px 0 16px;border-bottom:1px solid #D9D6CF"><span style="font-weight:800;font-size:16px;text-transform:uppercase">Filter &amp; sort</span><button aria-label="Close filters" style="width:44px;height:44px;border:0;background:#FFF;font-size:18px">✕</button></div>
+        <div style="flex:1;overflow:hidden">
+          <div class="fh">Sort <span class="lbl" style="color:#121212">Featured ▾</span></div>
+          <div class="fh">Size <span class="lbl" style="color:#2338E0">2 selected</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;padding:4px 16px 16px"><span class="opt">XS</span><span class="opt">S</span><span class="opt" style="background:#121212;color:#FFF;border-color:#121212" aria-pressed="true">M</span><span class="opt" style="background:#121212;color:#FFF;border-color:#121212">L</span><span class="opt">XL</span><span class="opt" style="color:#8A877F;text-decoration:line-through">2XL (0)</span></div>
+          <div class="fh">Colour <span>+</span></div>
+          <div class="fh">Price <span>+</span></div>
+          <div class="fh">Availability <span>+</span></div>
+          <div class="fh">Fabric <span>+</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;padding:12px 12px 20px;border-top:1px solid #D9D6CF">
+          <button style="height:48px;border:1px solid #121212;background:#FFF;font-family:Archivo;font-weight:700;text-transform:uppercase;font-size:13px">Reset</button>
+          <button style="height:48px;border:0;background:#121212;color:#FFF;font-family:Archivo;font-weight:700;text-transform:uppercase;font-size:13px">Show 24 results</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Values and counts come from collection.filters. Draft ≠ applied: closing discards the draft; Reset clears the draft only. The result count on Apply refreshes via Section Rendering (latest request wins). Footer sits above the home indicator (safe-area inset).</p>
+  </div>
+
+  <div class="col">
+    <span class="st">3 · Applied + updating</span>
+    <div class="ph">
+      <div class="mh"><span>☰</span><span>[BRAND]</span><span style="font-family:Archivo;font-stretch:100%;font-size:13px;font-weight:700">CART 0</span></div>
+      <div style="padding:14px 12px 8px;display:flex;justify-content:space-between;align-items:baseline"><h1 style="margin:0;font-stretch:72%;font-weight:800;font-size:34px;text-transform:uppercase">T-shirts</h1><span class="lbl" role="status">Updating…</span></div>
+      <div class="tb"><button>Filter (2)</button><button>Sort ▾</button><button style="border-right:0">View: Model</button></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:12px"><button class="pill" style="background:#FFF">Size: M ✕</button><button class="pill" style="background:#FFF">Size: L ✕</button><button class="pill" style="border:0;text-decoration:underline;background:#FFF">Clear all</button></div>
+      <div class="grid" style="opacity:.5">
+        <div class="card"><div class="img"></div><span class="t">[Heavy jersey tee]</span><span class="p">[PRICE]</span></div>
+        <div class="card"><div class="img"></div><span class="t">[Ringer tee]</span><span class="p">[PRICE]</span></div>
+      </div>
+      <div style="height:3px;background:#2338E0;width:40%;position:absolute;top:52px;left:0"></div>
+    </div>
+    <p class="note">Current grid stays visible at 50% with a thin progress line; no skeleton flash. URL updates via history.pushState with the real filter params; Back/Forward re-fetches from the URL. Chips remove one value each.</p>
+  </div>
+
+  <div class="col">
+    <span class="st">4 · Filtered to zero</span>
+    <div class="ph">
+      <div class="mh"><span>☰</span><span>[BRAND]</span><span style="font-family:Archivo;font-stretch:100%;font-size:13px;font-weight:700">CART 0</span></div>
+      <div style="padding:14px 12px 8px;display:flex;justify-content:space-between;align-items:baseline"><h1 style="margin:0;font-stretch:72%;font-weight:800;font-size:34px;text-transform:uppercase">T-shirts</h1><span class="lbl">0 of 48</span></div>
+      <div class="tb"><button>Filter (3)</button><button>Sort ▾</button><button style="border-right:0">View: Model</button></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:12px"><button class="pill" style="background:#FFF">Size: 2XL ✕</button><button class="pill" style="background:#FFF">Colour: Olive ✕</button><button class="pill" style="background:#FFF">In stock ✕</button></div>
+      <div style="padding:40px 16px;display:flex;flex-direction:column;gap:12px;align-items:flex-start">
+        <p style="margin:0;font-size:20px;font-weight:800;text-transform:uppercase">Nothing matches these filters</p>
+        <p class="note">Try removing a filter — size 2XL in olive isn’t in stock right now.</p>
+        <button style="height:48px;padding:0 20px;border:0;background:#121212;color:#FFF;font-family:Archivo;font-weight:700;text-transform:uppercase;font-size:13px">Clear all filters</button>
+      </div>
+    </div>
+    <p class="note">Different copy from an empty collection. Constraint chips stay visible so the shopper can undo one step. Copy is generated from active filter labels, not hardcoded.</p>
+  </div>
+
+  <div class="col">
+    <span class="st">5 · Empty collection / fetch failed</span>
+    <div class="ph" style="height:380px">
+      <div class="mh"><span>☰</span><span>[BRAND]</span><span style="font-family:Archivo;font-stretch:100%;font-size:13px;font-weight:700">CART 0</span></div>
+      <div style="padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:flex-start">
+        <h1 style="margin:0;font-stretch:72%;font-weight:800;font-size:34px;text-transform:uppercase">Winter drop</h1>
+        <p style="margin:0;font-size:18px;font-weight:700">This collection is empty right now.</p>
+        <p class="note">Merchant-set message, e.g. launch date. No filter bar shown.</p>
+        <a href="#" style="height:48px;display:flex;align-items:center;padding:0 20px;background:#121212;color:#FFF;font-weight:700;text-transform:uppercase;font-size:13px">Shop all products</a>
+      </div>
+    </div>
+    <div class="ph" style="height:390px;margin-top:6px">
+      <div style="padding:20px 16px;display:flex;flex-direction:column;gap:12px">
+        <div style="border:1px solid #B42318;padding:14px;display:flex;flex-direction:column;gap:8px" role="alert"><span style="font-weight:700;color:#B42318">Filters couldn’t update.</span><span class="note">Showing your previous results. Reload to apply “Size: M”.</span><a href="#" style="text-decoration:underline;font-weight:700">Apply with a full page load</a></div>
+        <div class="grid" style="padding:0"><div class="card"><div class="img"></div><span class="t">[Previous result]</span></div><div class="card"><div class="img"></div><span class="t">[Previous result]</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2206,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Product page selection states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:#2338E0}
+.lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#55534E}
+.st{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:#121212;color:#FFF;padding:3px 8px;align-self:flex-start}
+.col{display:flex;flex-direction:column;gap:12px;width:390px}
+.ph{width:390px;height:860px;border:1px solid #121212;background:#FFF;overflow:hidden;position:relative;box-sizing:border-box;display:flex;flex-direction:column}
+.gal{height:300px;background:#E7E4DE;position:relative;flex:none}
+.cnt{position:absolute;right:10px;bottom:10px;font-family:'IBM Plex Mono';font-size:12px;background:#FFF;padding:3px 8px}
+.gb{position:absolute;top:50%;width:44px;height:44px;border:1px solid #121212;background:#FFF;margin-top:-22px;font-size:16px}
+.info{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.ttl{margin:0;font-stretch:80%;font-weight:800;font-size:26px;text-transform:uppercase;line-height:1}
+.price{font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
+.opt{display:inline-flex;align-items:center;justify-content:center;min-width:52px;height:48px;border:1px solid #D9D6CF;font-family:'IBM Plex Mono';font-size:14px;background:#FFF;color:#121212}
+.on{background:#121212;color:#FFF;border-color:#121212}
+.na{color:#8A877F;text-decoration:line-through}
+.sw{width:44px;height:44px;border-radius:50%;border:1px solid #D9D6CF;display:inline-block}
+.btn{height:52px;border:0;background:#121212;color:#FFF;font-family:Archivo;font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;width:100%}
+.msg{font-size:14px;line-height:1.4}
+.note{font-size:13px;line-height:1.45;color:#55534E;margin:0}
+.acc{display:flex;justify-content:space-between;align-items:center;min-height:52px;border-top:1px solid #D9D6CF;font-weight:700;font-size:14px;text-transform:uppercase;padding:0 16px}
+table{border-collapse:collapse;font-family:'IBM Plex Mono';font-size:13px}
+th,td{border-bottom:1px solid #D9D6CF;padding:10px 12px;text-align:left;white-space:nowrap}
+th{font-weight:500;background:#F3F2EE}
+</style>
+</helmet>
+<div style="width:2206px;height:1040px;box-sizing:border-box;padding:56px 64px;background:#F3F2EE;color:#121212;font-family:Archivo,sans-serif;display:flex;gap:32px">
+
+  <div class="col">
+    <span class="st">P-03 · Incomplete selection</span>
+    <div class="ph">
+      <div class="gal"><button class="gb" style="left:8px" aria-label="Previous image">←</button><button class="gb" style="right:8px" aria-label="Next image">→</button><span class="cnt">1 / 7</span></div>
+      <div class="info">
+        <h1 class="ttl">[Heavy jersey tee]</h1>
+        <span class="price">[PRICE]</span>
+        <span class="lbl" style="color:#121212">Colour: Black</span>
+        <div style="display:flex;gap:10px"><span class="sw" style="background:#121212;outline:2px solid #121212;outline-offset:2px" aria-label="Black, selected"></span><span class="sw" style="background:#E9E2D3" aria-label="Bone"></span><span class="sw" style="background:#5D6248" aria-label="Olive"></span></div>
+        <div style="display:flex;justify-content:space-between"><span class="lbl" style="color:#121212">Size</span><button class="lbl" style="border:0;background:none;text-decoration:underline;color:#121212;height:24px">Size guide</button></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="opt">XS</span><span class="opt">S</span><span class="opt na" aria-label="M, sold out">M</span><span class="opt">L</span><span class="opt">XL</span></div>
+        <span class="lbl">Model is 185 cm, wears L · [product data]</span>
+        <button class="btn" style="background:#55534E">Select a size</button>
+      </div>
+    </div>
+    <p class="note">Color shows an initial value; size never does (unless a ?variant / option_values deep link names one). Swatches come from Shopify option swatch data with visible name label.</p>
+  </div>
+
+  <div class="col">
+    <span class="st">Available variant</span>
+    <div class="ph">
+      <div class="gal" style="background:#DCD8D0"><span class="cnt">3 / 7</span></div>
+      <div class="info">
+        <h1 class="ttl">[Heavy jersey tee]</h1>
+        <span class="price">[PRICE] <span style="font-size:14px;font-weight:400;text-decoration:line-through;color:#55534E">[WAS]</span></span>
+        <span class="lbl" style="color:#121212">Colour: Bone</span>
+        <div style="display:flex;gap:10px"><span class="sw" style="background:#121212"></span><span class="sw" style="background:#E9E2D3;outline:2px solid #121212;outline-offset:2px"></span><span class="sw" style="background:#5D6248"></span></div>
+        <span class="lbl" style="color:#121212">Size: L</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="opt">XS</span><span class="opt">S</span><span class="opt">M</span><span class="opt on" aria-pressed="true">L</span><span class="opt na">XL</span></div>
+        <span class="msg" style="color:#146C43">In stock</span>
+        <button class="btn">Add to cart — [PRICE]</button>
+        <span class="lbl">[Delivery/returns summary — merchant copy, linked policy]</span>
+      </div>
+    </div>
+    <p class="note">One state update syncs variant id, price, compare-at, availability, media (jumps to Bone image), URL (?variant=) and the sticky bar. Out-of-order responses are discarded by request id.</p>
+  </div>
+
+  <div class="col">
+    <span class="st">Sold out vs combination missing</span>
+    <div class="ph">
+      <div class="info" style="border-bottom:1px solid #D9D6CF">
+        <span class="lbl" style="color:#121212">A · existing variant, 0 stock</span>
+        <span class="lbl" style="color:#121212">Size: XL</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="opt">L</span><span class="opt on na" style="color:#FFF">XL</span></div>
+        <span class="msg"><b>XL is sold out in Bone.</b> Other colours may have it.</span>
+        <button class="btn" disabled="" style="background:#8A877F">Sold out</button>
+        <button style="height:44px;border:1px solid #121212;background:#FFF;font-family:Archivo;font-weight:700;font-size:13px;text-transform:uppercase">Notify me — only if a restock app is configured</button>
+      </div>
+      <div class="info" style="border-bottom:1px solid #D9D6CF">
+        <span class="lbl" style="color:#121212">B · combination does not exist</span>
+        <span class="lbl" style="color:#121212">Colour: Olive · Size: XS</span>
+        <span class="msg"><b>Olive isn’t made in XS.</b> Choose another size or colour.</span>
+        <button class="btn" disabled="" style="background:#8A877F">Unavailable</button>
+      </div>
+      <div class="info">
+        <span class="lbl" style="color:#121212">C · selection update failed</span>
+        <div role="alert" class="msg" style="border:1px solid #B42318;padding:12px"><b style="color:#B42318">Couldn’t update this selection.</b> <a href="#">Reload with Olive · M</a></div>
+        <button class="btn" disabled="" style="background:#8A877F">Add to cart</button>
+      </div>
+    </div>
+    <p class="note">Never submit the previous variant while a new one resolves; the button shows “Updating…” and stays disabled until the matching response lands.</p>
+  </div>
+
+  <div class="col">
+    <span class="st">P-05 · Size guide (dialog)</span>
+    <div class="ph">
+      <div style="position:absolute;inset:0;background:rgba(18,18,18,.45)"></div>
+      <div role="dialog" aria-labelledby="sg" style="position:absolute;left:0;right:0;bottom:0;top:72px;background:#FFF;display:flex;flex-direction:column">
+        <div style="display:flex;justify-content:space-between;align-items:center;height:56px;padding:0 6px 0 16px;border-bottom:1px solid #D9D6CF"><span id="sg" style="font-weight:800;text-transform:uppercase">Size guide — Tees</span><button aria-label="Close size guide" style="width:44px;height:44px;border:0;background:#FFF;font-size:18px">✕</button></div>
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl" style="color:#121212">Garment measurements, laid flat</span><div role="group" aria-label="Units" style="display:flex"><button style="height:36px;padding:0 12px;border:1px solid #121212;background:#121212;color:#FFF;font-family:'IBM Plex Mono'" aria-pressed="true">cm</button><button style="height:36px;padding:0 12px;border:1px solid #121212;background:#FFF;font-family:'IBM Plex Mono'">in</button></div></div>
+          <div style="overflow-x:auto;border:1px solid #D9D6CF" tabindex="0" aria-label="Size table, scrolls sideways">
+            <table><caption class="lbl" style="text-align:left;padding:8px 12px">[Merchant-approved chart]</caption><thead><tr><th scope="col">Size</th><th scope="col">Chest</th><th scope="col">Length</th><th scope="col">Shoulder</th><th scope="col">Sleeve</th></tr></thead><tbody><tr><th scope="row">S</th><td>[ ]</td><td>[ ]</td><td>[ ]</td><td>[ ]</td></tr><tr><th scope="row">M</th><td>[ ]</td><td>[ ]</td><td>[ ]</td><td>[ ]</td></tr><tr style="background:#EEF0FF"><th scope="row">L ●</th><td>[ ]</td><td>[ ]</td><td>[ ]</td><td>[ ]</td></tr><tr><th scope="row">XL</th><td>[ ]</td><td>[ ]</td><td>[ ]</td><td>[ ]</td></tr></tbody></table>
+          </div>
+          <div style="height:150px;background:#F3F2EE;border:1px dashed #8A877F;display:flex;align-items:center;justify-content:center"><span class="lbl">[How to measure diagram — optional]</span></div>
+          <p class="note">Fit: [fit text from product data]. Between sizes? [merchant guidance].</p>
+        </div>
+      </div>
+    </div>
+    <p class="note">Data from a size-chart metaobject referenced by the product (fallback: rich text). Only the table scrolls sideways. Selected size row is highlighted; closing keeps the selection and returns focus to “Size guide”.</p>
+  </div>
+
+  <div class="col">
+    <span class="st">Lower page + sticky bar</span>
+    <div class="ph">
+      <div class="info" style="padding-top:20px">
+        <span class="lbl">…scrolled past the main buy area</span>
+      </div>
+      <div class="acc" aria-expanded="true">Details <span>−</span></div>
+      <div style="padding:4px 16px 14px" class="note">[Product description from Shopify]</div>
+      <div class="acc">Fabric &amp; care <span>+</span></div>
+      <div class="acc">Delivery &amp; returns <span>+</span></div>
+      <div class="acc" style="border-bottom:1px solid #D9D6CF">[App block: reviews]</div>
+      <div style="padding:20px 16px 0"><span style="font-weight:800;text-transform:uppercase">You may also like</span></div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:12px 8px"><div style="aspect-ratio:4/5;background:#E7E4DE"></div><div style="aspect-ratio:4/5;background:#DCD8D0"></div></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;background:#FFF;border-top:1px solid #121212;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:10px 12px 22px">
+        <div style="display:flex;flex-direction:column"><span style="font-weight:700;font-size:14px">[Heavy jersey tee]</span><span class="lbl" style="color:#121212">Bone · L · [PRICE]</span></div>
+        <button class="btn" style="width:150px">Add to cart</button>
+      </div>
+    </div>
+    <p class="note">Sticky bar (optional, P1) appears only when the main form is out of view and no keyboard/dialog is open; incomplete → its button reads “Choose size” and scrolls to the size group. Same state + submit path as the main form. Bottom padding = safe-area inset; hidden in editor while selected blocks are underneath.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2206,"height":1040}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

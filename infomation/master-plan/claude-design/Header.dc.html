@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Header and navigation states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}a:hover{text-decoration:underline}
+.lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#55534E}
+.cap{display:flex;justify-content:space-between;gap:16px}
+.st{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:#121212;color:#FFF;padding:3px 8px}
+.hdr{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:68px;padding:0 28px;font-family:Archivo;font-size:14px;font-weight:600;letter-spacing:.03em;text-transform:uppercase}
+.nav{display:flex;gap:24px;align-items:center}
+.act{display:flex;gap:4px;justify-content:flex-end;align-items:center}
+.ib{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;color:inherit;padding:0}
+.logo{font-family:Archivo;font-stretch:72%;font-weight:900;font-size:26px;letter-spacing:.02em}
+.ph{width:390px;border:1px solid #121212;background:#FFF;overflow:hidden;position:relative;box-sizing:border-box}
+.mhdr{display:grid;grid-template-columns:auto 1fr auto;align-items:center;height:56px;padding:0 6px;font-family:Archivo}
+.li{display:flex;justify-content:space-between;align-items:center;min-height:52px;padding:0 20px;border-top:1px solid #E7E4DE;font-family:Archivo;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:.01em;color:#121212}
+.note{font-size:13px;line-height:1.45;color:#55534E;margin:0}
+</style>
+</helmet>
+<div style="width:2206px;height:1180px;box-sizing:border-box;padding:56px 64px;background:#F3F2EE;color:#121212;font-family:Archivo,sans-serif;display:flex;gap:40px">
+  <div style="width:1220px;display:flex;flex-direction:column;gap:22px">
+    <div class="cap"><span class="lbl" style="color:#121212">H-01 Desktop header · centered-logo layout · same menu data in every state</span><span class="lbl">1220px wide preview</span></div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="cap"><span class="st">Solid</span><span class="lbl">default on interior pages · announcement static</span></div>
+      <div style="border:1px solid #D9D6CF;background:#FFF">
+        <div style="height:32px;display:flex;align-items:center;justify-content:center;background:#121212;color:#FFF;font-family:'IBM Plex Mono';font-size:12px;letter-spacing:.06em;text-transform:uppercase">[ANNOUNCEMENT MESSAGE] — <a href="#" style="text-decoration:underline;margin-left:6px">[LINK]</a></div>
+        <div class="hdr" style="border-bottom:1px solid #D9D6CF">
+          <nav class="nav" aria-label="Primary"><a href="#">Shop ▾</a><a href="#">Collections ▾</a><a href="#">New</a></nav>
+          <a href="#" class="logo">[BRAND]</a>
+          <div class="act"><button class="ib" aria-label="Search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg></button><button class="ib" aria-label="Account"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg></button><button class="ib" aria-label="Cart, 2 items" style="width:auto;padding:0 8px;gap:6px">CART <span style="font-family:'IBM Plex Mono';font-size:12px;border:1px solid currentColor;border-radius:999px;padding:1px 7px">2</span></button></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="cap"><span class="st">Campaign overlay</span><span class="lbl">only when first section opts in · scrim tested on the real image</span></div>
+      <div style="position:relative;height:150px;background:#3A3A37;color:#FFF;border:1px solid #121212">
+        <div style="position:absolute;inset:0;background:#2E2D2A"></div>
+        <div style="position:absolute;right:24px;bottom:16px" class="lbl"><span style="color:#D9D6CF">[CAMPAIGN IMAGE — OWNED/LICENSED]</span></div>
+        <div style="position:absolute;inset:0 0 auto 0;height:96px;background:rgba(0,0,0,.35)"></div>
+        <div class="hdr" style="position:relative;color:#FFF"><nav class="nav" aria-label="Primary"><a href="#">Shop ▾</a><a href="#">Collections ▾</a><a href="#">New</a></nav><a href="#" class="logo">[BRAND]</a><div class="act"><button class="ib" aria-label="Search" style="color:#FFF"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg></button><button class="ib" aria-label="Cart, 2 items" style="width:auto;padding:0 8px;color:#FFF">CART 2</button></div></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="cap"><span class="st">Sticky · reveal on scroll-up</span><span class="lbl">hides after deliberate downward travel · never while focus or a panel is inside it</span></div>
+      <div style="border:1px solid #D9D6CF;background:#FFF;box-shadow:0 1px 0 #D9D6CF"><div class="hdr" style="height:56px"><nav class="nav" aria-label="Primary"><a href="#">Shop ▾</a><a href="#">Collections ▾</a><a href="#">New</a></nav><a href="#" class="logo" style="font-size:22px">[BRAND]</a><div class="act"><button class="ib" aria-label="Search">⌕</button><button class="ib" aria-label="Cart, 2 items" style="width:auto;padding:0 8px">CART 2</button></div></div></div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="cap"><span class="st">Mega menu open</span><span class="lbl">“Shop” link navigates; ▾ is a separate disclosure button (aria-expanded=true) · Esc closes, focus returns</span></div>
+      <div style="border:1px solid #D9D6CF;background:#FFF">
+        <div class="hdr" style="border-bottom:1px solid #D9D6CF"><nav class="nav" aria-label="Primary"><span style="display:flex;gap:2px;align-items:center;border-bottom:2px solid #121212;padding-bottom:2px"><a href="#">Shop</a><button class="ib" aria-expanded="true" aria-label="Shop submenu" style="width:28px">▴</button></span><a href="#">Collections ▾</a><a href="#">New</a></nav><a href="#" class="logo">[BRAND]</a><div class="act"><button class="ib" aria-label="Search">⌕</button><button class="ib" aria-label="Cart" style="width:auto;padding:0 8px">CART 2</button></div></div>
+        <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:24px;padding:28px">
+          <div style="display:flex;flex-direction:column;gap:10px"><span class="lbl" style="color:#121212">Tops</span><a href="#">T-shirts</a><a href="#">Shirts</a><a href="#">Knitwear</a><a href="#">Hoodies &amp; sweats</a></div>
+          <div style="display:flex;flex-direction:column;gap:10px"><span class="lbl" style="color:#121212">Bottoms</span><a href="#">Denim</a><a href="#">Trousers</a><a href="#">Shorts</a></div>
+          <div style="display:flex;flex-direction:column;gap:10px"><span class="lbl" style="color:#121212">More</span><a href="#">Outerwear</a><a href="#">Accessories</a><a href="#">Shop all →</a></div>
+          <a href="#" style="display:flex;flex-direction:column;gap:8px"><div style="aspect-ratio:4/5;background:#CFCBC2;display:flex;align-items:flex-end;padding:10px"><span class="lbl" style="color:#121212">[PROMO IMAGE 4:5]</span></div><span style="font-weight:700;text-transform:uppercase">[Campaign card 1]</span></a>
+          <a href="#" style="display:flex;flex-direction:column;gap:8px"><div style="aspect-ratio:4/5;background:#BDB8AE;display:flex;align-items:flex-end;padding:10px"><span class="lbl" style="color:#121212">[PROMO IMAGE 4:5]</span></div><span style="font-weight:700;text-transform:uppercase">[Campaign card 2]</span></a>
+        </div>
+      </div>
+      <p class="note">Columns come from the chosen Shopify menu’s 2nd/3rd levels; up to two promo-card blocks per top-level item (block setting: “Attach to menu item”). Selecting a promo block in the editor opens this panel without navigating. Pointer hover opens after ~150ms intent delay as an enhancement only.</p>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+    <div class="cap"><span class="lbl" style="color:#121212">H-04 Phone · closed</span><span class="lbl">390 · test 320</span></div>
+    <div class="ph">
+      <div style="height:30px;display:flex;align-items:center;justify-content:center;background:#121212;color:#FFF;font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.06em;text-transform:uppercase;gap:8px">[ANNOUNCEMENT] <button aria-label="Pause announcement" style="height:30px;width:30px;border:0;background:transparent;color:#FFF">❚❚</button></div>
+      <div class="mhdr" style="border-bottom:1px solid #D9D6CF"><div style="display:flex"><button class="ib" aria-label="Open menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18"></path></svg></button><button class="ib" aria-label="Search">⌕</button></div><a href="#" class="logo" style="text-align:center;font-size:22px">[BRAND]</a><button class="ib" aria-label="Cart, 2 items" style="width:auto;padding:0 10px;font-weight:700;font-size:13px">CART 2</button></div>
+      <div style="height:90px;background:#E7E4DE;display:flex;align-items:center;justify-content:center"><span class="lbl">page content</span></div>
+    </div>
+    <p class="note">Ticker variant shows a 44px pause button; reduced motion shows the first message statically. Search is one tap from the closed header — not buried in the drawer.</p>
+
+    <div class="cap" style="margin-top:8px"><span class="lbl" style="color:#121212">Drawer · level 1</span><span class="lbl">dialog · focus on close</span></div>
+    <div class="ph" style="height:640px;display:flex;flex-direction:column">
+      <div class="mhdr" style="border-bottom:1px solid #D9D6CF"><button class="ib" aria-label="Close menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"></path></svg></button><span class="lbl" style="text-align:center;color:#121212">Menu</span><span style="width:44px"></span></div>
+      <div style="padding:12px 16px"><label style="display:flex;align-items:center;gap:8px;height:48px;border:1px solid #121212;padding:0 12px;font-size:16px;color:#55534E">⌕ <span>Search products</span></label></div>
+      <a class="li" href="#">Shop <span aria-hidden="true">→</span></a>
+      <a class="li" href="#">Collections <span aria-hidden="true">→</span></a>
+      <a class="li" href="#">New in</a>
+      <a class="li" href="#">Sale</a>
+      <div style="padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <a href="#" style="display:flex;flex-direction:column;gap:6px"><div style="aspect-ratio:4/5;background:#CFCBC2"></div><span style="font-weight:700;font-size:13px;text-transform:uppercase">[Promo 1]</span></a>
+        <a href="#" style="display:flex;flex-direction:column;gap:6px"><div style="aspect-ratio:4/5;background:#BDB8AE"></div><span style="font-weight:700;font-size:13px;text-transform:uppercase">[Promo 2]</span></a>
+      </div>
+      <div style="margin-top:auto;border-top:1px solid #D9D6CF;padding:12px 20px calc(12px + 0px);display:flex;gap:16px;font-size:14px"><a href="#">Account</a><a href="#">Help</a><span class="lbl" style="margin-left:auto">[MARKET / LANGUAGE]</span></div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+    <div class="cap"><span class="lbl" style="color:#121212">Drawer · level 2 (Shop)</span><span class="lbl">slide 280ms · RM: instant</span></div>
+    <div class="ph" style="height:700px;display:flex;flex-direction:column">
+      <div class="mhdr" style="border-bottom:1px solid #D9D6CF"><button class="ib" aria-label="Back to main menu" style="width:auto;padding:0 10px;gap:6px;font-weight:700;font-size:13px;text-transform:uppercase">← Back</button><span class="lbl" style="text-align:center;color:#121212">Shop</span><button class="ib" aria-label="Close menu">✕</button></div>
+      <a class="li" href="#" style="font-size:15px;color:#2338E0">Shop all</a>
+      <div class="lbl" style="padding:18px 20px 8px;color:#121212">Tops</div>
+      <a class="li" href="#" style="font-size:16px;font-weight:500;text-transform:none">T-shirts</a>
+      <a class="li" href="#" style="font-size:16px;font-weight:500;text-transform:none">Shirts</a>
+      <a class="li" href="#" style="font-size:16px;font-weight:500;text-transform:none">Knitwear</a>
+      <div class="lbl" style="padding:18px 20px 8px;color:#121212">Bottoms</div>
+      <a class="li" href="#" style="font-size:16px;font-weight:500;text-transform:none">Denim</a>
+      <a class="li" href="#" style="font-size:16px;font-weight:500;text-transform:none">Trousers</a>
+      <a class="li" href="#" style="font-size:16px;font-weight:500;text-transform:none">A long translated category label that wraps onto two lines safely</a>
+    </div>
+    <p class="note">Back returns to level 1 at its previous scroll position and focuses the “Shop” row. Panel uses 100dvh with safe-area padding; rotation or crossing the desktop breakpoint closes it and releases the scroll lock. Without JS the menu is a plain &lt;details&gt; list of links.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2206,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

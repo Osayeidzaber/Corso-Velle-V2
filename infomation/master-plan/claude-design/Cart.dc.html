@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cart drawer and cart page states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:#2338E0}
+.lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#55534E}
+.st{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:#121212;color:#FFF;padding:3px 8px;align-self:flex-start}
+.col{display:flex;flex-direction:column;gap:12px;width:390px}
+.ph{width:390px;height:800px;border:1px solid #121212;background:#FFF;overflow:hidden;position:relative;box-sizing:border-box;display:flex;flex-direction:column}
+.dh{display:flex;justify-content:space-between;align-items:center;height:56px;padding:0 6px 0 16px;border-bottom:1px solid #D9D6CF;font-weight:800;text-transform:uppercase}
+.x{width:44px;height:44px;border:0;background:#FFF;font-size:18px}
+.line{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:14px 16px;border-bottom:1px solid #E7E4DE}
+.th{width:84px;height:105px;background:#E7E4DE}
+.qty{display:inline-grid;grid-template-columns:44px 40px 44px;height:44px;border:1px solid #D9D6CF;align-items:center;text-align:center;font-family:'IBM Plex Mono'}
+.qty button{height:44px;border:0;background:#FFF;font-size:18px}
+.foot{margin-top:auto;border-top:1px solid #121212;padding:14px 16px 24px;display:flex;flex-direction:column;gap:10px}
+.btn{height:52px;border:0;background:#121212;color:#FFF;font-family:Archivo;font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;width:100%}
+.note{font-size:13px;line-height:1.45;color:#55534E;margin:0}
+.rm{border:0;background:none;text-decoration:underline;font-size:13px;height:44px;padding:0;font-family:Archivo}
+</style>
+</helmet>
+<div style="width:2206px;height:1000px;box-sizing:border-box;padding:56px 64px;background:#F3F2EE;color:#121212;font-family:Archivo,sans-serif;display:flex;gap:32px">
+
+  <div class="col">
+    <span class="st">K-01 · Empty drawer</span>
+    <div class="ph">
+      <div class="dh">Cart (0) <button class="x" aria-label="Close cart">✕</button></div>
+      <div style="padding:48px 16px;display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+        <p style="margin:0;font-size:22px;font-weight:800;text-transform:uppercase">Your cart is empty</p>
+        <a href="#" style="height:52px;display:flex;align-items:center;padding:0 22px;background:#121212;color:#FFF;font-weight:700;text-transform:uppercase;font-size:14px;text-decoration:none">[Shop new in →]</a>
+        <span class="lbl" style="margin-top:24px;color:#121212">Popular collections</span>
+        <a href="#">T-shirts</a><a href="#">Denim</a>
+      </div>
+    </div>
+    <p class="note">No checkout button, no subtotal. Destination link and collections are drawer settings. Opening the drawer never mutates the cart.</p>
+  </div>
+
+  <div class="col">
+    <span class="st">Ready · after add</span>
+    <div class="ph">
+      <div class="dh">Cart (3) <button class="x" aria-label="Close cart">✕</button></div>
+      <div role="status" style="padding:10px 16px;background:#EEF7F1;color:#146C43;font-size:14px;font-weight:600">Added: Heavy jersey tee — Bone / L</div>
+      <div class="line"><div class="th"></div><div style="display:flex;flex-direction:column;gap:4px"><div style="display:flex;justify-content:space-between;gap:8px"><a href="#" style="font-weight:700;text-decoration:none">[Heavy jersey tee]</a><span style="font-weight:600;font-variant-numeric:tabular-nums">[LINE PRICE]</span></div><span class="lbl" style="color:#121212">Bone · L</span><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><div class="qty"><button aria-label="Decrease quantity">−</button><span>2</span><button aria-label="Increase quantity">+</button></div><button class="rm">Remove</button></div></div></div>
+      <div class="line"><div class="th" style="background:#DCD8D0"></div><div style="display:flex;flex-direction:column;gap:4px"><div style="display:flex;justify-content:space-between;gap:8px"><a href="#" style="font-weight:700;text-decoration:none">[Straight-leg denim, rinse wash, long title]</a><span style="font-weight:600">[LINE PRICE]</span></div><span class="lbl" style="color:#121212">W32 · L32</span><span class="lbl">[Discount: CODE −[AMOUNT]]</span><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><div class="qty"><button aria-label="Decrease quantity">−</button><span>1</span><button aria-label="Increase quantity">+</button></div><button class="rm">Remove</button></div></div></div>
+      <div class="foot">
+        <div style="display:flex;justify-content:space-between;font-weight:700"><span>Subtotal</span><span style="font-variant-numeric:tabular-nums">[CART SUBTOTAL]</span></div>
+        <span class="note">[Taxes and shipping calculated at checkout — store-configured copy]</span>
+        <button class="btn">Checkout</button>
+        <a href="#" style="text-align:center;font-size:14px">View cart</a>
+      </div>
+    </div>
+    <p class="note">Lines, prices, discounts and subtotal are Shopify-rendered HTML (bundled section render), never recalculated in JS. Footer pinned; the list scrolls so the last line clears it.</p>
+  </div>
+
+  <div class="col">
+    <span class="st">Mutating · line error</span>
+    <div class="ph">
+      <div class="dh">Cart (3) <button class="x" aria-label="Close cart">✕</button></div>
+      <div class="line" style="opacity:.6" aria-busy="true"><div class="th"></div><div style="display:flex;flex-direction:column;gap:4px"><span style="font-weight:700">[Heavy jersey tee]</span><span class="lbl" style="color:#121212">Bone · L</span><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><div class="qty"><button aria-label="Decrease quantity">−</button><span>3</span><button aria-label="Increase quantity">+</button></div><span class="lbl">Updating…</span></div></div></div>
+      <div class="line"><div class="th" style="background:#DCD8D0"></div><div style="display:flex;flex-direction:column;gap:6px"><span style="font-weight:700">[Straight-leg denim]</span><span class="lbl" style="color:#121212">W32 · L32</span><div class="qty"><button aria-label="Decrease quantity">−</button><span>1</span><button aria-label="Increase quantity" disabled="">+</button></div><div role="alert" style="font-size:13px;color:#B42318;font-weight:600">Only 1 available. Quantity kept at 1.</div></div></div>
+      <div class="foot">
+        <div style="display:flex;justify-content:space-between;font-weight:700;opacity:.5"><span>Subtotal</span><span>[CART SUBTOTAL]</span></div>
+        <button class="btn" disabled="" style="background:#55534E">Updating…</button>
+        <div style="border:1px solid #121212;padding:10px;font-size:13px;line-height:1.4"><b>Fragment failed, change succeeded:</b> totals reload from /cart.js; “View cart” offered. The change is never re-sent.</div>
+      </div>
+    </div>
+    <p class="note">Rapid taps 1→2→3 collapse into one queued absolute quantity (line key, not variant id). Checkout disabled only while a mutation is in flight. Focus stays on the stepper; on remove, moves to the next line or the empty-state heading.</p>
+  </div>
+
+  <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+    <span class="st">Cart page · desktop (always available at routes.cart_url)</span>
+    <div style="background:#FFF;border:1px solid #121212;padding:28px;display:grid;grid-template-columns:1fr 280px;gap:28px">
+      <div style="display:flex;flex-direction:column">
+        <h1 style="margin:0 0 16px;font-stretch:72%;font-weight:800;font-size:40px;text-transform:uppercase">Cart</h1>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;padding:8px 0;border-bottom:1px solid #121212" class="lbl"><span style="color:#121212">Item</span><span style="color:#121212">Quantity</span><span style="color:#121212;text-align:right">Total</span></div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;padding:14px 0;border-bottom:1px solid #E7E4DE;align-items:center"><div style="display:flex;gap:12px"><div class="th" style="width:64px;height:80px"></div><div style="display:flex;flex-direction:column;gap:4px"><span style="font-weight:700">[Heavy jersey tee]</span><span class="lbl" style="color:#121212">Bone · L</span></div></div><div class="qty"><button aria-label="Decrease">−</button><span>2</span><button aria-label="Increase">+</button></div><span style="text-align:right;font-weight:600">[LINE]</span></div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;padding:14px 0;border-bottom:1px solid #E7E4DE;align-items:center"><div style="display:flex;gap:12px"><div class="th" style="width:64px;height:80px"></div><div style="display:flex;flex-direction:column;gap:4px"><span style="font-weight:700">[Heavy jersey tee]</span><span class="lbl" style="color:#121212">Bone · L · Gift note: “[text]”</span><span class="lbl">same variant, separate line (properties)</span></div></div><div class="qty"><button aria-label="Decrease">−</button><span>1</span><button aria-label="Increase">+</button></div><span style="text-align:right;font-weight:600">[LINE]</span></div>
+        <label style="display:flex;flex-direction:column;gap:6px;margin-top:20px;font-size:14px;font-weight:600">Order note (optional)<textarea style="height:72px;border:1px solid #D9D6CF;font-family:Archivo;font-size:16px;padding:8px"></textarea></label>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;border:1px solid #D9D6CF;padding:18px;align-self:start">
+        <div style="display:flex;justify-content:space-between;font-weight:700"><span>Subtotal</span><span>[SUBTOTAL]</span></div>
+        <span class="note">[Store tax/shipping copy]</span>
+        <button class="btn" name="checkout">Checkout</button>
+        <div style="height:44px;border:1px dashed #8A877F;display:flex;align-items:center;justify-content:center"><span class="lbl">[Accelerated checkout buttons — Shopify-rendered]</span></div>
+      </div>
+    </div>
+    <p class="note">Works with JavaScript off: real &lt;form action="{{ routes.cart_url }}"&gt; with updates[] inputs and a submit named “checkout”. The drawer and page render the same line-item snippet; both update from the same cart service. Free-shipping bar, upsells, gift wrap and discount field are off until real rules exist.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2206,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
