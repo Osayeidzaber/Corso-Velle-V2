@@ -1,36 +1,42 @@
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}">
+<html lang="{{ request.locale.iso_code }}" class="no-js">
   <head>
-    {% # Inlined CSS Variables %}
+    {%- # Flag JS support before first paint; motion/reveal styles key off these classes. -%}
+    <script>
+      document.documentElement.classList.replace('no-js', 'js');
+    </script>
+
+    {% render 'meta-tags' %}
     {% render 'css-variables' %}
 
-    {% comment %}
-      Font preloading:
-      1. Preconnect to font CDN for faster connection
-      2. Preload only the critical font variant (base weight)
-      3. Additional variants load on-demand via @font-face
-    {% endcomment %}
-    {% unless settings.type_primary_font.system? %}
+    {%- unless settings.type_body_font.system? -%}
       <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+      {{ settings.type_body_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
+    {%- endunless -%}
 
-      {% comment %} Preload the base font variant for initial page render {% endcomment %}
-      {{ settings.type_primary_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
-    {% endunless %}
-
-    {% # Load and preload the critical CSS %}
-    {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
-
-    {% # Social, title, etc. %}
-    {% render 'meta-tags' %}
+    {% render 'nk-config' %}
+    {% render 'nk-assets', entry: 'global' %}
+    {%- if template.name == 'product' -%}
+      {% render 'nk-assets', entry: 'product' %}
+    {%- endif -%}
 
     {{ content_for_header }}
   </head>
 
   <body>
+    <a class="skip-link visually-hidden" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
+
     {% sections 'header-group' %}
 
-    {{ content_for_layout }}
+    <main id="MainContent" tabindex="-1" data-focus-fallback>
+      {{ content_for_layout }}
+    </main>
 
     {% sections 'footer-group' %}
+
+    {% section 'cart-drawer' %}
+
+    <div id="nk-live-polite" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+    <div id="nk-live-assertive" class="visually-hidden" aria-live="assertive" aria-atomic="true"></div>
   </body>
 </html>

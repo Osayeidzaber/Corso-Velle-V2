@@ -1,0 +1,247 @@
+/* Product page: layout, gallery (PR-01), picker (PR-02), buy area (PR-05). */
+.product {
+  display: grid;
+  gap: 20px;
+}
+
+@media (min-width: 990px) {
+  .product {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 48px;
+    align-items: start;
+  }
+
+  .product__info {
+    position: sticky;
+    top: calc(var(--nk-header-h) + 24px);
+  }
+}
+
+.product__info {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.product__title {
+  font-size: clamp(1.625rem, 4vw, 2.5rem);
+}
+
+.product__price {
+  font-size: 1.125rem;
+}
+
+/* Gallery: native scroll-snap; vertical page scroll stays native. */
+nk-gallery {
+  display: grid;
+  position: relative;
+}
+
+.gallery__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gallery__track::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery__slide {
+  scroll-snap-align: start;
+  aspect-ratio: var(--nk-media-ratio, 4 / 5);
+  background: var(--nk-color-surface);
+}
+
+.gallery__slide img,
+.gallery__slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.gallery__controls .icon-button {
+  border: 1px solid var(--nk-color-text);
+}
+
+.gallery__controls .icon-button:disabled {
+  opacity: 0.35;
+}
+
+@media (min-width: 990px) {
+  .gallery__track {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    overflow: visible;
+  }
+
+  .gallery__slide:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .gallery__controls {
+    display: none;
+  }
+}
+
+/* Variant picker. */
+.picker {
+  display: grid;
+  gap: 16px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.option {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.option__legend {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+}
+
+.option[data-incomplete] [data-selected-value] {
+  color: var(--nk-color-text-muted);
+}
+
+.option__values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.option__value {
+  position: relative;
+}
+
+.option__value input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.option__value label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--nk-color-line);
+  border-radius: var(--nk-radius);
+  font-family: var(--nk-font-spec);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    background-color var(--nk-dur-instant),
+    border-color var(--nk-dur-instant);
+}
+
+.option__value input:checked + label {
+  border-color: var(--nk-color-text);
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+}
+
+.option__value input:focus-visible + label {
+  outline: 2px solid var(--nk-focus);
+  outline-offset: 2px;
+}
+
+.option__value--sold-out label,
+.option__value--missing label {
+  color: var(--nk-color-disabled);
+  text-decoration: line-through;
+}
+
+.option__value--swatch label {
+  gap: 8px;
+}
+
+.option__swatch {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--nk-color-line);
+  border-radius: 50%;
+  background: var(--swatch);
+  background-size: cover;
+}
+
+.size-guide-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--nk-tap);
+  padding: 0;
+  border: 0;
+  background: none;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Buy area. */
+.buy {
+  display: grid;
+  gap: 10px;
+}
+
+[data-product-section][data-picker-state='resolving'] .buy .button {
+  opacity: 0.75;
+  cursor: progress;
+}
+
+.inventory-note--available {
+  color: var(--nk-color-success);
+}
+
+.size-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--nk-color-line);
+}
+
+.size-table {
+  border-collapse: collapse;
+  font-family: var(--nk-font-spec);
+  font-size: 0.8125rem;
+}
+
+.size-table th,
+.size-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--nk-color-line);
+  text-align: start;
+  white-space: nowrap;
+}
+
+.size-table thead th {
+  background: var(--nk-color-surface);
+  font-weight: 500;
+}

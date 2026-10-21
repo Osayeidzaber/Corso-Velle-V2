@@ -1,0 +1,97 @@
+{%- doc -%}
+  Product card (master-plan/07 DC-03), shared by collection grids, featured sections, search and
+  recommendations. Media and title are separate links (no interactive content nested in a link).
+  At most two images: the second only on pointer-hover devices, lazy, after the first.
+  Size summary comes from option values; unavailable values are struck through and named.
+
+  @param {object} product - The product
+  @param {boolean} [eager] - Load the first image eagerly (first row only)
+  @param {string} [sizes] - The image sizes attribute
+  @param {string} [heading_tag] - h2/h3 (default h3)
+
+  @example
+  {% render 'product-card', product: product, eager: forloop.index <= 4 %}
+{%- enddoc -%}
+{%- liquid
+  assign heading_tag = heading_tag | default: 'h3'
+  assign sizes = sizes | default: '(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw'
+  assign loading = 'lazy'
+  if eager
+    assign loading = 'eager'
+  endif
+  assign first_media = product.featured_media
+  assign second_media = product.media[1]
+  assign sold_out = false
+  unless product.available
+    assign sold_out = true
+  endunless
+  assign on_sale = false
+  if product.compare_at_price > product.price
+    assign on_sale = true
+  endif
+  assign size_names = settings.card_size_option_names | downcase | split: ','
+-%}
+<article class="card{% if sold_out %} card--sold-out{% endif %}">
+  <a class="card__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+    {%- if first_media -%}
+      {{
+        first_media
+        | image_url: width: 900
+        | image_tag:
+          loading: loading,
+          widths: '180, 270, 360, 450, 540, 720, 900',
+          sizes: sizes,
+          alt: ''
+      }}
+      {%- if settings.card_show_secondary and second_media and second_media.media_type == 'image' -%}
+        {{
+          second_media
+          | image_url: width: 900
+          | image_tag: loading: 'lazy', widths: '360, 540, 720, 900', sizes: sizes, alt: '', class: 'card__secondary'
+        }}
+      {%- endif -%}
+    {%- else -%}
+      <span class="card__placeholder spec text-muted">{{ 'product.no_image' | t }}</span>
+    {%- endif -%}
+    {%- if settings.card_show_badges -%}
+      <span class="card__badges">
+        {%- if sold_out -%}
+          <span class="badge">{{ 'product.sold_out' | t }}</span>
+        {%- elsif on_sale -%}
+          <span class="badge badge--sale">{{ 'product.sale' | t }}</span>
+        {%- endif -%}
+      </span>
+    {%- endif -%}
+  </a>
+
+  <{{ heading_tag }} class="card__heading">
+    <a class="card__title" href="{{ product.url }}">{{ product.title | escape }}</a>
+  </{{ heading_tag }}>
+
+  {% render 'price', product: product %}
+
+  {%- if settings.card_show_sizes and sold_out == false -%}
+    {%- for option in product.options_with_values -%}
+      {%- assign option_name = option.name | downcase | strip -%}
+      {%- assign is_size = false -%}
+      {%- for size_name in size_names -%}
+        {%- assign clean = size_name | strip -%}
+        {%- if option_name == clean -%}{%- assign is_size = true -%}{%- endif -%}
+      {%- endfor -%}
+      {%- if is_size -%}
+        <p class="card__sizes spec" aria-label="{{ 'product.sizes_label' | t }}">
+          {%- for value in option.values -%}
+            {%- if value.available -%}
+              <span>{{ value | escape }}</span>
+            {%- else -%}
+              <s>{{ value | escape }}<span class="visually-hidden"> {{ 'product.value_sold_out' | t }}</span></s>
+            {%- endif -%}
+          {%- endfor -%}
+        </p>
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- elsif sold_out -%}
+    <p class="card__sizes spec">{{ 'product.sold_out' | t }}</p>
+  {%- endif -%}
+</article>

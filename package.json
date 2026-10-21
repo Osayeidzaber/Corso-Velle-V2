@@ -1,0 +1,28 @@
+{
+  "name": "nk-theme",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reusable Shopify Online Store 2.0 clothing theme (project NKIL). Source in src/, deployable theme in theme/.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "vite build && node scripts/sync-assets.mjs",
+    "watch": "node scripts/watch.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check:theme": "shopify theme check --path theme --fail-level error",
+    "check:json": "node scripts/check-json.mjs",
+    "check": "npm run typecheck && npm run test && npm run build && npm run check:json && npm run check:theme",
+    "dev": "shopify theme dev --path theme",
+    "package": "npm run build && shopify theme package --path theme"
+  },
+  "devDependencies": {
+    "@shopify/cli": "4.9.0",
+    "happy-dom": "20.14.6",
+    "typescript": "6.0.3",
+    "vite": "8.3.4",
+    "vitest": "5.0.3"
+  }
+}

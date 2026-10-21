@@ -1,83 +1,209 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Skeleton",
+    "theme_name": "NK",
     "theme_version": "0.1.0",
-    "theme_author": "Shopify",
+    "theme_author": "NKIL",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
-    "theme_support_url": "https://support.shopify.com/"
+    "theme_support_url": "https://help.shopify.com/"
   },
   {
-    "name": "t:general.typography",
+    "name": "Logo",
+    "settings": [
+      { "type": "image_picker", "id": "logo", "label": "Logo" },
+      { "type": "image_picker", "id": "logo_inverse", "label": "Logo over campaign images", "info": "Used when the header overlays a dark hero image." },
+      { "type": "range", "id": "logo_width", "label": "Logo width (desktop)", "min": 60, "max": 300, "step": 10, "unit": "px", "default": 140 },
+      { "type": "range", "id": "logo_width_mobile", "label": "Logo width (phone)", "min": 60, "max": 200, "step": 10, "unit": "px", "default": 110 }
+    ]
+  },
+  {
+    "name": "Colors",
     "settings": [
       {
-        "type": "header",
-        "content": "t:general.fonts"
+        "type": "color_scheme_group",
+        "id": "color_schemes",
+        "definition": [
+          { "type": "color", "id": "background", "label": "Background", "default": "#F3F2EE" },
+          { "type": "color", "id": "surface", "label": "Surface (cards, image placeholders)", "default": "#E7E4DE" },
+          { "type": "color", "id": "text", "label": "Text", "default": "#121212" },
+          { "type": "color", "id": "text_muted", "label": "Secondary text", "default": "#55534E" },
+          { "type": "color", "id": "line", "label": "Lines and borders", "default": "#D9D6CF" },
+          { "type": "color", "id": "accent", "label": "Accent (focus, active, emphasis)", "default": "#2338E0" },
+          { "type": "color", "id": "accent_text", "label": "Text on accent", "default": "#FFFFFF" }
+        ],
+        "role": {
+          "background": "background",
+          "text": "text",
+          "primary_button": "text",
+          "on_primary_button": "background",
+          "primary_button_border": "text",
+          "secondary_button": "background",
+          "on_secondary_button": "text",
+          "secondary_button_border": "text",
+          "icons": "text",
+          "links": "accent"
+        }
+      },
+      { "type": "header", "content": "Status colors" },
+      { "type": "color", "id": "color_error", "label": "Errors", "default": "#B42318" },
+      { "type": "color", "id": "color_success", "label": "Success", "default": "#146C43" }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      { "type": "font_picker", "id": "type_heading_font", "label": "Headings", "default": "work_sans_n7" },
+      { "type": "font_picker", "id": "type_body_font", "label": "Body", "default": "work_sans_n4" },
+      { "type": "font_picker", "id": "type_spec_font", "label": "Labels (sizes, prices, details)", "default": "monospace_n4", "info": "A monospaced or compact font gives sizes and availability a precise label look." },
+      {
+        "type": "select",
+        "id": "heading_case",
+        "label": "Heading case",
+        "options": [
+          { "value": "none", "label": "As typed" },
+          { "value": "uppercase", "label": "Uppercase" }
+        ],
+        "default": "uppercase"
       },
       {
-        "type": "font_picker",
-        "id": "type_primary_font",
-        "default": "work_sans_n4",
-        "label": "t:general.primary"
+        "type": "select",
+        "id": "body_size",
+        "label": "Body text size",
+        "options": [
+          { "value": "15", "label": "Compact" },
+          { "value": "16", "label": "Regular" }
+        ],
+        "default": "16"
       }
     ]
   },
   {
-    "name": "t:general.layout",
+    "name": "Layout",
     "settings": [
       {
         "type": "select",
-        "id": "max_page_width",
-        "label": "t:labels.page_width",
+        "id": "page_width",
+        "label": "Page width",
         "options": [
-          {
-            "value": "90rem",
-            "label": "t:options.page_width.narrow"
-          },
-          {
-            "value": "110rem",
-            "label": "t:options.page_width.wide"
-          }
+          { "value": "1200px", "label": "Narrow" },
+          { "value": "1440px", "label": "Wide" },
+          { "value": "100vw", "label": "Full" }
         ],
-        "default": "90rem"
+        "default": "1440px"
       },
       {
-        "type": "range",
-        "id": "min_page_margin",
-        "min": 10,
-        "max": 100,
-        "step": 1,
-        "unit": "px",
-        "label": "t:labels.page_margin",
-        "default": 20
+        "type": "select",
+        "id": "section_spacing",
+        "label": "Space between sections",
+        "options": [
+          { "value": "48", "label": "Compact" },
+          { "value": "72", "label": "Regular" },
+          { "value": "112", "label": "Airy" }
+        ],
+        "default": "72"
+      },
+      {
+        "type": "select",
+        "id": "corner_radius",
+        "label": "Button and field corners",
+        "options": [
+          { "value": "0", "label": "Square" },
+          { "value": "2", "label": "Soft" },
+          { "value": "999", "label": "Pill" }
+        ],
+        "default": "2"
       }
     ]
   },
   {
-    "name": "t:general.colors",
+    "name": "Product cards",
     "settings": [
       {
-        "type": "color",
-        "id": "background_color",
-        "default": "#FFFFFF",
-        "label": "t:labels.background"
+        "type": "select",
+        "id": "card_image_ratio",
+        "label": "Image shape",
+        "options": [
+          { "value": "4 / 5", "label": "Portrait 4:5" },
+          { "value": "3 / 4", "label": "Portrait 3:4" },
+          { "value": "1 / 1", "label": "Square" }
+        ],
+        "default": "4 / 5"
       },
       {
-        "type": "color",
-        "id": "foreground_color",
-        "default": "#333333",
-        "label": "t:labels.foreground"
+        "type": "select",
+        "id": "card_image_fit",
+        "label": "Image fit",
+        "options": [
+          { "value": "cover", "label": "Fill" },
+          { "value": "contain", "label": "Fit" }
+        ],
+        "default": "cover"
       },
+      { "type": "checkbox", "id": "card_show_secondary", "label": "Show second image on hover", "default": true },
+      { "type": "checkbox", "id": "card_show_sizes", "label": "Show available sizes", "default": true },
+      { "type": "text", "id": "card_size_option_names", "label": "Size option name(s)", "default": "Size", "info": "Comma-separated option names treated as sizes, e.g. Size, Waist." },
+      { "type": "checkbox", "id": "card_show_badges", "label": "Show sale and sold-out badges", "default": true }
+    ]
+  },
+  {
+    "name": "Product page",
+    "settings": [
+      { "type": "text", "id": "product_required_options", "label": "Options shoppers must choose", "default": "Size", "info": "These options are never preselected, so shoppers can't add an unintended size. Comma-separated." },
       {
-        "type": "range",
-        "id": "input_corner_radius",
-        "min": 0,
-        "max": 10,
-        "step": 1,
-        "unit": "px",
-        "label": "t:labels.input_corner_radius",
-        "default": 4
+        "type": "select",
+        "id": "product_sold_out_values",
+        "label": "Sold-out option values",
+        "options": [
+          { "value": "strike", "label": "Show crossed out" },
+          { "value": "hide", "label": "Hide" }
+        ],
+        "default": "strike"
+      },
+      { "type": "range", "id": "inventory_threshold", "label": "Show \"only a few left\" at or below", "min": 0, "max": 20, "step": 1, "default": 0, "info": "0 turns the message off. Only shown when Shopify tracks inventory for the variant." }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_after_add",
+        "label": "After adding to cart",
+        "options": [
+          { "value": "drawer", "label": "Open cart drawer" },
+          { "value": "notification", "label": "Stay on page" },
+          { "value": "page", "label": "Go to cart page" }
+        ],
+        "default": "drawer"
+      },
+      { "type": "checkbox", "id": "cart_show_note", "label": "Order note", "default": false },
+      { "type": "collection", "id": "cart_empty_collection", "label": "Empty cart: suggested collection" }
+    ]
+  },
+  {
+    "name": "Motion",
+    "settings": [
+      {
+        "type": "select",
+        "id": "motion_level",
+        "label": "Animation level",
+        "options": [
+          { "value": "off", "label": "Off" },
+          { "value": "minimal", "label": "Minimal" },
+          { "value": "standard", "label": "Standard" }
+        ],
+        "default": "standard",
+        "info": "Shoppers who ask their device for reduced motion always get minimal motion."
       }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      { "type": "url", "id": "social_instagram", "label": "Instagram" },
+      { "type": "url", "id": "social_tiktok", "label": "TikTok" },
+      { "type": "url", "id": "social_facebook", "label": "Facebook" },
+      { "type": "url", "id": "social_youtube", "label": "YouTube" }
     ]
   }
 ]

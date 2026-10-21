@@ -1,0 +1,35 @@
+{%- doc -%}
+  Price from Shopify money formatting. Shows compare-at only when it is higher, and "From" when
+  the product's variants differ in price and no variant is chosen.
+
+  @param {object} product - The product
+  @param {object} [variant] - The selected variant (optional)
+
+  @example
+  {% render 'price', product: product, variant: variant %}
+{%- enddoc -%}
+{%- liquid
+  if variant
+    assign amount = variant.price
+    assign compare = variant.compare_at_price
+  else
+    assign amount = product.price
+    assign compare = product.compare_at_price
+  endif
+-%}
+<span class="price">
+  {%- if variant == blank and product.price_varies -%}
+    {%- assign formatted = amount | money -%}
+    {{ 'product.price_from_html' | t: price: formatted }}
+  {%- else -%}
+    {{ amount | money }}
+  {%- endif -%}
+  {%- if compare > amount -%}
+    <s class="price__compare"><span class="visually-hidden">{{ 'product.regular_price' | t }}</span>{{ compare | money }}</s>
+  {%- endif -%}
+  {%- if variant.unit_price_measurement -%}
+    <span class="spec text-muted">
+      {{ variant.unit_price | money }}/{{ variant.unit_price_measurement.reference_value }}{{ variant.unit_price_measurement.reference_unit }}
+    </span>
+  {%- endif -%}
+</span>

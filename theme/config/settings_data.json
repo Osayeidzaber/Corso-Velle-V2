@@ -8,5 +8,91 @@
  * ------------------------------------------------------------
  */
 {
-  "current": {}
+  "current": "Signal",
+  "presets": {
+    "Signal": {
+      "heading_case": "uppercase",
+      "corner_radius": "2",
+      "card_image_ratio": "4 / 5",
+      "motion_level": "standard",
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "background": "#F3F2EE",
+            "surface": "#E7E4DE",
+            "text": "#121212",
+            "text_muted": "#55534E",
+            "line": "#D9D6CF",
+            "accent": "#2338E0",
+            "accent_text": "#FFFFFF"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "background": "#0E0E0E",
+            "surface": "#1C1C1B",
+            "text": "#F3F2EE",
+            "text_muted": "#BDB8AE",
+            "line": "#3A3A37",
+            "accent": "#9AA5FF",
+            "accent_text": "#0E0E0E"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "background": "#FFFFFF",
+            "surface": "#F3F2EE",
+            "text": "#121212",
+            "text_muted": "#55534E",
+            "line": "#D9D6CF",
+            "accent": "#2338E0",
+            "accent_text": "#FFFFFF"
+          }
+        }
+      }
+    },
+    "Quiet": {
+      "heading_case": "none",
+      "corner_radius": "0",
+      "card_image_ratio": "3 / 4",
+      "card_show_sizes": false,
+      "motion_level": "minimal",
+      "section_spacing": "112",
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "background": "#EFEAE3",
+            "surface": "#DCD3C6",
+            "text": "#2A2622",
+            "text_muted": "#6B5E52",
+            "line": "#D3C8BA",
+            "accent": "#6B4E3D",
+            "accent_text": "#FFFFFF"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "background": "#2A2622",
+            "surface": "#3A342F",
+            "text": "#EFEAE3",
+            "text_muted": "#CFC3B4",
+            "line": "#4A433C",
+            "accent": "#D9B99B",
+            "accent_text": "#2A2622"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "background": "#FFFFFF",
+            "surface": "#EFEAE3",
+            "text": "#2A2622",
+            "text_muted": "#6B5E52",
+            "line": "#D3C8BA",
+            "accent": "#6B4E3D",
+            "accent_text": "#FFFFFF"
+          }
+        }
+      }
+    }
+  }
 }

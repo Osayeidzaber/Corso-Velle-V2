@@ -1,0 +1,341 @@
+{%- comment -%}
+  Main product (master-plan/08). Info column is merchant-ordered local blocks (S8 fallback model;
+  theme-block nesting is validated on a dev store before switching).
+
+  Re-render contract: the variant picker requests this section with ?option_values= and swaps
+  only [data-region] price / picker / inventory / buy. Everything else — including app blocks —
+  is left untouched.
+
+  Explicit choice: options named in settings.product_required_options are never preselected
+  unless the URL names a variant. Until then no hidden variant id is rendered (JS blocks submit;
+  without JS a <noscript> select provides the choice).
+{%- endcomment -%}
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign required = settings.product_required_options | downcase | split: ','
+  assign needs_choice = false
+  unless product.has_only_default_variant or product.selected_variant
+    for option in product.options_with_values
+      assign option_name = option.name | downcase | strip
+      for required_name in required
+        assign required_clean = required_name | strip
+        if option_name == required_clean
+          assign needs_choice = true
+        endif
+      endfor
+    endfor
+  endunless
+
+  if variant == blank
+    assign availability = 'unavailable'
+  elsif variant.available
+    assign availability = 'available'
+  else
+    assign availability = 'sold-out'
+  endif
+-%}
+
+<div class="section-spacing" data-product-section data-section-id="{{ section.id }}">
+  <div class="product">
+    {% render 'product-media', product: product %}
+
+    <div class="product__info">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when '@app' -%}
+            {% render block %}
+
+          {%- when 'title' -%}
+            <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
+
+          {%- when 'price' -%}
+            <div class="product__price" data-region="price" {{ block.shopify_attributes }}>
+              {% render 'price', product: product, variant: variant %}
+            </div>
+
+          {%- when 'text' -%}
+            {%- if block.settings.text != blank -%}
+              <div class="rte {{ block.settings.style }}" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+            {%- endif -%}
+
+          {%- when 'variant_picker' -%}
+            {%- unless product.has_only_default_variant -%}
+              <nk-variant-picker
+                class="picker"
+                data-region="picker"
+                data-section-id="{{ section.id }}"
+                data-product-url="{{ product.url }}"
+                data-required-options="{{ settings.product_required_options | escape }}"
+                {% unless needs_choice %}data-preselected{% endunless %}
+                {{ block.shopify_attributes }}
+              >
+                {%- for option in product.options_with_values -%}
+                  {%- assign option_index = forloop.index -%}
+                  {%- assign option_name = option.name | downcase -%}
+                  {%- assign size_names = block.settings.size_guide_option | downcase -%}
+                  <fieldset class="option" data-option-position="{{ option_index }}" data-option-name="{{ option.name | escape }}">
+                    <legend class="option__legend">
+                      <span class="spec">
+                        {{- option.name | escape }}: <span data-selected-value>{{ option.selected_value | escape }}</span>
+                      </span>
+                    </legend>
+                    <div class="option__values">
+                      {%- for value in option.values -%}
+                        {%- liquid
+                          assign state = 'available'
+                          if value.variant == blank
+                            assign state = 'missing'
+                          elsif value.available == false
+                            assign state = 'sold-out'
+                          endif
+                          if settings.product_sold_out_values == 'hide' and state != 'available' and value.selected == false
+                            continue
+                          endif
+                          assign input_id = section.id | append: '-' | append: option_index | append: '-' | append: forloop.index
+                        -%}
+                        <div class="option__value option__value--{{ state }}{% if value.swatch %} option__value--swatch{% endif %}">
+                          <input
+                            type="radio"
+                            id="{{ input_id }}"
+                            name="{{ section.id }}-option-{{ option_index }}"
+                            value="{{ value | escape }}"
+                            data-option-value-id="{{ value.id }}"
+                            data-focus-key="option-{{ value.id }}"
+                            {% if value.selected %}checked{% endif %}
+                          >
+                          <label for="{{ input_id }}">
+                            {%- if value.swatch -%}
+                              {%- if value.swatch.image -%}
+                                {%- assign swatch_bg = value.swatch.image | image_url: width: 60 | prepend: 'url(' | append: ')' -%}
+                              {%- else -%}
+                                {%- assign swatch_bg = value.swatch.color -%}
+                              {%- endif -%}
+                              <span class="option__swatch" style="--swatch: {{ swatch_bg }}" aria-hidden="true"></span>
+                            {%- endif -%}
+                            {{- value | escape -}}
+                            {%- if state == 'sold-out' -%}
+                              <span class="visually-hidden">{{ 'product.value_sold_out' | t }}</span>
+                            {%- elsif state == 'missing' -%}
+                              <span class="visually-hidden">{{ 'product.value_unavailable' | t }}</span>
+                            {%- endif -%}
+                          </label>
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                    {%- if option_name == size_names -%}
+                      {%- assign has_chart = product.metafields.custom.size_chart.value -%}
+                      {%- if has_chart or block.settings.size_guide_page != blank -%}
+                        <button type="button" class="size-guide-link spec" data-nk-open="SizeGuide-{{ section.id }}" aria-haspopup="dialog">
+                          {{- 'product.size_guide' | t -}}
+                        </button>
+                      {%- endif -%}
+                    {%- endif -%}
+                  </fieldset>
+                {%- endfor -%}
+                <p class="message message--error" data-picker-error role="alert" hidden>
+                  {{ 'product.selection_failed' | t }}
+                  <a href="{{ product.url }}">{{ 'product.reload_selection' | t }}</a>
+                </p>
+              </nk-variant-picker>
+
+              {%- if block.settings.size_guide_page != blank or product.metafields.custom.size_chart.value -%}
+                <nk-modal id="SizeGuide-{{ section.id }}">
+                  <dialog class="drawer drawer--right" aria-labelledby="SizeGuideTitle-{{ section.id }}">
+                    <div class="drawer__header">
+                      <h2 class="drawer__title spec" id="SizeGuideTitle-{{ section.id }}" tabindex="-1" data-autofocus>{{ 'product.size_guide' | t }}</h2>
+                      <button type="button" class="icon-button" data-nk-close aria-label="{{ 'general.close' | t }}">
+                        {% render 'icon', name: 'close' %}
+                      </button>
+                    </div>
+                    <div class="drawer__body" style="padding: 16px;">
+                      {% render 'size-chart', product: product, page: block.settings.size_guide_page %}
+                    </div>
+                  </dialog>
+                </nk-modal>
+              {%- endif -%}
+            {%- endunless -%}
+
+          {%- when 'inventory' -%}
+            <div class="inventory-note" data-region="inventory" {{ block.shopify_attributes }}>
+              {%- liquid
+                assign threshold = settings.inventory_threshold
+                if variant and threshold > 0 and variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny' and variant.inventory_quantity > 0 and variant.inventory_quantity <= threshold
+                  echo 'product.low_stock' | t: count: variant.inventory_quantity
+                endif
+              -%}
+            </div>
+
+          {%- when 'buy_buttons' -%}
+            <nk-product-form data-source-id="{{ section.id }}" {{ block.shopify_attributes }}>
+              {%- assign form_id = 'ProductForm-' | append: section.id -%}
+              {%- form 'product', product, id: form_id, novalidate: 'novalidate' -%}
+                <div
+                  class="buy"
+                  data-region="buy"
+                  data-availability="{{ availability }}"
+                  data-variant-media-id="{{ variant.featured_media.id }}"
+                >
+                  {%- unless needs_choice -%}
+                    <input type="hidden" name="id" value="{{ variant.id }}">
+                  {%- endunless -%}
+                  {%- liquid
+                    case availability
+                      when 'available'
+                        assign label = 'product.add_to_cart' | t
+                      when 'sold-out'
+                        assign label = 'product.sold_out' | t
+                      else
+                        assign label = 'product.unavailable' | t
+                    endcase
+                  -%}
+                  <button type="submit" name="add" class="button button--full" {% if availability != 'available' %}disabled{% endif %}>
+                    <span data-button-label>{{ label }}</span>
+                  </button>
+                </div>
+
+                {%- if needs_choice -%}
+                  <noscript>
+                    <label for="NoJsVariant-{{ section.id }}">{{ 'product.choose_option' | t }}</label>
+                    <select id="NoJsVariant-{{ section.id }}" name="id" required>
+                      <option value="">{{ 'product.choose_option' | t }}</option>
+                      {%- for option_variant in product.variants -%}
+                        <option value="{{ option_variant.id }}" {% unless option_variant.available %}disabled{% endunless %}>
+                          {{ option_variant.title | escape }} – {{ option_variant.price | money }}
+                        </option>
+                      {%- endfor -%}
+                    </select>
+                  </noscript>
+                {%- endif -%}
+
+                {%- if block.settings.show_quantity -%}
+                  <label class="spec" for="Quantity-{{ section.id }}">{{ 'product.quantity' | t }}</label>
+                  <div class="quantity">
+                    <span></span>
+                    <input
+                      id="Quantity-{{ section.id }}"
+                      type="number"
+                      inputmode="numeric"
+                      name="quantity"
+                      value="{{ variant.quantity_rule.min | default: 1 }}"
+                      min="{{ variant.quantity_rule.min | default: 1 }}"
+                      {% if variant.quantity_rule.max %}max="{{ variant.quantity_rule.max }}"{% endif %}
+                      step="{{ variant.quantity_rule.increment | default: 1 }}"
+                    >
+                    <span></span>
+                  </div>
+                {%- endif -%}
+
+                {%- if block.settings.show_dynamic_checkout and availability == 'available' -%}
+                  {{ form | payment_button }}
+                {%- endif -%}
+              {%- endform -%}
+              <p class="message message--error" data-form-error role="alert" hidden></p>
+            </nk-product-form>
+
+          {%- when 'description' -%}
+            {%- if product.description != blank -%}
+              <nk-disclosure {{ block.shopify_attributes }}>
+                <details class="disclosure" {% if block.settings.open %}open{% endif %}>
+                  {%- assign details_heading = 'product.details' | t -%}
+                  <summary>{{ block.settings.heading | default: details_heading | escape }}</summary>
+                  <div class="disclosure__content rte">{{ product.description }}</div>
+                </details>
+              </nk-disclosure>
+            {%- endif -%}
+
+          {%- when 'accordion' -%}
+            {%- liquid
+              assign accordion_content = block.settings.content
+              if block.settings.page != blank
+                assign accordion_content = block.settings.page.content
+              endif
+            -%}
+            {%- if accordion_content != blank -%}
+              <nk-disclosure {{ block.shopify_attributes }}>
+                <details class="disclosure">
+                  <summary>{{ block.settings.heading | escape }}</summary>
+                  <div class="disclosure__content rte">{{ accordion_content }}</div>
+                </details>
+              </nk-disclosure>
+            {%- endif -%}
+
+          {%- when 'custom_liquid' -%}
+            <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product information",
+  "class": "main-product-section",
+  "settings": [],
+  "blocks": [
+    { "type": "@app" },
+    { "type": "title", "name": "Title", "limit": 1 },
+    { "type": "price", "name": "Price", "limit": 1 },
+    {
+      "type": "variant_picker",
+      "name": "Variant picker",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "size_guide_option", "label": "Show size guide next to option", "default": "Size" },
+        { "type": "page", "id": "size_guide_page", "label": "Size guide page (fallback)", "info": "Used when a product has no size_chart metafield." }
+      ]
+    },
+    { "type": "inventory", "name": "Inventory status", "limit": 1 },
+    {
+      "type": "buy_buttons",
+      "name": "Buy buttons",
+      "limit": 1,
+      "settings": [
+        { "type": "checkbox", "id": "show_quantity", "label": "Show quantity", "default": false },
+        { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show accelerated checkout buttons", "default": true }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        { "type": "richtext", "id": "text", "label": "Text" },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            { "value": "", "label": "Body" },
+            { "value": "spec", "label": "Label" }
+          ],
+          "default": ""
+        }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Description",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading" },
+        { "type": "checkbox", "id": "open", "label": "Open by default", "default": true }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Collapsible row",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Fabric & care" },
+        { "type": "richtext", "id": "content", "label": "Content" },
+        { "type": "page", "id": "page", "label": "Content from page" }
+      ]
+    },
+    {
+      "type": "custom_liquid",
+      "name": "Custom Liquid",
+      "settings": [{ "type": "liquid", "id": "custom_liquid", "label": "Custom Liquid" }]
+    }
+  ],
+  "enabled_on": { "templates": ["product"] }
+}
+{% endschema %}

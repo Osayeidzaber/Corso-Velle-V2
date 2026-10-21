@@ -1,0 +1,58 @@
+{%- doc -%}
+  Product gallery (master-plan/08 PR-01): native scroll-snap track on phones, stacked grid on
+  desktop. First media is eager with high fetch priority (LCP); the rest are lazy. Video plays
+  only on request (controls, muted, playsinline) and pauses when its slide stops being current.
+
+  @param {object} product - The product
+
+  @example
+  {% render 'product-media', product: product %}
+{%- enddoc -%}
+<nk-gallery class="product__media" aria-label="{{ 'product.gallery' | t }}" role="region">
+  <ul class="gallery__track" data-ref="track" role="list">
+    {%- for media in product.media -%}
+      <li class="gallery__slide" data-ref="slide" data-media-id="{{ media.id }}">
+        {%- liquid
+          assign loading = 'lazy'
+          assign priority = 'auto'
+          if forloop.first
+            assign loading = 'eager'
+            assign priority = 'high'
+          endif
+          assign alt = media.alt | default: product.title
+        -%}
+        {%- case media.media_type -%}
+          {%- when 'image' -%}
+            {{
+              media
+              | image_url: width: 1800
+              | image_tag:
+                loading: loading,
+                fetchpriority: priority,
+                alt: alt,
+                widths: '360, 540, 720, 900, 1080, 1440, 1800',
+                sizes: '(min-width: 990px) 58vw, 100vw'
+            }}
+          {%- when 'video' -%}
+            {{ media | video_tag: controls: true, muted: true, playsinline: true, preload: 'none', image_size: '1200x' }}
+          {%- else -%}
+            {{ media.preview_image | image_url: width: 1200 | image_tag: loading: loading, alt: alt }}
+        {%- endcase -%}
+      </li>
+    {%- else -%}
+      <li class="gallery__slide" data-ref="slide">{{ 'product-1' | placeholder_svg_tag }}</li>
+    {%- endfor -%}
+  </ul>
+
+  {%- if product.media.size > 1 -%}
+    <div class="gallery__controls">
+      <button type="button" class="icon-button" data-gallery-step="-1" aria-label="{{ 'product.previous_media' | t }}">
+        {% render 'icon', name: 'arrow-left' %}
+      </button>
+      <span class="spec" data-ref="counter">1 / {{ product.media.size }}</span>
+      <button type="button" class="icon-button" data-gallery-step="1" aria-label="{{ 'product.next_media' | t }}">
+        {% render 'icon', name: 'arrow-right' %}
+      </button>
+    </div>
+  {%- endif -%}
+</nk-gallery>

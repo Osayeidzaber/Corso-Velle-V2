@@ -1,0 +1,16 @@
+{%- doc -%}
+  Promo card shown in a desktop menu panel and the phone menu drawer.
+
+  @param {object} block - Header "promo" block
+
+  @example
+  {% render 'menu-promo', block: block %}
+{%- enddoc -%}
+{%- if block.settings.link != blank -%}
+  <a href="{{ block.settings.link }}" class="menu-promo" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
+    {%- if block.settings.image -%}
+      {{ block.settings.image | image_url: width: 480 | image_tag: loading: 'lazy', sizes: '240px', alt: '' }}
+    {%- endif -%}
+    <span>{{ block.settings.title | escape }}</span>
+  </a>
+{%- endif -%}

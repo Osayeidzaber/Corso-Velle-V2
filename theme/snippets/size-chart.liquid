@@ -1,0 +1,57 @@
+{%- doc -%}
+  Size guide content (master-plan/08 PR-04).
+
+  Preferred source: product metafield custom.size_chart → metaobject "size_chart" with fields
+  title, measurement_basis, unit, table (JSON), notes (rich text), fallback (rich text).
+  table JSON: {"columns":[{"key":"chest","label":"Chest"}],"rows":[{"size":"S","values":{"chest":52}}]}
+  Fallback: a page chosen in the block settings. Renders nothing when neither exists.
+
+  @param {object} product - The product
+  @param {object} [page] - Fallback page
+
+  @example
+  {% render 'size-chart', product: product, page: block.settings.size_guide_page %}
+{%- enddoc -%}
+{%- assign chart = product.metafields.custom.size_chart.value -%}
+{%- if chart -%}
+  {%- assign table = chart.table.value -%}
+  <div class="size-chart">
+    {%- if chart.measurement_basis != blank -%}
+      <p class="spec text-muted">
+        {{ chart.measurement_basis }}{% if chart.unit != blank %} · {{ chart.unit }}{% endif %}
+      </p>
+    {%- endif -%}
+    {%- if table.rows.size > 0 and table.columns.size > 0 -%}
+      <div class="size-table-wrap" tabindex="0" role="region" aria-label="{{ 'product.size_table' | t }}">
+        <table class="size-table">
+          <caption class="visually-hidden">{{ chart.title | default: product.title | escape }}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{{ 'product.size' | t }}</th>
+              {%- for column in table.columns -%}
+                <th scope="col">{{ column.label | escape }}</th>
+              {%- endfor -%}
+            </tr>
+          </thead>
+          <tbody>
+            {%- for row in table.rows -%}
+              <tr data-size-row="{{ row.size | escape }}">
+                <th scope="row">{{ row.size | escape }}</th>
+                {%- for column in table.columns -%}
+                  <td>{{ row.values[column.key] | escape }}</td>
+                {%- endfor -%}
+              </tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+      </div>
+    {%- elsif chart.fallback != blank -%}
+      {{ chart.fallback | metafield_tag }}
+    {%- endif -%}
+    {%- if chart.notes != blank -%}
+      <div class="size-chart__notes">{{ chart.notes | metafield_tag }}</div>
+    {%- endif -%}
+  </div>
+{%- elsif page != blank -%}
+  <div class="size-chart">{{ page.content }}</div>
+{%- endif -%}

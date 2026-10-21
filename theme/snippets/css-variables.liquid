@@ -1,18 +1,59 @@
+{%- doc -%}
+  Design tokens from theme settings (master-plan/02 §3). Every visual decision a merchant can
+  make maps to a CSS custom property here; component CSS only reads these variables.
+
+  @example
+  {% render 'css-variables' %}
+{%- enddoc -%}
+{%- liquid
+  assign body_font = settings.type_body_font
+  assign heading_font = settings.type_heading_font
+  assign spec_font = settings.type_spec_font
+  assign body_bold = body_font | font_modify: 'weight', 'bold'
+-%}
 {% style %}
-  {% # Loads all font variantions with display: swap %}
-  {{ settings.type_primary_font | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+  {{ body_bold | font_face: font_display: 'swap' }}
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ spec_font | font_face: font_display: 'swap' }}
 
   :root {
-    --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
-    --font-primary--style: {{ settings.type_primary_font.style }};
-    --font-primary--weight: {{ settings.type_primary_font.weight }};
-    --page-width: {{ settings.max_page_width }};
-    --page-margin: {{ settings.min_page_margin }}px;
-    --color-background: {{ settings.background_color }};
-    --color-foreground: {{ settings.foreground_color }};
-    --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+    --nk-font-body: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --nk-font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --nk-font-heading-weight: {{ heading_font.weight }};
+    --nk-font-spec: {{ spec_font.family }}, {{ spec_font.fallback_families }};
+    --nk-heading-case: {{ settings.heading_case | default: 'none' }};
+    --nk-text-base: {{ settings.body_size | default: 16 }}px;
+    --nk-page-width: {{ settings.page_width | default: '1440px' }};
+    --nk-space-section: {{ settings.section_spacing | default: 72 }}px;
+    --nk-radius: {{ settings.corner_radius | default: 2 }}px;
+    --nk-logo-width: {{ settings.logo_width | default: 140 }}px;
+    --nk-logo-width-mobile: {{ settings.logo_width_mobile | default: 110 }}px;
+    --nk-card-ratio: {{ settings.card_image_ratio | default: '4 / 5' }};
+    --nk-card-fit: {{ settings.card_image_fit | default: 'cover' }};
+    --nk-color-error: {{ settings.color_error | default: '#B42318' }};
+    --nk-color-success: {{ settings.color_success | default: '#146C43' }};
   }
+
+  {% for scheme in settings.color_schemes %}
+    {%- liquid
+      assign s = scheme.settings
+      assign selector = '.color-' | append: scheme.id
+      if forloop.first
+        assign selector = ':root, ' | append: selector
+      endif
+    -%}
+    {{ selector }} {
+      --nk-color-bg: {{ s.background }};
+      --nk-color-surface: {{ s.surface }};
+      --nk-color-text: {{ s.text }};
+      --nk-color-text-muted: {{ s.text_muted }};
+      --nk-color-line: {{ s.line }};
+      --nk-color-accent: {{ s.accent }};
+      --nk-color-accent-text: {{ s.accent_text }};
+      --nk-color-disabled: {{ s.text_muted | color_mix: s.background, 60 }};
+      background-color: var(--nk-color-bg);
+      color: var(--nk-color-text);
+    }
+  {% endfor %}
 {% endstyle %}

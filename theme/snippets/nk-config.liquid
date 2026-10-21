@@ -1,0 +1,39 @@
+{%- doc -%}
+  Runtime configuration for the theme's JavaScript (src/core/config.ts).
+  Routes always come from the `routes` object so locale/market prefixes are respected.
+
+  @example
+  {% render 'nk-config' %}
+{%- enddoc -%}
+<script type="application/json" id="nk-config">
+  {
+    "routes": {
+      "root": {{ routes.root_url | json }},
+      "cart": {{ routes.cart_url | json }},
+      "cartAdd": {{ routes.cart_add_url | json }},
+      "cartChange": {{ routes.cart_change_url | json }},
+      "cartUpdate": {{ routes.cart_update_url | json }},
+      "predictiveSearch": {{ routes.predictive_search_url | json }},
+      "productRecommendations": {{ routes.product_recommendations_url | json }},
+      "search": {{ routes.search_url | json }}
+    },
+    "motion": {{ settings.motion_level | default: 'standard' | json }},
+    "cart": {
+      "afterAdd": {{ settings.cart_after_add | default: 'drawer' | json }},
+      "sections": []
+    },
+    "strings": {
+      "cart.added": {{ 'cart.added' | t | json }},
+      "cart.removed": {{ 'cart.removed' | t | json }},
+      "cart.error": {{ 'cart.error' | t | json }},
+      "cart.add_unconfirmed": {{ 'cart.add_unconfirmed' | t | json }},
+      "cart.add_not_applied": {{ 'cart.add_not_applied' | t | json }},
+      "product.adding": {{ 'product.adding' | t | json }},
+      "product.choose_option": {{ 'product.choose_option' | t | json }},
+      "product.choose_named_option": {{ 'product.choose_named_option' | t: option: '[option]' | json }},
+      "product.selection_failed": {{ 'product.selection_failed' | t | json }},
+      "product.unavailable": {{ 'product.unavailable' | t | json }},
+      "product.media_position": {{ 'product.media_position' | t: index: '[index]', count: '[count]' | json }}
+    }
+  }
+</script>

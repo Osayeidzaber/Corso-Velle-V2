@@ -1,0 +1,111 @@
+/*
+ * Shared overlay surfaces (<dialog> opened via the overlay service).
+ * .drawer slides from an edge; .sheet rises from the bottom on phones.
+ * Entry/exit use @starting-style + allow-discrete where supported; otherwise they appear instantly.
+ */
+.drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: min(100vw, 420px);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition:
+    translate var(--nk-dur-overlay-out) var(--nk-ease-in),
+    overlay var(--nk-dur-overlay-out) allow-discrete,
+    display var(--nk-dur-overlay-out) allow-discrete;
+  translate: -100% 0;
+}
+
+.drawer:not([open]) {
+  display: none;
+}
+
+.drawer--right {
+  inset: 0 0 0 auto;
+  translate: 100% 0;
+}
+
+.drawer[open] {
+  translate: 0 0;
+  transition-duration: var(--nk-dur-overlay-in);
+  transition-timing-function: var(--nk-ease-out);
+}
+
+@starting-style {
+  .drawer[open] {
+    translate: -100% 0;
+  }
+
+  .drawer--right[open] {
+    translate: 100% 0;
+  }
+}
+
+.drawer::backdrop {
+  background: rgb(18 18 18 / 0.45);
+  transition:
+    opacity var(--nk-dur-overlay-out),
+    overlay var(--nk-dur-overlay-out) allow-discrete,
+    display var(--nk-dur-overlay-out) allow-discrete;
+  opacity: 0;
+}
+
+.drawer[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .drawer[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+.drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  padding: 0 6px 0 16px;
+  border-bottom: 1px solid var(--nk-color-line);
+}
+
+.drawer__title {
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.drawer__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.drawer__footer {
+  border-top: 1px solid var(--nk-color-text);
+  padding: 14px 16px calc(16px + env(safe-area-inset-bottom));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer,
+  .drawer--right {
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .drawer[open],
+    .drawer--right[open] {
+      translate: 0 0;
+      opacity: 0;
+    }
+  }
+}

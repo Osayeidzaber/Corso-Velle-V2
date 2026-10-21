@@ -9,12 +9,18 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "New in",
+        "collection": "",
+        "limit": 8,
+        "columns_mobile": "2",
+        "columns_desktop": 4,
+        "show_view_all": true,
+        "color_scheme": "scheme-1"
+      }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["featured"]
 }
