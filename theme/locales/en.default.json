@@ -77,7 +77,8 @@
     "empty": "This collection is empty right now.",
     "shop_all": "Shop all products",
     "view_all": "View all",
-    "placeholder_product": "Product name"
+    "placeholder_product": "Product name",
+    "choose_collection": "Choose a collection for this tab."
   },
   "collections": {
     "title": "Collections"
@@ -110,7 +111,8 @@
     "previous_media": "Previous image",
     "next_media": "Next image",
     "media_position": "{{ index }} / {{ count }}",
-    "no_image": "No image"
+    "no_image": "No image",
+    "updating": "Updating…"
   },
   "customers": {
     "login": {
@@ -138,5 +140,13 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "marquee": {
+    "pause": "Pause moving content",
+    "play": "Play moving content"
+  },
+  "media": {
+    "play": "Play video",
+    "pause": "Pause video"
   }
 }

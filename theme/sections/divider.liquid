@@ -1,0 +1,41 @@
+{%- comment -%}
+  Divider — a hairline between sections; "Elastic" bends toward the pointer and springs back
+  (rewrite of the supplied elasticline example). Decorative only (aria-hidden).
+{%- endcomment -%}
+<div class="divider full-width color-{{ section.settings.color_scheme }}" style="padding-block: {{ section.settings.spacing }}px;">
+  <div style="width: var(--content-width); margin-inline: auto;">
+    {%- if section.settings.style == 'elastic' -%}
+      <nk-elastic-line grab="{{ section.settings.grab }}" release="60">
+        <svg viewBox="0 -50 100 100" preserveAspectRatio="none" focusable="false">
+          <path d="M0 0 Q 50 0 100 0" fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"></path>
+        </svg>
+      </nk-elastic-line>
+    {%- else -%}
+      <hr style="border: 0; border-top: 1px solid var(--nk-color-line); margin: 0;">
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Divider",
+  "class": "divider-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "line", "label": "Line" },
+        { "value": "elastic", "label": "Elastic line (reacts to the pointer)" }
+      ],
+      "default": "elastic"
+    },
+    { "type": "range", "id": "grab", "label": "Pointer catch distance", "min": 4, "max": 40, "step": 2, "unit": "px", "default": 14 },
+    { "type": "range", "id": "spacing", "label": "Spacing", "min": 0, "max": 96, "step": 4, "unit": "px", "default": 24 },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
+  ],
+  "presets": [{ "name": "Divider" }],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

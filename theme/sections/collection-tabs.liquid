@@ -1,0 +1,91 @@
+{%- comment -%}
+  Collection tabs (rewrite of the supplied tabswithtransctition example): one tab per chosen
+  collection, each panel a product grid using the shared card. ARIA tabs with JS; stacked
+  sections with headings without JS. Images in hidden panels stay lazy.
+{%- endcomment -%}
+{%- assign tabs = section.blocks | where: 'type', 'tab' -%}
+{%- if tabs.size > 0 -%}
+  <div class="section-spacing color-{{ section.settings.color_scheme }} full-width">
+    <div style="width: var(--content-width); margin-inline: auto;">
+      {%- if section.settings.heading != blank -%}
+        {% render 'reveal-heading', text: section.settings.heading, entrance: section.settings.entrance, class: 'collection-tabs__heading' %}
+      {%- endif -%}
+      <nk-tabs>
+        <div class="tabs__list" data-ref="tablist" hidden>
+          {%- for block in tabs -%}
+            {%- assign label = block.settings.label | default: block.settings.collection.title | default: 'Collection' -%}
+            <button
+              type="button"
+              class="tabs__tab"
+              id="Tab-{{ block.id }}"
+              data-ref="tab"
+              {% if forloop.first %}data-selected{% endif %}
+            >
+              {{- label | escape -}}
+            </button>
+          {%- endfor -%}
+          <span class="tabs__indicator" data-ref="indicator" aria-hidden="true"></span>
+        </div>
+
+        {%- for block in tabs -%}
+          {%- assign collection_source = block.settings.collection -%}
+          {%- assign label = block.settings.label | default: collection_source.title | default: 'Collection' -%}
+          <div class="tabs__panel" id="TabPanel-{{ block.id }}" data-ref="panel" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
+            <h3 class="tabs__panel-heading">{{ label | escape }}</h3>
+            {%- if collection_source.products.size > 0 -%}
+              <ul class="product-grid" role="list" style="--nk-cols-desktop: {{ section.settings.columns_desktop }};">
+                {%- for product in collection_source.products limit: section.settings.limit -%}
+                  <li>{% render 'product-card', product: product %}</li>
+                {%- endfor -%}
+              </ul>
+              <p style="margin-top: 20px;"><a class="spec" href="{{ collection_source.url }}">{{ 'collection.view_all' | t }}</a></p>
+            {%- elsif request.design_mode -%}
+              <p class="text-muted">{{ 'collection.choose_collection' | t }}</p>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </nk-tabs>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .collection-tabs__heading { font-size: clamp(1.75rem, 5vw, 3rem); margin-bottom: 16px; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collection tabs",
+  "class": "collection-tabs-section",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop the edit" },
+    {
+      "type": "select",
+      "id": "entrance",
+      "label": "Heading entrance",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "cut", "label": "Cut" },
+        { "value": "split-lines", "label": "Split lines" }
+      ],
+      "default": "cut"
+    },
+    { "type": "range", "id": "limit", "label": "Products per tab", "min": 2, "max": 12, "step": 1, "default": 8 },
+    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 5, "step": 1, "default": 4 },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "text", "id": "label", "label": "Tab label", "info": "Defaults to the collection title." }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Collection tabs", "blocks": [{ "type": "tab" }, { "type": "tab" }] }],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

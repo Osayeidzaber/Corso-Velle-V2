@@ -20,7 +20,7 @@
     data-overlay data-surface="overlay"
   {% endif %}
 >
-  <div class="header header--{{ section.settings.layout }}">
+  <div class="header header--{{ section.settings.layout }} header--panel-{{ section.settings.panel_style }}{% if section.settings.link_hover == 'swap' %} header--swap{% endif %}">
     <div class="header__start">
       <button
         type="button"
@@ -33,9 +33,29 @@
       >
         {% render 'icon', name: 'menu' %}
       </button>
-      <a class="icon-button" href="{{ routes.search_url }}" aria-label="{{ 'header.search' | t }}">
-        {% render 'icon', name: 'search' %}
-      </a>
+      {%- if section.settings.search_style == 'pill' -%}
+        <a class="icon-button header__search-icon--phone" href="{{ routes.search_url }}" aria-label="{{ 'header.search' | t }}">
+          {% render 'icon', name: 'search' %}
+        </a>
+        {%- # Expanding search field (gooeyinput). The goo filter applies to background blobs only. -%}
+        <nk-search-pill class="header__search-pill">
+          <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute;">
+            <filter id="nk-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="goo"/><feComposite in="SourceGraphic" in2="goo" operator="atop"/></filter>
+          </svg>
+          <span class="search-pill__goo" aria-hidden="true"><span class="search-pill__blob"></span><span class="search-pill__blob search-pill__blob--dot"></span></span>
+          <button type="button" class="icon-button" data-ref="toggle" aria-expanded="true" aria-controls="HeaderSearchPill" aria-label="{{ 'header.search' | t }}" style="position: relative;">
+            {% render 'icon', name: 'search' %}
+          </button>
+          <form class="search-pill__form" id="HeaderSearchPill" action="{{ routes.search_url }}" method="get" role="search">
+            <label class="visually-hidden" for="HeaderSearchInput">{{ 'header.search' | t }}</label>
+            <input id="HeaderSearchInput" type="search" name="q" placeholder="{{ 'header.search_placeholder' | t }}">
+          </form>
+        </nk-search-pill>
+      {%- else -%}
+        <a class="icon-button" href="{{ routes.search_url }}" aria-label="{{ 'header.search' | t }}">
+          {% render 'icon', name: 'search' %}
+        </a>
+      {%- endif -%}
 
       {%- if menu.links.size > 0 -%}
         <nav class="header__nav" aria-label="{{ 'header.primary_navigation' | t }}">
@@ -43,7 +63,11 @@
             {%- for link in menu.links -%}
               <li class="nav__item">
                 <a class="nav__link" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>
-                  {{- link.title | escape -}}
+                  {%- if section.settings.link_hover == 'swap' -%}
+                    <span class="swap"><span>{{ link.title | escape }}</span><span aria-hidden="true">{{ link.title | escape }}</span></span>
+                  {%- else -%}
+                    {{- link.title | escape -}}
+                  {%- endif -%}
                 </a>
                 {%- if link.links.size > 0 -%}
                   <details class="nav__disclosure">
@@ -155,10 +179,60 @@
       ],
       "default": "reveal"
     },
+    {
+      "type": "select",
+      "id": "panel_style",
+      "label": "Desktop menu panels",
+      "options": [
+        { "value": "attached", "label": "Full width" },
+        { "value": "floating", "label": "Floating card (morphs between items)" }
+      ],
+      "default": "attached"
+    },
+    {
+      "type": "select",
+      "id": "link_hover",
+      "label": "Menu link hover",
+      "options": [
+        { "value": "underline", "label": "Underline" },
+        { "value": "swap", "label": "Letter swap" }
+      ],
+      "default": "underline"
+    },
+    {
+      "type": "select",
+      "id": "drawer_style",
+      "label": "Phone menu style",
+      "options": [
+        { "value": "standard", "label": "Standard list" },
+        { "value": "editorial", "label": "Editorial (large numbered items)" },
+        { "value": "cards", "label": "Cards" }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "search_style",
+      "label": "Desktop search",
+      "options": [
+        { "value": "icon", "label": "Icon" },
+        { "value": "pill", "label": "Expanding field" }
+      ],
+      "default": "icon"
+    },
     { "type": "checkbox", "id": "overlay_home", "label": "Overlay the homepage hero", "default": false, "info": "Only applies when the first homepage section supports overlay (for example the campaign hero)." },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
   ],
   "blocks": [
+    {
+      "type": "group_description",
+      "name": "Menu card description",
+      "limit": 8,
+      "settings": [
+        { "type": "text", "id": "menu_item", "label": "Menu item title", "info": "Shown in the Cards phone menu under this top-level item." },
+        { "type": "text", "id": "text", "label": "Description" }
+      ]
+    },
     {
       "type": "promo",
       "name": "Menu promo card",

@@ -155,16 +155,16 @@
   }
 }
 
-/* Reveal footer — page content scrolls away to uncover the footer (stickeyfootor). Desktop only
-   and only while the footer fits the viewport (body[data-footer-reveal] set by Liquid). */
+/* Reveal footer — page content scrolls away to uncover the footer (stickeyfootor). Desktop only,
+   tall viewports only (footer must fit), switched on by the footer section's "reveal" setting. */
 @media (min-width: 990px) and (min-height: 700px) {
-  body[data-footer-reveal] main {
+  body:has(.footer[data-reveal]) main {
     position: relative;
     z-index: 1;
     background: var(--nk-color-bg);
   }
 
-  body[data-footer-reveal] .footer-section-group {
+  body:has(.footer[data-reveal]) .shopify-section-group-footer-group {
     position: sticky;
     bottom: 0;
     z-index: 0;

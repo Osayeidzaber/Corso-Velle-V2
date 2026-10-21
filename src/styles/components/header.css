@@ -471,3 +471,21 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]) {
   font-size: 0.75rem;
   color: var(--nk-color-accent);
 }
+
+.header--swap .nav__link {
+  text-decoration: none;
+}
+
+.header__search-pill {
+  display: none;
+}
+
+@media (min-width: 990px) {
+  .header__search-pill {
+    display: inline-flex;
+  }
+
+  .header__search-icon--phone {
+    display: none;
+  }
+}

@@ -1,0 +1,102 @@
+{%- comment -%}
+  Reviews wall (rewrite of the supplied marquee example's vertical review-card demo): columns
+  of quotes moving vertically in opposite directions. Quotes are merchant-entered blocks and must
+  be real, attributed reviews — the theme never generates or pads them. Static list under
+  reduced motion; one column on phones.
+{%- endcomment -%}
+{%- assign quotes = section.blocks | where: 'type', 'quote' -%}
+{%- if quotes.size > 0 -%}
+  <div class="reviews-wall full-width section-spacing color-{{ section.settings.color_scheme }}">
+    <div class="reviews-wall__inner">
+      {%- if section.settings.heading != blank -%}
+        {% render 'reveal-heading', text: section.settings.heading, entrance: 'cut', class: 'reviews-wall__heading' %}
+      {%- endif -%}
+      <div class="reviews-wall__columns" style="--wall-h: {{ section.settings.height }}px;">
+        {%- assign columns = section.settings.columns | plus: 0 -%}
+        {%- for column in (1..columns) -%}
+          {%- liquid
+            assign direction = 'up'
+            assign mod = column | modulo: 2
+            if mod == 0
+              assign direction = 'down'
+            endif
+          -%}
+          <nk-marquee class="reviews-wall__column{% if column > 1 %} reviews-wall__column--extra{% endif %}" direction="{{ direction }}" speed="{{ section.settings.speed }}" hover-speed="0" fade-edges {% if column > 1 %}aria-hidden="true"{% endif %}>
+            <div class="marquee__track" data-ref="track">
+              <ul class="marquee__list" data-ref="list" role="list">
+                {%- for block in quotes -%}
+                  {%- assign position = forloop.index0 | modulo: columns | plus: 1 -%}
+                  {%- if columns == 1 or position == column or quotes.size < columns -%}
+                    <li class="marquee__item" {% if column == 1 %}data-block-id="{{ block.id }}" {{ block.shopify_attributes }}{% endif %}>
+                      <figure class="review-card">
+                        <blockquote>{{ block.settings.quote }}</blockquote>
+                        <figcaption class="spec">
+                          {{- block.settings.name | escape -}}
+                          {%- if block.settings.product != blank %} · <a href="{{ block.settings.product.url }}">{{ block.settings.product.title | escape }}</a>{%- endif -%}
+                        </figcaption>
+                      </figure>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </div>
+            {%- if column == 1 -%}
+              <button type="button" class="marquee__pause" data-ref="pause" aria-pressed="false" aria-label="{{ 'marquee.pause' | t }}" hidden>❚❚</button>
+            {%- endif -%}
+          </nk-marquee>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .reviews-wall__inner { width: var(--content-width); margin-inline: auto; display: grid; gap: 24px; }
+  .reviews-wall__heading { font-size: clamp(1.75rem, 5vw, 3rem); }
+  .reviews-wall__columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; height: var(--wall-h, 520px); }
+  .reviews-wall__column { height: 100%; }
+  .review-card { margin: 0; padding: 18px; display: grid; gap: 10px; background: var(--nk-color-surface); border: 1px solid var(--nk-color-line); }
+  .review-card blockquote { margin: 0; line-height: 1.5; }
+  @media (max-width: 749px) {
+    .reviews-wall__column--extra { display: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Reviews wall",
+  "class": "reviews-wall-section",
+  "max_blocks": 24,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "What customers say" },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" }
+      ],
+      "default": "2"
+    },
+    { "type": "range", "id": "height", "label": "Height", "min": 320, "max": 800, "step": 20, "unit": "px", "default": 520 },
+    { "type": "range", "id": "speed", "label": "Speed", "min": 10, "max": 80, "step": 5, "unit": "px", "default": 25 },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "paragraph", "content": "Only add real reviews with the customer's permission. Review apps can also be added as app blocks on product pages." }
+  ],
+  "blocks": [
+    {
+      "type": "quote",
+      "name": "Review",
+      "settings": [
+        { "type": "richtext", "id": "quote", "label": "Review text" },
+        { "type": "text", "id": "name", "label": "Name" },
+        { "type": "product", "id": "product", "label": "Product reviewed" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Reviews wall" }],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}
