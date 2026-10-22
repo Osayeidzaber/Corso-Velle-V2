@@ -38,29 +38,14 @@
       >
         {% render 'icon', name: 'menu' %}
       </button>
-      {%- if section.settings.search_style == 'pill' -%}
-        <a class="icon-button header__search-icon--phone" href="{{ routes.search_url }}" {{ search_trigger }} aria-label="{{ 'header.search' | t }}">
-          {% render 'icon', name: 'search' %}
-        </a>
-        {%- # Expanding search field (gooeyinput). The goo filter applies to background blobs only. -%}
-        <nk-search-pill class="header__search-pill">
-          <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute;">
-            <filter id="nk-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="goo"/><feComposite in="SourceGraphic" in2="goo" operator="atop"/></filter>
-          </svg>
-          <span class="search-pill__goo" aria-hidden="true"><span class="search-pill__blob"></span><span class="search-pill__blob search-pill__blob--dot"></span></span>
-          <button type="button" class="icon-button" data-ref="toggle" aria-expanded="true" aria-controls="HeaderSearchPill" aria-label="{{ 'header.search' | t }}" style="position: relative;">
-            {% render 'icon', name: 'search' %}
-          </button>
-          <form class="search-pill__form" id="HeaderSearchPill" action="{{ routes.search_url }}" method="get" role="search">
-            <label class="visually-hidden" for="HeaderSearchInput">{{ 'header.search' | t }}</label>
-            <input id="HeaderSearchInput" type="search" name="q" placeholder="{{ 'header.search_placeholder' | t }}">
-          </form>
-        </nk-search-pill>
-      {%- else -%}
-        <a class="icon-button" href="{{ routes.search_url }}" {{ search_trigger }} aria-label="{{ 'header.search' | t }}">
-          {% render 'icon', name: 'search' %}
-        </a>
-      {%- endif -%}
+      <a
+        class="icon-button header__search-icon--phone"
+        href="{{ routes.search_url }}"
+        {{ search_trigger }}
+        aria-label="{{ 'header.search' | t }}"
+      >
+        {% render 'icon', name: 'search' %}
+      </a>
 
       {%- if menu.links.size > 0 -%}
         <nav class="header__nav" aria-label="{{ 'header.primary_navigation' | t }}">
@@ -86,8 +71,8 @@
                       {%- endfor -%}
                       {%- if has_grandchildren -%}
                         {%- for child in link.links -%}
-                          <div>
-                            <a class="spec" href="{{ child.url }}">{{ child.title | escape }}</a>
+                          <div class="nav__group">
+                            <a class="nav__group-heading spec" href="{{ child.url }}">{{ child.title | escape }}</a>
                             {%- if child.links.size > 0 -%}
                               <ul role="list">
                                 {%- for grandchild in child.links -%}
@@ -98,7 +83,7 @@
                           </div>
                         {%- endfor -%}
                       {%- else -%}
-                        <ul role="list">
+                        <ul class="nav__sublist" role="list">
                           {%- for child in link.links -%}
                             <li><a href="{{ child.url }}">{{ child.title | escape }}</a></li>
                           {%- endfor -%}
@@ -129,6 +114,49 @@
     </a>
 
     <div class="header__end">
+      {%- if section.settings.search_style == 'pill' -%}
+        <nk-search-pill class="header__search-pill" {% if section.settings.predictive_search %}data-predictive{% endif %}>
+          <button
+            type="button"
+            class="icon-button search-pill__toggle"
+            data-ref="toggle"
+            aria-expanded="false"
+            aria-controls="HeaderSearchPill"
+            aria-label="{{ 'header.search' | t }}"
+          >
+            {% render 'icon', name: 'search' %}
+          </button>
+          <form class="search-pill__form" id="HeaderSearchPill" action="{{ routes.search_url }}" method="get" role="search">
+            <span class="search-pill__icon" aria-hidden="true">{% render 'icon', name: 'search', size: 16 %}</span>
+            <label class="visually-hidden" for="HeaderSearchInput">{{ 'header.search' | t }}</label>
+            <input
+              id="HeaderSearchInput"
+              type="search"
+              name="q"
+              placeholder="{{ 'header.search_placeholder' | t }}"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              enterkeyhint="search"
+            >
+            <input type="hidden" name="options[prefix]" value="last">
+            <button type="button" class="icon-button search-pill__close" data-ref="close" aria-label="{{ 'general.close' | t }}">
+              {% render 'icon', name: 'close', size: 14 %}
+            </button>
+          </form>
+        </nk-search-pill>
+      {%- else -%}
+        <a
+          class="icon-button header__search-icon--desktop"
+          href="{{ routes.search_url }}"
+          {{ search_trigger }}
+          aria-label="{{ 'header.search' | t }}"
+        >
+          {% render 'icon', name: 'search' %}
+        </a>
+      {%- endif -%}
+
       {%- if shop.customer_accounts_enabled -%}
         <span class="header__account">
           <shopify-account menu="{{ section.settings.customer_account_menu }}">
@@ -157,7 +185,7 @@
 {% render 'nav-drawer', menu: menu, section: section %}
 
 {%- if section.settings.predictive_search -%}
-  {% render 'search-modal', collections: section.settings.search_collections %}
+  {% render 'search-modal', suggested_collections: section.settings.search_collections %}
 {%- endif -%}
 
 {% schema %}

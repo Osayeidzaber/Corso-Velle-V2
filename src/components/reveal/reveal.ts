@@ -1,5 +1,3 @@
-import './reveal.css';
-
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
 import { decorativeMotionAllowed } from '../../core/motion';
@@ -42,15 +40,18 @@ export class NkReveal extends NkElement {
     await document.fonts?.ready;
     if (!this.isConnected) return;
 
-    const mode = this.getAttribute('mode') ?? 'fade';
+    const mode = this.getAttribute('mode') ?? this.getAttribute('entrance') ?? 'fade';
     const by = this.getAttribute('by') ?? (mode === 'fold' ? 'word' : 'line');
+    const delay = Number(this.getAttribute('delay')) || 0;
+    const customDuration = Number(this.getAttribute('duration')) || 0;
     const playOnLoad = this.hasAttribute('play-on-load');
     const target = this.querySelector<HTMLElement>('[data-reveal-target]') ?? (this.firstElementChild as HTMLElement | null) ?? this;
-    const scrollTrigger = playOnLoad ? undefined : { trigger: this, start: 'top 85%', once: true };
+    const scrollTrigger = playOnLoad ? undefined : { trigger: this, start: 'top 88%', once: true };
 
     this.#context = gsap.context(() => {
       this.setAttribute('data-armed', '');
       const done = () => {
+        gsap.set(this, { clearProps: 'transform,opacity,clipPath' });
         this.removeAttribute('data-armed');
         this.setAttribute('data-done', '');
       };
@@ -69,12 +70,13 @@ export class NkReveal extends NkElement {
                 ? { rotationX: -90, opacity: 0, transformOrigin: '50% 0%', transformPerspective: 700 }
                 : by === 'char'
                   ? { opacity: 0, yPercent: 40 }
-                  : { yPercent: 110 };
+                  : { yPercent: 108 };
             return gsap.from(pieces, {
               ...from,
-              duration: mode === 'fold' ? 0.8 : 1,
-              stagger: by === 'char' ? 0.025 : by === 'word' ? 0.06 : 0.1,
-              ease: mode === 'fold' ? 'power2.out' : 'expo.out',
+              delay,
+              duration: customDuration || (mode === 'fold' ? 0.85 : 1.05),
+              stagger: by === 'char' ? 0.025 : by === 'word' ? 0.065 : 0.1,
+              ease: mode === 'fold' ? 'power3.out' : 'expo.out',
               scrollTrigger,
               onComplete: done,
             });
@@ -86,12 +88,14 @@ export class NkReveal extends NkElement {
       const presets: Record<string, gsap.TweenVars> = {
         cut: { clipPath: 'inset(0% 0% 100% 0%)' },
         wipe: { clipPath: 'inset(0% 100% 0% 0%)' },
-        fade: { opacity: 0, y: 28 },
+        fade: { opacity: 0, y: 24 },
+        rise: { opacity: 0, y: 28 },
       };
-      const to: gsap.TweenVars = mode === 'fade' ? { opacity: 1, y: 0 } : { clipPath: 'inset(0% 0% 0% 0%)' };
+      const to: gsap.TweenVars = mode === 'fade' || mode === 'rise' ? { opacity: 1, y: 0 } : { clipPath: 'inset(0% 0% 0% 0%)' };
       gsap.fromTo(this, presets[mode] ?? presets.fade!, {
         ...to,
-        duration: mode === 'wipe' ? 1.2 : 1,
+        delay,
+        duration: customDuration || (mode === 'wipe' ? 1.15 : 0.95),
         ease: 'expo.out',
         scrollTrigger,
         onComplete: done,

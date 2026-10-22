@@ -23,11 +23,10 @@ export class NkHeader extends NkElement {
       document.documentElement.style.setProperty('--nk-header-h', `${Math.round(this.getBoundingClientRect().height)}px`);
     });
 
-    if (this.dataset.sticky === 'reveal') {
-      this.#lastY = window.scrollY;
-      this.on(window, 'scroll', () => this.#schedule(), { passive: true });
-      this.on(this, 'focusin', () => this.#setHidden(false));
-    }
+    this.#lastY = window.scrollY;
+    this.toggleAttribute('data-scrolled', this.#lastY > 24);
+    this.on(window, 'scroll', () => this.#schedule(), { passive: true });
+    this.on(this, 'focusin', () => this.#setHidden(false));
 
     if (this.hasAttribute('data-overlay')) this.#watchOverlay();
 
@@ -152,13 +151,19 @@ export class NkHeader extends NkElement {
 
   #update(): void {
     const y = Math.max(0, window.scrollY);
+    this.toggleAttribute('data-scrolled', y > 24);
+    if (this.dataset.sticky !== 'reveal') return;
+
     const delta = y - this.#lastY;
     this.#lastY = y;
     // Accumulate travel in one direction; a direction change resets it (hysteresis).
     this.#travel = Math.sign(delta) === Math.sign(this.#travel) ? this.#travel + delta : delta;
 
     const height = this.offsetHeight;
-    const locked = this.matches(':focus-within') || overlay.current !== null || this.querySelector('details[open]') !== null;
+    const locked =
+      this.matches(':focus-within') ||
+      overlay.current !== null ||
+      this.querySelector('details[open], nk-search-pill[data-open]') !== null;
 
     if (y <= height * 2 || locked) {
       this.#setHidden(false);

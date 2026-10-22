@@ -21,14 +21,14 @@ Shopify themes. The first commit is the unmodified import.
 
 ```text
 src/                 TypeScript + CSS sources (built by Vite)
-  core/              NkElement base class, config, motion policy, DOM helpers
+  core/              NkElement base class, config, motion policy, DOM helpers, lazy loader
   services/          request, sections, cart (queue), cart-render, overlay, editor, announce
-  components/        header, nav-drawer, modal, cart drawer/items, product (picker, form, gallery), disclosure
-  entries/           one file per page bundle → theme/assets/nk-<entry>.js
+  components/        header, nav-drawer, modal, cart, product, facets, predictive-search, search-pill, size-guide, recommendations, marquee, tabs, expand-media, motion
+  entries/           global, product, collection, cart → theme/assets/nk-<entry>.js
   styles/            tokens/base + component CSS
 theme/               the deployable Shopify theme (push this folder)
 scripts/             sync-assets (flat assets + generated snippets/nk-assets.liquid), watch, check-json
-tests/unit/          Vitest (happy-dom): cart queue, request sequencing, element lifecycle
+tests/unit/          Vitest (happy-dom): cart queue, request sequencing, element lifecycle, storefront components
 ```
 
 Build output is copied flat into `theme/assets` with an `nk-` prefix. Only files listed in
@@ -51,17 +51,19 @@ npm run package      # build + shopify theme package
 | Area | Status |
 |---|---|
 | Build pipeline (D-05) | Done: flat hashed chunks, owned-asset sync, generated asset snippet. CDN loading not yet proven (spike S1) |
-| `NkElement` lifecycle (04 §5.1) | Done, unit-tested |
+| `NkElement` lifecycle (04 §5.1) + `registerLazy` | Done, unit-tested |
 | Services: request/Sequencer, sections, overlay (native `<dialog>`), editor adapter, announce | Done |
 | Cart service (CA-01): queue, coalescing, line keys, ambiguous-add reconciliation | Done, unit-tested |
-| Header N-01 (sticky reveal, overlay surface, cart count), announcement N-02 (static) | Done |
-| Desktop nav N-03 | Native `<details>` disclosures with link + separate toggle. `nk-mega-menu` with floating panel is P1 |
+| Header N-01 (sticky reveal, overlay surface, cart count, `<nk-search-pill>`), announcement N-02 | Done |
+| Desktop nav N-03 | Native `<details>` disclosures with link + separate toggle |
 | Phone drawer N-04 | Done (level panels, Back, focus, breakpoint close) |
+| Predictive search N-05 | Done (`<nk-predictive-search>` + `sections/predictive-search.liquid`, keyboard navigation, retry on failure) |
 | Cart drawer CA-02 / cart page CA-03 / line item CA-04 | Done; cart page works without JS |
-| Product page PR-01/02/04/05/07 | Gallery, `option_values` picker with explicit size choice, size-chart metaobject + page fallback, buy form, accordions, `@app` blocks |
-| Product card DC-03, collection DC-01, featured collection CS-03 | Done (no filters yet) |
-| Settings, colour schemes, presets Signal + Quiet | Done (fonts are placeholders until the brand is chosen) |
-| Not started | Predictive search N-05, filters/sort DC-02, quick add DC-04, sticky buy bar, hero/tiles/media-text sections, `nk-reveal`/`nk-marquee`/`nk-tabs`, schema label translation |
+| Product page PR-01..PR-07 | Gallery, `option_values` picker with explicit size choice, `<nk-size-guide>` (metaobject + page fallback, cm/in toggle, active size highlight), buy form, accordions, `@app` blocks, `<nk-recommendations>` |
+| Collection DC-01, filters/sort DC-02 (`<nk-facets>`), product card DC-03 | Done (drawer + horizontal filters, active chips, sort, URL sync, PopState, retry on error) |
+| Editorial & storytelling sections | Done: hero, featured collection, collection list, media-with-text, rich-text, lookbook, marquee (`<nk-marquee>`), tabbed content (`<nk-tabs>`), expandable media (`<nk-expand-media>`), motion (`<nk-reveal>`, `<nk-stagger>`, `<nk-text>`, `<nk-elastic-line>`, cursor follower) |
+| Settings, colour schemes, presets Signal + Quiet, EN/FR/DE locales | Done (fonts are placeholders until the brand is chosen) |
+| Deferred / P2 | Quick add DC-04, sticky buy bar, mega-menu floating panel |
 
 ## Licence notes
 

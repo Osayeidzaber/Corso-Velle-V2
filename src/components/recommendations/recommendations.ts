@@ -1,4 +1,5 @@
 import { define } from '../../core/define';
+import { parseHTML } from '../../core/dom';
 import { NkElement } from '../../core/element';
 import { fetchText } from '../../services/request';
 
@@ -24,14 +25,15 @@ export class NkRecommendations extends NkElement {
   async #load(url: string): Promise<void> {
     try {
       const html = await fetchText(url, { signal: this.signal });
-      const fresh = new DOMParser().parseFromString(html, 'text/html').querySelector('nk-recommendations');
+      const fresh = parseHTML(html).querySelector('nk-recommendations');
       if (!this.isConnected) return;
       if (!fresh || !fresh.querySelector('[data-stagger-item]')) {
         this.closest<HTMLElement>('.shopify-section')?.setAttribute('hidden', '');
         return;
       }
       this.setAttribute('data-loaded', '');
-      this.innerHTML = fresh.innerHTML;
+      this.replaceChildren(...[...fresh.childNodes].map((node) => document.importNode(node, true)));
+      this.dispatchEvent(new CustomEvent('nk:section:replaced', { bubbles: true, detail: { regions: ['recommendations'] } }));
     } catch (error) {
       if ((error as Error).name !== 'AbortedError') console.error(error);
     }

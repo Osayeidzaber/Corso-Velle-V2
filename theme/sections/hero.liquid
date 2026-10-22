@@ -59,9 +59,11 @@
       {%- for block in section.blocks -%}
         {%- case block.type -%}
           {%- when 'eyebrow' -%}
-            <p class="eyebrow hero__eyebrow" {{ block.shopify_attributes }}>
-              <span class="{% if block.settings.shine %}nk-text-shine{% endif %}">{{ block.settings.text | escape }}</span>
-            </p>
+            <nk-reveal mode="fade" delay="0.06" play-on-load {{ block.shopify_attributes }}>
+              <p class="eyebrow hero__eyebrow">
+                <span class="{% if block.settings.shine %}nk-text-shine{% endif %}">{{ block.settings.text | escape }}</span>
+              </p>
+            </nk-reveal>
           {%- when 'heading' -%}
             <div {{ block.shopify_attributes }}>
               {%- liquid
@@ -86,22 +88,20 @@
               %}
             </div>
           {%- when 'text' -%}
-            {%- if request.design_mode -%}
-              <div class="hero__text" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
-            {%- else -%}
-              <nk-text class="hero__text" effect="blur" split="words" stagger="0.035" delay="0.55" play-on-load {{ block.shopify_attributes }}>
-                <div data-text-target>{{ block.settings.text }}</div>
-              </nk-text>
-            {%- endif -%}
+            <nk-reveal mode="fade" delay="0.28" play-on-load {{ block.shopify_attributes }}>
+              <div class="hero__text">{{ block.settings.text }}</div>
+            </nk-reveal>
           {%- when 'buttons' -%}
-            <div class="hero__buttons" {{ block.shopify_attributes }}>
-              {%- if block.settings.label_1 != blank and block.settings.link_1 != blank -%}
-                <a class="button hero__button" href="{{ block.settings.link_1 }}">{% render 'letter-swap', text: block.settings.label_1 %}</a>
-              {%- endif -%}
-              {%- if block.settings.label_2 != blank and block.settings.link_2 != blank -%}
-                <a class="button button--secondary hero__button hero__button--ghost" href="{{ block.settings.link_2 }}">{% render 'letter-swap', text: block.settings.label_2 %}</a>
-              {%- endif -%}
-            </div>
+            <nk-reveal mode="fade" delay="0.4" play-on-load {{ block.shopify_attributes }}>
+              <div class="hero__buttons">
+                {%- if block.settings.label_1 != blank and block.settings.link_1 != blank -%}
+                  <a class="button hero__button" href="{{ block.settings.link_1 }}" data-magnetic>{{ block.settings.label_1 | escape }}</a>
+                {%- endif -%}
+                {%- if block.settings.label_2 != blank and block.settings.link_2 != blank -%}
+                  <a class="button button--secondary hero__button hero__button--ghost" href="{{ block.settings.link_2 }}">{{ block.settings.label_2 | escape }}</a>
+                {%- endif -%}
+              </div>
+            </nk-reveal>
         {%- endcase -%}
       {%- endfor -%}
     </div>
@@ -267,7 +267,7 @@
       "limit": 1,
       "settings": [
         { "type": "text", "id": "text", "label": "Text", "default": "New collection" },
-        { "type": "checkbox", "id": "shine", "label": "Shine effect", "default": true }
+        { "type": "checkbox", "id": "shine", "label": "Shine effect", "default": false }
       ]
     },
     {
@@ -277,14 +277,15 @@
       "settings": [
         { "type": "text", "id": "heading", "label": "Heading", "default": "Campaign" },
         { "type": "text", "id": "heading_italic", "label": "Second line (italic)" },
-        { "type": "select", "id": "italic_style", "label": "Italic line style", "options": [{ "value": "none", "label": "Plain" }, { "value": "gradient", "label": "Flowing gradient (Gradient Text)" }], "default": "gradient" },
+        { "type": "select", "id": "italic_style", "label": "Italic line style", "options": [{ "value": "none", "label": "Plain" }, { "value": "gradient", "label": "Flowing gradient (Gradient Text)" }], "default": "none" },
         {
           "type": "select",
           "id": "entrance",
           "label": "Entrance",
           "options": [
         { "value": "none", "label": "None" },
-        { "value": "rise", "label": "Rise letter by letter (Split Text)" },
+        { "value": "cut", "label": "Editorial masked reveal" },
+        { "value": "rise", "label": "Rise word by word (Split Text)" },
         { "value": "blur", "label": "Blur in word by word (Text Effect)" },
         { "value": "fold", "label": "Paper fold (Fold Text)" },
         { "value": "flip", "label": "Flip up" },
@@ -292,7 +293,7 @@
         { "value": "pop", "label": "Pop" },
         { "value": "fade", "label": "Fade" }
       ],
-          "default": "rise",
+          "default": "cut",
           "info": "Not shown to visitors who prefer reduced motion."
         },
         {
@@ -304,7 +305,7 @@
             { "value": "lift", "label": "Letters lift near the pointer" },
             { "value": "refold", "label": "Letters fold near the pointer" }
           ],
-          "default": "lift"
+          "default": "none"
         },
         {
           "type": "select",

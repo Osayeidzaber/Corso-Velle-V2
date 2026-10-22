@@ -55,7 +55,7 @@
         "layout": "center",
         "sticky": "reveal",
         "panel_style": "floating",
-        "link_hover": "swap",
+        "link_hover": "underline",
         "drawer_style": "editorial",
         "search_style": "pill",
         "overlay_home": true,

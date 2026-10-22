@@ -30,7 +30,10 @@
           "type": "variant_picker",
           "settings": {
             "size_guide_option": "Size",
-            "size_unit": "in"
+            "size_heading": "Measured flat, garment in hand",
+            "size_table": "Size,Chest,Length,Shoulder,Sleeves\nS,40,27,17.5,24.5\nM,42,28,18,25\nL,44,29,18.5,25.5\nXL,46,30,19,26",
+            "size_unit": "in",
+            "size_note": "If you are between sizes, we recommend taking the larger size for a relaxed fit."
           }
         },
         "inventory": {

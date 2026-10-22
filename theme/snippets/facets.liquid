@@ -1,8 +1,9 @@
 {%- doc -%}
-  Filter drawer, sort and active filter chips for a collection or search grid (master-plan/07
-  DC-02). It is one plain GET form: without JS the drawer content renders inline and Apply / the
-  sort button submit it. <nk-facets> intercepts submit, sort changes and chip links, re-renders
-  the section through Section Rendering and keeps the URL (filter.*, sort_by) in history.
+  Filter drawer, sort, interactive grid layout switcher, and active filter chips for a collection
+  or search grid (master-plan/07 DC-02). It is one plain GET form: without JS the drawer content
+  renders inline and Apply / the sort button submit it. <nk-facets> intercepts submit, sort changes,
+  layout switcher clicks, and chip links, re-renders the section through Section Rendering and keeps
+  the URL (filter.*, sort_by) in history.
 
   The drawer edits a draft: closing it without applying restores the applied state.
 
@@ -12,6 +13,9 @@
   @param {number} count - Number of results for the current filters
   @param {boolean} [show_filters] - Show the Filter button and drawer (default true)
   @param {boolean} [show_sort] - Show the sort select (default true)
+  @param {boolean} [show_layout_switch] - Show the 1/2 mobile & 2/3/4 desktop grid switcher (default true)
+  @param {string} [columns_mobile] - Default mobile columns ('1' or '2', default '2')
+  @param {number} [columns_desktop] - Default desktop columns (2, 3, or 4, default 4)
   @param {string} [terms] - Search terms (search page only; kept as hidden fields)
 
   @example
@@ -24,9 +28,15 @@
   if show_sort == nil
     assign show_sort = true
   endif
+  if show_layout_switch == nil
+    assign show_layout_switch = true
+  endif
   if results.filters.size == 0
     assign show_filters = false
   endif
+
+  assign cols_mobile = columns_mobile | default: '2' | append: ''
+  assign cols_desktop = columns_desktop | default: 4 | plus: 0
 
   assign sort_by = results.sort_by | default: results.default_sort_by
   assign active_count = 0
@@ -54,39 +64,144 @@
     <input type="hidden" name="options[prefix]" value="last">
   {%- endif -%}
 
-  <div class="facets__toolbar">
-    {%- if show_filters -%}
-      <button
-        type="button"
-        class="button button--secondary facets__open"
-        data-nk-open="{{ drawer_id }}"
-        aria-haspopup="dialog"
-        aria-expanded="false"
-        aria-controls="{{ drawer_id }}"
-        data-focus-key="facets-open"
-      >
-        {{- 'facets.filter' | t -}}
-        {%- if active_count > 0 %} <span class="facets__count">({{ active_count }})</span>{% endif -%}
-      </button>
-    {%- endif -%}
+  <div class="facets__toolbar-wrap">
+    <div class="facets__toolbar">
+      <div class="facets__toolbar-start">
+        {%- if show_filters -%}
+          <button
+            type="button"
+            class="facets__open"
+            data-nk-open="{{ drawer_id }}"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            aria-controls="{{ drawer_id }}"
+            data-focus-key="facets-open"
+          >
+            <svg class="facets__open-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M2 4h12M2 8h12M2 12h12"/>
+              <circle cx="5" cy="4" r="1.6" fill="var(--nk-color-bg)"/>
+              <circle cx="11" cy="8" r="1.6" fill="var(--nk-color-bg)"/>
+              <circle cx="7" cy="12" r="1.6" fill="var(--nk-color-bg)"/>
+            </svg>
+            <span>{{- 'facets.filter' | t -}}</span>
+            {%- if active_count > 0 -%}
+              <span class="facets__count">({{ active_count }})</span>
+            {%- endif -%}
+          </button>
+        {%- endif -%}
 
-    <p class="facets__results spec text-muted" data-results-label>{{ 'collection.product_count' | t: count: count }}</p>
-
-    {%- if show_sort and results.sort_options.size > 0 -%}
-      <div class="facets__sort">
-        <label class="spec" for="Sort-{{ section_id }}">{{ 'facets.sort_by' | t }}</label>
-        <select id="Sort-{{ section_id }}" name="sort_by" data-facets-sort data-focus-key="facets-sort">
-          {%- for option in results.sort_options -%}
-            <option value="{{ option.value | escape }}" {% if option.value == sort_by %}selected{% endif %}>
-              {{- option.name | escape -}}
-            </option>
-          {%- endfor -%}
-        </select>
-        <button type="submit" class="button button--secondary no-js-only">{{ 'facets.apply' | t }}</button>
+        {%- if show_sort and results.sort_options.size > 0 -%}
+          <div class="facets__sort">
+            <label class="spec facets__sort-label" for="Sort-{{ section_id }}">{{ 'facets.sort_by' | t }}:</label>
+            <div class="facets__sort-select-wrap">
+              <select id="Sort-{{ section_id }}" name="sort_by" data-facets-sort data-focus-key="facets-sort">
+                {%- for option in results.sort_options -%}
+                  <option value="{{ option.value | escape }}" {% if option.value == sort_by %}selected{% endif %}>
+                    {{- option.name | escape -}}
+                  </option>
+                {%- endfor -%}
+              </select>
+              {% render 'icon', name: 'chevron-down', size: 13 %}
+            </div>
+            <button type="submit" class="button button--secondary no-js-only">{{ 'facets.apply' | t }}</button>
+          </div>
+        {%- elsif results.sort_by != blank -%}
+          <input type="hidden" name="sort_by" value="{{ results.sort_by | escape }}">
+        {%- endif -%}
       </div>
-    {%- elsif results.sort_by != blank -%}
-      <input type="hidden" name="sort_by" value="{{ results.sort_by | escape }}">
-    {%- endif -%}
+
+      <p class="facets__results spec text-muted" data-results-label>{{ 'collection.product_count' | t: count: count }}</p>
+
+      {%- if show_layout_switch -%}
+        <div class="facets__layout-switch" role="group" aria-label="Grid layout">
+          <button
+            type="button"
+            class="facets__layout-btn facets__layout-btn--mobile"
+            data-grid-cols-mobile="1"
+            aria-pressed="{% if cols_mobile == '1' %}true{% else %}false{% endif %}"
+            aria-label="1 column layout"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect x="2.25" y="2.25" width="11.5" height="11.5" stroke="currentColor" stroke-width="1.3"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="facets__layout-btn facets__layout-btn--mobile"
+            data-grid-cols-mobile="2"
+            aria-pressed="{% if cols_mobile != '1' %}true{% else %}false{% endif %}"
+            aria-label="2 column layout"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <rect x="2" y="2" width="5" height="5"/>
+              <rect x="9" y="2" width="5" height="5"/>
+              <rect x="2" y="9" width="5" height="5"/>
+              <rect x="9" y="9" width="5" height="5"/>
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            class="facets__layout-btn facets__layout-btn--desktop"
+            data-grid-cols-desktop="2"
+            aria-pressed="{% if cols_desktop == 2 %}true{% else %}false{% endif %}"
+            aria-label="2 column grid"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <rect x="2" y="2" width="5" height="5"/>
+              <rect x="9" y="2" width="5" height="5"/>
+              <rect x="2" y="9" width="5" height="5"/>
+              <rect x="9" y="9" width="5" height="5"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="facets__layout-btn facets__layout-btn--desktop"
+            data-grid-cols-desktop="3"
+            aria-pressed="{% if cols_desktop == 3 %}true{% else %}false{% endif %}"
+            aria-label="3 column grid"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <rect x="1.5" y="1.5" width="3.2" height="3.2"/>
+              <rect x="6.4" y="1.5" width="3.2" height="3.2"/>
+              <rect x="11.3" y="1.5" width="3.2" height="3.2"/>
+              <rect x="1.5" y="6.4" width="3.2" height="3.2"/>
+              <rect x="6.4" y="6.4" width="3.2" height="3.2"/>
+              <rect x="11.3" y="6.4" width="3.2" height="3.2"/>
+              <rect x="1.5" y="11.3" width="3.2" height="3.2"/>
+              <rect x="6.4" y="11.3" width="3.2" height="3.2"/>
+              <rect x="11.3" y="11.3" width="3.2" height="3.2"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="facets__layout-btn facets__layout-btn--desktop"
+            data-grid-cols-desktop="4"
+            aria-pressed="{% if cols_desktop >= 4 %}true{% else %}false{% endif %}"
+            aria-label="4 column grid"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <rect x="1.5" y="1.5" width="2.2" height="2.2"/>
+              <rect x="5.1" y="1.5" width="2.2" height="2.2"/>
+              <rect x="8.7" y="1.5" width="2.2" height="2.2"/>
+              <rect x="12.3" y="1.5" width="2.2" height="2.2"/>
+              <rect x="1.5" y="5.1" width="2.2" height="2.2"/>
+              <rect x="5.1" y="5.1" width="2.2" height="2.2"/>
+              <rect x="8.7" y="5.1" width="2.2" height="2.2"/>
+              <rect x="12.3" y="5.1" width="2.2" height="2.2"/>
+              <rect x="1.5" y="8.7" width="2.2" height="2.2"/>
+              <rect x="5.1" y="8.7" width="2.2" height="2.2"/>
+              <rect x="8.7" y="8.7" width="2.2" height="2.2"/>
+              <rect x="12.3" y="8.7" width="2.2" height="2.2"/>
+              <rect x="1.5" y="12.3" width="2.2" height="2.2"/>
+              <rect x="5.1" y="12.3" width="2.2" height="2.2"/>
+              <rect x="8.7" y="12.3" width="2.2" height="2.2"/>
+              <rect x="12.3" y="12.3" width="2.2" height="2.2"/>
+            </svg>
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
   </div>
 
   {%- if show_filters -%}

@@ -3,9 +3,20 @@ nk-text {
   display: block;
 }
 
+nk-text .nk-w-clip {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+  padding-inline-end: 0.06em;
+  margin-inline-end: -0.06em;
+}
+
 nk-text .nk-w {
   display: inline-block;
   white-space: nowrap;
+  will-change: transform, opacity;
 }
 
 nk-text .nk-c {
@@ -14,6 +25,8 @@ nk-text .nk-c {
 }
 
 /* Italic letters lean past their box: a little room so neighbours do not overlap mid-motion. */
+nk-text em .nk-w:last-child,
 nk-text em .nk-c:last-child {
-  padding-inline-end: 0.06em;
+  padding-inline-end: 0.08em;
 }
+

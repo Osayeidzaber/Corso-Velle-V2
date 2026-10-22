@@ -1,21 +1,24 @@
 {%- comment -%}
-  Collection banner (Riviera): the collection image full-bleed with GSAP parallax (<nk-parallax>),
-  the title in a paper fold with hover refold (<nk-text>, from Fold Text), product count with a
-  shiny eyebrow (Shiny Text), description, and a row of related collections with letter swap.
-  Collections without an image get a coloured band instead, so the page never looks empty.
+  Collection banner & editorial header:
+  - When the collection has a banner image (or `use_product_image` is enabled), renders a
+    full-bleed parallax hero banner (<nk-parallax>).
+  - When no banner image is set, renders a crisp wrclo.com-inspired architectural editorial
+    header with breadcrumbs, display title + live item count, optional description, and a
+    horizontal collection quick-switcher strip.
 {%- endcomment -%}
 {%- liquid
-  assign image = collection.image | default: collection.featured_image
-  if section.settings.use_product_image == false
-    assign image = collection.image
+  assign image = collection.image
+  if image == blank and section.settings.use_product_image
+    assign image = collection.featured_image
   endif
   assign collection_title = collection.title | escape
+  assign related = section.settings.menu
 -%}
-<div class="collection-banner full-width color-{{ section.settings.color_scheme }}{% if image %} collection-banner--image{% endif %}">
+<div class="collection-banner full-width color-{{ section.settings.color_scheme }}{% if image %} collection-banner--image{% else %} collection-banner--editorial{% endif %}">
   {%- if image -%}
     <nk-parallax class="collection-banner__media" strength="12">
       <div class="collection-banner__media-inner" data-parallax-media>
-        {%- assign alt = image.alt | escape -%}
+        {%- assign alt = image.alt | default: collection.title | escape -%}
         {{ image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750, 1100, 1500, 1920, 2400', sizes: '100vw', alt: alt }}
       </div>
     </nk-parallax>
@@ -23,22 +26,83 @@
   {%- endif -%}
 
   <div class="collection-banner__content">
-    <p class="eyebrow collection-banner__count"><span class="nk-text-shine">{{ 'collection.product_count' | t: count: collection.all_products_count }}</span></p>
-    {% render 'reveal-heading', text: collection_title, entrance: 'fold', hover: 'refold', class: 'collection-banner__title display', tag: 'h1', play_on_load: true %}
-    {%- if section.settings.show_description and collection.description != blank -%}
-      <div class="collection-banner__description rte">{{ collection.description }}</div>
-    {%- endif -%}
-    {%- assign related = section.settings.menu -%}
-    {%- if related.links.size > 0 -%}
-      <nav class="collection-banner__nav" aria-label="{{ 'collection.categories' | t }}">
-        <ul role="list">
-          {%- for link in related.links -%}
-            <li>
-              <a href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>{% render 'letter-swap', text: link.title, from: 'center' %}</a>
-            </li>
-          {%- endfor -%}
-        </ul>
+    <nk-reveal entrance="rise" duration="0.65">
+      <nav class="collection-banner__breadcrumbs spec" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="{{ routes.collections_url }}">{{ 'collections.title' | t }}</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ collection.title | escape }}</span>
       </nav>
+    </nk-reveal>
+
+    <div class="collection-banner__heading-row">
+      {% render 'reveal-heading',
+        text: collection_title,
+        entrance: 'words',
+        class: 'collection-banner__title display',
+        tag: 'h1',
+        play_on_load: true
+      %}
+      <nk-reveal entrance="rise" delay="0.16" duration="0.7">
+        <span class="collection-banner__count spec">
+          {{- 'collection.product_count' | t: count: collection.all_products_count -}}
+        </span>
+      </nk-reveal>
+    </div>
+
+    {%- if section.settings.show_description and collection.description != blank -%}
+      <nk-reveal entrance="rise" delay="0.22" duration="0.75">
+        <div class="collection-banner__description rte">{{ collection.description }}</div>
+      </nk-reveal>
+    {%- endif -%}
+
+    {%- if related != blank and related.links.size > 0 -%}
+      <nk-reveal entrance="rise" delay="0.28" duration="0.75">
+        <nav class="collection-banner__nav" aria-label="{{ 'collection.categories' | t }}">
+          <ul role="list">
+            {%- for link in related.links -%}
+              <li>
+                <a class="collection-banner__pill" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>
+                  <span>{{ link.title | escape }}</span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      </nk-reveal>
+    {%- elsif collections.size > 1 -%}
+      <nk-reveal entrance="rise" delay="0.28" duration="0.75">
+        <nav class="collection-banner__nav" aria-label="{{ 'collection.categories' | t }}">
+          <ul role="list">
+            <li>
+              <a
+                class="collection-banner__pill"
+                href="{{ routes.all_products_collection_url }}"
+                {% if collection.handle == 'all' %}aria-current="page"{% endif %}
+              >
+                <span>{{ 'collection.view_all' | t }}</span>
+              </a>
+            </li>
+            {%- assign pill_shown = 0 -%}
+            {%- for item in collections -%}
+              {%- if item.all_products_count > 0 and item.handle != 'all' and item.handle != 'frontpage' and pill_shown < 8 -%}
+                {%- assign pill_shown = pill_shown | plus: 1 -%}
+                <li>
+                  <a
+                    class="collection-banner__pill"
+                    href="{{ item.url }}"
+                    {% if item.handle == collection.handle %}aria-current="page"{% endif %}
+                  >
+                    <span>{{ item.title | escape }}</span>
+                    <span class="collection-banner__pill-count">({{ item.all_products_count }})</span>
+                  </a>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </nav>
+      </nk-reveal>
     {%- endif -%}
   </div>
 </div>
@@ -47,60 +111,211 @@
   .collection-banner {
     position: relative;
     display: grid;
-    min-height: clamp(320px, 46svh, 520px);
     overflow: hidden;
     isolation: isolate;
     background: var(--nk-color-bg);
     color: var(--nk-color-text);
   }
-  .collection-banner--image { min-height: clamp(420px, 68svh, 760px); color: #faf8f5; }
+
+  .collection-banner--editorial {
+    min-height: auto;
+  }
+
+  .collection-banner--image {
+    min-height: clamp(360px, 54svh, 640px);
+    color: #faf8f5;
+  }
+
   .collection-banner__media,
   .collection-banner__scrim,
-  .collection-banner__content { grid-area: 1 / 1; }
-  .collection-banner__media { position: relative; display: block; overflow: hidden; z-index: -2; }
-  .collection-banner__media-inner { position: absolute; inset: 0; }
-  .collection-banner__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .collection-banner__content {
+    grid-area: 1 / 1;
+  }
+
+  .collection-banner__media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    z-index: -2;
+  }
+
+  .collection-banner__media-inner {
+    position: absolute;
+    inset: 0;
+  }
+
+  .collection-banner__media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
   .collection-banner__scrim {
     z-index: -1;
-    background: linear-gradient(to top, rgb(20 16 12 / 0.72), rgb(20 16 12 / 0.12) 60%, rgb(20 16 12 / 0.28));
+    background: linear-gradient(to top, rgb(16 14 12 / 0.76), rgb(16 14 12 / 0.18) 58%, rgb(16 14 12 / 0.34));
   }
+
   .collection-banner__content {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: 18px;
+    gap: 14px;
     width: var(--content-width);
     margin-inline: auto;
-    padding: clamp(48px, 8vw, 96px) 0 clamp(28px, 5vw, 56px);
+    padding: clamp(28px, 4.5vw, 56px) 0 clamp(24px, 3.5vw, 40px);
   }
-  .collection-banner__count { margin: 0; color: inherit; }
-  .collection-banner__title {
-    margin: 0;
-    font-size: clamp(2.75rem, 10vw, 8.5rem);
-    line-height: 0.95;
-    overflow-wrap: anywhere;
+
+  .collection-banner--image .collection-banner__content {
+    padding: clamp(64px, 9vw, 112px) 0 clamp(32px, 5vw, 56px);
   }
-  .collection-banner__description { max-width: 52ch; margin: 0; opacity: 0.85; line-height: 1.7; }
-  .collection-banner__description p { margin: 0; }
-  .collection-banner__nav ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 22px;
-    margin: 8px 0 0;
-    padding: 0;
-    list-style: none;
-  }
-  .collection-banner__nav a {
+
+  .collection-banner__breadcrumbs {
     display: inline-flex;
-    padding-block: 6px;
-    font-family: var(--nk-font-spec);
-    font-size: 0.6875rem;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.625rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
+    color: var(--nk-color-text-muted);
   }
-  .collection-banner__nav a[aria-current='page'] { border-bottom-color: currentColor; }
+
+  .collection-banner--image .collection-banner__breadcrumbs {
+    color: rgb(250 248 245 / 0.72);
+  }
+
+  .collection-banner__breadcrumbs a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 200ms var(--nk-ease-out);
+  }
+
+  .collection-banner__breadcrumbs a:hover {
+    color: var(--nk-color-text);
+  }
+
+  .collection-banner--image .collection-banner__breadcrumbs a:hover {
+    color: #faf8f5;
+  }
+
+  .collection-banner__breadcrumbs [aria-current='page'] {
+    color: var(--nk-color-text);
+  }
+
+  .collection-banner--image .collection-banner__breadcrumbs [aria-current='page'] {
+    color: #faf8f5;
+  }
+
+  .collection-banner__heading-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px 18px;
+  }
+
+  .collection-banner__title {
+    margin: 0;
+    font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+    overflow-wrap: anywhere;
+  }
+
+  .collection-banner__count {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border: 1px solid color-mix(in oklab, currentColor 18%, transparent);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.78;
+  }
+
+  .collection-banner__description {
+    max-width: 60ch;
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--nk-color-text-muted);
+  }
+
+  .collection-banner--image .collection-banner__description {
+    color: rgb(250 248 245 / 0.86);
+  }
+
+  .collection-banner__description p {
+    margin: 0;
+  }
+
+  .collection-banner__nav {
+    margin-top: 6px;
+  }
+
+  .collection-banner__nav ul {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0 0 4px;
+    list-style: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .collection-banner__nav ul::-webkit-scrollbar {
+    display: none;
+  }
+
+  .collection-banner__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--nk-color-line);
+    background: transparent;
+    color: inherit;
+    font-family: var(--nk-font-spec);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .collection-banner--image .collection-banner__pill {
+    border-color: rgb(250 248 245 / 0.28);
+  }
+
+  .collection-banner__pill:hover {
+    border-color: currentColor;
+  }
+
+  .collection-banner__pill[aria-current='page'] {
+    background: var(--nk-color-text);
+    border-color: var(--nk-color-text);
+    color: var(--nk-color-bg);
+  }
+
+  .collection-banner--image .collection-banner__pill[aria-current='page'] {
+    background: #faf8f5;
+    border-color: #faf8f5;
+    color: #14110e;
+  }
+
+  .collection-banner__pill-count {
+    font-size: 0.625rem;
+    opacity: 0.65;
+    font-variant-numeric: tabular-nums;
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -110,8 +325,8 @@
   "settings": [
     { "type": "checkbox", "id": "show_description", "label": "Show collection description", "default": true },
     { "type": "checkbox", "id": "use_product_image", "label": "Use the first product image when the collection has no image", "default": false },
-    { "type": "link_list", "id": "menu", "label": "Related collections menu", "info": "Optional row of links under the title." },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" }
+    { "type": "link_list", "id": "menu", "label": "Related collections menu", "info": "Optional row of links under the title. Falls back to store collections when blank." },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
   ],
   "presets": [{ "name": "Collection banner" }],
   "enabled_on": { "templates": ["collection"] }

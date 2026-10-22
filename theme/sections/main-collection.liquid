@@ -1,22 +1,22 @@
 {%- comment -%}
-  Collection page (master-plan/07 DC-01): header, merchandising pills, filters + sort (DC-02,
-  snippets/facets.liquid + <nk-facets>), product grid and real pagination links.
+  Collection page (master-plan/07 DC-01): header, merchandising pills, filters + sort + layout
+  switcher (DC-02, snippets/facets.liquid + <nk-facets>), product grid and real pagination links.
   <nk-facets> re-renders this section with Section Rendering, so everything that depends on the
   active filters lives inside it; the header above shows the unfiltered total. The header can be
   turned off when a Collection banner section sits above.
 {%- endcomment -%}
 {%- paginate collection.products by section.settings.products_per_page -%}
-  <div class="section-spacing">
+  <div class="main-collection{% if section.settings.show_header %} section-spacing{% else %} main-collection--flush-top{% endif %}">
     {%- if section.settings.show_header -%}
-    <div class="collection-header collection-header--riviera">
-      <span class="eyebrow">{{ 'collection.product_count' | t: count: collection.all_products_count }}</span>
-      {%- assign collection_title = collection.title | escape -%}
-      {% render 'reveal-heading', text: collection_title, entrance: 'fold', hover: 'refold', class: 'display', tag: 'h1', play_on_load: true %}
-    </div>
+      <div class="collection-header collection-header--riviera">
+        <span class="eyebrow">{{ 'collection.product_count' | t: count: collection.all_products_count }}</span>
+        {%- assign collection_title = collection.title | escape -%}
+        {% render 'reveal-heading', text: collection_title, entrance: 'words', class: 'display', tag: 'h1', play_on_load: true %}
+      </div>
 
-    {%- if section.settings.show_description and collection.description != blank -%}
-      <div class="rte text-muted" style="max-width: 70ch; margin-bottom: 20px;">{{ collection.description }}</div>
-    {%- endif -%}
+      {%- if section.settings.show_description and collection.description != blank -%}
+        <div class="rte text-muted main-collection__description">{{ collection.description }}</div>
+      {%- endif -%}
     {%- endif -%}
 
     {%- assign pills = section.settings.pills_menu -%}
@@ -37,45 +37,93 @@
         results_url: collection.url,
         count: collection.products_count,
         show_filters: section.settings.show_filters,
-        show_sort: section.settings.show_sort
+        show_sort: section.settings.show_sort,
+        columns_mobile: section.settings.columns_mobile,
+        columns_desktop: section.settings.columns_desktop
       %}
 
       <div class="facets__results-grid" data-facets-results>
         {%- if collection.products.size > 0 -%}
           <nk-stagger>
-          <ul
-            class="product-grid"
-            role="list"
-            style="--nk-cols-mobile: {{ section.settings.columns_mobile }}; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
-          >
-            {%- for product in collection.products -%}
-              <li data-stagger-item>
-                {%- assign eager = false -%}
-                {%- if forloop.index <= 4 and paginate.current_page == 1 -%}{%- assign eager = true -%}{%- endif -%}
-                {% render 'product-card', product: product, eager: eager, heading_tag: 'h2' %}
-              </li>
-            {%- endfor -%}
-          </ul>
+            <ul
+              class="product-grid"
+              role="list"
+              style="--nk-cols-mobile: {{ section.settings.columns_mobile }}; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
+            >
+              {%- for product in collection.products -%}
+                <li data-stagger-item>
+                  {%- assign eager = false -%}
+                  {%- if forloop.index <= 4 and paginate.current_page == 1 -%}{%- assign eager = true -%}{%- endif -%}
+                  {% render 'product-card', product: product, eager: eager, heading_tag: 'h2' %}
+                </li>
+              {%- endfor -%}
+            </ul>
           </nk-stagger>
         {%- elsif collection.all_products_count > 0 -%}
-          <div class="cart-empty">
-            <p class="cart-empty__title">{{ 'facets.no_matches' | t }}</p>
-            <a class="button" href="{{ collection.url }}" data-facets-link>{{ 'facets.clear_all' | t }}</a>
+          <div class="main-collection__empty">
+            <p class="eyebrow">0 results</p>
+            <p class="main-collection__empty-title">{{ 'facets.no_matches' | t }}</p>
+            <nk-magnetic strength="0.18">
+              <a class="button" href="{{ collection.url }}" data-facets-link>{{ 'facets.clear_all' | t }}</a>
+            </nk-magnetic>
           </div>
         {%- else -%}
-          <div class="cart-empty">
-            <p class="cart-empty__title">{{ 'collection.empty' | t }}</p>
-            <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'collection.shop_all' | t }}</a>
+          <div class="main-collection__empty">
+            <p class="eyebrow">{{ collection.title | escape }}</p>
+            <p class="main-collection__empty-title">{{ 'collection.empty' | t }}</p>
+            <nk-magnetic strength="0.18">
+              <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'collection.shop_all' | t }}</a>
+            </nk-magnetic>
           </div>
         {%- endif -%}
 
         {%- if paginate.pages > 1 -%}
-          {% render 'pagination', paginate: paginate %}
+          <div class="main-collection__pagination">
+            {% render 'pagination', paginate: paginate %}
+          </div>
         {%- endif -%}
       </div>
     </nk-facets>
   </div>
 {%- endpaginate -%}
+
+{% stylesheet %}
+  .main-collection--flush-top {
+    padding-bottom: clamp(56px, 8vw, 112px);
+  }
+
+  .main-collection__description {
+    max-width: 65ch;
+    margin-bottom: 24px;
+  }
+
+  .main-collection__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: clamp(56px, 9vw, 112px) 24px;
+    border: 1px solid var(--nk-color-line);
+    text-align: center;
+  }
+
+  .main-collection__empty-title {
+    margin: 0 0 6px;
+    font-family: var(--nk-font-display);
+    font-size: clamp(1.35rem, 2.5vw, 2rem);
+  }
+
+  .main-collection__pagination {
+    margin-top: clamp(40px, 6vw, 72px);
+    padding-top: 24px;
+    border-top: 1px solid var(--nk-color-line);
+  }
+
+  .main-collection__pagination .pagination {
+    margin-top: 0;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -94,7 +142,7 @@
       ],
       "default": "2"
     },
-    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 3, "max": 5, "step": 1, "default": 4 },
+    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 5, "step": 1, "default": 4 },
     { "type": "link_list", "id": "pills_menu", "label": "Category links menu", "info": "Optional row of links to related collections." },
     { "type": "checkbox", "id": "show_description", "label": "Show collection description", "default": true },
     { "type": "checkbox", "id": "show_filters", "label": "Show filters", "default": true, "info": "Filters come from Shopify's Search & Discovery app." },

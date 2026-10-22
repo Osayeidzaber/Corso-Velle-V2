@@ -58,6 +58,9 @@ export function replaceElementById(html: string, id: string): boolean {
   const focusKey = captureFocus(current);
   current.replaceWith(document.importNode(next, true));
   const fresh = document.getElementById(id);
-  if (fresh) restoreFocus(fresh, focusKey);
+  if (fresh) {
+    restoreFocus(fresh, focusKey);
+    fresh.dispatchEvent(new CustomEvent('nk:section:replaced', { bubbles: true, detail: { id } }));
+  }
   return true;
 }

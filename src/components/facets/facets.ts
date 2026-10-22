@@ -1,20 +1,27 @@
 import { define } from '../../core/define';
 import { captureFocus, parseHTML, restoreFocus } from '../../core/dom';
 import { NkElement } from '../../core/element';
+import { animate } from '../../core/motion';
 import { announce } from '../../services/announce';
 import { overlay } from '../../services/overlay';
 import { Sequencer } from '../../services/request';
 import { renderSection } from '../../services/sections';
 
+const STORAGE_MOBILE_KEY = 'nk:grid-cols-mobile';
+const STORAGE_DESKTOP_KEY = 'nk:grid-cols-desktop';
+
 /**
- * <nk-facets data-section-id="…"> (master-plan/07 DC-02) wraps the filter form, active chips and
- * the result grid of a collection or search section (snippets/facets.liquid).
+ * <nk-facets data-section-id="…"> (master-plan/07 DC-02) wraps the filter form, active chips,
+ * interactive layout switcher, and the result grid of a collection or search section
+ * (snippets/facets.liquid).
  *
  * - Apply (drawer submit), a sort change, or a chip / Clear all link re-renders this section via
  *   Section Rendering and replaces this element's children; the URL is pushed to history and
  *   Back/Forward re-render from the URL. Only the latest request may render (Sequencer).
  * - The drawer is a draft: closing it without applying resets the form to the applied state,
  *   and "Clear all" inside the drawer only clears the draft.
+ * - Layout switcher buttons ([data-grid-cols-mobile], [data-grid-cols-desktop]) update the
+ *   product grid columns, persist the choice in sessionStorage, and smoothly animate the grid.
  * - On failure the previous results stay and an inline error links to the full-page URL.
  *
  * All listeners are delegated on this element, so they survive the children being replaced.
@@ -24,6 +31,7 @@ export class NkFacets extends NkElement {
 
   protected mount(): void {
     this.setAttribute('data-enhanced', '');
+    this.#restoreGridLayout();
 
     this.on(this, 'submit', (event) => {
       const form = (event.target as Element).closest<HTMLFormElement>('form[data-facets-form]');
@@ -42,6 +50,23 @@ export class NkFacets extends NkElement {
     this.on(this, 'click', (event) => {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const target = event.target as Element;
+
+      const mobileBtn = target.closest<HTMLButtonElement>('[data-grid-cols-mobile]');
+      if (mobileBtn) {
+        event.preventDefault();
+        const cols = mobileBtn.dataset.gridColsMobile;
+        if (cols) this.#setGridLayout('mobile', cols, true);
+        return;
+      }
+
+      const desktopBtn = target.closest<HTMLButtonElement>('[data-grid-cols-desktop]');
+      if (desktopBtn) {
+        event.preventDefault();
+        const cols = desktopBtn.dataset.gridColsDesktop;
+        if (cols) this.#setGridLayout('desktop', cols, true);
+        return;
+      }
+
       const reset = target.closest<HTMLElement>('[data-facets-reset]');
       if (reset) {
         event.preventDefault();
@@ -71,6 +96,81 @@ export class NkFacets extends NkElement {
       if (form && new URL(form.action).pathname === location.pathname) void this.#render(location.href, false);
     });
     this.dispose(() => this.#sequencer.cancel());
+  }
+
+  #restoreGridLayout(): void {
+    try {
+      const savedMobile = sessionStorage.getItem(STORAGE_MOBILE_KEY);
+      if (savedMobile) this.#setGridLayout('mobile', savedMobile, false);
+      const savedDesktop = sessionStorage.getItem(STORAGE_DESKTOP_KEY);
+      if (savedDesktop) this.#setGridLayout('desktop', savedDesktop, false);
+    } catch {
+      // sessionStorage may be unavailable in restricted contexts
+    }
+  }
+
+  #setGridLayout(mode: 'mobile' | 'desktop', cols: string, animated: boolean): void {
+    const grid = this.querySelector<HTMLElement>('.product-grid');
+    if (mode === 'mobile') {
+      grid?.style.setProperty('--nk-cols-mobile', cols);
+      for (const btn of this.querySelectorAll<HTMLButtonElement>('[data-grid-cols-mobile]')) {
+        btn.setAttribute('aria-pressed', String(btn.dataset.gridColsMobile === cols));
+      }
+      try {
+        sessionStorage.setItem(STORAGE_MOBILE_KEY, cols);
+      } catch {
+        // ignore
+      }
+    } else {
+      grid?.style.setProperty('--nk-cols-desktop', cols);
+      for (const btn of this.querySelectorAll<HTMLButtonElement>('[data-grid-cols-desktop]')) {
+        btn.setAttribute('aria-pressed', String(btn.dataset.gridColsDesktop === cols));
+      }
+      try {
+        sessionStorage.setItem(STORAGE_DESKTOP_KEY, cols);
+      } catch {
+        // ignore
+      }
+    }
+
+    if (animated && grid) {
+      this.#animateGridItems(grid);
+    }
+  }
+
+  #animateGridItems(container: HTMLElement): void {
+    const items = container.querySelectorAll<HTMLElement>(':scope > li, [data-stagger-item]');
+    items.forEach((item, index) => {
+      if (index > 15) return;
+      animate(
+        item,
+        [
+          { opacity: 0, transform: 'translateY(18px)' },
+          { opacity: 1, transform: 'none' },
+        ],
+        {
+          duration: 520,
+          delay: index * 32,
+          easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+          fill: 'backwards',
+        },
+        { decorative: true },
+      );
+      const img = item.querySelector<HTMLElement>('.card__media > img:first-child');
+      if (img) {
+        animate(
+          img,
+          [{ transform: 'scale(1.04)' }, { transform: 'scale(1)' }],
+          {
+            duration: 720,
+            delay: index * 32,
+            easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+            fill: 'backwards',
+          },
+          { decorative: true },
+        );
+      }
+    });
   }
 
   /** Form state as a URL; empty values (blank price fields) are dropped and page resets. */
@@ -115,9 +215,13 @@ export class NkFacets extends NkElement {
       if (push) history.pushState(history.state, '', url);
       const focusKey = captureFocus(this);
       this.replaceChildren(...[...fresh.childNodes].map((node) => document.importNode(node, true)));
+      this.#restoreGridLayout();
       restoreFocus(this, focusKey);
       this.dispatchEvent(new CustomEvent('nk:section:replaced', { bubbles: true, detail: { regions: ['facets'] } }));
       this.removeAttribute('aria-busy');
+
+      const grid = this.querySelector<HTMLElement>('.product-grid');
+      if (grid) this.#animateGridItems(grid);
 
       const label = this.querySelector('[data-results-label]')?.textContent?.trim();
       if (label) announce.polite(label);

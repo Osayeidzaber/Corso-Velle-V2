@@ -10,7 +10,7 @@
   <ul class="pagination" role="list">
     {%- if paginate.previous -%}
       <li>
-        <a href="{{ paginate.previous.url }}" aria-label="{{ 'general.previous_page' | t }}">
+        <a href="{{ paginate.previous.url }}" data-facets-link aria-label="{{ 'general.previous_page' | t }}">
           {%- render 'icon', name: 'arrow-left', size: 18 -%}
         </a>
       </li>
@@ -18,7 +18,7 @@
     {%- for part in paginate.parts -%}
       <li>
         {%- if part.is_link -%}
-          <a href="{{ part.url }}" aria-label="{{ 'general.page_n' | t: number: part.title }}">{{ part.title }}</a>
+          <a href="{{ part.url }}" data-facets-link aria-label="{{ 'general.page_n' | t: number: part.title }}">{{ part.title }}</a>
         {%- elsif part.title == paginate.current_page -%}
           <span aria-current="page">{{ part.title }}</span>
         {%- else -%}
@@ -28,7 +28,7 @@
     {%- endfor -%}
     {%- if paginate.next -%}
       <li>
-        <a href="{{ paginate.next.url }}" aria-label="{{ 'general.next_page' | t }}">
+        <a href="{{ paginate.next.url }}" data-facets-link aria-label="{{ 'general.next_page' | t }}">
           {%- render 'icon', name: 'arrow-right', size: 18 -%}
         </a>
       </li>

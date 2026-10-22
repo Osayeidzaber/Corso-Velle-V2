@@ -16,7 +16,7 @@
           "type": "eyebrow",
           "settings": {
             "text": "Corso Velle · Collection 2026",
-            "shine": true
+            "shine": false
           }
         },
         "heading": {
@@ -24,10 +24,10 @@
           "settings": {
             "heading": "Timeless Basics",
             "heading_italic": "'26",
-            "entrance": "rise",
+            "entrance": "cut",
             "text_style": "none",
-            "hover": "lift",
-            "italic_style": "gradient"
+            "hover": "none",
+            "italic_style": "none"
           }
         },
         "text": {
@@ -178,7 +178,7 @@
         "eyebrow": "New season",
         "heading": "Just",
         "heading_italic": "landed",
-        "entrance": "blur",
+        "entrance": "cut",
         "limit": 8,
         "columns_desktop": 4,
         "color_scheme": "scheme-1"
@@ -272,7 +272,7 @@
         "text": "<p>Timeless Basics by Corso Velle is a refined collection of everyday essentials designed for effortless, modern dressing.</p>",
         "link_label": "Discover the collection",
         "link": "shopify://collections/timeless-basics-26",
-        "heading_entrance": "flip",
+        "heading_entrance": "rise",
         "entrance": "fade",
         "text_style": "none",
         "color_scheme": "scheme-1"

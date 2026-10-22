@@ -118,7 +118,11 @@
     "inches": "in",
     "centimetres": "cm",
     "decrease_quantity": "Decrease quantity",
-    "increase_quantity": "Increase quantity"
+    "increase_quantity": "Increase quantity",
+    "in_stock": "In stock — ready to ship",
+    "select_size_prompt": "Select a size",
+    "zoom": "Zoom image",
+    "quick_add": "Quick add"
   },
   "customers": {
     "login": {

@@ -64,7 +64,13 @@
                           {{ item_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300, 450, 600', sizes: '(min-width: 750px) 25vw, 50vw', alt: '' }}
                         </a>
                       {%- endif -%}
-                      <p class="spec text-muted">{{ 'search.type_' | append: item.object_type | t }}</p>
+                      <p class="spec text-muted">
+                        {%- if item.object_type == 'article' -%}
+                          {{ 'search.type_article' | t }}
+                        {%- else -%}
+                          {{ 'search.type_page' | t }}
+                        {%- endif -%}
+                      </p>
                       <h2 class="card__heading"><a class="card__title" href="{{ item.url }}">{{ item.title | escape }}</a></h2>
                       {%- assign excerpt = item.excerpt | default: item.content | strip_html | truncatewords: 20 -%}
                       {%- if excerpt != blank -%}<p class="text-muted">{{ excerpt }}</p>{%- endif -%}

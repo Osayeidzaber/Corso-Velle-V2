@@ -1,5 +1,3 @@
-import './expand-media.css';
-
 import { t } from '../../core/config';
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';

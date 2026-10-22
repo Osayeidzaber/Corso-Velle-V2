@@ -1,70 +1,117 @@
 {%- comment -%}
-  Shop by category (rewrite of the supplied cardnav example as a homepage section, Riviera
-  board 16): a large lead card plus smaller cards, each a collection with its own image, an
-  optional description and up to four sub-links. Cards rise in sequence (GSAP, <nk-stagger>).
-  Layout uses Tailwind utilities.
+  Shop by category ("The wardrobe"): architectural studio category index where every garment image
+  fits completely inside its studio frame (object-contain, never cropped), paired with index
+  numbering, live product counts, and staggered entrance choreography (<nk-stagger>).
 {%- endcomment -%}
 {%- assign cards = section.blocks | where: 'type', 'category' -%}
 {%- if cards.size > 0 -%}
-  <div class="full-width section-spacing color-{{ section.settings.color_scheme }}">
+  <div class="category-cards full-width section-spacing color-{{ section.settings.color_scheme }}">
     <div style="width: var(--content-width); margin-inline: auto;">
-      <div class="section-head">
-        <div class="flex flex-col gap-4">
-          {%- if section.settings.eyebrow != blank -%}<span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
+      <div class="section-head category-cards__head">
+        <div class="flex flex-col gap-3">
+          {%- if section.settings.eyebrow != blank -%}
+            <nk-reveal mode="fade">
+              <span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>
+            </nk-reveal>
+          {%- endif -%}
           {%- liquid
-                assign heading_html = section.settings.heading | escape
-                assign italic = section.settings.heading_italic | escape
-              -%}
-          {% render 'reveal-heading', text: heading_html, italic: italic, entrance: 'fold', hover: 'refold', class: 'display' %}
+            assign heading_html = section.settings.heading | escape
+            assign italic = section.settings.heading_italic | escape
+          -%}
+          {% render 'reveal-heading', text: heading_html, italic: italic, entrance: 'cut', class: 'display' %}
         </div>
         {%- if section.settings.link != blank -%}
-          <a class="spec link-underline" href="{{ section.settings.link }}">{{ section.settings.link_label | escape }}</a>
+          <nk-reveal mode="fade" delay="0.12">
+            <a class="button button--secondary category-cards__cta" href="{{ section.settings.link }}" data-magnetic>
+              {{- section.settings.link_label | escape }} →
+            </a>
+          </nk-reveal>
         {%- endif -%}
       </div>
 
-      <nk-stagger class="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4 lg:grid-rows-2 lg:h-[min(78vh,760px)]">
+      <nk-stagger class="grid grid-cols-2 gap-4 md:gap-5 lg:grid-cols-5">
         {%- for block in cards -%}
           {%- liquid
             assign c = block.settings.collection
             assign image = block.settings.image | default: c.featured_image
+            if image == blank and c != blank and c.products.first != blank
+              assign image = c.products.first.featured_media
+            endif
             assign title = block.settings.title | default: c.title
             assign url = c.url | default: block.settings.link
-            assign span = 'col-span-1 aspect-[3/4] lg:aspect-auto'
-            if forloop.first
-              assign span = 'col-span-2 aspect-[4/5] lg:col-span-2 lg:row-span-2 lg:aspect-auto'
-            endif
+            assign idx = forloop.index | prepend: '0' | slice: -2, 2
           -%}
-          <div class="category-card group relative overflow-hidden bg-surface {{ span }}" data-stagger-item {{ block.shopify_attributes }}>
-            {%- if image -%}
-              {{ image | image_url: width: 1600 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1200, 1600', sizes: '(min-width: 990px) 50vw, 100vw', class: 'absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] ease-out-soft group-hover:scale-105', alt: '' }}
-            {%- else -%}
-              {{ 'collection-1' | placeholder_svg_tag: 'absolute inset-0 h-full w-full' }}
-            {%- endif -%}
-            <span class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" aria-hidden="true"></span>
-            <div class="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-5 text-[#FAF8F5] md:p-7">
-              <h3 class="display {% if forloop.first %}text-5xl md:text-7xl{% else %}text-3xl md:text-4xl{% endif %}">
-                <a href="{{ url }}" class="after:absolute after:inset-0 after:content-['']">
-                  {%- if forloop.first -%}{{ title | escape }}{%- else -%}<em>{{ title | escape }}</em>{%- endif -%}
-                </a>
-              </h3>
+          <article class="category-card group relative flex flex-col border border-line bg-bg transition-colors duration-300 hover:border-text" data-stagger-item {{ block.shopify_attributes }}>
+            <div class="flex items-center justify-between border-b border-line px-3.5 py-2.5">
+              <span class="spec text-muted">{{ idx }}</span>
+              {%- if c != blank and c.all_products_count > 0 -%}
+                <span class="spec text-muted">{{ 'collection.product_count' | t: count: c.all_products_count }}</span>
+              {%- else -%}
+                <span class="spec text-muted">↗</span>
+              {%- endif -%}
+            </div>
+
+            <a
+              href="{{ url }}"
+              class="category-card__media relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden bg-white p-4 md:p-5"
+              tabindex="-1"
+              aria-hidden="true"
+              data-cursor="view"
+            >
+              {%- if image -%}
+                {{
+                  image
+                  | image_url: width: 1200
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '360, 540, 720, 960, 1200',
+                    sizes: '(min-width: 990px) 20vw, 50vw',
+                    class: 'max-h-full max-w-full h-full w-full object-contain transition-transform duration-500 ease-out-soft group-hover:scale-[1.02]',
+                    alt: ''
+                }}
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag: 'h-full w-full object-contain' }}
+              {%- endif -%}
+            </a>
+
+            <div class="flex flex-1 flex-col justify-between gap-2 border-t border-line p-4">
+              <div class="flex items-baseline justify-between gap-2">
+                <h3 class="display text-2xl md:text-[1.75rem]">
+                  <a href="{{ url }}" class="after:absolute after:inset-0 after:content-['']">
+                    <em>{{ title | escape }}</em>
+                  </a>
+                </h3>
+                <span class="spec transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true">↗</span>
+              </div>
               {%- if block.settings.description != blank -%}
-                <p class="max-w-[36ch] text-sm leading-relaxed text-[#FAF8F5]/85">{{ block.settings.description | escape }}</p>
+                <p class="text-xs leading-relaxed text-muted">{{ block.settings.description | escape }}</p>
               {%- endif -%}
               {%- assign sub = block.settings.menu -%}
               {%- if sub.links.size > 0 -%}
-                <ul class="relative z-10 flex flex-wrap gap-x-5 gap-y-1" role="list">
+                <ul class="relative z-10 flex flex-wrap gap-x-4 gap-y-1 pt-1" role="list">
                   {%- for link in sub.links limit: 4 -%}
-                    <li><a class="spec link-underline text-[#FAF8F5]" href="{{ link.url }}">↗ {{ link.title | escape }}</a></li>
+                    <li><a class="spec link-underline" href="{{ link.url }}">↗ {{ link.title | escape }}</a></li>
                   {%- endfor -%}
                 </ul>
               {%- endif -%}
             </div>
-          </div>
+          </article>
         {%- endfor -%}
       </nk-stagger>
     </div>
   </div>
 {%- endif -%}
+
+{% stylesheet %}
+  .category-cards__head {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--nk-color-line);
+  }
+  .category-cards__cta {
+    min-height: 46px;
+    padding-inline: 24px;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {

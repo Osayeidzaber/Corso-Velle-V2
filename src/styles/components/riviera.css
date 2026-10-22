@@ -111,10 +111,6 @@ em,
 }
 
 /* ---------- Header ---------- */
-nk-header {
-  border-bottom-color: transparent;
-}
-
 .header {
   min-height: 64px;
 }
@@ -142,7 +138,7 @@ nk-header {
 
 @media (min-width: 990px) {
   .header {
-    min-height: 80px;
+    min-height: 76px;
   }
 }
 
@@ -153,7 +149,7 @@ nk-header .header__logo img {
   transition: filter var(--nk-dur-small);
 }
 
-nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]) .header__logo img {
+nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]):not([data-scrolled]):not(:has(.nav__disclosure[open])):not(:has(nk-search-pill[data-open])) .header__logo img {
   filter: brightness(0) invert(1);
 }
 

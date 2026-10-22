@@ -1,64 +1,260 @@
 import { t } from '../../core/config';
 import { NkElement } from '../../core/element';
-import { transitionsAllowed } from '../../core/motion';
+import { animate, transitionsAllowed } from '../../core/motion';
 
 /**
- * <nk-gallery> (master-plan/08 PR-01). A native horizontal scroll-snap track, so vertical page
- * scrolling and pinch zoom stay native. Buttons and the "3 / 7" counter are enhancements; the
- * slide nearest the start of the track is "current". When the variant changes, the gallery moves
- * to that variant's featured media (data-variant-media-id on the buy region).
- * Videos pause when their slide stops being current.
+ * <nk-gallery> (master-plan/08 PR-01).
+ *
+ * Supports:
+ * - Native horizontal scroll-snap track on mobile and stacked/editorial grid on desktop
+ * - Interactive thumbnail navigation strip ([data-gallery-thumb])
+ * - Keyboard ArrowLeft / ArrowRight navigation
+ * - Automatic scroll/highlight when a variant with featured media is selected
+ * - High-resolution lightbox zoom modal (<dialog closedby="any">) with 2x pan zoom & light-dismiss
  */
 export class NkGallery extends NkElement {
   #track!: HTMLElement;
   #slides: HTMLElement[] = [];
+  #thumbs: HTMLButtonElement[] = [];
   #index = 0;
+  #zoomed = false;
 
   protected mount(): void {
     const track = this.ref('track');
     if (!track) return;
     this.#track = track;
     this.#slides = this.refs('slide');
-    if (this.#slides.length < 2) return;
+    this.#thumbs = [...this.querySelectorAll<HTMLButtonElement>('[data-gallery-thumb]')];
 
-    for (const slide of this.#slides) {
-      this.observeIntersection(
-        slide,
-        (entry) => {
-          if (entry.intersectionRatio >= 0.6) this.#setCurrent(this.#slides.indexOf(slide));
-        },
-        { root: this.#track, threshold: [0.6] },
-      );
+    if (this.#slides.length > 1) {
+      for (const slide of this.#slides) {
+        this.observeIntersection(
+          slide,
+          (entry) => {
+            if (entry.intersectionRatio >= 0.6) this.#setCurrent(this.#slides.indexOf(slide));
+          },
+          { root: this.#track, threshold: [0.6] },
+        );
+      }
     }
+
     this.on(this, 'click', (event) => {
-      const button = (event.target as Element).closest<HTMLButtonElement>('[data-gallery-step]');
-      if (button) this.go(this.#index + Number(button.dataset.galleryStep));
+      const target = event.target as Element;
+
+      const thumb = target.closest<HTMLButtonElement>('[data-gallery-thumb]');
+      if (thumb) {
+        event.preventDefault();
+        const idx = Number(thumb.dataset.galleryThumb);
+        if (!Number.isNaN(idx)) this.go(idx, true);
+        return;
+      }
+
+      const stepBtn = target.closest<HTMLButtonElement>('[data-gallery-step]');
+      if (stepBtn) {
+        event.preventDefault();
+        this.go(this.#index + Number(stepBtn.dataset.galleryStep));
+        return;
+      }
+
+      const zoomBtn = target.closest<HTMLButtonElement>('[data-gallery-zoom]');
+      if (zoomBtn) {
+        event.preventDefault();
+        const idx = Number(zoomBtn.dataset.galleryZoom);
+        this.openLightbox(Number.isNaN(idx) ? this.#index : idx);
+        return;
+      }
+
+      const slideImg = target.closest<HTMLElement>('.gallery__slide[data-zoom-src] > img');
+      if (slideImg) {
+        const slide = slideImg.closest<HTMLElement>('.gallery__slide');
+        const idx = slide ? this.#slides.indexOf(slide) : this.#index;
+        this.openLightbox(idx >= 0 ? idx : this.#index);
+      }
     });
+
+    this.#setupLightbox();
+
     const section = this.closest('[data-product-section]');
     if (section) {
       this.on(section, 'nk:variant:changed', () => {
         const mediaId = section.querySelector<HTMLElement>('[data-region="buy"]')?.dataset.variantMediaId;
         const target = mediaId ? this.#slides.findIndex((s) => s.dataset.mediaId === mediaId) : -1;
-        if (target >= 0) this.go(target);
+        if (target >= 0) this.go(target, true);
       });
     }
-    this.#setCurrent(0);
+
+    const initialMediaId = this.dataset.initialMediaId;
+    const initialIdx = initialMediaId ? this.#slides.findIndex((s) => s.dataset.mediaId === initialMediaId) : 0;
+    this.#setCurrent(initialIdx >= 0 ? initialIdx : 0);
   }
 
-  go(index: number): void {
+  go(index: number, scrollDesktop = false): void {
     const clamped = Math.max(0, Math.min(this.#slides.length - 1, index));
     const slide = this.#slides[clamped];
     if (!slide) return;
-    this.#track.scrollTo({ left: slide.offsetLeft - this.#track.offsetLeft, behavior: transitionsAllowed() ? 'smooth' : 'instant' });
+    const behavior: ScrollBehavior = transitionsAllowed() ? 'smooth' : 'instant';
+
+    if (this.#track.scrollWidth > this.#track.clientWidth + 4) {
+      this.#track.scrollTo({
+        left: slide.offsetLeft - this.#track.offsetLeft,
+        behavior,
+      });
+    } else if (scrollDesktop && typeof slide.scrollIntoView === 'function') {
+      slide.scrollIntoView({ behavior, block: 'nearest' });
+    }
+
+    animate(
+      slide,
+      [{ opacity: 0.72 }, { opacity: 1 }],
+      { duration: 260, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+    );
+
     this.#setCurrent(clamped);
   }
 
+  openLightbox(index: number): void {
+    const dialog = this.ref<HTMLDialogElement>('lightbox');
+    if (!dialog) return;
+    this.#setCurrent(index);
+    this.#renderLightboxSlide(this.#index);
+    if (typeof dialog.showModal === 'function' && !dialog.open) {
+      dialog.showModal();
+    } else {
+      dialog.setAttribute('open', '');
+    }
+  }
+
+  closeLightbox(): void {
+    const dialog = this.ref<HTMLDialogElement>('lightbox');
+    if (!dialog) return;
+    this.#setZoom(false);
+    if (typeof dialog.close === 'function' && dialog.open) {
+      dialog.close();
+    } else {
+      dialog.removeAttribute('open');
+    }
+  }
+
+  #setupLightbox(): void {
+    const dialog = this.ref<HTMLDialogElement>('lightbox');
+    if (!dialog) return;
+
+    this.on(dialog, 'click', (event) => {
+      const target = event.target as Element;
+      // Light-dismiss when clicking backdrop (dialog itself) or stage background
+      if (target === dialog || target.hasAttribute('data-lightbox-close') || target.closest('[data-lightbox-close]')) {
+        event.preventDefault();
+        this.closeLightbox();
+        return;
+      }
+
+      const step = target.closest<HTMLButtonElement>('[data-lightbox-step]');
+      if (step) {
+        event.preventDefault();
+        const count = this.#slides.length;
+        const nextIdx = (this.#index + Number(step.dataset.lightboxStep) + count) % count;
+        this.#setCurrent(nextIdx);
+        this.#renderLightboxSlide(nextIdx);
+        return;
+      }
+
+      const img = target.closest<HTMLElement>('[data-ref="lightbox-img"]');
+      if (img) {
+        this.#setZoom(!this.#zoomed, event as MouseEvent);
+      }
+    });
+
+    const stage = this.ref<HTMLElement>('lightbox-stage');
+    if (stage) {
+      this.on(stage, 'pointermove', (event) => {
+        if (!this.#zoomed) return;
+        const e = event as PointerEvent;
+        const rect = stage.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        const xPct = ((e.clientX - rect.left) / rect.width - 0.5) * -80;
+        const yPct = ((e.clientY - rect.top) / rect.height - 0.5) * -80;
+        stage.style.setProperty('--zoom-x', `${xPct.toFixed(1)}%`);
+        stage.style.setProperty('--zoom-y', `${yPct.toFixed(1)}%`);
+      });
+    }
+
+    this.on(dialog, 'keydown', (event) => {
+      const key = (event as KeyboardEvent).key;
+      if (key === 'ArrowLeft' && this.#slides.length > 1) {
+        event.preventDefault();
+        const nextIdx = (this.#index - 1 + this.#slides.length) % this.#slides.length;
+        this.#setCurrent(nextIdx);
+        this.#renderLightboxSlide(nextIdx);
+      } else if (key === 'ArrowRight' && this.#slides.length > 1) {
+        event.preventDefault();
+        const nextIdx = (this.#index + 1) % this.#slides.length;
+        this.#setCurrent(nextIdx);
+        this.#renderLightboxSlide(nextIdx);
+      }
+    });
+  }
+
+  #setZoom(zoomed: boolean, event?: MouseEvent): void {
+    this.#zoomed = zoomed;
+    const stage = this.ref<HTMLElement>('lightbox-stage');
+    if (!stage) return;
+    stage.toggleAttribute('data-zoomed', zoomed);
+    if (!zoomed) {
+      stage.style.setProperty('--zoom-x', '0%');
+      stage.style.setProperty('--zoom-y', '0%');
+    } else if (event) {
+      const rect = stage.getBoundingClientRect();
+      if (rect.width && rect.height) {
+        const xPct = ((event.clientX - rect.left) / rect.width - 0.5) * -80;
+        const yPct = ((event.clientY - rect.top) / rect.height - 0.5) * -80;
+        stage.style.setProperty('--zoom-x', `${xPct.toFixed(1)}%`);
+        stage.style.setProperty('--zoom-y', `${yPct.toFixed(1)}%`);
+      }
+    }
+  }
+
+  #renderLightboxSlide(index: number): void {
+    const slide = this.#slides[index];
+    const stage = this.ref<HTMLElement>('lightbox-stage');
+    if (!slide || !stage) return;
+
+    let img = this.ref<HTMLImageElement>('lightbox-img');
+    if (!img) {
+      img = document.createElement('img');
+      img.className = 'gallery-lightbox__img';
+      img.dataset.ref = 'lightbox-img';
+      stage.append(img);
+    }
+
+    const counter = this.ref<HTMLElement>('lightbox-counter');
+    this.#setZoom(false);
+    const zoomSrc = slide.dataset.zoomSrc || slide.querySelector('img')?.src || '';
+    const zoomAlt = slide.dataset.zoomAlt || slide.querySelector('img')?.alt || '';
+    img.src = zoomSrc;
+    img.alt = zoomAlt;
+    if (counter) {
+      counter.textContent = t('product.media_position', { index: index + 1, count: this.#slides.length });
+    }
+
+    // Preload adjacent image for instant next-slide transition
+    const nextSlide = this.#slides[(index + 1) % this.#slides.length];
+    if (nextSlide?.dataset.zoomSrc) {
+      const preload = new Image();
+      preload.src = nextSlide.dataset.zoomSrc;
+    }
+  }
+
   #setCurrent(index: number): void {
-    if (index < 0) return;
+    if (index < 0 || index >= this.#slides.length) return;
     this.#index = index;
     this.#slides.forEach((slide, i) => {
       slide.toggleAttribute('data-current', i === index);
       if (i !== index) slide.querySelectorAll('video').forEach((video) => video.pause());
+    });
+    this.#thumbs.forEach((thumb, i) => {
+      const active = i === index;
+      thumb.classList.toggle('is-active', active);
+      thumb.setAttribute('aria-current', String(active));
     });
     const counter = this.ref('counter');
     if (counter) counter.textContent = t('product.media_position', { index: index + 1, count: this.#slides.length });

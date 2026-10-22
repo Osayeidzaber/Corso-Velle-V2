@@ -13,20 +13,35 @@ export class NkSizeGuide extends NkElement {
 
   protected mount(): void {
     this.#base = this.getAttribute('unit') === 'cm' ? 'cm' : 'in';
+    let initialUnit = this.#base;
+    try {
+      const saved = sessionStorage.getItem('nk:measure-unit');
+      if (saved === 'in' || saved === 'cm') initialUnit = saved;
+    } catch {
+      // ignore
+    }
     for (const button of this.refs<HTMLButtonElement>('unit')) {
       button.hidden = false;
-      this.on(button, 'click', () => this.#show(button.value === 'cm' ? 'cm' : 'in'));
+      this.on(button, 'click', () => {
+        const nextUnit = button.value === 'cm' ? 'cm' : 'in';
+        this.#show(nextUnit, true);
+      });
     }
-    this.#show(this.#base);
+    this.#show(initialUnit, false);
     this.#highlight();
     this.on(document, 'change', (event) => {
       if ((event.target as Element | null)?.closest('nk-variant-picker')) this.#highlight();
     });
-    // The picker region is re-rendered after each choice; re-read once it settles.
     this.on(document, 'nk:variant:changed', () => this.#highlight());
+    this.on(document, 'nk:unit:changed', (event) => {
+      const detail = (event as CustomEvent<{ unit: 'in' | 'cm'; source?: Element }>).detail;
+      if (detail?.source !== this && (detail?.unit === 'in' || detail?.unit === 'cm')) {
+        this.#show(detail.unit, false);
+      }
+    });
   }
 
-  #show(unit: 'in' | 'cm'): void {
+  #show(unit: 'in' | 'cm', broadcast = false): void {
     for (const cell of this.querySelectorAll<HTMLElement>('[data-value]')) {
       const value = Number.parseFloat(cell.dataset.value ?? '');
       if (Number.isNaN(value)) continue;
@@ -37,10 +52,22 @@ export class NkSizeGuide extends NkElement {
     for (const button of this.refs<HTMLButtonElement>('unit')) {
       button.setAttribute('aria-pressed', String(button.value === unit));
     }
+    if (broadcast) {
+      try {
+        sessionStorage.setItem('nk:measure-unit', unit);
+      } catch {
+        // ignore
+      }
+      this.emit('nk:unit:changed', { unit, source: this });
+    }
   }
 
   #highlight(): void {
-    const fieldset = document.querySelector<HTMLElement>(`nk-variant-picker fieldset[data-option-name="${this.getAttribute('option') ?? 'Size'}"]`);
+    const scope = this.closest('[data-product-section]') ?? document;
+    const optionName = (this.getAttribute('option') ?? 'Size').trim().toLowerCase();
+    const fieldset = [...scope.querySelectorAll<HTMLElement>('nk-variant-picker fieldset[data-option-name]')].find(
+      (el) => el.dataset.optionName?.trim().toLowerCase() === optionName,
+    );
     const chosen = fieldset?.querySelector<HTMLInputElement>('input:checked')?.value.trim().toLowerCase();
     for (const row of this.querySelectorAll<HTMLElement>('[data-size-row]')) {
       row.toggleAttribute('data-current', !!chosen && row.dataset.sizeRow?.trim().toLowerCase() === chosen);

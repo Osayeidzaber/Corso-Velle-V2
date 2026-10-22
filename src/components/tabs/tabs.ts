@@ -1,5 +1,3 @@
-import './tabs.css';
-
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
 import { animate } from '../../core/motion';
@@ -77,16 +75,11 @@ export class NkTabs extends NkElement {
     });
     this.#moveIndicator(animated);
     if (animated && previous !== index) {
-      // Transition panel: the new panel blurs/slides in, then its cards follow one by one.
       const panel = this.#panels[index]!;
-      const direction = index > previous ? 1 : -1;
       animate(
         panel,
-        [
-          { opacity: 0, transform: `translateX(${direction * 24}px)`, filter: 'blur(6px)' },
-          { opacity: 1, transform: 'none', filter: 'blur(0)' },
-        ],
-        { duration: 520, easing: 'cubic-bezier(.2,.7,.2,1)' },
+        [{ opacity: 0 }, { opacity: 1 }],
+        { duration: 280, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
         { decorative: true },
       );
       panel.querySelectorAll<HTMLElement>('[data-stagger-item], [data-tab-item]').forEach((item, i) => {
@@ -94,12 +87,21 @@ export class NkTabs extends NkElement {
         animate(
           item,
           [
-            { opacity: 0, transform: 'translateY(28px)' },
+            { opacity: 0, transform: 'translateY(22px)' },
             { opacity: 1, transform: 'none' },
           ],
-          { duration: 700, delay: 80 + i * 55, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards' },
+          { duration: 580, delay: 40 + i * 45, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'backwards' },
           { decorative: true },
         );
+        const img = item.querySelector<HTMLElement>('.card__media > img:first-child');
+        if (img) {
+          animate(
+            img,
+            [{ transform: 'scale(1.045)' }, { transform: 'scale(1)' }],
+            { duration: 780, delay: 40 + i * 45, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'backwards' },
+            { decorative: true },
+          );
+        }
       });
     }
     this.emit('nk:tabs:change', { index });

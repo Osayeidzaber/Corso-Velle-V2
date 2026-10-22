@@ -2,73 +2,118 @@ nk-search-pill {
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: 44px;
-}
-
-.search-pill__goo {
-  position: absolute;
-  inset: 0;
-  filter: url('#nk-goo');
-  pointer-events: none;
-}
-
-.search-pill__blob {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: 0;
-  width: 100%;
-  border-radius: 999px;
-  background: var(--nk-color-surface);
-  transition: width var(--nk-dur-overlay-in) var(--nk-ease-out);
-}
-
-.search-pill__blob--dot {
-  width: 36px;
-  left: auto;
-  right: 0;
+  min-height: var(--nk-tap);
 }
 
 .search-pill__form {
   position: relative;
   display: flex;
   align-items: center;
-  width: 240px;
-  transition: width var(--nk-dur-overlay-in) var(--nk-ease-out);
+  gap: 6px;
+  width: clamp(210px, 22vw, 290px);
+  height: 38px;
+  padding: 0 6px 0 12px;
+  border: 1px solid var(--nk-color-line);
+  border-radius: 999px;
+  background: var(--nk-color-surface);
+  color: var(--nk-color-text);
+  transition:
+    width var(--nk-dur-overlay-in) var(--nk-ease-out),
+    padding var(--nk-dur-overlay-in) var(--nk-ease-out),
+    border-color var(--nk-dur-small),
+    opacity var(--nk-dur-small);
 }
 
-.search-pill__form input {
+.search-pill__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  opacity: 0.65;
+}
+
+.search-pill__form input[type='search'] {
+  flex: 1 1 auto;
+  min-width: 0;
   width: 100%;
-  min-height: 36px;
-  padding: 0 14px;
+  height: 100%;
+  padding: 0 4px;
   border: 0;
   background: transparent;
+  color: inherit;
+  font-size: 0.875rem;
 }
 
-.search-pill__form input:focus-visible {
+.search-pill__form input[type='search']::placeholder {
+  color: var(--nk-color-text-muted);
+}
+
+.search-pill__form input[type='search']:focus-visible {
   outline: none;
 }
 
-nk-search-pill:focus-within .search-pill__blob {
-  box-shadow: inset 0 0 0 2px var(--nk-focus);
+.search-pill__form input[type='search']::-webkit-search-cancel-button {
+  -webkit-appearance: none;
 }
 
-/* Enhanced + collapsed: only the icon button shows. */
-nk-search-pill[data-enhanced]:not([data-open]) .search-pill__form {
+.search-pill__close {
+  flex: none;
+  min-width: 28px;
+  min-height: 28px;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  opacity: 0.7;
+}
+
+.search-pill__close:hover {
+  opacity: 1;
+}
+
+nk-search-pill[data-open] .search-pill__form:focus-within {
+  border-color: var(--nk-color-text);
+}
+
+/* Collapse the form whenever JS is active and the pill is not open (prevents FOUC before chunk loads). */
+html.js nk-search-pill:not([data-open]) .search-pill__form {
   width: 0;
+  padding: 0;
+  border-width: 0;
+  opacity: 0;
   overflow: hidden;
+  pointer-events: none;
 }
 
-nk-search-pill[data-enhanced]:not([data-open]) .search-pill__blob {
-  width: 44px;
+/* Without JS, hide the toggle and close buttons so the plain form works standalone. */
+html:not(.js) .search-pill__toggle,
+html:not(.js) .search-pill__close {
+  display: none;
 }
 
-nk-search-pill[data-enhanced]:not([data-open]) .search-pill__blob--dot {
-  width: 0;
+/* Loading spinner inside the pill */
+nk-search-pill[data-loading] .search-pill__icon {
+  animation: nk-spin 0.7s linear infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .search-pill__goo {
-    filter: none;
-  }
+/* Floating predictive search results panel under the pill */
+.search-pill__results {
+  position: absolute;
+  top: calc(100% + 10px);
+  inset-inline-end: 0;
+  z-index: 40;
+  width: min(460px, calc(100vw - 32px));
+  max-height: min(72dvh, 560px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px;
+  border: 1px solid var(--nk-color-line);
+  border-radius: var(--nk-radius);
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+  box-shadow: 0 20px 48px -16px rgb(0 0 0 / 0.28);
 }
+
+.search-pill__results .predictive__group:not(.predictive__group--queries) {
+  grid-template-columns: 1fr;
+}
+
