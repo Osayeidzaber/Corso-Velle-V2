@@ -26,6 +26,9 @@ new ResizeObserver(() => {
   scheduleRefresh();
 }).observe(document.body);
 document.addEventListener('shopify:section:load', scheduleRefresh);
+document.addEventListener('shopify:section:reorder', scheduleRefresh);
+document.addEventListener('shopify:section:unload', scheduleRefresh);
+document.addEventListener('nk:section:replaced', scheduleRefresh);
 document.addEventListener('nk:tabs:change', scheduleRefresh);
 document.fonts?.ready.then(scheduleRefresh);
 window.addEventListener('load', scheduleRefresh, { once: true });

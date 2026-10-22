@@ -142,6 +142,37 @@ describe('Shopify response quirks', () => {
 });
 
 describe('CartService add outcomes', () => {
+  it('rejects invalid mutations before sending any network requests', async () => {
+    installFetch(() => { throw new Error('must not send'); });
+    const service = new CartService();
+    await expect(service.add([{ id: 1, quantity: NaN }], 'test')).rejects.toMatchObject({ kind: 'rejected' });
+    await expect(service.change('k', 1.2, 'test')).rejects.toMatchObject({ kind: 'rejected' });
+    expect(calls).toHaveLength(0);
+  });
+
+  it('does not confuse subscription lines with a one-time purchase during reconciliation', async () => {
+    let added = false;
+    installFetch((url) => {
+      if (url.startsWith('/cart.js')) {
+        const state = cartWith(added ? [{ key: 'subscription', variant_id: 7, quantity: 1 }] : []);
+        if (state.items[0]) state.items[0].selling_plan_allocation = { selling_plan: { id: 99 } };
+        return json(state);
+      }
+      if (url.startsWith('/cart/add.js')) { added = true; throw new TypeError('lost'); }
+      throw new Error(`unexpected ${url}`);
+    });
+    await expect(new CartService().add([{ id: 7, quantity: 1 }], 'test')).rejects.toMatchObject({ kind: 'not-applied' });
+  });
+
+  it('requires the combined requested quantity when matching identical items', async () => {
+    let added = false;
+    installFetch((url) => {
+      if (url.startsWith('/cart.js')) return json(cartWith(added ? [{ key: 'k', variant_id: 7, quantity: 1 }] : []));
+      if (url.startsWith('/cart/add.js')) { added = true; throw new TypeError('lost'); }
+      throw new Error(`unexpected ${url}`);
+    });
+    await expect(new CartService().add([{ id: 7, quantity: 1 }, { id: 7, quantity: 1 }], 'test')).rejects.toMatchObject({ kind: 'not-applied' });
+  });
   it('reports a rejected add (422) without re-sending', async () => {
     installFetch((url) => {
       if (url.startsWith('/cart.js')) return json(cartWith([]));

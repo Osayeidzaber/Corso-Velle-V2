@@ -111,6 +111,7 @@
   .collection-banner {
     position: relative;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     overflow: hidden;
     isolation: isolate;
     background: var(--nk-color-bg);
@@ -159,6 +160,8 @@
 
   .collection-banner__content {
     display: flex;
+    min-width: 0;
+    max-width: calc(100% - var(--nk-gutter) * 2);
     flex-direction: column;
     justify-content: flex-end;
     gap: 14px;
@@ -192,12 +195,16 @@
     transition: color 200ms var(--nk-ease-out);
   }
 
-  .collection-banner__breadcrumbs a:hover {
-    color: var(--nk-color-text);
+  @media (hover: hover) {
+    .collection-banner__breadcrumbs a:hover {
+        color: var(--nk-color-text);
+      }
   }
 
-  .collection-banner--image .collection-banner__breadcrumbs a:hover {
-    color: #faf8f5;
+  @media (hover: hover) {
+    .collection-banner--image .collection-banner__breadcrumbs a:hover {
+        color: #faf8f5;
+      }
   }
 
   .collection-banner__breadcrumbs [aria-current='page'] {
@@ -295,8 +302,10 @@
     border-color: rgb(250 248 245 / 0.28);
   }
 
-  .collection-banner__pill:hover {
-    border-color: currentColor;
+  @media (hover: hover) {
+    .collection-banner__pill:hover {
+        border-color: currentColor;
+      }
   }
 
   .collection-banner__pill[aria-current='page'] {

@@ -67,20 +67,32 @@ em,
   transition: transform 450ms var(--nk-ease-out);
 }
 
-.button:hover::before,
-.button:focus-visible::before {
+/* Label and border travel with the fill, so the text never flips colour before the fill arrives. */
+.button {
+  transition:
+    opacity var(--nk-dur-instant) var(--nk-ease-out),
+    color 450ms var(--nk-ease-out),
+    border-color 450ms var(--nk-ease-out);
+}
+
+.button:not(:disabled, [aria-disabled='true']):focus-visible::before {
   transform: scaleY(1);
 }
 
-.button:hover,
-.button:focus-visible {
+.button:not(:disabled, [aria-disabled='true']):focus-visible {
   border-color: var(--nk-color-accent);
   color: var(--nk-color-accent-text);
 }
 
-.button--secondary:hover,
-.button--secondary:focus-visible {
-  color: var(--nk-color-accent-text);
+@media (hover: hover) {
+  .button:not(:disabled, [aria-disabled='true']):hover::before {
+    transform: scaleY(1);
+  }
+
+  .button:not(:disabled, [aria-disabled='true']):hover {
+    border-color: var(--nk-color-accent);
+    color: var(--nk-color-accent-text);
+  }
 }
 
 .button:disabled::before,
@@ -106,8 +118,14 @@ em,
   transition: transform 500ms var(--nk-ease-out);
 }
 
-.link-underline:hover::after {
+.link-underline:focus-visible::after {
   transform: scaleX(0);
+}
+
+@media (hover: hover) {
+  .link-underline:hover::after {
+    transform: scaleX(0);
+  }
 }
 
 /* ---------- Header ---------- */
@@ -155,12 +173,12 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]):not([da
 
 /* ---------- Product cards ---------- */
 .product-grid {
-  gap: 36px 12px;
+  gap: 32px 8px;
 }
 
 @media (min-width: 750px) {
   .product-grid {
-    gap: 56px 20px;
+    gap: 36px 8px;
   }
 }
 
@@ -253,20 +271,6 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]):not([da
 .rte ul {
   padding-left: 1.1em;
   line-height: 1.9;
-}
-
-/* ---------- Footer ---------- */
-.footer {
-  padding-block: 96px calc(36px + env(safe-area-inset-bottom));
-}
-
-.footer__brand .header__logo {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-}
-
-.footer__brand .header__logo img {
-  width: min(260px, 60vw);
-  filter: brightness(0) invert(1);
 }
 
 /* ---------- Announcement ---------- */

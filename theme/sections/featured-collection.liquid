@@ -53,6 +53,57 @@
         {%- endif -%}
       </div>
 
+      {%- if section.settings.layout == 'carousel' -%}
+        <nk-carousel
+          id="Carousel-{{ section.id }}"
+          class="product-carousel"
+          data-effect="{{ section.settings.carousel_effect | default: 'liquid' }}"
+          data-intro="{{ section.settings.carousel_intro | default: 'rise' }}"
+          data-canvas-label="{{ 'carousel.canvas_label' | t | escape }}"
+          data-sold-out-label="{{ 'product.sold_out' | t | escape }}"
+          data-select-size-label="{{ 'product.select_size_prompt' | t | escape }}"
+          {% if section.settings.carousel_autoplay %}data-autoplay{% endif %}
+          speed="{{ section.settings.carousel_speed }}"
+          role="region"
+          aria-roledescription="carousel"
+          aria-label="{{ section.settings.heading | default: featured.title | escape }}"
+        >
+          <div class="product-carousel__viewport" data-ref="viewport">
+            <ul class="product-carousel__track" data-ref="track" role="list">
+              {%- for product in featured.products limit: section.settings.limit -%}
+                <li class="product-carousel__slide">
+                  {%- render 'product-card', product: product, actions: false, sizes: '(min-width: 990px) 28vw, (min-width: 600px) 44vw, 82vw' -%}
+                  {%- render 'carousel-product-data', product: product -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+          {%- comment -%}
+            Size selector and one Add to cart button for whichever product is highlighted.
+            The button stays disabled until a size is chosen (JS fills the sizes from the product data).
+          {%- endcomment -%}
+          <div class="product-carousel__purchase">
+            <div class="product-carousel__sizes" data-ref="sizes" role="radiogroup" aria-labelledby="CarouselSizes-{{ section.id }}" hidden>
+              <span class="product-carousel__sizes-label spec" id="CarouselSizes-{{ section.id }}" data-ref="sizes-label">{{ 'product.size' | t }}</span>
+              <div class="product-carousel__size-options" data-size-options></div>
+              <span class="product-carousel__sizes-context spec text-muted" data-ref="sizes-context" hidden></span>
+            </div>
+            <button type="button" class="button product-carousel__add" data-ref="add" data-index="0" disabled>
+              <span class="product-carousel__add-label" data-add-label>{{ 'product.select_size_prompt' | t }}</span>
+              <span class="product-carousel__add-product" data-add-product aria-hidden="true"></span>
+            </button>
+            <p class="product-carousel__purchase-status" data-ref="purchase-status" role="status" aria-live="polite"></p>
+          </div>
+          <div class="product-carousel__controls">
+            <span class="spec text-muted">{{ 'carousel.hint' | t }}</span>
+            <div class="product-carousel__buttons">
+              <button type="button" class="icon-button" data-carousel-step="-1" aria-label="{{ 'carousel.previous' | t }}">{% render 'icon', name: 'arrow-left' %}</button>
+              <button type="button" class="product-carousel__pause spec" data-carousel-pause data-play-label="{{ 'carousel.play' | t }}" data-pause-label="{{ 'carousel.pause' | t }}" aria-pressed="false" hidden><span data-carousel-pause-label>{{ 'carousel.pause' | t }}</span></button>
+              <button type="button" class="icon-button" data-carousel-step="1" aria-label="{{ 'carousel.next' | t }}">{% render 'icon', name: 'arrow-right' %}</button>
+            </div>
+          </div>
+        </nk-carousel>
+      {%- else -%}
       <nk-stagger>
         <ul
           class="product-grid"
@@ -75,6 +126,7 @@
           {%- endif -%}
         </ul>
       </nk-stagger>
+      {%- endif -%}
     </div>
   </div>
 {%- endif -%}
@@ -101,6 +153,7 @@
     flex-direction: column;
     gap: 10px;
     max-width: 64ch;
+    min-width: 0;
   }
 
   .featured-collection__title-row {
@@ -108,6 +161,7 @@
     flex-wrap: wrap;
     align-items: baseline;
     gap: 12px;
+    min-width: 0;
   }
 
   .featured-collection__heading {
@@ -116,6 +170,7 @@
   }
 
   .featured-collection__count {
+    flex-shrink: 0;
     color: var(--nk-color-text-muted);
     font-variant-numeric: tabular-nums;
   }
@@ -145,6 +200,11 @@
     { "type": "checkbox", "id": "show_collection_description", "label": "Use collection description when empty", "default": true },
     { "type": "collection", "id": "collection", "label": "Collection" },
     { "type": "range", "id": "limit", "label": "Products to show", "min": 2, "max": 16, "step": 1, "default": 8 },
+    { "type": "select", "id": "layout", "label": "Layout", "options": [{ "value": "grid", "label": "Grid" }, { "value": "carousel", "label": "Product carousel" }], "default": "grid" },
+    { "type": "select", "id": "carousel_effect", "label": "Carousel style", "options": [{ "value": "liquid", "label": "Editorial strip" }, { "value": "native", "label": "Classic product rail" }], "default": "liquid", "info": "Phones and tablets use a lightweight swipe rail.", "visible_if": "{{ section.settings.layout == 'carousel' }}" },
+    { "type": "select", "id": "carousel_intro", "label": "Carousel entrance", "options": [{ "value": "rise", "label": "Rise" }, { "value": "bloom", "label": "Bloom" }, { "value": "deal", "label": "Spread" }, { "value": "none", "label": "None" }], "default": "rise", "visible_if": "{{ section.settings.layout == 'carousel' and section.settings.carousel_effect == 'liquid' }}" },
+    { "type": "checkbox", "id": "carousel_autoplay", "label": "Advance products automatically", "default": true, "info": "Pauses while a shopper hovers, drags, focuses the strip or chooses a size.", "visible_if": "{{ section.settings.layout == 'carousel' and section.settings.carousel_effect == 'liquid' }}" },
+    { "type": "range", "id": "carousel_speed", "label": "Carousel speed", "min": 10, "max": 80, "step": 5, "default": 35, "unit": "px" },
     {
       "type": "select",
       "id": "columns_mobile",
@@ -153,7 +213,7 @@
         { "value": "1", "label": "1" },
         { "value": "2", "label": "2" }
       ],
-      "default": "2"
+      "default": "1"
     },
     { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 5, "step": 1, "default": 4 },
     { "type": "checkbox", "id": "show_view_all", "label": "Show 'View all' button", "default": true },

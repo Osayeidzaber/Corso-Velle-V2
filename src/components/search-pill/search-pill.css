@@ -66,8 +66,10 @@ nk-search-pill {
   opacity: 0.7;
 }
 
-.search-pill__close:hover {
-  opacity: 1;
+@media (hover: hover) {
+  .search-pill__close:hover {
+    opacity: 1;
+  }
 }
 
 nk-search-pill[data-open] .search-pill__form:focus-within {

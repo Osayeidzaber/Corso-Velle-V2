@@ -35,7 +35,7 @@
           {%- assign index_num = index_num | plus: 1 -%}
           {%- assign card_image = collection.featured_image | default: collection.products.first.featured_media.preview_image -%}
           <li data-stagger-item>
-            <a class="collections-card" href="{{ collection.url }}" data-cursor="{{ 'cursor.view' | t }}">
+            <a class="collections-card" href="{{ collection.url }}" data-cursor="view">
               <div class="collections-card__top">
                 <span class="collections-card__index spec">{{ index_num | prepend: '0' | slice: -2, 2 }}</span>
                 <span class="collections-card__count spec">
@@ -211,17 +211,19 @@
       color 260ms var(--nk-ease-out);
   }
 
+  /* Hover is read from the static list item so the 3px lift never moves the card out from under
+     a pointer resting on its bottom edge. */
   @media (hover: hover) and (pointer: fine) {
-    .collections-card:hover {
+    .collections-index__grid > li:hover > .collections-card {
       border-color: var(--nk-color-text);
       transform: translateY(-3px);
     }
 
-    .collections-card:hover .collections-card__media img {
+    .collections-index__grid > li:hover .collections-card__media img {
       transform: scale(1.045);
     }
 
-    .collections-card:hover .collections-card__arrow {
+    .collections-index__grid > li:hover .collections-card__arrow {
       transform: translate(2px, -2px);
       color: var(--nk-color-text);
     }

@@ -9,13 +9,14 @@
   @param {boolean} [eager] - Load the first image eagerly (first row only)
   @param {string} [sizes] - The image sizes attribute
   @param {string} [heading_tag] - h2/h3 (default h3)
+  @param {boolean} [actions] - Render size and quick-add controls (default true; the carousel uses its own button)
 
   @example
   {% render 'product-card', product: product, eager: forloop.index <= 4 %}
 {%- enddoc -%}
 {%- liquid
   assign heading_tag = heading_tag | default: 'h3'
-  assign sizes = sizes | default: '(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw'
+  assign sizes = sizes | default: '(min-width: 1200px) 33vw, (min-width: 750px) 50vw, 50vw'
   assign loading = 'lazy'
   if eager
     assign loading = 'eager'
@@ -34,11 +35,11 @@
     assign sold_out = true
   endunless
   assign has_video = false
-  if hover_video != blank and sold_out == false
+  if hover_video != blank and sold_out == false and settings.card_show_secondary
     assign has_video = true
   endif
   assign on_sale = false
-  if product.compare_at_price > product.price
+  if product.compare_at_price_min > product.price_max
     assign on_sale = true
   endif
   assign size_names = settings.card_size_option_names | downcase | split: ','
@@ -60,7 +61,7 @@
 >
   <div class="card__media-wrap card__figure">
     <a
-      class="card__media{% if has_video %} card__media--has-video{% elsif second_media and settings.card_show_secondary %} card__media--has-second{% endif %}"
+      class="card__media{% if has_video %} card__media--has-video{% endif %}{% if second_media and settings.card_show_secondary %} card__media--has-second{% endif %}"
       href="{{ product.url }}"
       data-card-link
       tabindex="-1"
@@ -69,7 +70,7 @@
     >
       {%- if first_media -%}
         {{
-          first_media
+          first_media.preview_image
           | image_url: width: 900
           | image_tag:
             loading: loading,
@@ -79,19 +80,47 @@
             data-card-primary-img: ''
         }}
         {%- if has_video -%}
-          {{
-            hover_video
-            | video_tag:
-              muted: true,
-              loop: true,
-              playsinline: true,
-              controls: false,
-              preload: 'metadata',
-              image_size: '720x',
-              class: 'card__video',
-              data-card-video: ''
-          }}
-        {%- elsif settings.card_show_secondary and second_media -%}
+          {%- liquid
+            # video_tag serves the largest rendition (1080p, ~7 Mbps), far too heavy for a card
+            # hover: the photo sat there while it buffered and the video arrived late. Use the
+            # smallest MP4 that is at least 480px tall (or the largest smaller one).
+            assign hover_source = blank
+            assign hover_mp4s = hover_video.sources | where: 'format', 'mp4' | sort: 'height'
+            for source in hover_mp4s
+              assign hover_source = source
+              if source.height >= 480
+                break
+              endif
+            endfor
+          -%}
+          {%- if hover_source != blank -%}
+            <video
+              class="card__video"
+              data-card-video              muted
+              loop
+              playsinline
+              disablepictureinpicture
+              preload="none"
+              poster="{{ hover_video.preview_image | image_url: width: 720 }}"
+            >
+              <source src="{{ hover_source.url }}" type="{{ hover_source.mime_type }}">
+            </video>
+          {%- else -%}
+            {{
+              hover_video
+              | video_tag:
+                muted: true,
+                loop: true,
+                playsinline: true,
+                controls: false,
+                preload: 'none',
+                image_size: '720x',
+                class: 'card__video',
+                data-card-video: ''
+            }}
+          {%- endif -%}
+        {%- endif -%}
+        {%- if settings.card_show_secondary and second_media -%}
           {{
             second_media
             | image_url: width: 900
@@ -117,9 +146,10 @@
       {%- endif -%}
     </a>
 
-    {%- comment -%} Hover tray: available sizes slide up over the image with 1-click Quick Add. {%- endcomment -%}
-    {%- if settings.card_show_sizes and sold_out == false -%}
-      {%- assign rendered_tray = false -%}
+    {%- capture card_controls -%}
+    {%- comment -%} Size actions live below product information, never over photography. {%- endcomment -%}
+    {%- assign rendered_tray = false -%}
+    {%- if settings.card_show_sizes and sold_out == false and product.options.size == 1 and product.requires_selling_plan == false -%}
       {%- for option in product.options_with_values -%}
         {%- assign option_name = option.name | downcase | strip -%}
         {%- assign tray_size = false -%}
@@ -129,17 +159,15 @@
         {%- endfor -%}
         {%- if tray_size -%}
           {%- assign rendered_tray = true -%}
-          {%- assign option_key = 'option' | append: option.position -%}
           <div class="card__tray" role="group" aria-label="{{ 'product.sizes_label' | t }}">
             <span class="card__tray-label">{{ 'product.sizes_label' | t }}</span>
             <div class="card__tray-values">
               {%- for value in option.values -%}
                 {%- liquid
-                  assign matching_avail = product.variants | where: option_key, value | where: 'available', true
-                  assign first_avail = matching_avail | first
-                  if first_avail == blank and value.available and value.variant.available
-                    assign first_avail = value.variant
-                  endif
+                  assign first_avail = value.variant
+                  unless first_avail.available
+                    assign first_avail = nil
+                  endunless
                   assign is_avail = false
                   if first_avail != blank or value.available
                     assign is_avail = true
@@ -150,6 +178,7 @@
                     type="button"
                     class="card__tray-pill card__tray-pill--action"
                     data-quick-add="{{ first_avail.id }}"
+                    data-quick-add-quantity="{{ first_avail.quantity_rule.min | default: 1 }}"
                     aria-label="{{ 'product.add_to_cart' | t }}: {{ product.title | escape }} ({{ value | escape }})"
                   >
                     {{- value | escape -}}
@@ -165,11 +194,13 @@
       {%- endfor -%}
 
       {%- if rendered_tray == false and product.has_only_default_variant and product.selected_or_first_available_variant.available -%}
+        {%- assign rendered_tray = true -%}
         <div class="card__tray">
           <button
             type="button"
             class="card__tray-pill card__tray-pill--action card__tray-pill--single"
             data-quick-add="{{ product.selected_or_first_available_variant.id }}"
+            data-quick-add-quantity="{{ product.selected_or_first_available_variant.quantity_rule.min | default: 1 }}"
             aria-label="{{ 'product.add_to_cart' | t }}: {{ product.title | escape }}"
           >
             {{- 'product.quick_add' | t -}}
@@ -177,6 +208,33 @@
         </div>
       {%- endif -%}
     {%- endif -%}
+    {%- if sold_out == false -%}
+      {%- if rendered_tray == false -%}
+        <div class="card__tray">
+          {%- if settings.card_show_sizes -%}
+            {%- for option in product.options_with_values -%}
+              {%- assign option_name = option.name | downcase | strip -%}
+              {%- assign is_size = false -%}
+              {%- for size_name in size_names -%}
+                {%- assign clean_name = size_name | strip -%}
+                {%- if option_name == clean_name -%}{%- assign is_size = true -%}{%- endif -%}
+              {%- endfor -%}
+              {%- if is_size -%}
+                <span class="card__tray-label">{{ 'product.sizes_label' | t }}</span>
+                <div class="card__tray-values">
+                  {%- for value in option.values -%}
+                    <span class="card__tray-pill{% unless value.available %} is-out{% endunless %}">{{ value | escape }}</span>
+                  {%- endfor -%}
+                </div>
+                {%- break -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+          <a class="card__tray-pill card__tray-pill--action" href="{{ product.url }}" data-card-choose-options data-close-label="{{ 'general.close' | t }}" aria-label="{{ product.title | escape }} — {{ 'product.choose_options' | t }}">{{ 'product.choose_options' | t }}</a>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+    {%- endcapture -%}
   </div>
 
   <div class="card__meta">
@@ -191,22 +249,22 @@
       {%- endif -%}
     </div>
 
+    {%- unless actions == false -%}{{ card_controls }}{%- endunless -%}
+
     {%- if color_option != blank -%}
       <div class="card__swatches" role="group" aria-label="{{ color_option.name | escape }}">
         {%- for value in color_option.values limit: 6 -%}
           {%- capture swatch_bg -%}{%- render 'swatch-color', value: value, is_color_option: true -%}{%- endcapture -%}
           {%- assign swatch_bg = swatch_bg | strip -%}
           {%- if swatch_bg != blank -%}
-            <button
-              type="button"
-              class="card__swatch{% if forloop.first %} is-active{% endif %}"
+            {%- capture swatch_url -%}{{ value.product_url | default: product.url }}?option_values={{ value.id }}{%- endcapture -%}
+            <a
+              class="card__swatch{% if value.selected %} is-active{% endif %}"
               style="--swatch: {{ swatch_bg }}"
-              data-card-swatch
-              {% if value.variant.featured_media %}data-swatch-src="{{ value.variant.featured_media | image_url: width: 900 }}"{% endif %}
-              {% if value.variant.url %}data-swatch-url="{{ value.variant.url }}"{% endif %}
+              href="{{ swatch_url | escape }}"
               aria-label="{{ value | escape }}"
-              aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
-            ></button>
+              {% if value.selected %}aria-current="true"{% endif %}
+            ></a>
           {%- endif -%}
         {%- endfor -%}
       </div>

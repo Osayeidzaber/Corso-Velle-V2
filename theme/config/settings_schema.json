@@ -10,10 +10,37 @@
   {
     "name": "Logo",
     "settings": [
-      { "type": "image_picker", "id": "logo", "label": "Logo" },
-      { "type": "image_picker", "id": "logo_inverse", "label": "Logo over campaign images", "info": "Used when the header overlays a dark hero image." },
-      { "type": "range", "id": "logo_width", "label": "Logo width (desktop)", "min": 60, "max": 300, "step": 10, "unit": "px", "default": 140 },
-      { "type": "range", "id": "logo_width_mobile", "label": "Logo width (phone)", "min": 60, "max": 200, "step": 10, "unit": "px", "default": 110 }
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo_inverse",
+        "label": "Logo over campaign images",
+        "info": "Used when the header overlays a dark hero image."
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "label": "Logo width (desktop)",
+        "min": 60,
+        "max": 300,
+        "step": 10,
+        "unit": "px",
+        "default": 140
+      },
+      {
+        "type": "range",
+        "id": "logo_width_mobile",
+        "label": "Logo width (phone)",
+        "min": 60,
+        "max": 200,
+        "step": 10,
+        "unit": "px",
+        "default": 110
+      }
     ]
   },
   {
@@ -23,13 +50,48 @@
         "type": "color_scheme_group",
         "id": "color_schemes",
         "definition": [
-          { "type": "color", "id": "background", "label": "Background", "default": "#F3F2EE" },
-          { "type": "color", "id": "surface", "label": "Surface (cards, image placeholders)", "default": "#E7E4DE" },
-          { "type": "color", "id": "text", "label": "Text", "default": "#121212" },
-          { "type": "color", "id": "text_muted", "label": "Secondary text", "default": "#55534E" },
-          { "type": "color", "id": "line", "label": "Lines and borders", "default": "#D9D6CF" },
-          { "type": "color", "id": "accent", "label": "Accent (focus, active, emphasis)", "default": "#2338E0" },
-          { "type": "color", "id": "accent_text", "label": "Text on accent", "default": "#FFFFFF" }
+          {
+            "type": "color",
+            "id": "background",
+            "label": "Background",
+            "default": "#F3F2EE"
+          },
+          {
+            "type": "color",
+            "id": "surface",
+            "label": "Surface (cards, image placeholders)",
+            "default": "#E7E4DE"
+          },
+          {
+            "type": "color",
+            "id": "text",
+            "label": "Text",
+            "default": "#121212"
+          },
+          {
+            "type": "color",
+            "id": "text_muted",
+            "label": "Secondary text",
+            "default": "#55534E"
+          },
+          {
+            "type": "color",
+            "id": "line",
+            "label": "Lines and borders",
+            "default": "#D9D6CF"
+          },
+          {
+            "type": "color",
+            "id": "accent",
+            "label": "Accent (focus, active, emphasis)",
+            "default": "#2338E0"
+          },
+          {
+            "type": "color",
+            "id": "accent_text",
+            "label": "Text on accent",
+            "default": "#FFFFFF"
+          }
         ],
         "role": {
           "background": "background",
@@ -44,24 +106,59 @@
           "links": "accent"
         }
       },
-      { "type": "header", "content": "Status colors" },
-      { "type": "color", "id": "color_error", "label": "Errors", "default": "#B42318" },
-      { "type": "color", "id": "color_success", "label": "Success", "default": "#146C43" }
+      {
+        "type": "header",
+        "content": "Status colors"
+      },
+      {
+        "type": "color",
+        "id": "color_error",
+        "label": "Errors",
+        "default": "#B42318"
+      },
+      {
+        "type": "color",
+        "id": "color_success",
+        "label": "Success",
+        "default": "#146C43"
+      }
     ]
   },
   {
     "name": "Typography",
     "settings": [
-      { "type": "font_picker", "id": "type_heading_font", "label": "Headings", "default": "newsreader_n4" },
-      { "type": "font_picker", "id": "type_body_font", "label": "Body", "default": "inter_n4" },
-      { "type": "font_picker", "id": "type_spec_font", "label": "Labels (sizes, prices, details)", "default": "inter_n5", "info": "Used for small uppercase labels, sizes and prices." },
+      {
+        "type": "font_picker",
+        "id": "type_heading_font",
+        "label": "Headings",
+        "default": "newsreader_n4"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "label": "Body",
+        "default": "inter_n4"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_spec_font",
+        "label": "Labels (sizes, prices, details)",
+        "default": "inter_n5",
+        "info": "Used for small uppercase labels, sizes and prices."
+      },
       {
         "type": "select",
         "id": "heading_case",
         "label": "Heading case",
         "options": [
-          { "value": "none", "label": "As typed" },
-          { "value": "uppercase", "label": "Uppercase" }
+          {
+            "value": "none",
+            "label": "As typed"
+          },
+          {
+            "value": "uppercase",
+            "label": "Uppercase"
+          }
         ],
         "default": "uppercase"
       },
@@ -70,8 +167,14 @@
         "id": "body_size",
         "label": "Body text size",
         "options": [
-          { "value": "15", "label": "Compact" },
-          { "value": "16", "label": "Regular" }
+          {
+            "value": "15",
+            "label": "Compact"
+          },
+          {
+            "value": "16",
+            "label": "Regular"
+          }
         ],
         "default": "16"
       }
@@ -85,9 +188,18 @@
         "id": "page_width",
         "label": "Page width",
         "options": [
-          { "value": "1200px", "label": "Narrow" },
-          { "value": "1440px", "label": "Wide" },
-          { "value": "100vw", "label": "Full" }
+          {
+            "value": "1200px",
+            "label": "Narrow"
+          },
+          {
+            "value": "1440px",
+            "label": "Wide"
+          },
+          {
+            "value": "100vw",
+            "label": "Full"
+          }
         ],
         "default": "1440px"
       },
@@ -96,9 +208,18 @@
         "id": "section_spacing",
         "label": "Space between sections",
         "options": [
-          { "value": "48", "label": "Compact" },
-          { "value": "72", "label": "Regular" },
-          { "value": "112", "label": "Airy" }
+          {
+            "value": "48",
+            "label": "Compact"
+          },
+          {
+            "value": "72",
+            "label": "Regular"
+          },
+          {
+            "value": "112",
+            "label": "Airy"
+          }
         ],
         "default": "72"
       },
@@ -107,9 +228,18 @@
         "id": "corner_radius",
         "label": "Button and field corners",
         "options": [
-          { "value": "0", "label": "Square" },
-          { "value": "2", "label": "Soft" },
-          { "value": "999", "label": "Pill" }
+          {
+            "value": "0",
+            "label": "Square"
+          },
+          {
+            "value": "2",
+            "label": "Soft"
+          },
+          {
+            "value": "999",
+            "label": "Pill"
+          }
         ],
         "default": "2"
       }
@@ -123,9 +253,18 @@
         "id": "card_image_ratio",
         "label": "Image shape",
         "options": [
-          { "value": "4 / 5", "label": "Portrait 4:5" },
-          { "value": "3 / 4", "label": "Portrait 3:4" },
-          { "value": "1 / 1", "label": "Square" }
+          {
+            "value": "4 / 5",
+            "label": "Portrait 4:5"
+          },
+          {
+            "value": "3 / 4",
+            "label": "Portrait 3:4"
+          },
+          {
+            "value": "1 / 1",
+            "label": "Square"
+          }
         ],
         "default": "4 / 5"
       },
@@ -134,32 +273,339 @@
         "id": "card_image_fit",
         "label": "Image fit",
         "options": [
-          { "value": "cover", "label": "Fill" },
-          { "value": "contain", "label": "Fit" }
+          {
+            "value": "cover",
+            "label": "Fill"
+          },
+          {
+            "value": "contain",
+            "label": "Fit"
+          }
         ],
-        "default": "cover"
+        "default": "contain"
       },
-      { "type": "checkbox", "id": "card_show_secondary", "label": "Show second image on hover", "default": true },
-      { "type": "checkbox", "id": "card_show_sizes", "label": "Show available sizes", "default": true },
-      { "type": "text", "id": "card_size_option_names", "label": "Size option name(s)", "default": "Size", "info": "Comma-separated option names treated as sizes, e.g. Size, Waist." },
-      { "type": "checkbox", "id": "card_show_badges", "label": "Show sale and sold-out badges", "default": true }
+      {
+        "type": "checkbox",
+        "id": "card_show_secondary",
+        "label": "Show second image on hover",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_sizes",
+        "label": "Show available sizes",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "card_size_option_names",
+        "label": "Size option name(s)",
+        "default": "Size",
+        "info": "Comma-separated option names treated as sizes, e.g. Size, Waist."
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_badges",
+        "label": "Show sale and sold-out badges",
+        "default": true
+      }
     ]
   },
   {
     "name": "Product page",
     "settings": [
-      { "type": "text", "id": "product_required_options", "label": "Options shoppers must choose", "default": "Size", "info": "These options are never preselected, so shoppers can't add an unintended size. Comma-separated." },
+      {
+        "type": "text",
+        "id": "product_required_options",
+        "label": "Options shoppers must choose",
+        "default": "Size",
+        "info": "These options are never preselected, so shoppers can't add an unintended size. Comma-separated."
+      },
       {
         "type": "select",
         "id": "product_sold_out_values",
         "label": "Sold-out option values",
         "options": [
-          { "value": "strike", "label": "Show crossed out" },
-          { "value": "hide", "label": "Hide" }
+          {
+            "value": "strike",
+            "label": "Show crossed out"
+          },
+          {
+            "value": "hide",
+            "label": "Hide"
+          }
         ],
         "default": "strike"
       },
-      { "type": "range", "id": "inventory_threshold", "label": "Show \"only a few left\" at or below", "min": 0, "max": 20, "step": 1, "default": 0, "info": "0 turns the message off. Only shown when Shopify tracks inventory for the variant." }
+      {
+        "type": "range",
+        "id": "inventory_threshold",
+        "label": "Show \"only a few left\" at or below",
+        "min": 0,
+        "max": 20,
+        "step": 1,
+        "default": 0,
+        "info": "0 turns the message off. Only shown when Shopify tracks inventory for the variant."
+      }
+    ]
+  },
+  {
+    "name": "Size charts",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Assign verified measurements to collections or specific products. Product metafields override these rules. Product assignments override collection assignments; the first matching chart wins. Purchasable sizes and stock still come from Shopify product variants."
+      },
+      {
+        "type": "header",
+        "content": "Chart 1"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_1_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_1_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_1_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_1_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_1_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_1_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 2"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_2_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_2_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_2_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_2_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_2_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_2_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 3"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_3_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_3_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_3_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_3_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_3_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_3_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 4"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_4_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_4_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_4_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_4_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_4_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_4_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 5"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_5_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_5_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_5_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_5_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_5_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_5_note",
+        "label": "Size guide note"
+      }
     ]
   },
   {
@@ -170,14 +616,32 @@
         "id": "cart_after_add",
         "label": "After adding to cart",
         "options": [
-          { "value": "drawer", "label": "Open cart drawer" },
-          { "value": "notification", "label": "Stay on page" },
-          { "value": "page", "label": "Go to cart page" }
+          {
+            "value": "drawer",
+            "label": "Open cart drawer"
+          },
+          {
+            "value": "notification",
+            "label": "Stay on page"
+          },
+          {
+            "value": "page",
+            "label": "Go to cart page"
+          }
         ],
         "default": "drawer"
       },
-      { "type": "checkbox", "id": "cart_show_note", "label": "Order note", "default": false },
-      { "type": "collection", "id": "cart_empty_collection", "label": "Empty cart: suggested collection" }
+      {
+        "type": "checkbox",
+        "id": "cart_show_note",
+        "label": "Order note",
+        "default": false
+      },
+      {
+        "type": "collection",
+        "id": "cart_empty_collection",
+        "label": "Empty cart: suggested collection"
+      }
     ]
   },
   {
@@ -188,9 +652,18 @@
         "id": "motion_level",
         "label": "Animation level",
         "options": [
-          { "value": "off", "label": "Off" },
-          { "value": "minimal", "label": "Minimal" },
-          { "value": "standard", "label": "Standard" }
+          {
+            "value": "off",
+            "label": "Off"
+          },
+          {
+            "value": "minimal",
+            "label": "Minimal"
+          },
+          {
+            "value": "standard",
+            "label": "Standard"
+          }
         ],
         "default": "standard",
         "info": "Shoppers who ask their device for reduced motion always get minimal motion."
@@ -200,10 +673,26 @@
   {
     "name": "Social media",
     "settings": [
-      { "type": "url", "id": "social_instagram", "label": "Instagram" },
-      { "type": "url", "id": "social_tiktok", "label": "TikTok" },
-      { "type": "url", "id": "social_facebook", "label": "Facebook" },
-      { "type": "url", "id": "social_youtube", "label": "YouTube" }
+      {
+        "type": "url",
+        "id": "social_instagram",
+        "label": "Instagram"
+      },
+      {
+        "type": "url",
+        "id": "social_tiktok",
+        "label": "TikTok"
+      },
+      {
+        "type": "url",
+        "id": "social_facebook",
+        "label": "Facebook"
+      },
+      {
+        "type": "url",
+        "id": "social_youtube",
+        "label": "YouTube"
+      }
     ]
   }
 ]

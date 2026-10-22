@@ -148,3 +148,23 @@ nk-cart-drawer[data-pending] [name='checkout'] {
 .js .no-js-only {
   display: none;
 }
+
+.cart-notification {
+  position: fixed;
+  inset-block-start: calc(var(--nk-header-h, 0px) + 16px);
+  inset-inline-end: 16px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: calc(100vw - 32px);
+  padding: 12px 16px;
+  border: 1px solid var(--nk-color-line);
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+  box-shadow: 0 8px 32px #0002;
+}
+
+.cart-notification[hidden] { display: none; }
+nk-cart-items[data-pending] [name='checkout'],
+[data-cart-stale] [name='checkout'] { opacity: 0.6; }

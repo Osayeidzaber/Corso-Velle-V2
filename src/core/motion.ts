@@ -34,6 +34,24 @@ export function transitionsAllowed(): boolean {
   return config().motion !== 'off' && !prefersReducedMotion();
 }
 
+let installed = false;
+/** Apply changes made in OS accessibility settings without reloading the storefront. */
+export function installMotionPolicy(): void {
+  if (installed) return;
+  installed = true;
+  reducedQuery?.addEventListener('change', () => {
+    document.documentElement.classList.toggle('nk-anim', decorativeMotionAllowed());
+    document.dispatchEvent(new CustomEvent('nk:motion:changed'));
+    for (const element of document.querySelectorAll<HTMLElement>(
+      'nk-reveal, nk-text, nk-stagger, nk-parallax, nk-marquee, nk-carousel, nk-expand-media, nk-elastic-line',
+    )) {
+      const component = element as HTMLElement & { disconnectedCallback?: () => void; connectedCallback?: () => void };
+      component.disconnectedCallback?.();
+      component.connectedCallback?.();
+    }
+  });
+}
+
 /**
  * Web Animations wrapper returning a handle that can always be finished. Resolves immediately
  * (and applies the end state) when motion is not allowed.

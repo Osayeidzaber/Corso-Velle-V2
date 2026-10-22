@@ -68,6 +68,7 @@
           name="updates[]"
           value="{{ item.quantity }}"
           min="0"
+          data-quantity-min="{{ rule.min | default: 1 }}"
           {% if rule.max %}max="{{ rule.max }}"{% endif %}
           step="{{ rule.increment | default: 1 }}"
           data-qty-input

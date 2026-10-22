@@ -17,7 +17,7 @@ export function registerLazy(tag: string, loader: Loader): void {
 export function loadFor(root: ParentNode = document): void {
   for (const [tag, loader] of loaders) {
     if (started.has(tag) || customElements.get(tag)) continue;
-    if (!root.querySelector(tag)) continue;
+    if (!(root instanceof Element && root.matches(tag)) && !root.querySelector(tag)) continue;
     started.add(tag);
     loader().catch((error: unknown) => {
       started.delete(tag); // allow a retry on the next section load
@@ -26,7 +26,10 @@ export function loadFor(root: ParentNode = document): void {
   }
 }
 
+let installed = false;
 export function installLazyLoader(): void {
+  if (installed) return;
+  installed = true;
   loadFor(document);
   document.addEventListener('shopify:section:load', (event) => loadFor(event.target as ParentNode));
   // Sections swapped in by the theme itself (cart, variant re-render) announce themselves too.

@@ -47,19 +47,15 @@ const branches = entries
   .map(([key, chunk]) => {
     const graph = [...collect(key)];
     const preloads = graph.filter((k) => k !== key).map((k) => manifest[k].file);
-    // Motion runtime: fetched in parallel with the entry so pre-hidden text never waits on it.
-    if (chunk.name === 'global') {
-      const motion = Object.values(manifest).find((c) => c.name === 'gsap' && !c.isEntry);
-      if (motion && !preloads.includes(motion.file)) preloads.push(motion.file);
-    }
     const css = [...new Set(graph.flatMap((k) => manifest[k].css ?? []))];
     const lines = [
       `  {%- when '${chunk.name}' -%}`,
       ...css.map((file) => `    {{ '${file}' | asset_url | stylesheet_tag }}`),
-      // Chunks import each other by bare URL; the preload must match it exactly (no ?v=) or the
-      // browser fetches the module twice.
+      // Chunks import each other (and entries) by bare URL; every tag must match it exactly (no ?v=)
+      // or the browser loads a second instance of the module and runs it twice. File names are
+      // content-hashed, so dropping ?v= costs no cache-busting.
       ...preloads.map((file) => `    <link rel="modulepreload" href="{{ '${file}' | asset_url | split: '?' | first }}">`),
-      `    <script src="{{ '${chunk.file}' | asset_url }}" type="module" defer></script>`,
+      `    <script src="{{ '${chunk.file}' | asset_url | split: '?' | first }}" type="module" defer></script>`,
     ];
     return lines.join('\n');
   })

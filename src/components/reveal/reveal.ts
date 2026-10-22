@@ -21,7 +21,7 @@ export class NkReveal extends NkElement {
       this.setAttribute('data-done', '');
       return;
     }
-    void this.#start();
+    void this.#start().catch(console.error);
   }
 
   protected override unmount(): void {
@@ -35,10 +35,11 @@ export class NkReveal extends NkElement {
   }
 
   async #start(): Promise<void> {
+    const connection = this.signal;
     const { gsap, SplitText } = await import('../../motion/gsap');
-    if (!this.isConnected) return;
+    if (!this.connectionIsCurrent(connection)) return;
     await document.fonts?.ready;
-    if (!this.isConnected) return;
+    if (!this.connectionIsCurrent(connection)) return;
 
     const mode = this.getAttribute('mode') ?? this.getAttribute('entrance') ?? 'fade';
     const by = this.getAttribute('by') ?? (mode === 'fold' ? 'word' : 'line');

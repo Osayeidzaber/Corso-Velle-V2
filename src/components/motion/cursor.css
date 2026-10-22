@@ -17,6 +17,12 @@
   pointer-events: none;
 }
 
-[data-cursor='view'] {
+/* Only hide the system cursor while the badge is actually running (motion on, script loaded). */
+html.nk-cursor-on [data-cursor='view'] {
   cursor: none;
+}
+
+/* Unknown elements are inline, and transforms do not apply to inline boxes. */
+nk-magnetic {
+  display: inline-block;
 }

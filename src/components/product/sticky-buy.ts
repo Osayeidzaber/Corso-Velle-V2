@@ -1,5 +1,7 @@
 import { t } from '../../core/config';
 import { NkElement } from '../../core/element';
+import { transitionsAllowed } from '../../core/motion';
+import { overlay } from '../../services/overlay';
 import type { NkVariantPicker } from './variant-picker';
 
 /**
@@ -11,19 +13,29 @@ export class NkStickyBuy extends NkElement {
   protected mount(): void {
     const section = this.closest<HTMLElement>('[data-product-section]');
     if (!section) return;
+    let passedBuyArea = false;
+    const reflectVisibility = (): void => {
+      const keyboardOpen = window.visualViewport && window.visualViewport.height < window.innerHeight * 0.75;
+      const visible = passedBuyArea && !overlay.current && !keyboardOpen && !window.Shopify?.designMode;
+      this.hidden = !visible;
+      this.inert = !visible;
+      this.toggleAttribute('data-visible', !!visible);
+      document.documentElement.style.setProperty('--nk-bottom-offset', visible ? `${this.offsetHeight}px` : '0px');
+    };
+    this.on(document, 'nk:overlay:opened', reflectVisibility);
+    this.on(document, 'nk:overlay:closed', reflectVisibility);
+    if (window.visualViewport) this.on(window.visualViewport, 'resize', reflectVisibility);
+    this.observeResize(this, reflectVisibility);
+    this.dispose(() => document.documentElement.style.removeProperty('--nk-bottom-offset'));
+    reflectVisibility();
 
     const formEl = section.querySelector<HTMLElement>('nk-product-form');
     if (formEl) {
       this.observeIntersection(
         formEl,
         (entry) => {
-          const passedBuyArea = !entry.isIntersecting && entry.boundingClientRect.bottom < 80;
-          if (passedBuyArea) {
-            this.hidden = false;
-            this.setAttribute('data-visible', '');
-          } else {
-            this.removeAttribute('data-visible');
-          }
+          passedBuyArea = !entry.isIntersecting && entry.boundingClientRect.bottom < 80;
+          reflectVisibility();
         },
         { threshold: 0 },
       );
@@ -40,7 +52,7 @@ export class NkStickyBuy extends NkElement {
         const picker = section.querySelector<NkVariantPicker>('nk-variant-picker');
         if (picker && picker.state === 'incomplete') {
           const incompleteFieldset = picker.firstIncomplete();
-          incompleteFieldset?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          incompleteFieldset?.scrollIntoView({ behavior: transitionsAllowed() ? 'smooth' : 'instant', block: 'center' });
           incompleteFieldset?.querySelector<HTMLInputElement>('input[type="radio"]')?.focus();
           return;
         }
@@ -50,7 +62,7 @@ export class NkStickyBuy extends NkElement {
     }
 
     const picker = section.querySelector<NkVariantPicker>('nk-variant-picker');
-    this.#sync(section, picker?.state ?? 'available');
+    this.#sync(section, picker?.state ?? section.querySelector<HTMLElement>('[data-region="buy"]')?.dataset.availability ?? 'unavailable');
   }
 
   #sync(section: HTMLElement, state: string): void {
@@ -83,8 +95,8 @@ export class NkStickyBuy extends NkElement {
     } else if (state === 'sold-out') {
       labelEl.textContent = t('product.sold_out');
       cta.disabled = true;
-    } else if (state === 'unavailable') {
-      labelEl.textContent = t('product.unavailable');
+    } else if (state === 'unavailable' || state === 'failed') {
+      labelEl.textContent = t(state === 'failed' ? 'product.selection_failed' : 'product.unavailable');
       cta.disabled = true;
     } else {
       const mainLabel = section.querySelector<HTMLElement>('[data-region="buy"] [data-button-label]')?.textContent?.trim();

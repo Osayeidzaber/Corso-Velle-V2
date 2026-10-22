@@ -3,20 +3,60 @@
   desktop. Social links, policies and payment icons come from store configuration; anything
   without a destination is omitted.
 {%- endcomment -%}
-<footer class="footer color-{{ section.settings.color_scheme }} full-width"{% if section.settings.reveal %} data-reveal{% endif %}>
-  <div class="footer__inner" style="width: var(--content-width); margin-inline: auto;">
+{%- assign footer_link_urls = '' -%}
+<nk-footer
+  class="full-width"
+  {% if section.settings.reveal %}data-reveal{% endif %}
+  {% if section.settings.animate_beam %}data-beam{% endif %}
+  style="--footer-background: {{ section.settings.background | default: '#432d23' }}; --footer-ink: {{ section.settings.ink | default: '#f5ecdf' }}; --footer-accent: {{ section.settings.accent | default: '#d7ae83' }};"
+>
+<footer class="footer color-{{ section.settings.color_scheme }}">
+  <div class="footer__sky" aria-hidden="true">
+    <div class="footer__wash"></div>
+    <div class="footer__beam"></div>
+    <div class="footer__glow"></div>
+    <div class="footer__grain"></div>
+  </div>
+  <div class="footer__inner">
+    {%- if section.settings.show_newsletter -%}
+      <div class="footer__newsletter">
+        <div class="footer__newsletter-copy">
+          <p class="eyebrow">{{ section.settings.newsletter_eyebrow | escape }}</p>
+          <h2>{{ section.settings.newsletter_heading | escape }}</h2>
+        </div>
+        <div class="footer__signup">
+          {%- assign newsletter_id = 'FooterNewsletter-' | append: section.id -%}
+          {%- form 'customer', id: newsletter_id, class: 'footer__form' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <label class="visually-hidden" for="FooterEmail-{{ section.id }}">{{ 'footer.email' | t }}</label>
+            <div class="footer__email-row">
+              <input id="FooterEmail-{{ section.id }}" type="email" name="contact[email]" autocomplete="email" placeholder="{{ 'footer.email' | t }}" required {% if form.errors %}aria-invalid="true" aria-describedby="FooterError-{{ section.id }}"{% endif %}>
+              <button type="submit" aria-label="{{ 'footer.subscribe' | t }}">{{ 'footer.subscribe' | t }} <span aria-hidden="true">↗</span></button>
+            </div>
+            {%- if form.posted_successfully? -%}
+              <p class="footer__form-message" role="status">{{ 'footer.subscribed' | t }}</p>
+            {%- elsif form.errors -%}
+              <div id="FooterError-{{ section.id }}" class="footer__form-message" role="alert">{{ form.errors | default_errors }}</div>
+            {%- endif -%}
+          {%- endform -%}
+          {%- if shop.privacy_policy != blank -%}
+            <p class="footer__privacy"><a href="{{ shop.privacy_policy.url }}">{{ shop.privacy_policy.title | escape }}</a></p>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
     <div class="footer__columns">
       {%- for block in section.blocks -%}
         {%- case block.type -%}
           {%- when 'brand' -%}
             <div class="footer__brand" {{ block.shopify_attributes }}>
-              <p class="header__logo">
+              <a class="footer__logo{% if section.settings.invert_logo %} footer__logo--invert{% endif %}" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
                 {%- if settings.logo -%}
                   {{ settings.logo | image_url: width: 600 | image_tag: loading: 'lazy', alt: shop.name }}
                 {%- else -%}
                   {{ shop.name | escape }}
                 {%- endif -%}
-              </p>
+              </a>
               {%- if block.settings.text != blank -%}
                 <div class="text-muted">{{ block.settings.text }}</div>
               {%- endif -%}
@@ -26,11 +66,12 @@
             {%- if footer_menu.links.size > 0 -%}
               <nav class="footer__menu" aria-label="{{ footer_menu.title | escape }}" {{ block.shopify_attributes }}>
                 <nk-disclosure>
-                  <details class="disclosure" open>
+                  <details class="disclosure" data-footer-menu open>
                     <summary>{{ block.settings.heading | default: footer_menu.title | escape }}</summary>
                     <ul role="list" class="disclosure__content">
                       {%- for link in footer_menu.links -%}
-                        <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+                        {%- assign footer_link_urls = footer_link_urls | append: link.url | append: '|' -%}
+                        <li><a href="{{ link.url }}"><span class="footer__link-label">{{ link.title | escape }}</span></a></li>
                       {%- endfor -%}
                     </ul>
                   </details>
@@ -57,10 +98,10 @@
               <div class="footer__menu" {{ block.shopify_attributes }}>
                 <p class="spec">{{ 'footer.follow' | t }}</p>
                 <ul role="list">
-                  {%- if settings.social_instagram != blank -%}<li><a href="{{ settings.social_instagram }}" rel="noopener">Instagram</a></li>{%- endif -%}
-                  {%- if settings.social_tiktok != blank -%}<li><a href="{{ settings.social_tiktok }}" rel="noopener">TikTok</a></li>{%- endif -%}
-                  {%- if settings.social_facebook != blank -%}<li><a href="{{ settings.social_facebook }}" rel="noopener">Facebook</a></li>{%- endif -%}
-                  {%- if settings.social_youtube != blank -%}<li><a href="{{ settings.social_youtube }}" rel="noopener">YouTube</a></li>{%- endif -%}
+                  {%- if settings.social_instagram != blank -%}<li><a href="{{ settings.social_instagram }}" rel="noopener"><span class="footer__link-label">Instagram</span></a></li>{%- endif -%}
+                  {%- if settings.social_tiktok != blank -%}<li><a href="{{ settings.social_tiktok }}" rel="noopener"><span class="footer__link-label">TikTok</span></a></li>{%- endif -%}
+                  {%- if settings.social_facebook != blank -%}<li><a href="{{ settings.social_facebook }}" rel="noopener"><span class="footer__link-label">Facebook</span></a></li>{%- endif -%}
+                  {%- if settings.social_youtube != blank -%}<li><a href="{{ settings.social_youtube }}" rel="noopener"><span class="footer__link-label">YouTube</span></a></li>{%- endif -%}
                 </ul>
               </div>
             {%- elsif request.design_mode -%}
@@ -75,10 +116,13 @@
       {%- if shop.policies.size > 0 -%}
         <ul class="footer__payments" role="list">
           {%- for policy in shop.policies -%}
-            <li><a href="{{ policy.url }}">{{ policy.title | escape }}</a></li>
+            {%- unless footer_link_urls contains policy.url -%}
+              <li><a href="{{ policy.url }}">{{ policy.title | escape }}</a></li>
+            {%- endunless -%}
           {%- endfor -%}
         </ul>
       {%- endif -%}
+      <a class="footer__top" href="#MainContent">{{ 'footer.back_to_top' | t }} <span aria-hidden="true">↑</span></a>
       {%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
         <ul class="footer__payments" role="list" aria-label="{{ 'footer.payment_methods' | t }}">
           {%- for type in shop.enabled_payment_types -%}
@@ -88,15 +132,37 @@
       {%- endif -%}
     </div>
   </div>
+  {%- if section.settings.show_wordmark -%}
+    {%- assign wordmark_letters = shop.name | upcase | split: '' -%}
+    <div class="footer__wordmark-crop">
+      <a class="footer__wordmark" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+        <span class="footer__wordmark-text" data-footer-word aria-hidden="true">
+          {%- for letter in wordmark_letters -%}
+            <span class="footer__letter-wrap" style="--footer-letter-delay: {{ forloop.index0 | times: 35 | plus: 100 }}ms;"><span class="footer__letter">{{ letter | escape }}</span></span>
+          {%- endfor -%}
+        </span>
+      </a>
+    </div>
+  {%- endif -%}
 </footer>
+</nk-footer>
 
 {% schema %}
 {
   "name": "Footer",
   "class": "footer-section",
   "settings": [
+    { "type": "checkbox", "id": "show_newsletter", "label": "Show newsletter signup", "default": true },
+    { "type": "text", "id": "newsletter_eyebrow", "label": "Newsletter label", "default": "A note from us" },
+    { "type": "text", "id": "newsletter_heading", "label": "Newsletter heading", "default": "Good things, first." },
+    { "type": "checkbox", "id": "show_wordmark", "label": "Show large brand name", "default": true },
+    { "type": "color", "id": "background", "label": "Background", "default": "#432d23" },
+    { "type": "color", "id": "ink", "label": "Text", "default": "#f5ecdf" },
+    { "type": "color", "id": "accent", "label": "Light beam and accents", "default": "#d7ae83" },
+    { "type": "checkbox", "id": "animate_beam", "label": "Animate soft light beam", "default": true },
+    { "type": "checkbox", "id": "invert_logo", "label": "Use light logo on dark background", "default": true },
     { "type": "checkbox", "id": "show_payment_icons", "label": "Show payment icons", "default": true },
-    { "type": "checkbox", "id": "reveal", "label": "Reveal footer on scroll (desktop)", "default": false, "info": "Page content scrolls away to uncover the footer. Desktop only." },
+    { "type": "checkbox", "id": "reveal", "label": "Reveal footer on scroll (desktop)", "default": true, "info": "Page content scrolls away to uncover the footer when it fits in the viewport. Desktop only." },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" }
   ],
   "blocks": [

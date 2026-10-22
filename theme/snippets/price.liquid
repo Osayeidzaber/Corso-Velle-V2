@@ -14,7 +14,10 @@
     assign compare = variant.compare_at_price
   else
     assign amount = product.price
-    assign compare = product.compare_at_price
+    assign compare = nil
+    unless product.price_varies or product.compare_at_price_varies
+      assign compare = product.compare_at_price_min
+    endunless
   endif
 -%}
 <span class="price{% if compare > amount %} price--on-sale{% endif %}">

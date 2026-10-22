@@ -37,6 +37,7 @@ export class NkText extends NkElement {
 
   protected override unmount(): void {
     cancelAnimationFrame(this.#frame);
+    this.#frame = 0;
     this.#revert?.();
     this.#revert = null;
   }
@@ -52,12 +53,13 @@ export class NkText extends NkElement {
   }
 
   async #start(): Promise<void> {
+    const connection = this.signal;
     const { gsap, ScrollTrigger } = await import('../../motion/gsap');
-    if (!this.isConnected) return;
+    if (!this.connectionIsCurrent(connection)) return;
     if (document.fonts && document.fonts.status !== 'loaded') {
       await Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, 1200))]);
     }
-    if (!this.isConnected) return;
+    if (!this.connectionIsCurrent(connection)) return;
 
     const target = this.querySelector<HTMLElement>('[data-text-target]') ?? (this.firstElementChild as HTMLElement | null);
     if (!target) return this.#show();
@@ -67,6 +69,7 @@ export class NkText extends NkElement {
     const hover = (this.getAttribute('hover') ?? 'none') as Hover;
     const from = (this.getAttribute('stagger-from') ?? 'start') as 'start' | 'center' | 'end';
 
+    const originalHTML = target.innerHTML;
     const label = target.textContent?.replace(/\s+/g, ' ').trim() ?? '';
     const masked = effect === 'cut' || effect === 'rise';
     const { words, chars } = splitText(target, by === 'chars', masked);
@@ -113,7 +116,7 @@ export class NkText extends NkElement {
         ScrollTrigger.create({ trigger: this, start: 'top 88%', once: true, onEnter: () => timeline.play(0) });
       }
     }, this);
-    this.#revert = () => context.revert();
+    this.#revert = () => { context.revert(); target.innerHTML = originalHTML; };
   }
 
   /** Subtle pointer hover response when explicitly enabled. */
@@ -168,7 +171,9 @@ export class NkText extends NkElement {
       if (!this.#frame) this.#frame = requestAnimationFrame(step);
     };
 
+    // Touch on hybrid devices would leave the lift parked under the last tap point.
     this.on(this, 'pointerenter', (event) => {
+      if (event.pointerType === 'touch') return;
       measure();
       pointer.inside = true;
       pointer.x = event.clientX;
@@ -176,6 +181,7 @@ export class NkText extends NkElement {
       wake();
     });
     this.on(this, 'pointermove', (event) => {
+      if (!pointer.inside) return;
       pointer.x = event.clientX;
       pointer.y = event.clientY;
       wake();

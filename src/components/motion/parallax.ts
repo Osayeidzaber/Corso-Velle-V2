@@ -12,7 +12,7 @@ export class NkParallax extends NkElement {
 
   protected mount(): void {
     if (!decorativeMotionAllowed()) return;
-    void this.#start();
+    void this.#start().catch(console.error);
   }
 
   protected override unmount(): void {
@@ -20,8 +20,9 @@ export class NkParallax extends NkElement {
   }
 
   async #start(): Promise<void> {
+    const connection = this.signal;
     const { gsap } = await import('../../motion/gsap');
-    if (!this.isConnected) return;
+    if (!this.connectionIsCurrent(connection)) return;
     const media = this.querySelector<HTMLElement>('[data-parallax-media]') ?? (this.firstElementChild as HTMLElement | null);
     if (!media) return;
     const strength = Number(this.getAttribute('strength') ?? 12);

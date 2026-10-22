@@ -41,11 +41,13 @@ export function replaceRegions(scope: Element, html: string, regions: string[]):
     const next = incoming.querySelector(`[data-region="${name}"]`);
     if (!next) throw new MissingFragmentError(`Region "${name}" missing`);
     // Attributes carry state too (e.g. data-availability on the buy region).
-    for (const { name: attr, value } of [...next.attributes]) current.setAttribute(attr, value);
     return [[current, next] as const];
   });
   const focusKey = captureFocus(scope);
-  for (const [current, next] of pairs) current.replaceChildren(...[...next.childNodes].map((n) => document.importNode(n, true)));
+  for (const [current, next] of pairs) {
+    for (const { name: attr, value } of [...next.attributes]) current.setAttribute(attr, value);
+    current.replaceChildren(...[...next.childNodes].map((n) => document.importNode(n, true)));
+  }
   restoreFocus(scope, focusKey);
   scope.dispatchEvent(new CustomEvent('nk:section:replaced', { bubbles: true, detail: { regions } }));
 }

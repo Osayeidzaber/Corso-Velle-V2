@@ -27,47 +27,50 @@ export class NkStagger extends NkElement {
   }
 
   async #start(): Promise<void> {
+    const connection = this.signal;
     const { gsap, ScrollTrigger } = await import('../../motion/gsap');
-    if (!this.isConnected) return;
+    if (!this.connectionIsCurrent(connection)) return;
     const items = [...this.querySelectorAll<HTMLElement>('[data-stagger-item]')];
     if (!items.length) {
       this.setAttribute('data-ready', '');
       return;
     }
-    const context = gsap.context(() => {
+    const context = gsap.context((self) => {
       gsap.set(items, { opacity: 0, y: 34 });
       this.setAttribute('data-ready', '');
       ScrollTrigger.batch(items, {
         start: 'top 92%',
         once: true,
         onEnter: (batch) => {
-          const elements = batch as HTMLElement[];
-          gsap.to(elements, {
-            opacity: 1,
-            y: 0,
-            duration: 0.95,
-            ease: 'expo.out',
-            stagger: 0.075,
-            overwrite: true,
-            clearProps: 'transform,opacity',
+          self.add(() => {
+            const elements = batch as HTMLElement[];
+            gsap.to(elements, {
+              opacity: 1,
+              y: 0,
+              duration: 0.95,
+              ease: 'expo.out',
+              stagger: 0.075,
+              overwrite: true,
+              clearProps: 'transform,opacity',
+            });
+            const mediaImgs = elements
+              .map((el) => el.querySelector<HTMLElement>('.card__media > img:first-child, .category-card__media > img:first-child'))
+              .filter((img): img is HTMLElement => Boolean(img));
+            if (mediaImgs.length) {
+              gsap.fromTo(
+                mediaImgs,
+                { scale: 1.05 },
+                {
+                  scale: 1,
+                  duration: 1.25,
+                  ease: 'expo.out',
+                  stagger: 0.075,
+                  overwrite: 'auto',
+                  clearProps: 'transform',
+                },
+              );
+            }
           });
-          const mediaImgs = elements
-            .map((el) => el.querySelector<HTMLElement>('.card__media > img:first-child, .category-card__media > img:first-child'))
-            .filter((img): img is HTMLElement => Boolean(img));
-          if (mediaImgs.length) {
-            gsap.fromTo(
-              mediaImgs,
-              { scale: 1.05 },
-              {
-                scale: 1,
-                duration: 1.25,
-                ease: 'expo.out',
-                stagger: 0.075,
-                overwrite: 'auto',
-                clearProps: 'transform',
-              },
-            );
-          }
         },
       });
     }, this);

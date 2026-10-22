@@ -31,6 +31,9 @@ export class NkFacets extends NkElement {
 
   protected mount(): void {
     this.setAttribute('data-enhanced', '');
+    const measureViewport = () => this.style.setProperty('--nk-viewport-width', `${document.documentElement.clientWidth}px`);
+    measureViewport();
+    this.observeResize(document.documentElement, measureViewport);
     this.#restoreGridLayout();
 
     this.on(this, 'submit', (event) => {
@@ -50,6 +53,19 @@ export class NkFacets extends NkElement {
     this.on(this, 'click', (event) => {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const target = event.target as Element;
+
+      const sortOption = target.closest<HTMLButtonElement>('[data-facets-sort-value]');
+      if (sortOption) {
+        const select = this.querySelector<HTMLSelectElement>('[data-facets-sort]');
+        const menu = sortOption.closest<HTMLDetailsElement>('[data-sort-menu]');
+        if (menu) menu.open = false;
+        menu?.querySelector('summary')?.focus();
+        if (select && select.value !== sortOption.dataset.facetsSortValue) {
+          select.value = sortOption.dataset.facetsSortValue ?? '';
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        return;
+      }
 
       const mobileBtn = target.closest<HTMLButtonElement>('[data-grid-cols-mobile]');
       if (mobileBtn) {
@@ -76,7 +92,30 @@ export class NkFacets extends NkElement {
       const link = target.closest<HTMLAnchorElement>('a[data-facets-link]');
       if (link) {
         event.preventDefault();
+        this.#closeDrawer();
         void this.#render(link.href, true);
+      }
+    });
+
+    this.on(document, 'pointerdown', (event) => {
+      for (const menu of this.querySelectorAll<HTMLDetailsElement>('[data-sort-menu][open]')) {
+        if (!menu.contains(event.target as Node)) menu.open = false;
+      }
+    });
+    this.on(this, 'keydown', (event) => {
+      const menu = (event.target as Element).closest<HTMLDetailsElement>('[data-sort-menu]');
+      if (!menu?.open) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+      } else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+        event.preventDefault();
+        const options = [...menu.querySelectorAll<HTMLButtonElement>('[data-facets-sort-value]')];
+        const current = options.indexOf(document.activeElement as HTMLButtonElement);
+        const index = event.key === 'Home' ? 0 : event.key === 'End' || (current === -1 && event.key === 'ArrowUp') ? options.length - 1
+          : (current + (event.key === 'ArrowUp' ? -1 : 1) + options.length) % options.length;
+        options[index]?.focus();
       }
     });
 
@@ -110,6 +149,7 @@ export class NkFacets extends NkElement {
   }
 
   #setGridLayout(mode: 'mobile' | 'desktop', cols: string, animated: boolean): void {
+    if (!(mode === 'mobile' ? ['1', '2'] : ['2', '3', '4']).includes(cols)) return;
     const grid = this.querySelector<HTMLElement>('.product-grid');
     if (mode === 'mobile') {
       grid?.style.setProperty('--nk-cols-mobile', cols);

@@ -1,9 +1,10 @@
-import { config } from '../../core/config';
+import { config, t } from '../../core/config';
 import { define } from '../../core/define';
 import { parseHTML } from '../../core/dom';
 import { NkElement } from '../../core/element';
 import { announce } from '../../services/announce';
 import { fetchText, Sequencer } from '../../services/request';
+import { scopeSearchResults, searchNamespace } from '../predictive-search/results';
 
 const MIN_CHARS = 2;
 const DEBOUNCE_MS = 200;
@@ -19,6 +20,7 @@ export class NkSearchPill extends NkElement {
   #timer = 0;
   #results: HTMLElement | null = null;
   #active = -1;
+  #namespace = searchNamespace();
 
   protected mount(): void {
     const toggle = this.ref<HTMLButtonElement>('toggle');
@@ -36,6 +38,7 @@ export class NkSearchPill extends NkElement {
       dropdown.hidden = true;
       this.append(dropdown);
       this.#results = dropdown;
+      this.dispose(() => { dropdown.remove(); this.#results = null; });
 
       input.setAttribute('role', 'combobox');
       input.setAttribute('aria-autocomplete', 'list');
@@ -66,6 +69,8 @@ export class NkSearchPill extends NkElement {
     this.on(input, 'input', () => {
       if (!this.#results) return;
       window.clearTimeout(this.#timer);
+      this.#sequencer.cancel();
+      this.#hideResults(input);
       const query = input.value.trim();
       if (query.length < MIN_CHARS) {
         this.#sequencer.cancel();
@@ -145,22 +150,30 @@ export class NkSearchPill extends NkElement {
         this.#hideResults(input);
         return;
       }
-      // Namespace option IDs inside the pill dropdown so they never collide with #SearchModal
-      fresh.querySelector('#PredictiveSearchListbox')?.setAttribute('id', 'PillPredictiveListbox');
-      fresh.querySelectorAll<HTMLElement>('[id^="Predictive"]').forEach((el) => {
-        el.id = `Pill-${el.id}`;
-      });
+      const listboxId = scopeSearchResults(fresh, this.#namespace);
       this.#results.replaceChildren(...[...fresh.childNodes].map((node) => document.importNode(node, true)));
       this.#results.hidden = false;
       this.#active = -1;
       const count = Number(fresh.dataset.resultsCount ?? 0);
-      input.setAttribute('aria-controls', 'PillPredictiveListbox');
+      input.setAttribute('aria-controls', listboxId);
       input.setAttribute('aria-expanded', String(count > 0));
       announce.polite(count > 0 ? (fresh.dataset.resultsLabel ?? '') : (this.#results.textContent?.trim() ?? ''));
     } catch (error) {
       console.error(error);
       this.removeAttribute('data-loading');
       this.#hideResults(input);
+      const message = document.createElement('p');
+      message.className = 'message message--error';
+      message.setAttribute('role', 'alert');
+      message.textContent = t('search.predictive_error');
+      const link = document.createElement('a');
+      const fallback = new URL(config().routes.search, location.origin);
+      fallback.searchParams.set('q', query);
+      fallback.searchParams.set('options[prefix]', 'last');
+      link.href = fallback.toString();
+      link.textContent = t('search.submit');
+      this.#results.replaceChildren(message, link);
+      this.#results.hidden = false;
     }
   }
 
@@ -177,6 +190,8 @@ export class NkSearchPill extends NkElement {
   }
 
   #hideResults(input: HTMLInputElement): void {
+    window.clearTimeout(this.#timer);
+    this.#sequencer.cancel();
     this.removeAttribute('data-loading');
     this.#active = -1;
     input.removeAttribute('aria-activedescendant');

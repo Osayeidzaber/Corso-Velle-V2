@@ -1,10 +1,17 @@
 {%- comment -%}
-  Campaign hero (master-plan/10 CS-01, Riviera board 16).
+  Campaign hero (master-plan/10 CS-01, Riviera board 16). Styles: src/styles/components/hero.css.
   Media priority: Shopify video → video URL (+ poster) → image → collection image.
   Media drifts with GSAP parallax (<nk-parallax>). Headline: Split Text rise with hover lift and a
-  Gradient Text italic tail (<nk-text>); eyebrow: Shiny Text; intro copy: Text Effect blur; buttons:
-  letter swap. Scroll cue fades out as the page moves.
-  Marked overlay-eligible so a transparent header can sit on top when it is the first section.
+  Gradient Text italic tail (<nk-text>); eyebrow: Shiny Text; intro copy: Text Effect blur.
+  Scroll cue fades out as the page moves.
+
+  Layouts: overlay (full-bleed, copy over media), editorial (full-bleed, magazine-cover grid),
+  split (media beside a solid text panel). Entrances: fade-up, text (masked line reveal), zoom
+  (media settles from a zoom), curtain (media unveils, copy follows), none. Media entrances are CSS
+  keyed off html.nk-anim, which is only set while decorative motion is allowed; copy entrances
+  are <nk-reveal>, which checks the same policy.
+  Overlay-eligible (a transparent header can sit on top when it is the first section) unless the
+  layout is split, where the header would land on the text panel.
 {%- endcomment -%}
 {%- liquid
   assign desktop = section.settings.image | default: section.settings.collection.featured_image
@@ -14,11 +21,63 @@
   if section.index == 1
     assign is_first = true
   endif
+
+  assign layout = section.settings.layout | default: 'overlay'
+  assign entrance = section.settings.entrance | default: 'fade-up'
+
+  assign wrap = 'nk-reveal'
+  assign copy_mode = 'fade'
+  assign buttons_mode = 'fade'
+  assign offset = 0
+  case entrance
+    when 'none'
+      assign wrap = 'div'
+    when 'text'
+      assign copy_mode = 'split'
+      assign buttons_mode = 'rise'
+      assign offset = 0.08
+    when 'zoom'
+      assign offset = 0.3
+    when 'curtain'
+      assign copy_mode = 'cut'
+      assign offset = 0.55
+  endcase
+  assign eyebrow_delay = 0.06 | plus: offset
+  assign text_delay = 0.28 | plus: offset
+  assign buttons_delay = 0.4 | plus: offset
+
+  # Positions are "<vertical>-<horizontal>", or "center" for both.
+  assign position_classes = ''
+  assign positions = section.settings.position | default: 'bottom-left' | append: ',' | append: section.settings.position_mobile
+  assign positions = positions | split: ','
+  for pos in positions
+    if pos == blank or pos == 'same'
+      continue
+    endif
+    assign prefix = 'hero--'
+    if forloop.index == 2
+      assign prefix = 'hero--m'
+    endif
+    if pos == 'center'
+      assign v = 'center'
+      assign h = 'center'
+    else
+      assign parts = pos | split: '-'
+      assign v = parts[0]
+      assign h = parts[1]
+    endif
+    assign position_classes = position_classes | append: ' ' | append: prefix | append: 'v-' | append: v | append: ' ' | append: prefix | append: 'h-' | append: h
+  endfor
+  if section.settings.text_align != blank and section.settings.text_align != 'auto'
+    assign position_classes = position_classes | append: ' hero--text-' | append: section.settings.text_align
+  endif
 -%}
 <div
-  class="hero full-width color-{{ section.settings.color_scheme }} hero--{{ section.settings.height }} hero--{{ section.settings.position }}"
-  data-overlay-eligible
-  style="--nk-scrim: {{ section.settings.scrim | divided_by: 100.0 }};"
+  class="hero full-width color-{{ section.settings.color_scheme }} hero--{{ layout }} hero--{{ section.settings.height }}{{ position_classes }} hero--media-{{ section.settings.media_position }} hero--enter-{{ entrance }}"
+  {% unless layout == 'split' %}
+    data-overlay-eligible
+  {% endunless %}
+  style="--nk-scrim: {{ section.settings.scrim | divided_by: 100.0 }}; --hero-width: {{ section.settings.content_width | default: 1100 }}px; --hero-gap: {{ section.settings.block_gap | default: 22 }}px;"
 >
   <nk-parallax class="hero__media" strength="{{ section.settings.parallax }}">
     <div class="hero__media-inner" data-parallax-media>
@@ -37,12 +96,16 @@
             assign priority = 'high'
           endif
           assign alt = desktop.alt | escape
+          assign sizes = '100vw'
+          if layout == 'split'
+            assign sizes = '(min-width: 990px) 55vw, 100vw'
+          endif
         -%}
         <picture>
           {%- if section.settings.image_mobile -%}
             <source media="(max-width: 749px)" srcset="{{ mobile | image_url: width: 750 }} 750w, {{ mobile | image_url: width: 1100 }} 1100w, {{ mobile | image_url: width: 1500 }} 1500w" sizes="100vw">
           {%- endif -%}
-          {{ desktop | image_url: width: 2880 | image_tag: loading: loading, fetchpriority: priority, widths: '750, 1100, 1500, 1920, 2400, 2880', sizes: '100vw', alt: alt }}
+          {{ desktop | image_url: width: 2880 | image_tag: loading: loading, fetchpriority: priority, widths: '750, 1100, 1500, 1920, 2400, 2880', sizes: sizes, alt: alt }}
         </picture>
       {%- else -%}
         {{ 'lifestyle-1' | placeholder_svg_tag: 'hero__placeholder' }}
@@ -59,13 +122,24 @@
       {%- for block in section.blocks -%}
         {%- case block.type -%}
           {%- when 'eyebrow' -%}
-            <nk-reveal mode="fade" delay="0.06" play-on-load {{ block.shopify_attributes }}>
+            <{{ wrap }}
+              class="hero__block hero__block--eyebrow"
+              style="--hero-eyebrow-scale: {{ block.settings.size | default: 100 | divided_by: 100.0 }};"
+              {% if wrap == 'nk-reveal' %}
+                mode="{{ copy_mode }}" delay="{{ eyebrow_delay }}" play-on-load
+              {% endif %}
+              {{ block.shopify_attributes }}
+            >
               <p class="eyebrow hero__eyebrow">
                 <span class="{% if block.settings.shine %}nk-text-shine{% endif %}">{{ block.settings.text | escape }}</span>
               </p>
-            </nk-reveal>
+            </{{ wrap }}>
           {%- when 'heading' -%}
-            <div {{ block.shopify_attributes }}>
+            <div
+              class="hero__block hero__block--heading"
+              style="--hero-heading-scale: {{ block.settings.size | default: 100 | divided_by: 100.0 }}; --hero-heading-scale-mobile: {{ block.settings.size_mobile | default: 100 | divided_by: 100.0 }};"
+              {{ block.shopify_attributes }}
+            >
               {%- liquid
                 assign heading_tag = 'h2'
                 if is_first
@@ -73,13 +147,17 @@
                 endif
                 assign heading_html = block.settings.heading | escape
                 assign italic = block.settings.heading_italic | escape
+                assign heading_entrance = block.settings.entrance
+                if entrance == 'none'
+                  assign heading_entrance = 'none'
+                endif
               -%}
               {% render 'reveal-heading',
                 text: heading_html,
                 italic: italic,
                 italic_break: true,
                 tag: heading_tag,
-                entrance: block.settings.entrance,
+                entrance: heading_entrance,
                 hover: block.settings.hover,
                 italic_style: block.settings.italic_style,
                 style: block.settings.text_style,
@@ -88,20 +166,43 @@
               %}
             </div>
           {%- when 'text' -%}
-            <nk-reveal mode="fade" delay="0.28" play-on-load {{ block.shopify_attributes }}>
+            <{{ wrap }}
+              class="hero__block hero__block--text"
+              style="--hero-text-scale: {{ block.settings.size | default: 100 | divided_by: 100.0 }}; --hero-text-width: {{ block.settings.width | default: 42 }}ch;"
+              {% if wrap == 'nk-reveal' %}
+                mode="{{ copy_mode }}" delay="{{ text_delay }}" play-on-load
+              {% endif %}
+              {{ block.shopify_attributes }}
+            >
               <div class="hero__text">{{ block.settings.text }}</div>
-            </nk-reveal>
+            </{{ wrap }}>
           {%- when 'buttons' -%}
-            <nk-reveal mode="fade" delay="0.4" play-on-load {{ block.shopify_attributes }}>
-              <div class="hero__buttons">
-                {%- if block.settings.label_1 != blank and block.settings.link_1 != blank -%}
-                  <a class="button hero__button" href="{{ block.settings.link_1 }}" data-magnetic>{{ block.settings.label_1 | escape }}</a>
-                {%- endif -%}
-                {%- if block.settings.label_2 != blank and block.settings.link_2 != blank -%}
-                  <a class="button button--secondary hero__button hero__button--ghost" href="{{ block.settings.link_2 }}">{{ block.settings.label_2 | escape }}</a>
-                {%- endif -%}
+            <{{ wrap }}
+              class="hero__block hero__block--buttons"
+              style="--hero-buttons-gap: {{ block.settings.gap | default: 14 }}px; --hero-buttons-offset: {{ block.settings.offset | default: 0 }}px;"
+              {% if wrap == 'nk-reveal' %}
+                mode="{{ buttons_mode }}" delay="{{ buttons_delay }}" play-on-load
+              {% endif %}
+              {{ block.shopify_attributes }}
+            >
+              <div class="hero__buttons hero__buttons--align-{{ block.settings.alignment | default: 'auto' }} hero__buttons--{{ block.settings.arrangement | default: 'row' }}{% if block.settings.full_width_mobile %} hero__buttons--fill-mobile{% endif %}">
+                {% render 'hero-button',
+                  label: block.settings.label_1,
+                  link: block.settings.link_1,
+                  style: block.settings.style_1,
+                  size: block.settings.size,
+                  arrow: block.settings.arrow,
+                  magnetic: true
+                %}
+                {% render 'hero-button',
+                  label: block.settings.label_2,
+                  link: block.settings.link_2,
+                  style: block.settings.style_2,
+                  size: block.settings.size,
+                  arrow: false
+                %}
               </div>
-            </nk-reveal>
+            </{{ wrap }}>
         {%- endcase -%}
       {%- endfor -%}
     </div>
@@ -113,101 +214,6 @@
     {%- endif -%}
   </div>
 </div>
-
-{% stylesheet %}
-  .hero {
-    position: relative;
-    display: grid;
-    min-height: 60svh;
-    overflow: hidden;
-    color: var(--nk-color-text);
-    isolation: isolate;
-  }
-  .hero--medium { min-height: min(75svh, 760px); }
-  .hero--full { min-height: 100svh; }
-  .hero--adapt { min-height: 0; }
-  .hero__media,
-  .hero__content { grid-area: 1 / 1; }
-  .hero__media { position: relative; display: block; overflow: hidden; z-index: -2; }
-  .hero__media-inner { position: absolute; inset: 0; }
-  .hero__media img,
-  .hero__media video,
-  .hero__placeholder {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .hero__scrim,
-  .hero .nk-scrim-blur { z-index: -1; }
-  .hero__scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgb(0 0 0 / calc(var(--nk-scrim, 0.3) + 0.2)), rgb(0 0 0 / calc(var(--nk-scrim, 0.3) * 0.4)) 55%, rgb(0 0 0 / calc(var(--nk-scrim, 0.3) * 0.6))); }
-  .hero__content {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: calc(var(--nk-header-h, 64px) + 24px) var(--nk-gutter) 44px;
-  }
-  .hero__copy { display: flex; flex-direction: column; gap: 22px; max-width: 1100px; }
-  .hero--center .hero__content { justify-content: center; align-items: center; text-align: center; }
-  .hero--center .hero__copy { align-items: center; }
-  .hero__eyebrow { color: color-mix(in oklab, var(--nk-color-text) 80%, transparent); }
-  .hero__heading { font-size: clamp(3.5rem, 13vw, 11.5rem); }
-  .hero__heading em { font-weight: 400; }
-  .hero__text { max-width: 42ch; font-family: var(--nk-font-heading); font-style: italic; font-size: clamp(1.0625rem, 1.6vw, 1.375rem); line-height: 1.45; }
-  .hero__buttons { display: flex; flex-wrap: wrap; gap: 12px; }
-  .hero .button { background: var(--nk-color-text); color: var(--nk-color-bg); border-color: var(--nk-color-text); }
-  .hero .hero__button--ghost { background: transparent; color: var(--nk-color-text); }
-  .hero__cue {
-    position: absolute;
-    left: 50%;
-    bottom: 18px;
-    translate: -50% 0;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--nk-font-spec);
-    font-size: 0.625rem;
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    padding-inline-start: 0.32em;
-    color: color-mix(in oklab, var(--nk-color-text) 75%, transparent);
-    pointer-events: none;
-  }
-  .hero__cue-line {
-    position: relative;
-    width: 1px;
-    height: 44px;
-    overflow: hidden;
-    background: color-mix(in oklab, var(--nk-color-text) 25%, transparent);
-  }
-  .hero__cue-line::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--nk-color-text);
-    translate: 0 -100%;
-    animation: hero-cue 2.2s cubic-bezier(0.76, 0, 0.24, 1) infinite;
-  }
-  @keyframes hero-cue {
-    0% { translate: 0 -100%; }
-    50% { translate: 0 0; }
-    100% { translate: 0 100%; }
-  }
-  @supports (animation-timeline: scroll()) {
-    .hero__cue { animation: hero-cue-out linear both; animation-timeline: scroll(root); animation-range: 0 30vh; }
-    @keyframes hero-cue-out { to { opacity: 0; } }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hero__cue-line::after { animation: none; translate: 0 0; }
-  }
-  @media (min-width: 990px) {
-    .hero__content { padding-bottom: 64px; }
-    .hero__cue { display: flex; }
-  }
-{% endstylesheet %}
 
 {% schema %}
 {
@@ -225,6 +231,28 @@
     { "type": "header", "content": "Layout" },
     {
       "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "overlay", "label": "Full-bleed, text over media" },
+        { "value": "editorial", "label": "Editorial cover" },
+        { "value": "split", "label": "Split, media beside text" }
+      ],
+      "default": "overlay",
+      "info": "Editorial puts the heading bottom left with the text and buttons in a ruled column on the right. Split shows the media next to a solid panel in the color scheme."
+    },
+    {
+      "type": "select",
+      "id": "media_position",
+      "label": "Media side (split layout)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
       "id": "height",
       "label": "Height",
       "options": [
@@ -239,11 +267,48 @@
       "id": "position",
       "label": "Content position",
       "options": [
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-center", "label": "Top center" },
+        { "value": "top-right", "label": "Top right" },
+        { "value": "center-left", "label": "Middle left" },
+        { "value": "center", "label": "Center" },
+        { "value": "center-right", "label": "Middle right" },
         { "value": "bottom-left", "label": "Bottom left" },
-        { "value": "center", "label": "Center" }
+        { "value": "bottom-center", "label": "Bottom center" },
+        { "value": "bottom-right", "label": "Bottom right" }
       ],
-      "default": "bottom-left"
+      "default": "bottom-left",
+      "info": "Used by the full-bleed and split layouts. Text aligns to the side you pick."
     },
+    {
+      "type": "select",
+      "id": "position_mobile",
+      "label": "Content position on phones",
+      "options": [
+        { "value": "same", "label": "Same as desktop" },
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-center", "label": "Top center" },
+        { "value": "center-left", "label": "Middle left" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-center", "label": "Bottom center" }
+      ],
+      "default": "same"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "options": [
+        { "value": "auto", "label": "Follow the position" },
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "auto"
+    },
+    { "type": "range", "id": "content_width", "label": "Content width", "min": 360, "max": 1400, "step": 20, "unit": "px", "default": 1100 },
+    { "type": "range", "id": "block_gap", "label": "Space between blocks", "min": 8, "max": 56, "step": 2, "unit": "px", "default": 22 },
     { "type": "range", "id": "parallax", "label": "Parallax depth", "min": 0, "max": 30, "step": 2, "unit": "%", "default": 14 },
     { "type": "checkbox", "id": "show_scroll_cue", "label": "Show scroll cue", "default": true },
     {
@@ -258,7 +323,22 @@
       "default": "solid"
     },
     { "type": "range", "id": "scrim", "label": "Tint strength", "min": 0, "max": 80, "step": 5, "unit": "%", "default": 30 },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" }
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" },
+    { "type": "header", "content": "Animation" },
+    {
+      "type": "select",
+      "id": "entrance",
+      "label": "Entrance",
+      "options": [
+        { "value": "fade-up", "label": "Fade up" },
+        { "value": "text", "label": "Text reveal, line by line" },
+        { "value": "zoom", "label": "Media zooms out" },
+        { "value": "curtain", "label": "Media curtain, then text" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "fade-up",
+      "info": "Plays when the page loads. The heading keeps its own entrance unless this is None. Not shown to visitors who prefer reduced motion or when Motion is off."
+    }
   ],
   "blocks": [
     {
@@ -267,7 +347,8 @@
       "limit": 1,
       "settings": [
         { "type": "text", "id": "text", "label": "Text", "default": "New collection" },
-        { "type": "checkbox", "id": "shine", "label": "Shine effect", "default": false }
+        { "type": "checkbox", "id": "shine", "label": "Shine effect", "default": false },
+        { "type": "range", "id": "size", "label": "Size", "min": 80, "max": 200, "step": 10, "unit": "%", "default": 100 }
       ]
     },
     {
@@ -277,6 +358,8 @@
       "settings": [
         { "type": "text", "id": "heading", "label": "Heading", "default": "Campaign" },
         { "type": "text", "id": "heading_italic", "label": "Second line (italic)" },
+        { "type": "range", "id": "size", "label": "Size", "min": 50, "max": 160, "step": 5, "unit": "%", "default": 100 },
+        { "type": "range", "id": "size_mobile", "label": "Size on phones", "min": 50, "max": 160, "step": 5, "unit": "%", "default": 100 },
         { "type": "select", "id": "italic_style", "label": "Italic line style", "options": [{ "value": "none", "label": "Plain" }, { "value": "gradient", "label": "Flowing gradient (Gradient Text)" }], "default": "none" },
         {
           "type": "select",
@@ -324,7 +407,11 @@
       "type": "text",
       "name": "Text",
       "limit": 1,
-      "settings": [{ "type": "richtext", "id": "text", "label": "Text" }]
+      "settings": [
+        { "type": "richtext", "id": "text", "label": "Text" },
+        { "type": "range", "id": "size", "label": "Size", "min": 80, "max": 160, "step": 5, "unit": "%", "default": 100 },
+        { "type": "range", "id": "width", "label": "Line length", "min": 20, "max": 80, "step": 2, "unit": "ch", "default": 42 }
+      ]
     },
     {
       "type": "buttons",
@@ -333,8 +420,70 @@
       "settings": [
         { "type": "text", "id": "label_1", "label": "First button label", "default": "Shop now" },
         { "type": "url", "id": "link_1", "label": "First button link" },
+        {
+          "type": "select",
+          "id": "style_1",
+          "label": "First button style",
+          "options": [
+            { "value": "solid", "label": "Solid" },
+            { "value": "outline", "label": "Outline" },
+            { "value": "glass", "label": "Frosted glass" },
+            { "value": "link", "label": "Text link with arrow" }
+          ],
+          "default": "solid"
+        },
+        { "type": "checkbox", "id": "arrow", "label": "Show arrow on first button", "default": false, "info": "Text links always show an arrow." },
         { "type": "text", "id": "label_2", "label": "Second button label" },
-        { "type": "url", "id": "link_2", "label": "Second button link" }
+        { "type": "url", "id": "link_2", "label": "Second button link" },
+        {
+          "type": "select",
+          "id": "style_2",
+          "label": "Second button style",
+          "options": [
+            { "value": "solid", "label": "Solid" },
+            { "value": "outline", "label": "Outline" },
+            { "value": "glass", "label": "Frosted glass" },
+            { "value": "link", "label": "Text link with arrow" }
+          ],
+          "default": "outline"
+        },
+        { "type": "header", "content": "Size and position" },
+        {
+          "type": "select",
+          "id": "size",
+          "label": "Button size",
+          "options": [
+            { "value": "small", "label": "Small" },
+            { "value": "medium", "label": "Medium" },
+            { "value": "large", "label": "Large" }
+          ],
+          "default": "medium"
+        },
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Button alignment",
+          "options": [
+            { "value": "auto", "label": "Follow the text" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "auto"
+        },
+        {
+          "type": "select",
+          "id": "arrangement",
+          "label": "Arrangement",
+          "options": [
+            { "value": "row", "label": "Side by side" },
+            { "value": "stack", "label": "Stacked" }
+          ],
+          "default": "row"
+        },
+        { "type": "checkbox", "id": "full_width_mobile", "label": "Full width on phones", "default": false },
+        { "type": "range", "id": "gap", "label": "Space between buttons", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 14 },
+        { "type": "range", "id": "offset", "label": "Extra space above", "min": 0, "max": 64, "step": 4, "unit": "px", "default": 0 }
       ]
     }
   ],

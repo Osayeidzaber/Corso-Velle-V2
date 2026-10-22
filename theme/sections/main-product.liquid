@@ -6,9 +6,8 @@
   only [data-region] price / picker / inventory / buy. Everything else — including app blocks —
   is left untouched.
 
-  Explicit choice: options named in settings.product_required_options are never preselected
-  unless the URL names a variant. Until then no hidden variant id is rendered (JS blocks submit;
-  without JS a <noscript> select provides the choice).
+  Explicit size choice is required on each enhanced page visit, including variant links.
+  The hidden variant ID stays disabled until selection; no-JavaScript option links remain available.
 {%- endcomment -%}
 {%- liquid
   assign variant = product.selected_or_first_available_variant
@@ -20,6 +19,8 @@
       for required_name in required
         assign required_clean = required_name | strip
         if option_name == required_clean
+          assign needs_choice = true
+        elsif required_clean == 'size' and option_name contains 'size'
           assign needs_choice = true
         endif
       endfor
@@ -82,7 +83,7 @@
               {%- if eyebrow != blank -%}
                 <p class="product__eyebrow eyebrow">{{ eyebrow | escape }}</p>
               {%- endif -%}
-              <div class="product__badges">
+              <div class="product__badges" data-region="badges">
                 {%- if product.available == false -%}
                   <span class="badge badge--sold-out">{{ 'product.sold_out' | t }}</span>
                 {%- elsif variant.compare_at_price > variant.price -%}
@@ -131,8 +132,27 @@
           {%- when 'variant_picker' -%}
             {%- liquid
               assign size_modal_id = ''
+              capture chart_rule
+                render 'measurement-chart-rule', product: product
+              endcapture
+              assign chart_rule = chart_rule | strip
+              assign size_table = block.settings.size_table
+              assign size_unit = block.settings.size_unit
+              assign size_heading = block.settings.size_heading
+              assign size_note = block.settings.size_note
+              if chart_rule != blank
+                assign chart_prefix = 'size_chart_' | append: chart_rule
+                assign table_key = chart_prefix | append: '_table'
+                assign unit_key = chart_prefix | append: '_unit'
+                assign basis_key = chart_prefix | append: '_basis'
+                assign note_key = chart_prefix | append: '_note'
+                assign size_table = settings[table_key]
+                assign size_unit = settings[unit_key]
+                assign size_heading = settings[basis_key]
+                assign size_note = settings[note_key]
+              endif
               capture size_chart_html
-                render 'size-chart', product: product, page: block.settings.size_guide_page, table_csv: block.settings.size_table, unit: block.settings.size_unit, note: block.settings.size_note, option: block.settings.size_guide_option
+                render 'size-chart', product: product, page: block.settings.size_guide_page, table_csv: size_table, unit: size_unit, note: size_note, heading: size_heading, option: block.settings.size_guide_option, verified_chart: chart_rule
               endcapture
               assign size_chart_html = size_chart_html | strip
               if size_chart_html != blank
@@ -140,7 +160,7 @@
               endif
             -%}
 
-            {% render 'product-siblings', product: product, primary_collection: primary_collection %}
+            {% render 'product-siblings', product: product %}
 
             {%- unless product.has_only_default_variant -%}
               <nk-variant-picker
@@ -149,6 +169,7 @@
                 data-section-id="{{ section.id }}"
                 data-product-url="{{ product.url }}"
                 data-required-options="{{ settings.product_required_options | escape }}"
+                data-explicit-size-choice
                 {% unless needs_choice %}data-preselected{% endunless %}
                 {{ block.shopify_attributes }}
               >
@@ -218,14 +239,16 @@
                             name="{{ section.id }}-option-{{ option_index }}"
                             value="{{ value | escape }}"
                             data-option-value-id="{{ value.id }}"
+                            {% if value.product_url %}data-product-url="{{ value.product_url | escape }}"{% endif %}
                             data-focus-key="option-{{ value.id }}"
                             {% if value.selected %}checked{% endif %}
+                            {% if is_size_option and state != 'available' %}disabled{% endif %}
                           >
                           <label for="{{ input_id }}">
                             {%- if swatch_bg != blank -%}
                               <span class="option__swatch" style="--swatch: {{ swatch_bg }}" aria-hidden="true"></span>
                             {%- endif -%}
-                            <span class="option__label-text">{{- value | escape -}}</span>
+                            <span class="option__label-text" data-text="{{ value | escape }}">{{- value | escape -}}</span>
                             {%- if state == 'sold-out' -%}
                               <span class="visually-hidden">{{ 'product.value_sold_out' | t }}</span>
                             {%- elsif state == 'missing' -%}
@@ -243,9 +266,10 @@
                       {% render 'product-measurements',
                         product: product,
                         size_option: option,
-                        table_csv: block.settings.size_table,
-                        unit: block.settings.size_unit,
-                        heading: block.settings.size_heading,
+                        table_csv: size_table,
+                        unit: size_unit,
+                        heading: size_heading,
+                        verified_chart: chart_rule,
                         modal_id: size_modal_id
                       %}
                     {%- endif -%}
@@ -259,15 +283,24 @@
 
               {%- if size_modal_id != blank -%}
                 <nk-modal id="{{ size_modal_id }}">
-                  <dialog class="drawer drawer--right" aria-labelledby="SizeGuideTitle-{{ section.id }}">
-                    <div class="drawer__header">
-                      <h2 class="drawer__title spec" id="SizeGuideTitle-{{ section.id }}" tabindex="-1" data-autofocus>{{ 'product.size_guide' | t }}</h2>
-                      <button type="button" class="icon-button" data-nk-close aria-label="{{ 'general.close' | t }}">
+                  <dialog
+                    class="drawer drawer--right size-guide-dialog"
+                    aria-labelledby="SizeGuideTitle-{{ section.id }}"
+                    data-swipe-close
+                  >
+                    <div class="size-guide-dialog__header" data-drag-handle>
+                      <span class="size-guide-dialog__grip" aria-hidden="true"></span>
+                      <div class="size-guide-dialog__titles">
+                        <p class="size-guide-dialog__eyebrow spec">{{ 'product.size_guide' | t }}</p>
+                        <h2 class="size-guide-dialog__title" id="SizeGuideTitle-{{ section.id }}" tabindex="-1" data-autofocus>
+                          {{- product.title | escape -}}
+                        </h2>
+                      </div>
+                      <button type="button" class="icon-button size-guide-dialog__close" data-nk-close aria-label="{{ 'general.close' | t }}">
                         {% render 'icon', name: 'close' %}
                       </button>
                     </div>
                     <div class="drawer__body size-guide__body">
-                      {%- if block.settings.size_heading != blank -%}<p class="size-guide__heading">{{ block.settings.size_heading | escape }}</p>{%- endif -%}
                       {{ size_chart_html }}
                     </div>
                   </dialog>
@@ -279,18 +312,6 @@
             <div class="inventory-note" data-region="inventory" {{ block.shopify_attributes }}>
               {%- liquid
                 assign threshold = settings.inventory_threshold
-                if threshold == 0
-                  assign threshold = 5
-                endif
-                assign available_sizes_list = ''
-                for v in product.variants
-                  if v.available
-                    if available_sizes_list != ''
-                      assign available_sizes_list = available_sizes_list | append: ', '
-                    endif
-                    assign available_sizes_list = available_sizes_list | append: v.title
-                  endif
-                endfor
               -%}
               {%- if variant and variant.available -%}
                 {%- if variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny' and variant.inventory_quantity > 0 and variant.inventory_quantity <= threshold -%}
@@ -298,19 +319,12 @@
                     <span class="inventory-status__dot" aria-hidden="true"></span>
                     {{ 'product.low_stock' | t: count: variant.inventory_quantity }}
                   </span>
-                {%- else -%}
-                  <span class="inventory-status inventory-status--in-stock spec">
-                    <span class="inventory-status__dot" aria-hidden="true"></span>
-                    {{ 'product.in_stock' | t }}
-                  </span>
                 {%- endif -%}
               {%- elsif availability == 'sold-out' -%}
                 <span class="inventory-status inventory-status--sold-out spec">
                   <span class="inventory-status__dot" aria-hidden="true"></span>
                   {{ 'product.sold_out' | t }}
-                  {%- if available_sizes_list != '' -%}
-                    <span class="text-muted"> · Available in {{ available_sizes_list | escape }}</span>
-                  {%- endif -%}
+
                 </span>
               {%- endif -%}
             </div>
@@ -320,7 +334,7 @@
               {%- assign form_id = 'ProductForm-' | append: section.id -%}
               {%- form 'product', product, id: form_id, novalidate: 'novalidate' -%}
                 {%- if block.settings.show_quantity -%}
-                  <div class="product__quantity-row">
+                  <div class="product__quantity-row" data-region="quantity">
                     <label class="spec" for="Quantity-{{ section.id }}">{{ 'product.quantity' | t }}</label>
                     <div class="quantity">
                       <button type="button" class="icon-button" data-qty-step="-1" aria-label="{{ 'product.decrease_quantity' | t }}">
@@ -351,9 +365,10 @@
                   data-variant-title="{{ variant.title | escape }}"
                   data-variant-price="{{ variant.price | money | escape }}"
                 >
-                  {%- unless needs_choice -%}
-                    <input type="hidden" name="id" value="{{ variant.id }}">
+                  {%- unless block.settings.show_quantity -%}
+                    <input type="hidden" name="quantity" value="{{ variant.quantity_rule.min | default: 1 }}">
                   {%- endunless -%}
+                  <input type="hidden" name="id" value="{{ variant.id }}" {% if needs_choice %}disabled{% endif %}>
                   {%- liquid
                     case availability
                       when 'available'
@@ -371,28 +386,14 @@
                       <span class="buy__submit-price" data-button-price>{{ variant.price | money }}</span>
                     {%- endif -%}
                   </button>
-                  {%- comment -%}
-                    Accelerated checkout buys whatever variant the form holds, so it only appears once
-                    a real, available variant is chosen. Inside the buy region so a re-render adds it.
-                  {%- endcomment -%}
-                  {%- if block.settings.show_dynamic_checkout and availability == 'available' and needs_choice == false -%}
-                    {{ form | payment_button }}
-                  {%- endif -%}
+
                 </div>
 
-                {%- if needs_choice -%}
+                {%- unless product.has_only_default_variant -%}
                   <noscript>
-                    <label for="NoJsVariant-{{ section.id }}">{{ 'product.choose_option' | t }}</label>
-                    <select id="NoJsVariant-{{ section.id }}" name="id" required>
-                      <option value="">{{ 'product.choose_option' | t }}</option>
-                      {%- for option_variant in product.variants -%}
-                        <option value="{{ option_variant.id }}" {% unless option_variant.available %}disabled{% endunless %}>
-                          {{ option_variant.title | escape }} – {{ option_variant.price | money }}
-                        </option>
-                      {%- endfor -%}
-                    </select>
+                    {% render 'product-option-links', product: product %}
                   </noscript>
-                {%- endif -%}
+                {%- endunless -%}
 
               {%- endform -%}
               <p class="message message--error" data-form-error role="alert" hidden></p>
@@ -400,7 +401,7 @@
 
           {%- when 'description' -%}
             {%- liquid
-              assign fabric_meta = product.metafields.custom.fabric.value | default: product.metafields.custom.materials.value
+              assign fabric_meta = product.metafields.custom.fabric | default: product.metafields.custom.materials
               assign fit_meta = product.metafields.custom.fit.value
               assign origin_meta = product.metafields.custom.origin.value
               assign care_meta = product.metafields.custom.care.value | default: product.metafields.custom.care_instructions.value
@@ -416,7 +417,7 @@
                         {%- if fabric_meta != blank -%}
                           <div class="product__spec-item">
                             <dt class="spec text-muted">Composition</dt>
-                            <dd>{{ fabric_meta | escape }}</dd>
+                            <dd>{{ fabric_meta | metafield_tag }}</dd>
                           </div>
                         {%- endif -%}
                         {%- if fit_meta != blank -%}
@@ -442,7 +443,7 @@
               <nk-disclosure>
                 <details class="disclosure">
                   <summary>Fabric &amp; Care</summary>
-                  <div class="disclosure__content rte">{{ care_meta | metafield_tag }}</div>
+                  <div class="disclosure__content rte">{{ product.metafields.custom.care | default: product.metafields.custom.care_instructions | metafield_tag }}</div>
                 </details>
               </nk-disclosure>
             {%- endif -%}
@@ -470,40 +471,6 @@
     </div>
   </div>
 
-  <nk-sticky-buy class="sticky-buy" data-section-id="{{ section.id }}" hidden>
-    <div class="sticky-buy__inner">
-      <div class="sticky-buy__product">
-        {%- if product.featured_media -%}
-          <img
-            class="sticky-buy__thumb"
-            src="{{ product.featured_media | image_url: width: 120 }}"
-            alt="{{ product.title | escape }}"
-            width="44"
-            height="56"
-            loading="lazy"
-          >
-        {%- endif -%}
-        <div class="sticky-buy__info">
-          <p class="sticky-buy__title">{{ product.title | escape }}</p>
-          <p class="sticky-buy__meta spec text-muted" data-sticky-meta>
-            {%- unless product.has_only_default_variant -%}
-              <span data-sticky-variant>{{ variant.title | escape }}</span>
-              <span aria-hidden="true">·</span>
-            {%- endunless -%}
-            <span data-sticky-price>{{ variant.price | money }}</span>
-          </p>
-        </div>
-      </div>
-      <button
-        type="button"
-        class="button sticky-buy__cta"
-        data-sticky-cta
-        {% unless variant.available %}disabled{% endunless %}
-      >
-        <span data-sticky-label>{{ 'product.add_to_cart' | t }}</span>
-      </button>
-    </div>
-  </nk-sticky-buy>
 </div>
 
 {% schema %}
@@ -535,8 +502,7 @@
           "type": "textarea",
           "id": "size_table",
           "label": "Size table",
-          "info": "Used when there is no size_chart metafield or page. First line is the headings, then one size per line, comma separated.",
-          "default": "Size,Chest,Length,Shoulder,Sleeves\nS,40,27,17.5,24.5\nM,42,28,18,25\nL,44,29,18.5,25.5\nXL,46,30,19,26"
+          "info": "Optional merchant-verified chart shared by products using this template. Leave empty unless it applies to every such product. Prefer product metafields. First line: headings; subsequent lines: comma-separated measurements."
         },
         {
           "type": "select",
@@ -557,8 +523,7 @@
       "name": "Buy buttons",
       "limit": 1,
       "settings": [
-        { "type": "checkbox", "id": "show_quantity", "label": "Show quantity", "default": false },
-        { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show accelerated checkout buttons", "default": true }
+        { "type": "checkbox", "id": "show_quantity", "label": "Show quantity", "default": false }
       ]
     },
     {

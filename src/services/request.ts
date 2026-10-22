@@ -30,15 +30,17 @@ export interface RequestOptions extends Omit<RequestInit, 'signal'> {
   signal?: AbortSignal;
 }
 
-async function send(url: string, { timeoutMs = 15000, signal, ...init }: RequestOptions): Promise<Response> {
+async function send<T>(url: string, { timeoutMs = 15000, signal, ...init }: RequestOptions, read: (response: Response) => Promise<T>): Promise<T> {
   const timeout = new AbortController();
   const timer = setTimeout(() => timeout.abort(new TimeoutError(`Timed out after ${timeoutMs}ms`)), timeoutMs);
   const combined = signal ? AbortSignal.any([signal, timeout.signal]) : timeout.signal;
   try {
-    return await fetch(url, { credentials: 'same-origin', ...init, signal: combined });
+    const response = await fetch(url, { credentials: 'same-origin', ...init, signal: combined });
+    return await read(response);
   } catch (error) {
     if (timeout.signal.aborted) throw new TimeoutError(`Timed out after ${timeoutMs}ms`);
     if (signal?.aborted) throw new AbortedError('Superseded');
+    if (error instanceof HttpError || error instanceof ParseError) throw error;
     throw new NetworkError(error instanceof Error ? error.message : String(error));
   } finally {
     clearTimeout(timer);
@@ -52,19 +54,22 @@ async function readBody(response: Response): Promise<unknown> {
 }
 
 export async function fetchText(url: string, options: RequestOptions = {}): Promise<string> {
-  const response = await send(url, options);
-  if (!response.ok) throw new HttpError(response.status, await readBody(response));
-  return response.text();
+  return send(url, options, async (response) => {
+    if (!response.ok) throw new HttpError(response.status, await readBody(response));
+    return response.text();
+  });
 }
 
 export async function fetchJSON<T>(url: string, options: RequestOptions = {}): Promise<T> {
-  const response = await send(url, {
+  const headers = new Headers(options.headers);
+  if (!headers.has('Accept')) headers.set('Accept', 'application/json');
+  return send(url, {
     ...options,
-    headers: { Accept: 'application/json', ...(options.headers ?? {}) },
-  });
+    headers,
+  }, async (response) => {
   // Shopify serves the Ajax cart endpoints (/cart.js, /cart/add.js…) as text/javascript, so the
   // body is parsed as JSON regardless of content-type.
-  const text = await response.text().catch(() => '');
+  const text = await response.text();
   let body: unknown = null;
   try {
     body = text ? JSON.parse(text) : null;
@@ -78,7 +83,9 @@ export async function fetchJSON<T>(url: string, options: RequestOptions = {}): P
       (body as { message?: string } | null)?.message;
     throw new HttpError(response.status, body, message ?? `HTTP ${response.status}`);
   }
+  if (body === null && response.ok) throw new ParseError(`Expected JSON from ${url}`);
   return body as T;
+  });
 }
 
 /**
@@ -112,5 +119,5 @@ export class Sequencer {
 
 /** Errors after which a POST may or may not have been applied by the server. */
 export function isAmbiguous(error: unknown): boolean {
-  return error instanceof TimeoutError || error instanceof NetworkError || (error instanceof HttpError && error.status >= 500);
+  return error instanceof TimeoutError || error instanceof NetworkError || error instanceof ParseError || (error instanceof HttpError && error.status >= 500);
 }
