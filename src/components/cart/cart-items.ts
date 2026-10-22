@@ -22,7 +22,10 @@ export class NkCartItems extends NkElement {
         if (!input) return;
         // Steps follow the variant's quantity rule increment (rendered as the input's step).
         const increment = Number(input.step) || 1;
-        const next = Math.max(0, Number(input.value || 0) + increment * Number(step.dataset.qtyStep));
+        const min = Number(input.dataset.quantityMin) || 1;
+        const max = input.max ? Number(input.max) : Infinity;
+        const candidate = Number(input.value || 0) + increment * Number(step.dataset.qtyStep);
+        const next = candidate < min ? (Number(step.dataset.qtyStep) < 0 ? 0 : min) : Math.min(max, candidate);
         input.value = String(next);
         this.#change(step, next);
       } else if (remove) {
@@ -38,8 +41,16 @@ export class NkCartItems extends NkElement {
       }
       const input = (event.target as Element).closest<HTMLInputElement>('input[data-qty-input]');
       if (!input) return;
-      const value = Math.max(0, Math.floor(Number(input.value)));
-      if (Number.isFinite(value)) this.#change(input, value);
+      const value = Number(input.value);
+      const min = Number(input.dataset.quantityMin) || 1;
+      if (!input.value.trim() || !Number.isInteger(value) || value < 0 || (value !== 0 && value < min) || !input.reportValidity()) {
+        input.value = input.defaultValue;
+        return;
+      }
+      this.#change(input, value);
+    });
+    this.on(this, 'submit', (event) => {
+      if (cart.pending || this.querySelector('[data-cart-stale]')) event.preventDefault();
     });
   }
 

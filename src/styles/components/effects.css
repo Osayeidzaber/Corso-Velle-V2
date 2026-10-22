@@ -110,12 +110,23 @@
   translate: 0 105%;
 }
 
-:is(a, button, summary):is(:hover, :focus-visible) .swap > span:first-child {
+:is(a, button, summary):focus-visible .swap > span:first-child {
   translate: 0 -105%;
 }
 
-:is(a, button, summary):is(:hover, :focus-visible) .swap > span + span {
+:is(a, button, summary):focus-visible .swap > span + span {
   translate: 0 0;
+}
+
+/* Hover only where a real hover exists: a tap must not leave the label rolled up. */
+@media (hover: hover) {
+  :is(a, button, summary):hover .swap > span:first-child {
+    translate: 0 -105%;
+  }
+
+  :is(a, button, summary):hover .swap > span + span {
+    translate: 0 0;
+  }
 }
 
 /* Letter swap (snippets/letter-swap.liquid): letters roll up one after another on hover/focus. */
@@ -141,8 +152,14 @@
   font-style: italic;
 }
 
-:is(a, button, summary):is(:hover, :focus-visible) .ls__c > span {
+:is(a, button, summary):focus-visible .ls__c > span {
   translate: 0 -100%;
+}
+
+@media (hover: hover) {
+  :is(a, button, summary):hover .ls__c > span {
+    translate: 0 -100%;
+  }
 }
 
 /* Motion pre-hide: html.nk-anim is set in <head> only when decorative motion will run. Text and
@@ -213,13 +230,13 @@ html.nk-anim nk-reveal:not([data-armed]):not([data-done]) {
 /* Reveal footer — page content scrolls away to uncover the footer (stickeyfootor). Desktop only,
    tall viewports only (footer must fit), switched on by the footer section's "reveal" setting. */
 @media (min-width: 990px) and (min-height: 700px) {
-  body:has(.footer[data-reveal]) main {
+  body:has(nk-footer[data-reveal-ready]) main {
     position: relative;
     z-index: 1;
     background: var(--nk-color-bg);
   }
 
-  body:has(.footer[data-reveal]) .shopify-section-group-footer-group {
+  .footer-section:has(nk-footer[data-reveal-ready]) {
     position: sticky;
     bottom: 0;
     z-index: 0;

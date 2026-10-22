@@ -31,7 +31,11 @@ export default defineConfig({
     rolldownOptions: {
       input,
       output: {
-        entryFileNames: 'nk-[name].js',
+        // Entries are hashed and loaded by bare URL (no ?v=), the same URL chunks use when they
+        // import an entry (shared helpers live in it; quick add imports the product entry). With
+        // "nk-global.js?v=…" on the page and "./nk-global.js" in chunks the browser saw two URLs,
+        // made two module instances and ran the whole entry twice: every listener doubled.
+        entryFileNames: 'nk-[name]-[hash].js',
         chunkFileNames: 'nk-chunk-[name]-[hash].js',
         // Entry CSS keeps a stable name (asset_url adds ?v=); CSS of lazy chunks is fetched by
         // relative URL without ?v=, so it carries a content hash for cache-busting.

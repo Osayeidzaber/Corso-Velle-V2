@@ -103,6 +103,27 @@
               </select>
               {% render 'icon', name: 'chevron-down', size: 13 %}
             </div>
+            <details class="facets__sort-menu" data-sort-menu>
+              <summary data-focus-key="facets-sort-menu">
+                <span class="facets__sort-menu-label">{{ 'facets.sort_by' | t }}</span>
+                <span class="facets__sort-menu-value">
+                  {%- for option in results.sort_options -%}
+                    {%- if option.value == sort_by -%}{{ option.name | escape }}{%- endif -%}
+                  {%- endfor -%}
+                </span>
+                {% render 'icon', name: 'chevron-down', size: 13 %}
+              </summary>
+              <ul class="facets__sort-options" role="list" aria-label="{{ 'facets.sort_by' | t }}">
+                {%- for option in results.sort_options -%}
+                  <li>
+                    <button type="button" data-facets-sort-value="{{ option.value | escape }}" aria-pressed="{% if option.value == sort_by %}true{% else %}false{% endif %}">
+                      <span>{{ option.name | escape }}</span>
+                      <span aria-hidden="true" class="facets__sort-check">✓</span>
+                    </button>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </details>
             <button type="submit" class="button button--secondary no-js-only">{{ 'facets.apply' | t }}</button>
           </div>
         {%- elsif results.sort_by != blank -%}

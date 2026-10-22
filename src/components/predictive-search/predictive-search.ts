@@ -4,6 +4,7 @@ import { parseHTML } from '../../core/dom';
 import { NkElement } from '../../core/element';
 import { announce } from '../../services/announce';
 import { fetchText, Sequencer } from '../../services/request';
+import { scopeSearchResults, searchNamespace } from './results';
 
 /**
  * <nk-predictive-search> (master-plan/06 N-05). Wraps the search dialog's form; without JS (or
@@ -26,6 +27,7 @@ export class NkPredictiveSearch extends NkElement {
   #results: HTMLElement | null = null;
   #timer = 0;
   #active = -1;
+  #namespace = searchNamespace();
 
   protected mount(): void {
     const input = this.querySelector<HTMLInputElement>('input[type="search"]');
@@ -36,7 +38,7 @@ export class NkPredictiveSearch extends NkElement {
 
     input.setAttribute('role', 'combobox');
     input.setAttribute('aria-autocomplete', 'list');
-    input.setAttribute('aria-controls', 'PredictiveSearchListbox');
+    input.removeAttribute('aria-controls');
     input.setAttribute('aria-expanded', 'false');
     this.#setState(input.value.trim().length >= MIN_CHARS ? 'loading' : 'empty');
     if (input.value.trim().length >= MIN_CHARS) void this.#search(input.value.trim());
@@ -64,6 +66,9 @@ export class NkPredictiveSearch extends NkElement {
 
   #schedule(): void {
     window.clearTimeout(this.#timer);
+    this.#sequencer.cancel();
+    this.#setActive(-1);
+    this.#input?.setAttribute('aria-expanded', 'false');
     const query = this.#input?.value.trim() ?? '';
     const clear = this.ref('clear');
     if (clear) clear.hidden = query.length === 0;
@@ -72,6 +77,7 @@ export class NkPredictiveSearch extends NkElement {
       this.#setState('empty');
       return;
     }
+    this.#setState('loading');
     this.#timer = window.setTimeout(() => void this.#search(query), DEBOUNCE_MS);
   }
 
@@ -91,6 +97,7 @@ export class NkPredictiveSearch extends NkElement {
       if (outcome.stale) return;
       const fresh = parseHTML(outcome.value).querySelector<HTMLElement>('[data-predictive-results]');
       if (!fresh) throw new Error('Predictive search response had no results region');
+      this.#input?.setAttribute('aria-controls', scopeSearchResults(fresh, this.#namespace));
       this.#results.replaceChildren(...[...fresh.childNodes].map((node) => document.importNode(node, true)));
       this.#setActive(-1);
       this.#setState('results');
@@ -117,7 +124,7 @@ export class NkPredictiveSearch extends NkElement {
         break;
       }
       case 'Enter': {
-        const link = options[this.#active]?.querySelector<HTMLAnchorElement>('a');
+        const link = this.dataset.state === 'results' ? options[this.#active]?.querySelector<HTMLAnchorElement>('a') : null;
         if (!link) return; // no active row: the form submits to the search page
         event.preventDefault();
         link.click();

@@ -1,0 +1,41 @@
+{%- comment -%}
+  Resolve a merchant chart rule: explicit product assignments precede collection assignments.
+  First populated matching rule wins. Output only its index so all product surfaces share it.
+{%- endcomment -%}
+{%- liquid
+  assign matched_rule = ''
+  assign scopes = 'products,collections' | split: ','
+  for scope in scopes
+    for index in (1..5)
+      assign prefix = 'size_chart_' | append: index
+      assign table_key = prefix | append: '_table'
+      assign scope_key = prefix | append: '_' | append: scope
+      if settings[table_key] == blank
+        continue
+      endif
+      for resource in settings[scope_key]
+        if scope == 'products' and resource.id == product.id
+          assign matched_rule = index
+          break
+        elsif scope == 'collections'
+          for membership in product.collections
+            if membership.id == resource.id
+              assign matched_rule = index
+              break
+            endif
+          endfor
+        endif
+        if matched_rule != ''
+          break
+        endif
+      endfor
+      if matched_rule != ''
+        break
+      endif
+    endfor
+    if matched_rule != ''
+      break
+    endif
+  endfor
+-%}
+{{- matched_rule -}}

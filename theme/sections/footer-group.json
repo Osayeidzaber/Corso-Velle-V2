@@ -14,17 +14,54 @@
     "footer": {
       "type": "footer",
       "blocks": {
-        "brand": { "type": "brand", "settings": { "text": "<p>Refined everyday essentials, designed for effortless, modern dressing.</p>" } },
-        "menu-1": { "type": "menu", "settings": { "heading": "", "menu": "footer" } },
-        "social": { "type": "social", "settings": {} }
+        "brand": {
+          "type": "brand",
+          "settings": {
+            "text": "<p>Refined everyday essentials, designed for effortless, modern dressing.</p>"
+          }
+        },
+        "menu-1": {
+          "type": "menu",
+          "settings": {
+            "heading": "Customer care",
+            "menu": "footer"
+          }
+        },
+        "social": {
+          "type": "social",
+          "settings": {}
+        },
+        "shop": {
+          "type": "menu",
+          "settings": {
+            "heading": "Explore",
+            "menu": "main-menu"
+          }
+        }
       },
-      "block_order": ["brand", "menu-1", "social"],
+      "block_order": [
+        "brand",
+        "shop",
+        "menu-1",
+        "social"
+      ],
       "settings": {
         "show_payment_icons": true,
         "reveal": true,
-        "color_scheme": "scheme-2"
+        "color_scheme": "scheme-2",
+        "show_newsletter": true,
+        "newsletter_eyebrow": "A note from us",
+        "newsletter_heading": "Good things, first.",
+        "show_wordmark": true,
+        "invert_logo": true,
+        "background": "#432d23",
+        "ink": "#f5ecdf",
+        "accent": "#d7ae83",
+        "animate_beam": true
       }
     }
   },
-  "order": ["footer"]
+  "order": [
+    "footer"
+  ]
 }

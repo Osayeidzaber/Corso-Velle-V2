@@ -1,5 +1,5 @@
 import { config } from '../core/config';
-import { fetchJSON, HttpError, isAmbiguous } from './request';
+import { fetchJSON, HttpError, isAmbiguous, ParseError } from './request';
 
 /**
  * Cart mutation service (master-plan/09 CA-01).
@@ -18,6 +18,7 @@ export interface CartLine {
   variant_id: number;
   quantity: number;
   properties: Record<string, string> | null;
+  selling_plan_allocation?: { selling_plan: { id: number } } | null;
 }
 
 export interface Cart {
@@ -86,8 +87,18 @@ function propertiesMatch(a: Record<string, string> | null | undefined, b: Record
 
 function quantityFor(cart: Cart, item: AddItem): number {
   return cart.items
-    .filter((line) => line.variant_id === item.id && propertiesMatch(line.properties, item.properties))
+    .filter((line) => line.variant_id === item.id && propertiesMatch(line.properties, item.properties)
+      && (line.selling_plan_allocation?.selling_plan.id ?? null) === (item.selling_plan ?? null))
     .reduce((sum, line) => sum + line.quantity, 0);
+}
+
+function checkedCart(state: Cart): Cart {
+  if (!state || !Array.isArray(state.items) || !Number.isInteger(state.item_count) || state.item_count < 0
+    || !Number.isFinite(state.total_price) || state.total_price < 0
+    || state.items.some((line) => typeof line.key !== 'string' || !Number.isInteger(line.quantity) || line.quantity < 0)) {
+    throw new ParseError('Invalid cart response');
+  }
+  return state;
 }
 
 export class CartService {
@@ -99,12 +110,20 @@ export class CartService {
     return this.#last;
   }
 
+  get pending(): boolean {
+    return this.#running || this.#queue.length > 0;
+  }
+
   add(items: AddItem[], sourceId: string): Promise<CartResult> {
+    if (!items.length || items.some((item) => !Number.isSafeInteger(item.id) || item.id < 1 || !Number.isInteger(item.quantity) || item.quantity < 1)) {
+      return Promise.reject(new CartError('rejected', 'Invalid product or quantity'));
+    }
     return this.#enqueue({ kind: 'add', sourceId, payload: { items } });
   }
 
   /** Set an absolute quantity for a line (0 removes it). */
   change(key: string, quantity: number, sourceId: string): Promise<CartResult> {
+    if (!key || !Number.isInteger(quantity) || quantity < 0) return Promise.reject(new CartError('rejected', 'Invalid cart quantity'));
     const pending = this.#queue.find((op) => !op.sent && op.kind === 'change' && op.payload.key === key);
     if (pending) {
       pending.payload.quantity = quantity;
@@ -176,7 +195,7 @@ export class CartService {
   }
 
   async #add(items: AddItem[], sections: string[]): Promise<CartResult> {
-    const before = this.#last ?? (await this.#getCart().catch(() => null));
+    const before = await this.#getCart().catch(() => null);
     try {
       // add.js returns the added items, not the cart, so the cart is re-read afterwards.
       const response = await fetchJSON<{ sections?: Record<string, string | null> }>(`${routes().cartAdd}.js`, {
@@ -190,7 +209,12 @@ export class CartService {
       // The add may or may not have happened. Compare against the snapshot; never re-send.
       const after = await this.#getCart().catch(() => null);
       if (!after || !before) throw new CartError('unknown', 'Could not confirm whether the item was added', error);
-      const applied = items.every((item) => quantityFor(after, item) >= quantityFor(before, item) + item.quantity);
+      const applied = items.every((item) => {
+        const requested = items.filter((other) => other.id === item.id
+          && propertiesMatch(other.properties, item.properties) && other.selling_plan === item.selling_plan)
+          .reduce((sum, other) => sum + other.quantity, 0);
+        return quantityFor(after, item) >= quantityFor(before, item) + requested;
+      });
       if (!applied) throw new CartError('not-applied', 'The item was not added', error);
       return { cart: after, sections: await this.#renderCartSections(sections), reconciled: true };
     }
@@ -225,11 +249,12 @@ export class CartService {
       body: JSON.stringify({ ...body, sections, sections_url: location.pathname }),
     });
     const { sections: rendered, ...cart } = response;
-    return { cart: cart as Cart, sections: rendered ?? {}, reconciled: false };
+    return { cart: checkedCart(cart as Cart), sections: rendered ?? {}, reconciled: false };
   }
 
   async #getCart(): Promise<Cart> {
-    return fetchJSON<Cart>(`${routes().cart}.js`);
+    const state = await fetchJSON<Cart>(`${routes().cart}.js`, { cache: 'no-store' });
+    return checkedCart(state);
   }
 
   /** Safe GET used after reconciliation or for refresh; failures degrade to "no HTML". */

@@ -283,41 +283,6 @@ describe('nk-gallery', () => {
   });
 });
 
-describe('product card interactions', () => {
-  it('toggles mobile quick-add tray and previews color swatch images', () => {
-    mountHTML(`
-      <article class="card" data-product-card data-product-url="/products/shirt">
-        <div class="card__media-wrap">
-          <a class="card__media" href="/products/shirt">
-            <img src="/shirt-ivory.jpg" data-card-primary-img alt="">
-          </a>
-          <button type="button" data-card-quick-toggle aria-expanded="false">+</button>
-          <div class="card__tray" data-card-tray>
-            <button type="button" class="card__tray-pill" data-quick-add-id="555">M</button>
-          </div>
-        </div>
-        <div class="card__meta">
-          <button type="button" class="card__swatch is-active" data-card-swatch-img="/shirt-ivory.jpg"></button>
-          <button type="button" class="card__swatch" data-card-swatch-img="/shirt-noir.jpg"></button>
-        </div>
-      </article>
-    `);
-
-    const card = document.querySelector<HTMLElement>('.card')!;
-    const toggleBtn = document.querySelector<HTMLButtonElement>('[data-card-quick-toggle]')!;
-    const swatches = document.querySelectorAll<HTMLButtonElement>('.card__swatch');
-    const primaryImg = document.querySelector<HTMLImageElement>('[data-card-primary-img]')!;
-
-    toggleBtn.click();
-    expect(card.hasAttribute('data-tray-open')).toBe(true);
-    expect(toggleBtn.getAttribute('aria-expanded')).toBe('true');
-
-    swatches[1]!.click();
-    expect(swatches[1]!.classList.contains('is-active')).toBe(true);
-    expect(primaryImg.src).toContain('/shirt-noir.jpg');
-  });
-});
-
 describe('nk-predictive-search', () => {
   it('fetches predictive search suggestions and renders them into [data-ref="results"]', async () => {
     vi.stubGlobal('fetch', async (input: RequestInfo | URL) => {

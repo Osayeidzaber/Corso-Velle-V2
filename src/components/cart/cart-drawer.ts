@@ -17,7 +17,7 @@ export class NkCartDrawer extends NkModal {
       announce.polite(t('cart.added'));
       if (config().cart.afterAdd === 'drawer' && !this.isOpen) {
         // Wait one frame so the renderer has swapped in the new lines.
-        requestAnimationFrame(() => this.open(document.querySelector<HTMLElement>(`[data-nk-open="${this.id}"]`)));
+        this.later(() => this.open(document.querySelector<HTMLElement>(`[data-nk-open="${this.id}"]`)), 0);
       }
       if (config().cart.afterAdd === 'page') location.assign(config().routes.cart);
     });

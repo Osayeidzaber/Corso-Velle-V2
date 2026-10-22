@@ -15,12 +15,15 @@ export abstract class NkElement extends HTMLElement {
   }
 
   connectedCallback(): void {
+    if (this.#controller) return;
     this.#controller = new AbortController();
     this.#disposers = [];
     this.mount();
   }
 
   disconnectedCallback(): void {
+    if (!this.#controller) return;
+    this.getAnimations?.({ subtree: true }).forEach((animation) => animation.cancel());
     this.#controller?.abort();
     this.#controller = null;
     for (const dispose of this.#disposers.splice(0)) {
@@ -31,6 +34,11 @@ export abstract class NkElement extends HTMLElement {
       }
     }
     this.unmount?.();
+  }
+
+  /** Invalidates work from a previous connection, even after an editor reorder. */
+  protected connectionIsCurrent(signal: AbortSignal): boolean {
+    return !signal.aborted && this.#controller?.signal === signal && this.isConnected;
   }
 
   /** Called once per connection. Query children with ref()/refs(); never in the constructor. */

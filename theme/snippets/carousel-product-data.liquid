@@ -1,0 +1,57 @@
+{%- doc -%}
+  Purchase data for one product in the featured carousel (src/components/carousel/size-sheet.ts).
+  The size option is the first option named in the "Size option name(s)" theme setting, otherwise
+  the product's first option. Shopify re-checks availability when the variant is added.
+
+  @param {object} product - The product
+
+  @example
+  {% render 'carousel-product-data', product: product %}
+{%- enddoc -%}
+{%- liquid
+  assign size_names = settings.card_size_option_names | downcase | split: ','
+  assign choice = nil
+  for option in product.options_with_values
+    assign option_name = option.name | downcase | strip
+    for size_name in size_names
+      assign clean = size_name | strip
+      if option_name == clean
+        assign choice = option
+        break
+      endif
+    endfor
+    if choice
+      break
+    endif
+  endfor
+  if choice == nil and product.has_only_default_variant == false
+    assign choice = product.options_with_values | first
+  endif
+  assign preferred = product.selected_or_first_available_variant
+-%}
+<script type="application/json" data-carousel-product>
+  {
+    "id": {{ product.id | json }},
+    "title": {{ product.title | json }},
+    "url": {{ product.url | json }},
+    "available": {{ product.available | json }},
+    "sellingPlan": {{ product.requires_selling_plan | json }},
+    "option": {% if choice %}{{ choice.position | minus: 1 }}{% else %}-1{% endif %},
+    "optionName": {% if choice %}{{ choice.name | json }}{% else %}""{% endif %},
+    "values": [
+      {%- if choice -%}
+        {%- for value in choice.values -%}
+          {{ value.name | json }}{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      {%- endif -%}
+    ],
+    "options": {{ product.options | json }},
+    "preferred": {{ preferred.id | json }},
+    "variants": [
+      {%- for variant in product.variants -%}
+        {"id": {{ variant.id | json }}, "available": {{ variant.available | json }}, "options": {{ variant.options | json }}, "min": {{ variant.quantity_rule.min | default: 1 | json }}}
+        {%- unless forloop.last %},{% endunless -%}
+      {%- endfor -%}
+    ]
+  }
+</script>

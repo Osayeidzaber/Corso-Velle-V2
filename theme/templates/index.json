@@ -180,7 +180,7 @@
         "heading_italic": "landed",
         "entrance": "cut",
         "limit": 8,
-        "columns_desktop": 4,
+        "columns_desktop": 3,
         "color_scheme": "scheme-1"
       }
     },
@@ -318,8 +318,8 @@
         "heading": "Shackets",
         "collection": "shackets",
         "limit": 4,
-        "columns_mobile": "2",
-        "columns_desktop": 4,
+        "columns_mobile": "1",
+        "columns_desktop": 3,
         "show_view_all": true,
         "color_scheme": "scheme-1"
       }
@@ -338,11 +338,30 @@
         "reverse": false,
         "color_scheme": "scheme-1"
       }
+    },
+    "arrivals": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "The latest edit",
+        "heading": "New arrivals",
+        "collection": "all-products",
+        "layout": "carousel",
+        "carousel_speed": 35,
+        "carousel_effect": "liquid",
+        "carousel_intro": "rise",
+        "carousel_autoplay": true,
+        "limit": 12,
+        "columns_mobile": "1",
+        "columns_desktop": 3,
+        "show_view_all": true,
+        "color_scheme": "scheme-1"
+      }
     }
   },
   "order": [
     "hero",
     "band",
+    "arrivals",
     "tabs",
     "categories",
     "divider",

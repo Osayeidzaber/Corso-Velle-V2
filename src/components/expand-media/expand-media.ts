@@ -29,15 +29,17 @@ export class NkExpandMedia extends NkElement {
       return;
     }
 
+    this.removeAttribute('data-static');
     this.#apply(0);
-    void this.#startScrollTrigger();
+    void this.#startScrollTrigger().catch(console.error);
     this.#wireVideo(video, true);
   }
 
   /** GSAP ScrollTrigger drives progress with scrubbed smoothing; opens fully at 75% of the track. */
   async #startScrollTrigger(): Promise<void> {
+    const connection = this.signal;
     const { gsap } = await import('../../motion/gsap');
-    if (!this.isConnected) return;
+    if (!this.connectionIsCurrent(connection)) return;
     const track = this.ref('track') ?? this;
     const proxy = { p: 0 };
     const context = gsap.context(() => {

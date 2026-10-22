@@ -115,3 +115,14 @@ Ran complete automated verification suite (`npm run check`):
 - **Production Build (`npm run build`)**: `vite build && node scripts/sync-assets.mjs` — **20 files built and synced to `theme/assets/`, `nk-assets.liquid` updated**
 - **Strict JSON Check (`npm run check:json`)**: `node scripts/check-json.mjs` — **all 7 theme JSON files parse strictly**
 - **Shopify Theme Check (`npm run check:theme`)**: `shopify theme check --path theme --fail-level error` — **71 files inspected, 0 offenses, 0 errors, 0 warnings**
+
+
+## 8. Infinite collection carousel and footer improvements — 22 October 2026
+
+- Inspected the public Corso Velle homepage's continuous New Arrivals rail. Added an **Infinite carousel** layout to the existing Featured collection section and configured a New arrivals instance on the homepage using the real All Products collection. Existing grid settings and product-card controls are preserved.
+- Added `src/components/carousel/carousel.ts` and its stylesheet: continuous native scrolling, seamless wrap, touch/swipe browsing, previous/next controls, persistent pause, hover/focus/offscreen/background suspension, and a static reduced-motion/editor fallback. Visual duplicates have no tab stops or duplicate IDs; their clicks route through the matching original product control. Duplicate video downloads are avoided.
+- Improved the existing footer with responsive native menus, actual Shopify newsletter submission/error states, store-driven links and policies, a large live wordmark, and a reveal enabled only when the full footer fits on desktop. Tall/mobile/reduced-motion footers remain normal document content. Keyboard focus exposes the revealed footer; newsletter submissions are blocked in design mode.
+- Reused the supplied sticky-footer interaction as the starting pattern. Subsequent Beam Wordmark styling and motion added concurrently by the other chat are preserved in the same footer component.
+- Registered both components lazily through the global entrypoint. Added `tests/unit/carousel-footer.test.ts` covering wrapping, accessible duplicate controls, pause/cleanup, editor fallback, click forwarding, and responsive footer menus.
+- Verification: TypeScript, production build/owned-asset sync, strict JSON and Theme Check pass. Real Shopify preview browser checks at 320, 390, 768 and 1440px verified autoplay, pause, navigation, native menus and zero page overflow/console errors; reduced motion produced a static rail. Newsletter backend submission was intentionally not performed (no test subscriber created). Screenshots are in `docs/evidence/infinite-carousel-desktop.png` and `docs/evidence/footer-390.png` / `footer-1440.png`.
+- The carousel/footer preview was initially isolated to avoid changing product validation assets. The source is integrated into the main theme and final assets are synced. Nothing was published to the live production theme.

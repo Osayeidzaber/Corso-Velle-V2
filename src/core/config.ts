@@ -47,7 +47,24 @@ export function config(): ThemeConfig {
     cached = fallback;
     return cached;
   }
-  cached = JSON.parse(node.textContent) as ThemeConfig;
+  try {
+    const value = JSON.parse(node.textContent) as Partial<ThemeConfig> | null;
+    if (!value || typeof value !== 'object') throw new Error('Invalid theme configuration');
+    cached = {
+      ...fallback,
+      ...value,
+      routes: { ...fallback.routes, ...value.routes },
+      cart: { ...fallback.cart, ...value.cart },
+      strings: { ...fallback.strings, ...value.strings },
+    };
+  } catch (error) {
+    console.error('Could not read nk-config', error);
+    const root = window.Shopify?.routes?.root ?? '/';
+    cached = {
+      ...fallback,
+      routes: Object.fromEntries(Object.entries(fallback.routes).map(([key, path]) => [key, key === 'root' ? root : `${root}${path.slice(1)}`])) as ThemeConfig['routes'],
+    };
+  }
   return cached;
 }
 

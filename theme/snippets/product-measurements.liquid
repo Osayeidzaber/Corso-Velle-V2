@@ -14,6 +14,7 @@
   @param {string} [bottoms_csv] - Fallback CSV for bottoms (e.g. "Size,Waist,Length,Thigh,Leg Opening\nS,30,40,24,16")
   @param {string} [unit] - Default unit ('in' or 'cm')
   @param {string} [heading] - Measurement basis caption
+  @param {string} [verified_chart] - Explicit collection/product rule index; bypass category guesses
   @param {string} [modal_id] - Optional size guide modal ID to open full chart
 
   @example
@@ -23,7 +24,10 @@
   assign chart = product.metafields.custom.size_chart.value
   assign custom_json = product.metafields.custom.measurements.value
   assign base_unit = unit | default: 'in' | downcase
-  assign basis_label = heading | default: 'Measured flat, garment in hand'
+  assign basis_label = heading
+  if basis_label == blank
+    assign basis_label = 'product.size_table' | t
+  endif
   assign has_valid_data = false
   assign use_metaobject = false
 
@@ -56,6 +60,10 @@
       assign is_bottom = true
     endif
 
+    if verified_chart != blank
+      assign is_footwear = false
+      assign is_bottom = false
+    endif
     assign active_csv = table_csv
     if is_bottom
       if bottoms_csv != blank
@@ -93,7 +101,6 @@
   endif
 -%}
 
-{%- if has_valid_data -%}
   <div
     class="measurement-panel"
     data-measurement-panel
@@ -109,6 +116,7 @@
         <span class="measurement-panel__basis">{{ basis_label | escape }}</span>
       </div>
 
+      {%- if has_valid_data -%}
       <div class="measurement-panel__actions">
         <div class="measurement-panel__units" role="group" aria-label="{{ 'product.units' | t }}">
           <button
@@ -140,8 +148,10 @@
           </button>
         {%- endif -%}
       </div>
+      {%- endif -%}
     </div>
 
+    <p class="measurement-panel__empty" data-measurement-empty hidden>{{ 'product.measurements_unavailable' | t }}</p>
     <div class="measurement-panel__rows">
       {%- if use_metaobject -%}
         {%- for row in table_data.rows -%}
@@ -194,4 +204,3 @@
       {%- endif -%}
     </div>
   </div>
-{%- endif -%}

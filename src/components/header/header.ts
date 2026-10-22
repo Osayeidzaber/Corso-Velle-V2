@@ -17,6 +17,7 @@ export class NkHeader extends NkElement {
   #lastY = 0;
   #travel = 0;
   #frame = 0;
+  #editorSelected = false;
 
   protected mount(): void {
     this.observeResize(this, () => {
@@ -32,6 +33,7 @@ export class NkHeader extends NkElement {
 
     this.on(document, 'nk:overlay:opened', () => {
       this.dataset.forcedSolid = '';
+      for (const details of this.querySelectorAll<HTMLDetailsElement>('.nav__disclosure[open]')) details.open = false;
       this.#setHidden(false);
     });
     this.on(document, 'nk:overlay:closed', () => delete this.dataset.forcedSolid);
@@ -109,18 +111,40 @@ export class NkHeader extends NkElement {
         if (floating && fromRect) this.#morph(panel, fromRect);
       });
     }
-    // Hover intent opens panels on pointer-fine devices (click/keyboard always work).
+    // Hover intent opens panels for a mouse (click/keyboard always work). Touch and pen pointers on
+    // hybrid devices are ignored here: their tap already toggles the native <details>, and a
+    // following pointerleave would otherwise close the panel they just opened.
     if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
       for (const details of panels) {
         const item = details.closest('.nav__item') ?? details;
+        const summary = details.querySelector('summary');
         let timer = 0;
-        this.on(item, 'pointerenter', () => {
+        let openedByHover = false;
+        this.on(item, 'pointerenter', (event) => {
+          if (event.pointerType !== 'mouse') return;
           window.clearTimeout(timer);
-          timer = window.setTimeout(() => (details.open = true), 150);
+          if (details.open) return;
+          timer = window.setTimeout(() => {
+            openedByHover = true;
+            details.open = true;
+          }, 150);
         });
-        this.on(item, 'pointerleave', () => {
+        this.on(item, 'pointerleave', (event) => {
+          if (event.pointerType !== 'mouse') return;
           window.clearTimeout(timer);
           timer = window.setTimeout(() => (details.open = false), 250);
+        });
+        // Clicking the chevron of a panel that hover has just opened would natively close it again;
+        // treat that click as "keep it open" instead.
+        if (summary) {
+          this.on(summary, 'click', (event) => {
+            window.clearTimeout(timer);
+            if (openedByHover && details.open && (event as MouseEvent).detail > 0) event.preventDefault();
+            openedByHover = false;
+          });
+        }
+        this.on(details, 'toggle', () => {
+          if (!details.open) openedByHover = false;
         });
         this.dispose(() => window.clearTimeout(timer));
       }
@@ -135,11 +159,19 @@ export class NkHeader extends NkElement {
     this.on(document, 'click', (event) => {
       if (!this.contains(event.target as Node)) for (const details of panels) details.open = false;
     });
+    this.on(this, 'focusout', (event) => {
+      if (event.relatedTarget && !this.contains(event.relatedTarget as Node)) {
+        for (const details of panels) details.open = false;
+      }
+    });
   }
 
   override onEditorSelect(): void {
+    this.#editorSelected = true;
     this.#setHidden(false);
   }
+
+  override onEditorDeselect(): void { this.#editorSelected = false; }
 
   #schedule(): void {
     if (this.#frame) return;
@@ -161,6 +193,7 @@ export class NkHeader extends NkElement {
 
     const height = this.offsetHeight;
     const locked =
+      this.#editorSelected ||
       this.matches(':focus-within') ||
       overlay.current !== null ||
       this.querySelector('details[open], nk-search-pill[data-open]') !== null;

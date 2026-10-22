@@ -210,8 +210,10 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]):not([da
   transition: opacity var(--nk-dur-instant);
 }
 
-.nav__link:hover {
-  opacity: 0.72;
+@media (hover: hover) {
+  .nav__link:hover {
+    opacity: 0.72;
+  }
 }
 
 .nav__link[aria-current='page'] {
@@ -283,8 +285,10 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]):not([da
   text-decoration: none;
 }
 
-.nav__panel a:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .nav__panel a:hover {
+    text-decoration: underline;
+  }
 }
 
 /* Phone drawer. */

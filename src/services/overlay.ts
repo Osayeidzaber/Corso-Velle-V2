@@ -31,11 +31,13 @@ let savedScroll = 0;
 function lockScroll(): void {
   savedScroll = window.scrollY;
   document.documentElement.classList.add('nk-locked');
+  document.documentElement.setAttribute('data-overlay-open', '');
   document.documentElement.style.setProperty('--nk-scrollbar', `${window.innerWidth - document.documentElement.clientWidth}px`);
 }
 
 function unlockScroll(): void {
   document.documentElement.classList.remove('nk-locked');
+  document.documentElement.removeAttribute('data-overlay-open');
   document.documentElement.style.removeProperty('--nk-scrollbar');
   if (Math.abs(window.scrollY - savedScroll) > 1) window.scrollTo({ top: savedScroll, behavior: 'instant' });
 }
@@ -74,6 +76,7 @@ export const overlay = {
   },
 
   open(dialog: HTMLDialogElement, options: OpenOptions = {}): void {
+    if (!dialog.isConnected) return;
     if (active?.dialog === dialog) return;
     if (active) overlay.close(active.dialog, { restoreFocus: false });
 
@@ -98,7 +101,12 @@ export const overlay = {
     window.addEventListener('pagehide', () => overlay.close(dialog), { signal: controller.signal });
 
     lockScroll();
-    if (!dialog.open) dialog.showModal();
+    try {
+      if (!dialog.open) dialog.showModal();
+    } catch (error) {
+      teardown(false);
+      throw error;
+    }
     const focusTarget = options.initialFocus ?? dialog.querySelector<HTMLElement>('[data-autofocus]');
     focusTarget?.focus();
     document.dispatchEvent(new CustomEvent('nk:overlay:opened', { detail: { id: dialog.id } }));

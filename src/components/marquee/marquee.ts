@@ -21,14 +21,25 @@ export class NkMarquee extends NkElement {
   #animation: Animation | null = null;
   #userPaused = false;
   #visible = true;
-  #hovered = false;
+  #pointerInside = false;
+  #focusInside = false;
+  /** Base playback rate, eased toward 1 or hover-speed so hover slows and resumes smoothly. */
+  #rate = 1;
+  #rateFrame = 0;
   #scrollBoost = 1;
   #frame = 0;
+
+  get #hovered(): boolean {
+    return this.#pointerInside || this.#focusInside;
+  }
 
   protected mount(): void {
     const track = this.ref('track');
     const list = this.ref('list');
     if (!track || !list) return;
+    this.#pointerInside = false;
+    this.#focusInside = false;
+    this.#rate = 1;
 
     if (!decorativeMotionAllowed()) {
       this.setAttribute('data-static', '');
@@ -36,6 +47,7 @@ export class NkMarquee extends NkElement {
     }
 
     this.#build(track, list);
+    this.removeAttribute('data-static');
     let width = this.offsetWidth;
     this.observeResize(this, () => {
       if (Math.abs(this.offsetWidth - width) < 2) return;
@@ -49,23 +61,25 @@ export class NkMarquee extends NkElement {
     });
     this.on(document, 'visibilitychange', () => this.#sync());
 
-    const hoverRate = Number(this.getAttribute('hover-speed') ?? '0');
+    // Pointer and focus are tracked apart: tabbing out must not restart a strip the mouse still
+    // rests on, and the mouse leaving must not restart one that holds keyboard focus.
     this.on(this, 'pointerenter', (event) => {
       if (event.pointerType !== 'mouse') return;
-      this.#hovered = true;
-      this.#applyRate(hoverRate);
+      this.#pointerInside = true;
+      this.#easeRate();
     });
     this.on(this, 'pointerleave', () => {
-      this.#hovered = false;
-      this.#applyRate(1);
+      this.#pointerInside = false;
+      this.#easeRate();
     });
     this.on(this, 'focusin', () => {
-      this.#hovered = true;
-      this.#sync();
+      this.#focusInside = true;
+      this.#easeRate();
     });
-    this.on(this, 'focusout', () => {
-      this.#hovered = false;
-      this.#sync();
+    this.on(this, 'focusout', (event) => {
+      if (this.contains(event.relatedTarget as Node | null)) return;
+      this.#focusInside = false;
+      this.#easeRate();
     });
 
     const pause = this.ref<HTMLButtonElement>('pause');
@@ -83,6 +97,9 @@ export class NkMarquee extends NkElement {
     this.dispose(() => {
       this.#animation?.cancel();
       cancelAnimationFrame(this.#frame);
+      cancelAnimationFrame(this.#rateFrame);
+      this.#frame = 0;
+      this.#rateFrame = 0;
       this.querySelectorAll('[data-marquee-clone]').forEach((clone) => clone.remove());
     });
   }
@@ -142,27 +159,40 @@ export class NkMarquee extends NkElement {
       [{ transform: `${axis}(0)` }, { transform: `${axis}(-${distance}px)` }],
       { duration: (distance / speed) * 1000, iterations: Infinity, direction: reverse ? 'reverse' : 'normal' },
     );
-    this.#sync();
+    this.#applyPlayback(); // a rebuild mid-hover keeps the slowed rate
   }
 
   #sync(): void {
     const animation = this.#animation;
     if (!animation) return;
-    const hoverRate = Number(this.getAttribute('hover-speed') ?? '0');
-    const stopped = this.#userPaused || !this.#visible || document.hidden || (this.#hovered && hoverRate === 0);
+    // A hover-speed of 0 pauses only once the eased rate has actually reached zero.
+    const stopped = this.#userPaused || !this.#visible || document.hidden || this.#rate === 0;
     if (stopped && animation.playState === 'running') animation.pause();
     if (!stopped && animation.playState !== 'running') animation.play();
     this.toggleAttribute('data-paused', this.#userPaused);
   }
 
-  #applyRate(base: number): void {
+  #targetRate(): number {
+    return this.#hovered ? Math.max(0, Number(this.getAttribute('hover-speed') ?? '0') || 0) : 1;
+  }
+
+  #applyPlayback(): void {
     if (!this.#animation) return;
-    if (base === 0) {
-      this.#sync();
-      return;
-    }
-    this.#animation.updatePlaybackRate(base * this.#scrollBoost);
+    if (this.#rate > 0) this.#animation.updatePlaybackRate(this.#rate * this.#scrollBoost);
     this.#sync();
+  }
+
+  /** Ease the base rate toward its target over ~300ms instead of jumping on hover in/out. */
+  #easeRate(): void {
+    if (this.#rateFrame) return;
+    const step = () => {
+      const target = this.#targetRate();
+      this.#rate += (target - this.#rate) * 0.14;
+      if (Math.abs(target - this.#rate) < 0.02) this.#rate = target;
+      this.#applyPlayback();
+      this.#rateFrame = this.#rate === target ? 0 : requestAnimationFrame(step);
+    };
+    this.#rateFrame = requestAnimationFrame(step);
   }
 
   /** Scroll Velocity behaviour: speed up with scroll speed, ease back when scrolling stops. */
@@ -178,7 +208,7 @@ export class NkMarquee extends NkElement {
       skew *= 0.88;
       if (Math.abs(skew) < 0.05) skew = 0;
       setSkew();
-      if (!this.#hovered) this.#animation?.updatePlaybackRate(this.#scrollBoost);
+      this.#applyPlayback();
       if (this.#scrollBoost !== 1 || skew !== 0) this.#frame = requestAnimationFrame(decay);
     };
     this.on(
@@ -195,7 +225,7 @@ export class NkMarquee extends NkElement {
         setSkew();
         lastTime = now;
         this.#scrollBoost = Math.min(3, Math.max(this.#scrollBoost, 1 + velocity * 1.5));
-        if (!this.#hovered) this.#animation?.updatePlaybackRate(this.#scrollBoost);
+        this.#applyPlayback();
         if (!this.#frame) this.#frame = requestAnimationFrame(decay);
       },
       { passive: true },

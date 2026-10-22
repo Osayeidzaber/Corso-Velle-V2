@@ -67,7 +67,7 @@
                 <ul
                   class="product-grid collection-tabs__grid"
                   role="list"
-                  style="--nk-cols-mobile: 2; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
+                  style="--nk-cols-mobile: 1; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
                 >
                   {%- for product in collection_source.products limit: section.settings.limit -%}
                     <li {% if forloop.parentloop.first %}data-stagger-item{% else %}data-tab-item{% endif %}>
@@ -163,8 +163,10 @@
     transition: color 260ms var(--nk-ease-out);
   }
 
-  .collection-tabs-section .collection-tabs__tab:hover {
-    color: color-mix(in oklab, var(--nk-color-text) 82%, transparent);
+  @media (hover: hover) {
+    .collection-tabs-section .collection-tabs__tab:hover {
+        color: color-mix(in oklab, var(--nk-color-text) 82%, transparent);
+      }
   }
 
   .collection-tabs-section .collection-tabs__tab[aria-selected='true'] {

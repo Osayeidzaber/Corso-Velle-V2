@@ -46,4 +46,16 @@ describe('NkElement lifecycle', () => {
   it('defines a tag only once', () => {
     expect(() => define('nk-test-element', TestElement)).not.toThrow();
   });
+
+  it('does not double-mount when an already connected section is hydrated again', () => {
+    const element = document.createElement('nk-test-element') as TestElement;
+    document.body.append(element);
+    element.connectedCallback();
+    expect(element.mounts).toBe(1);
+    element.remove();
+    element.disconnectedCallback();
+    document.body.append(element);
+    expect(element.mounts).toBe(2);
+    element.remove();
+  });
 });

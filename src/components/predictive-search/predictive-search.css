@@ -50,9 +50,14 @@ nk-predictive-search[data-state='loading'] .search-modal__field::after {
   text-decoration: none;
 }
 
-.predictive__option[aria-selected='true'] > a,
-.predictive__option > a:hover {
+.predictive__option[aria-selected='true'] > a {
   background: var(--nk-color-surface);
+}
+
+@media (hover: hover) {
+  .predictive__option > a:hover {
+    background: var(--nk-color-surface);
+  }
 }
 
 .predictive__option[aria-selected='true'] > a {

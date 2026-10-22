@@ -4,6 +4,7 @@ import '../styles/global.css';
 
 import { define } from '../core/define';
 import { installLazyLoader, registerLazy } from '../core/lazy';
+import { installMotionPolicy } from '../core/motion';
 import { NkCartDrawer } from '../components/cart/cart-drawer';
 import { NkCartItems } from '../components/cart/cart-items';
 import { NkDisclosure } from '../components/disclosure/disclosure';
@@ -15,6 +16,7 @@ import { installCartRenderer } from '../services/cart-render';
 import { installEditorAdapter } from '../services/editor';
 
 installEditorAdapter();
+installMotionPolicy();
 installCartRenderer();
 installModalTriggers();
 installCardInteractions();
@@ -30,6 +32,8 @@ define('nk-disclosure', NkDisclosure);
 registerLazy('nk-reveal', () => import('../components/reveal/reveal'));
 registerLazy('nk-text', () => import('../components/text/text'));
 registerLazy('nk-marquee', () => import('../components/marquee/marquee'));
+registerLazy('nk-carousel', () => import('../components/carousel/carousel'));
+registerLazy('nk-footer', () => import('../components/footer/footer'));
 registerLazy('nk-tabs', () => import('../components/tabs/tabs'));
 registerLazy('nk-expand-media', () => import('../components/expand-media/expand-media'));
 registerLazy('nk-elastic-line', () => import('../components/elastic-line/elastic-line'));
@@ -40,15 +44,19 @@ registerLazy('nk-parallax', () => import('../components/motion/parallax'));
 registerLazy('nk-stagger', () => import('../components/motion/stagger'));
 registerLazy('nk-size-guide', () => import('../components/size-guide/size-guide'));
 registerLazy('nk-recommendations', () => import('../components/recommendations/recommendations'));
+for (const tag of ['nk-variant-picker', 'nk-product-form', 'nk-gallery', 'nk-sticky-buy']) {
+  registerLazy(tag, () => import('./product'));
+}
 installLazyLoader();
 
 // Desktop "View" cursor + magnetic buttons (GSAP), only where the page uses them.
 function maybeInstallCursor(root: ParentNode = document): void {
-  if (root.querySelector?.('[data-cursor], [data-magnetic]')) {
-    void import('../components/motion/cursor').then((module) => module.installCursor());
+  if (root.querySelector?.('[data-cursor], [data-magnetic], nk-magnetic')) {
+    void import('../components/motion/cursor').then((module) => module.installCursor()).catch(console.error);
   }
 }
 
 maybeInstallCursor();
 document.addEventListener('shopify:section:load', (event) => maybeInstallCursor(event.target as ParentNode));
 document.addEventListener('nk:section:replaced', (event) => maybeInstallCursor(event.target as ParentNode));
+document.addEventListener('nk:motion:changed', () => maybeInstallCursor());

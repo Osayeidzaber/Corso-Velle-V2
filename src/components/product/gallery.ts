@@ -1,6 +1,7 @@
 import { t } from '../../core/config';
 import { NkElement } from '../../core/element';
 import { animate, transitionsAllowed } from '../../core/motion';
+import { overlay } from '../../services/overlay';
 
 /**
  * <nk-gallery> (master-plan/08 PR-01).
@@ -18,6 +19,7 @@ export class NkGallery extends NkElement {
   #thumbs: HTMLButtonElement[] = [];
   #index = 0;
   #zoomed = false;
+  #animation: Animation | null = null;
 
   protected mount(): void {
     const track = this.ref('track');
@@ -73,6 +75,22 @@ export class NkGallery extends NkElement {
     });
 
     this.#setupLightbox();
+    this.observeIntersection(this, (entry) => {
+      if (!entry.isIntersecting) this.querySelectorAll('video').forEach((video) => video.pause());
+    });
+    this.on(this.#track, 'keydown', (event) => {
+      if ((event.target as Element).closest('button, input, video, iframe, model-viewer')) return;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+        event.preventDefault();
+        this.go(this.#index + (event.key === 'ArrowRight' ? 1 : -1), true);
+      }
+    });
+    this.dispose(() => {
+      this.#animation?.cancel();
+      const dialog = this.ref<HTMLDialogElement>('lightbox');
+      if (dialog && overlay.isOpen(dialog)) overlay.close(dialog);
+      this.querySelectorAll('video').forEach((video) => video.pause());
+    });
 
     const section = this.closest('[data-product-section]');
     if (section) {
@@ -85,7 +103,7 @@ export class NkGallery extends NkElement {
 
     const initialMediaId = this.dataset.initialMediaId;
     const initialIdx = initialMediaId ? this.#slides.findIndex((s) => s.dataset.mediaId === initialMediaId) : 0;
-    this.#setCurrent(initialIdx >= 0 ? initialIdx : 0);
+    this.go(initialIdx >= 0 ? initialIdx : 0);
   }
 
   go(index: number, scrollDesktop = false): void {
@@ -103,7 +121,8 @@ export class NkGallery extends NkElement {
       slide.scrollIntoView({ behavior, block: 'nearest' });
     }
 
-    animate(
+    this.#animation?.cancel();
+    this.#animation = animate(
       slide,
       [{ opacity: 0.72 }, { opacity: 1 }],
       { duration: 260, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
@@ -114,25 +133,23 @@ export class NkGallery extends NkElement {
 
   openLightbox(index: number): void {
     const dialog = this.ref<HTMLDialogElement>('lightbox');
-    if (!dialog) return;
+    if (!dialog || !this.#slides[index]?.dataset.zoomSrc) return;
     this.#setCurrent(index);
     this.#renderLightboxSlide(this.#index);
-    if (typeof dialog.showModal === 'function' && !dialog.open) {
-      dialog.showModal();
-    } else {
-      dialog.setAttribute('open', '');
-    }
+    overlay.open(dialog, {
+      trigger: this.#slides[index]?.querySelector<HTMLElement>('[data-gallery-zoom]') ?? document.activeElement as HTMLElement,
+      onClose: () => {
+        this.#setZoom(false);
+        if (this.isConnected) this.go(this.#index);
+      },
+    });
   }
 
   closeLightbox(): void {
     const dialog = this.ref<HTMLDialogElement>('lightbox');
     if (!dialog) return;
     this.#setZoom(false);
-    if (typeof dialog.close === 'function' && dialog.open) {
-      dialog.close();
-    } else {
-      dialog.removeAttribute('open');
-    }
+    overlay.close(dialog);
   }
 
   #setupLightbox(): void {
@@ -142,7 +159,7 @@ export class NkGallery extends NkElement {
     this.on(dialog, 'click', (event) => {
       const target = event.target as Element;
       // Light-dismiss when clicking backdrop (dialog itself) or stage background
-      if (target === dialog || target.hasAttribute('data-lightbox-close') || target.closest('[data-lightbox-close]')) {
+      if (target === dialog || target === this.ref('lightbox-stage') || target.hasAttribute('data-lightbox-close') || target.closest('[data-lightbox-close]')) {
         event.preventDefault();
         this.closeLightbox();
         return;
@@ -151,8 +168,7 @@ export class NkGallery extends NkElement {
       const step = target.closest<HTMLButtonElement>('[data-lightbox-step]');
       if (step) {
         event.preventDefault();
-        const count = this.#slides.length;
-        const nextIdx = (this.#index + Number(step.dataset.lightboxStep) + count) % count;
+        const nextIdx = this.#nextImage(Number(step.dataset.lightboxStep));
         this.#setCurrent(nextIdx);
         this.#renderLightboxSlide(nextIdx);
         return;
@@ -182,16 +198,25 @@ export class NkGallery extends NkElement {
       const key = (event as KeyboardEvent).key;
       if (key === 'ArrowLeft' && this.#slides.length > 1) {
         event.preventDefault();
-        const nextIdx = (this.#index - 1 + this.#slides.length) % this.#slides.length;
+        const nextIdx = this.#nextImage(-1);
         this.#setCurrent(nextIdx);
         this.#renderLightboxSlide(nextIdx);
       } else if (key === 'ArrowRight' && this.#slides.length > 1) {
         event.preventDefault();
-        const nextIdx = (this.#index + 1) % this.#slides.length;
+        const nextIdx = this.#nextImage(1);
         this.#setCurrent(nextIdx);
         this.#renderLightboxSlide(nextIdx);
       }
     });
+  }
+
+  #nextImage(step: number): number {
+    let index = this.#index;
+    for (let count = 0; count < this.#slides.length; count++) {
+      index = (index + step + this.#slides.length) % this.#slides.length;
+      if (this.#slides[index]?.dataset.zoomSrc) return index;
+    }
+    return this.#index;
   }
 
   #setZoom(zoomed: boolean, event?: MouseEvent): void {

@@ -33,7 +33,11 @@
   "footer": {
     "follow": "Follow",
     "payment_methods": "Payment methods",
-    "social_setup": "Add social profile links in Theme settings › Social media."
+    "social_setup": "Add social profile links in Theme settings › Social media.",
+    "email": "Your email address",
+    "subscribe": "Subscribe",
+    "subscribed": "You're on the list. Thank you for subscribing.",
+    "back_to_top": "Back to top"
   },
   "blog": {
     "article_comments": "Comments",
@@ -93,6 +97,7 @@
     "price_from_html": "From {{ price }}",
     "regular_price": "Regular price",
     "choose_option": "Choose one",
+    "choose_options": "Choose options",
     "choose_named_option": "Choose a {{ option }}",
     "selection_failed": "This selection couldn't be updated.",
     "reload_selection": "Reload the page with this selection",
@@ -115,12 +120,17 @@
     "no_image": "No image",
     "updating": "Updating…",
     "units": "Units",
+    "measurements_unavailable": "Measurements for this size have not been provided.",
     "inches": "in",
     "centimetres": "cm",
     "decrease_quantity": "Decrease quantity",
     "increase_quantity": "Increase quantity",
-    "in_stock": "In stock — ready to ship",
+    "in_stock": "In stock",
+    "available_to_order": "Available to order",
     "select_size_prompt": "Select a size",
+    "size_selected": "Selected",
+    "size_table_heading": "Garment measurements",
+    "measurements_in": "measurements in",
     "zoom": "Zoom image",
     "quick_add": "Quick add"
   },
@@ -190,5 +200,13 @@
     "no_matches": "No products match these filters.",
     "update_failed": "The results couldn't be updated.",
     "reload": "Load the page with these filters"
+  },
+  "carousel": {
+    "canvas_label": "Product images. Drag, swipe, or use the left and right arrow keys to browse. Press Enter to view the highlighted product.",
+    "hint": "Swipe or use the arrows to explore",
+    "previous": "Previous products",
+    "next": "Next products",
+    "pause": "Pause",
+    "play": "Play"
   }
 }

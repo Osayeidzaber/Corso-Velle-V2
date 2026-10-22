@@ -18,8 +18,8 @@ nk-facets[aria-busy='true'] .facets__results-grid {
   position: sticky;
   top: var(--nk-header-h, 0px);
   z-index: 20;
-  margin-inline: calc(50% - 50vw);
-  padding-inline: max(var(--nk-gutter, 20px), calc((100vw - var(--content-width)) / 2));
+  margin-inline: calc(50% - var(--nk-viewport-width, 100vw) / 2);
+  padding-inline: max(var(--nk-gutter, 20px), calc((var(--nk-viewport-width, 100vw) - var(--content-width)) / 2));
   background: color-mix(in oklab, var(--nk-color-bg) 94%, transparent);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
@@ -60,8 +60,10 @@ nk-facets[aria-busy='true'] .facets__results-grid {
   transition: opacity 200ms var(--nk-ease-out);
 }
 
-.facets__open:hover {
-  opacity: 0.7;
+@media (hover: hover) {
+  .facets__open:hover {
+    opacity: 0.7;
+  }
 }
 
 .facets__open-icon {
@@ -176,9 +178,11 @@ nk-facets[aria-busy='true'] .facets__results-grid {
   border-inline-start: 1px solid color-mix(in oklab, var(--nk-color-line) 55%, transparent);
 }
 
-.facets__layout-btn:hover {
-  opacity: 0.82;
-  color: var(--nk-color-text);
+@media (hover: hover) {
+  .facets__layout-btn:hover {
+    opacity: 0.82;
+    color: var(--nk-color-text);
+  }
 }
 
 .facets__layout-btn[aria-pressed='true'] {
@@ -347,9 +351,11 @@ html:not(.js) .facets__drawer {
     background-color var(--nk-dur-instant);
 }
 
-.facets__chip:hover {
-  border-color: var(--nk-color-text);
-  background: var(--nk-color-surface);
+@media (hover: hover) {
+  .facets__chip:hover {
+    border-color: var(--nk-color-text);
+    background: var(--nk-color-surface);
+  }
 }
 
 .facets__clear {
@@ -387,3 +393,29 @@ html:not(.js) .facets__drawer {
 .search-page__form input[type='search']:focus-visible {
   border-color: var(--nk-color-text);
 }
+
+@media (max-width: 599px) {
+  .facets__toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  .facets__toolbar-start { display: contents; }
+  .facets__open { grid-column: 1; grid-row: 1; margin: 0; border: 0; }
+  .facets__layout-switch { grid-column: 2; grid-row: 1; }
+  .facets__sort { grid-column: 1 / -1; grid-row: 2; padding: 0; border: 0; border-top: 1px solid var(--nk-color-line); }
+  .facets__sort-select-wrap { flex: 1; min-width: 0; }
+  .facets__sort select { width: 100%; max-width: 100%; font-size: 16px; letter-spacing: .04em; min-height: 44px; }
+}
+.facets__sort-menu { display: none; position: relative; min-width: 0; width: 100%; }
+nk-facets[data-enhanced] .facets__sort-menu { display: block; }
+nk-facets[data-enhanced] .facets__sort-select-wrap, nk-facets[data-enhanced] .facets__sort-label { display: none; }
+.facets__sort-menu > summary { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 12px; cursor: pointer; list-style: none; font-family: var(--nk-font-spec); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+.facets__sort-menu > summary::-webkit-details-marker { display: none; }
+.facets__sort-menu-label { color: var(--nk-color-text-muted); flex-shrink: 0; }
+.facets__sort-menu-value { flex: 1; }
+.facets__sort-menu > summary svg { flex-shrink: 0; transition: rotate 180ms ease; }
+.facets__sort-menu[open] > summary svg { rotate: 180deg; }
+.facets__sort-options { position: absolute; z-index: 45; inset: calc(100% + 4px) 0 auto auto; width: max(100%, 260px); max-width: calc(100vw - 32px); max-height: min(420px, 65dvh); overflow-y: auto; overscroll-behavior: contain; margin: 0; padding: 6px; list-style: none; background: var(--nk-color-bg); border: 1px solid var(--nk-color-line); box-shadow: 0 14px 36px rgb(0 0 0 / .12); }
+.facets__sort-options button { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; min-height: 44px; border: 0; padding: 10px 12px; background: transparent; color: var(--nk-color-text); text-align: start; font: inherit; font-size: 13px; cursor: pointer; }
+.facets__sort-options button:focus-visible, .facets__sort-options button[aria-pressed='true'] { background: var(--nk-color-surface); }
+@media (hover: hover) { .facets__sort-options button:hover { background: var(--nk-color-surface); } }
+.facets__sort-check { visibility: hidden; }
+.facets__sort-options button[aria-pressed='true'] .facets__sort-check { visibility: visible; }
+@media (max-width: 599px) { .facets__sort-menu > summary { min-height: 48px; padding-inline: 0; } .facets__sort-options { width: 100%; max-width: 100%; } }

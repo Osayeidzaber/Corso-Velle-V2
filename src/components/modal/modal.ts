@@ -21,6 +21,50 @@ export class NkModal extends NkElement {
     this.dispose(() => {
       if (overlay.isOpen(this.dialog)) overlay.close(this.dialog, { restoreFocus: false });
     });
+    if (dialog.hasAttribute('data-swipe-close')) this.#installSwipeClose(dialog);
+  }
+
+  /**
+   * Bottom sheets (phones): dragging the [data-drag-handle] area down follows the finger and
+   * closes past a distance or flick threshold; otherwise the sheet springs back.
+   */
+  #installSwipeClose(dialog: HTMLDialogElement): void {
+    const sheetQuery = matchMedia('(max-width: 749px)');
+    let pointerId: number | null = null;
+    let startY = 0;
+    let startTime = 0;
+    let offset = 0;
+
+    const release = (event: PointerEvent): void => {
+      if (event.pointerId !== pointerId) return;
+      pointerId = null;
+      dialog.style.removeProperty('transition');
+      const velocity = offset / Math.max(1, performance.now() - startTime);
+      const shouldClose = event.type === 'pointerup' && (offset > dialog.offsetHeight * 0.25 || (offset > 24 && velocity > 0.5));
+      // Clearing the inline offset lets the CSS transition carry the sheet from where the finger
+      // left it, either back to rest or out through the close transition.
+      dialog.style.removeProperty('translate');
+      offset = 0;
+      if (shouldClose) this.close();
+    };
+
+    this.on(dialog, 'pointerdown', (event) => {
+      if (!sheetQuery.matches || event.button !== 0 || !(event.target as Element).closest('[data-drag-handle]')) return;
+      if ((event.target as Element).closest('button, a, input')) return;
+      pointerId = event.pointerId;
+      startY = event.clientY;
+      startTime = performance.now();
+      offset = 0;
+      (event.target as Element).setPointerCapture?.(event.pointerId);
+      dialog.style.setProperty('transition', 'none');
+    });
+    this.on(dialog, 'pointermove', (event) => {
+      if (event.pointerId !== pointerId) return;
+      offset = Math.max(0, event.clientY - startY);
+      dialog.style.setProperty('translate', `0 ${offset}px`);
+    });
+    this.on(dialog, 'pointerup', release);
+    this.on(dialog, 'pointercancel', release);
   }
 
   get isOpen(): boolean {

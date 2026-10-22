@@ -53,19 +53,28 @@ export class NkProductForm extends NkElement {
 
   /** Button label/disabled for states Liquid can't express (explicit choice, missing combination). */
   #reflectState(state: string): void {
+    if (state === 'available') this.#clearError();
     const button = this.querySelector<HTMLButtonElement>('[data-region="buy"] button[type="submit"]');
     const label = button?.querySelector<HTMLElement>('[data-button-label]');
     if (!button || !label) return;
+    button.disabled = state !== 'available' && state !== 'incomplete';
+    const checkout = this.querySelector<HTMLElement>('.shopify-payment-button');
+    if (checkout) checkout.hidden = state !== 'available';
     label.classList.toggle('nk-text-wave', state === 'resolving');
     if (state === 'resolving') {
       label.textContent = t('product.updating');
     } else if (state === 'incomplete') {
-      const name = this.#picker()?.firstIncomplete()?.dataset.optionName ?? '';
-      label.textContent = t('product.choose_named_option', { option: name });
+      label.textContent = t('product.add_to_cart');
       button.disabled = false; // clicking explains what is missing
     } else if (state === 'unavailable') {
       label.textContent = t('product.unavailable');
       button.disabled = true;
+    } else if (state === 'failed') {
+      label.textContent = t('product.selection_failed');
+    } else if (state === 'sold-out') {
+      label.textContent = t('product.sold_out');
+    } else {
+      label.textContent = t('product.add_to_cart');
     }
   }
 
@@ -94,7 +103,10 @@ export class NkProductForm extends NkElement {
     const id = Number(data.get('id'));
     if (!id || (picker && String(id) !== picker.resolvedVariantId)) return;
 
-    const quantity = Math.max(1, Number(data.get('quantity') ?? 1));
+    const quantityInput = form.querySelector<HTMLInputElement>('input[name="quantity"]');
+    if (quantityInput && !quantityInput.reportValidity()) return;
+    const quantity = Number(data.get('quantity') ?? 1);
+    if (!Number.isInteger(quantity) || quantity < 1) return;
     const properties: Record<string, string> = {};
     for (const [key, value] of data.entries()) {
       const match = /^properties\[(.+)\]$/.exec(key);
