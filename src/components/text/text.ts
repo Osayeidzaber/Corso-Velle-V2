@@ -1,29 +1,23 @@
-import './text.css';
-
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
 import { decorativeMotionAllowed } from '../../core/motion';
 
-type Effect = 'rise' | 'blur' | 'flip' | 'pop' | 'skew' | 'fold' | 'fade';
+type Effect = 'cut' | 'rise' | 'blur' | 'flip' | 'pop' | 'skew' | 'fold' | 'fade';
 type SplitBy = 'chars' | 'words' | 'lines';
 type Hover = 'none' | 'lift' | 'refold';
 
-/** Spring constants for the hover lift (per letter, critically damped-ish). */
-const STIFFNESS = 180;
-const DAMPING = 19;
+/** Spring constants for the hover lift (per piece, critically damped). */
+const STIFFNESS = 140;
+const DAMPING = 22;
 
 /**
- * <nk-text effect split hover stagger-from play-on-load> — animated headings, rebuilt from the
- * supplied Split Text (rise / blur / flip / pop / skew + hover lift), Fold Text (paper fold from
- * a top hinge with crease shading + hover refold) and Text Effect (per-character blur fade).
+ * <nk-text effect split hover stagger-from play-on-load> — editorial animated headings.
  *
  * - The heading is real text in the HTML. With motion on, CSS hides it before first paint
  *   (html.nk-anim) and this element reveals it already split, so it never flashes in twice.
  *   A CSS failsafe shows it after 3s if scripts fail.
- * - Splitting wraps each word in a no-wrap inline-block (words never break mid-word, nothing is
- *   clipped by masks) and, for chars/fold, each letter in its own inline-block. <em>, <br> and
- *   gradient/shine spans are kept; gradient/shine spans animate as one piece so background-clip
- *   text keeps painting.
+ * - Splitting wraps each word in an overflow-hidden clip mask (.nk-w-clip) and a no-wrap
+ *   inline-block (.nk-w) so words rise smoothly from a clean baseline without breaking mid-word.
  * - Screen readers get one visually hidden copy of the text; the pieces are aria-hidden.
  */
 export class NkText extends NkElement {
@@ -68,13 +62,14 @@ export class NkText extends NkElement {
     const target = this.querySelector<HTMLElement>('[data-text-target]') ?? (this.firstElementChild as HTMLElement | null);
     if (!target) return this.#show();
 
-    const effect = (this.getAttribute('effect') ?? 'rise') as Effect;
-    const by = (this.getAttribute('split') ?? (effect === 'fold' ? 'chars' : 'words')) as SplitBy;
+    const effect = (this.getAttribute('effect') ?? 'cut') as Effect;
+    const by = (this.getAttribute('split') ?? 'words') as SplitBy;
     const hover = (this.getAttribute('hover') ?? 'none') as Hover;
     const from = (this.getAttribute('stagger-from') ?? 'start') as 'start' | 'center' | 'end';
 
     const label = target.textContent?.replace(/\s+/g, ' ').trim() ?? '';
-    const { words, chars } = splitText(target, by !== 'words');
+    const masked = effect === 'cut' || effect === 'rise';
+    const { words, chars } = splitText(target, by === 'chars', masked);
     if (label) {
       // Pieces are aria-hidden; one plain copy keeps the text whole for screen readers.
       const spoken = document.createElement('span');
@@ -86,7 +81,7 @@ export class NkText extends NkElement {
     const em = Number.parseFloat(getComputedStyle(target).fontSize) || 16;
     const pieces = by === 'chars' ? chars : words;
     const look = effectVars(effect, em);
-    const each = Number(this.getAttribute('stagger')) || (by === 'chars' ? (effect === 'fold' ? 0.045 : 0.03) : 0.08);
+    const each = Number(this.getAttribute('stagger')) || (by === 'chars' ? 0.024 : 0.065);
     const duration = Number(this.getAttribute('duration')) || look.duration;
 
     const context = gsap.context(() => {
@@ -99,14 +94,14 @@ export class NkText extends NkElement {
         onComplete: () => {
           gsap.set(pieces, { clearProps: 'transform,filter,opacity,willChange' });
           this.setAttribute('data-done', '');
-          if (hover !== 'none') this.#enableHover(hover, by === 'words' ? words : chars, em);
+          if (hover !== 'none') this.#enableHover(hover, words, em);
         },
       });
 
       if (by === 'lines') {
         // Words that share a line move together; lines follow each other.
         lineGroups(words).forEach((line, index) => {
-          timeline.to(line, { ...look.to, duration, ease: look.ease }, index * each * 1.6);
+          timeline.to(line, { ...look.to, duration, ease: look.ease }, index * 0.11);
         });
       } else {
         timeline.to(pieces, { ...look.to, duration, ease: look.ease, stagger: { each, from } }, 0);
@@ -121,7 +116,7 @@ export class NkText extends NkElement {
     this.#revert = () => context.revert();
   }
 
-  /** Split Text "lift" (letters spring up around the pointer) or Fold Text "refold". */
+  /** Subtle pointer hover response when explicitly enabled. */
   #enableHover(mode: Hover, pieces: HTMLElement[], em: number): void {
     if (!matchMedia('(hover: hover) and (pointer: fine)').matches || !pieces.length) return;
     const springs = pieces.map(() => ({ value: 0, velocity: 0 }));
@@ -145,10 +140,10 @@ export class NkText extends NkElement {
         const center = centers[index];
         let target = 0;
         if (pointer.inside && center) {
-          const dx = (center.x - pointer.x) / (em * 0.9);
+          const dx = (center.x - pointer.x) / (em * 1.1);
           const dy = (center.y - pointer.y) / (em * 1.2);
           const falloff = Math.exp(-(dx * dx + dy * dy) * 0.5);
-          target = mode === 'lift' ? -em * 0.2 * falloff : -45 * falloff;
+          target = mode === 'lift' ? -em * 0.06 * falloff : -14 * falloff;
         }
         spring.velocity += (STIFFNESS * (target - spring.value) - DAMPING * spring.velocity) * dt;
         spring.value += spring.velocity * dt;
@@ -203,44 +198,39 @@ interface Look {
 function effectVars(effect: Effect, em: number): Look {
   switch (effect) {
     case 'fade':
-      return { from: { opacity: 0 }, to: { opacity: 1 }, ease: 'power2.inOut', duration: 0.9 };
+      return { from: { opacity: 0, y: em * 0.14 }, to: { opacity: 1, y: 0 }, ease: 'power3.out', duration: 0.9 };
     case 'blur':
       return {
-        from: { opacity: 0, filter: `blur(${Math.round(em * 1.4) / 10}px)`, y: em * 0.12 },
+        from: { opacity: 0, filter: 'blur(6px)', y: em * 0.14 },
         to: { opacity: 1, filter: 'blur(0px)', y: 0 },
-        ease: 'power2.out',
-        duration: 1.1,
+        ease: 'power3.out',
+        duration: 0.95,
       };
     case 'flip':
+    case 'fold':
       return {
-        from: { opacity: 0, rotationX: -90, transformPerspective: em * 6, transformOrigin: '50% 100%' },
-        to: { opacity: 1, rotationX: 0 },
-        ease: 'power3.out',
-        duration: 1,
+        from: { opacity: 0, yPercent: 85, rotationX: -28, transformPerspective: 900, transformOrigin: '50% 100%' },
+        to: { opacity: 1, yPercent: 0, rotationX: 0 },
+        ease: 'expo.out',
+        duration: 0.95,
       };
     case 'pop':
-      return { from: { opacity: 0, scale: 0 }, to: { opacity: 1, scale: 1 }, ease: 'back.out(1.6)', duration: 0.8 };
+      return { from: { opacity: 0, y: em * 0.2 }, to: { opacity: 1, y: 0 }, ease: 'power3.out', duration: 0.85 };
     case 'skew':
       return {
-        from: { opacity: 0, x: -em * 0.4, skewX: -24, transformOrigin: '50% 100%' },
-        to: { opacity: 1, x: 0, skewX: 0 },
+        from: { opacity: 0, yPercent: 95, skewY: 3, transformOrigin: '0% 100%' },
+        to: { opacity: 1, yPercent: 0, skewY: 0 },
         ease: 'expo.out',
-        duration: 1.2,
+        duration: 1.0,
       };
-    case 'fold':
-      // Paper fold on a top hinge; the crease is darker until the letter lies flat.
-      return {
-        from: { rotationX: -92, transformPerspective: 700, transformOrigin: '50% 0%', filter: 'brightness(0.45)', opacity: 0 },
-        to: { rotationX: 0, filter: 'brightness(1)', opacity: 1 },
-        ease: 'power3.out',
-        duration: 0.65,
-      };
+    case 'cut':
+    case 'rise':
     default:
       return {
-        from: { opacity: 0, y: em * 0.55 },
-        to: { opacity: 1, y: 0 },
-        ease: 'power3.out',
-        duration: 1.1,
+        from: { opacity: 0, yPercent: 102 },
+        to: { opacity: 1, yPercent: 0 },
+        ease: 'expo.out',
+        duration: 0.95,
       };
   }
 }
@@ -248,7 +238,7 @@ function effectVars(effect: Effect, em: number): Look {
 const WHOLE = '.nk-text-shine, .nk-text-gradient';
 
 /** Wrap words (and optionally letters) in inline-blocks, keeping inline markup. */
-function splitText(root: HTMLElement, letters: boolean): { words: HTMLElement[]; chars: HTMLElement[] } {
+function splitText(root: HTMLElement, letters: boolean, masked: boolean): { words: HTMLElement[]; chars: HTMLElement[] } {
   const words: HTMLElement[] = [];
   const chars: HTMLElement[] = [];
 
@@ -278,7 +268,15 @@ function splitText(root: HTMLElement, letters: boolean): { words: HTMLElement[];
           word.textContent = part;
         }
         words.push(word);
-        fragment.append(word);
+        if (masked) {
+          const clip = document.createElement('span');
+          clip.className = 'nk-w-clip';
+          clip.setAttribute('aria-hidden', 'true');
+          clip.append(word);
+          fragment.append(clip);
+        } else {
+          fragment.append(word);
+        }
       }
       node.parentNode?.replaceChild(fragment, node);
       return;

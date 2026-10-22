@@ -2,7 +2,7 @@
 .product-grid {
   display: grid;
   grid-template-columns: repeat(var(--nk-cols-mobile, 2), minmax(0, 1fr));
-  gap: 20px 8px;
+  gap: 24px 10px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -10,8 +10,8 @@
 
 @media (min-width: 750px) {
   .product-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 32px 16px;
+    grid-template-columns: repeat(var(--nk-cols-desktop, 3), minmax(0, 1fr));
+    gap: 36px 16px;
   }
 }
 
@@ -24,8 +24,14 @@
 .card {
   position: relative;
   display: grid;
-  gap: 6px;
+  gap: 8px;
   align-content: start;
+}
+
+.card__media-wrap {
+  position: relative;
+  overflow: hidden;
+  background: var(--nk-color-surface);
 }
 
 .card__media {
@@ -33,27 +39,36 @@
   display: block;
   aspect-ratio: var(--nk-card-ratio, 4 / 5);
   overflow: hidden;
-  background: var(--nk-color-surface);
+  background: #fff;
 }
 
-.card__media img {
+.card__media img,
+.card__media video.card__video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: var(--nk-card-fit, cover);
-  transition: opacity var(--nk-dur-small) var(--nk-ease-out);
+  transition:
+    opacity 450ms var(--nk-ease-out),
+    transform 1200ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    clip-path 700ms cubic-bezier(0.76, 0, 0.24, 1),
+    filter 500ms var(--nk-ease-out);
 }
 
-.card__media img + img {
+.card__media video.card__video {
+  z-index: 1;
   opacity: 0;
+  pointer-events: none;
+  background: #fff;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .card:hover .card__media img + img,
-  .card:focus-within .card__media img + img {
-    opacity: 1;
-  }
+/* Second image wipes up like a curtain and settles from a slight zoom. */
+.card__media--has-second img + img {
+  z-index: 1;
+  opacity: 1;
+  clip-path: inset(100% 0 0 0);
+  transform: scale(1.06);
 }
 
 .card__placeholder {
@@ -66,14 +81,168 @@
 
 .card__badges {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
 }
 
-.card--sold-out .card__media img {
-  opacity: 0.6;
+/* Mobile / touch quick-add toggle button */
+.card__quick-toggle {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 4;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
+  border: 1px solid color-mix(in oklab, var(--nk-color-text) 16%, transparent);
+  background: color-mix(in oklab, var(--nk-color-bg) 92%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--nk-color-text);
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.card[data-tray-open] .card__quick-toggle {
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+  transform: rotate(45deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card__quick-toggle {
+    display: none;
+  }
+}
+
+.card__tray {
+  position: absolute;
+  inset: auto 8px 8px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  background: color-mix(in oklab, var(--nk-color-bg) 94%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in oklab, var(--nk-color-text) 12%, transparent);
+  color: var(--nk-color-text);
+  font-family: var(--nk-font-spec);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  translate: 0 calc(100% + 14px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    translate 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 260ms var(--nk-ease-out);
+}
+
+.card[data-tray-open] .card__tray {
+  translate: 0 0;
+  opacity: 1;
+  pointer-events: auto;
+  right: 48px;
+}
+
+.card__tray-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.card__tray-label {
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
+  color: var(--nk-color-text-muted);
+}
+
+.card__tray-values {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 6px;
+  width: 100%;
+}
+
+.card__tray-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 26px;
+  padding: 0 7px;
+  border: 1px solid color-mix(in oklab, var(--nk-color-text) 18%, transparent);
+  background: color-mix(in oklab, var(--nk-color-bg) 85%, transparent);
+  color: var(--nk-color-text);
+  font-family: var(--nk-font-spec);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.card__tray-pill--btn {
+  cursor: pointer;
+}
+
+.card__tray-pill--btn:hover,
+.card__tray-pill--btn:focus-visible,
+.card__tray-pill[data-added] {
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+  border-color: var(--nk-color-text);
+}
+
+.card__tray-pill[data-busy] {
+  opacity: 0.65;
+  cursor: progress;
+}
+
+.card__tray-pill.is-out {
+  color: var(--nk-color-disabled);
+  border-color: color-mix(in oklab, var(--nk-color-text) 8%, transparent);
+  background: transparent;
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+
+.card__tray-single {
+  width: 100%;
+  height: 32px;
+  border: 0;
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+}
+
+.card__meta {
+  display: grid;
+  gap: 4px;
+}
+
+.card__heading {
+  margin: 0;
+  font-size: inherit;
 }
 
 .card__title {
@@ -81,22 +250,46 @@
   font-size: 0.875rem;
   line-height: 1.3;
   text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 500ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .card__title::after {
-  /* Not a stretched link: media and title are separate links (no nested interactive content). */
   content: none;
 }
 
-.card__sizes {
+.card__price-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 8px;
-  color: var(--nk-color-text-muted);
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.card__sizes s {
-  color: var(--nk-color-disabled);
+.card__swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 2px;
+}
+
+.card__swatch {
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--nk-color-text) 22%, transparent);
+  background: var(--swatch, #ccc);
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.card__swatch:hover,
+.card__swatch.is-active {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 1px var(--nk-color-bg), 0 0 0 2px var(--nk-color-text);
 }
 
 .pagination {
@@ -164,67 +357,8 @@
   border-color: var(--nk-color-text);
 }
 
-/* ---------- Product card v2: fill, hover, sold out ---------- */
-/* Product shots are square on white: the frame matches, so nothing is cropped or letterboxed. */
-.card__media {
-  background: #fff;
-}
-
-.card__media img {
-  transition:
-    opacity 600ms var(--nk-ease-out),
-    transform 1400ms cubic-bezier(0.2, 0.7, 0.2, 1),
-    clip-path 800ms cubic-bezier(0.76, 0, 0.24, 1),
-    filter 600ms var(--nk-ease-out);
-}
-
-/* Second image wipes up like a curtain and settles from a slight zoom. */
-.card__media--has-second img + img {
-  opacity: 1;
-  clip-path: inset(100% 0 0 0);
-  transform: scale(1.08);
-}
-
-.card__tray {
-  position: absolute;
-  inset: auto 10px 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  background: color-mix(in oklab, var(--nk-color-bg) 82%, transparent);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  color: var(--nk-color-text);
-  font-family: var(--nk-font-spec);
-  font-size: 0.625rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  translate: 0 calc(100% + 14px);
-  opacity: 0;
-  transition:
-    translate 600ms cubic-bezier(0.2, 0.7, 0.2, 1),
-    opacity 400ms var(--nk-ease-out);
-}
-
-.card__tray-values {
-  display: flex;
-  gap: 10px;
-}
-
-.card__tray-values .is-out {
-  color: var(--nk-color-disabled);
-  text-decoration: line-through;
-}
-
-.card__title {
-  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
-  transition: background-size 500ms cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
 @media (hover: hover) and (pointer: fine) {
-  .card:hover .card__media img {
+  .card:not(.card--sold-out):hover .card__media > img:first-child {
     transform: scale(1.03);
   }
 
@@ -234,10 +368,17 @@
     transform: scale(1);
   }
 
+  .card--has-video:hover .card__media video.card__video,
+  .card--has-video:focus-within .card__media video.card__video,
+  .card--has-video[data-video-playing] .card__media video.card__video {
+    opacity: 1;
+  }
+
   .card:hover .card__tray,
   .card:focus-within .card__tray {
     translate: 0 0;
     opacity: 1;
+    pointer-events: auto;
   }
 
   .card:hover .card__title {
@@ -245,14 +386,47 @@
   }
 }
 
-/* Sold out: quiet, desaturated image; a clear ink label; colour returns on hover. */
-.card--sold-out .card__media img {
-  opacity: 1;
-  filter: grayscale(1) contrast(0.9) brightness(1.04);
+/* Sold out: gray out the ENTIRE product card clearly and show an unmistakable sold-out veil & badge. */
+.card--sold-out {
+  filter: grayscale(1);
+  opacity: 0.58;
+  transition:
+    opacity 300ms var(--nk-ease-out),
+    filter 300ms var(--nk-ease-out);
 }
 
-.card--sold-out:hover .card__media img {
-  filter: grayscale(0.2);
+.card--sold-out:hover,
+.card--sold-out:focus-within {
+  filter: grayscale(1);
+  opacity: 0.68;
+}
+
+.card--sold-out .card__media img {
+  opacity: 0.82;
+  filter: grayscale(1) contrast(0.92);
+}
+
+.card__sold-out-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in oklab, var(--nk-color-bg) 32%, transparent);
+  pointer-events: none;
+}
+
+.card__sold-out-banner {
+  padding: 8px 16px;
+  background: color-mix(in oklab, var(--nk-color-bg) 92%, transparent);
+  border: 1px solid color-mix(in oklab, var(--nk-color-text) 24%, transparent);
+  color: var(--nk-color-text);
+  font-family: var(--nk-font-spec);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
 }
 
 .card--sold-out .card__title,
@@ -260,9 +434,15 @@
   color: var(--nk-color-text-muted);
 }
 
-.card__badges {
-  top: 10px;
-  left: 10px;
+.card--sold-out .price__current {
+  text-decoration: line-through;
+}
+
+.card__sold-out-label {
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  color: var(--nk-color-text);
+  font-weight: 600;
 }
 
 .badge--sold-out {
@@ -279,12 +459,13 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #d9776a;
-  box-shadow: 0 0 0 3px color-mix(in oklab, #d9776a 30%, transparent);
+  background: var(--nk-color-bg);
+  opacity: 0.75;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .card__media img,
+  .card__media video.card__video,
   .card__tray,
   .card__title {
     transition: none;

@@ -35,21 +35,40 @@ export class NkStagger extends NkElement {
       return;
     }
     const context = gsap.context(() => {
-      gsap.set(items, { opacity: 0, y: 48 });
+      gsap.set(items, { opacity: 0, y: 34 });
       this.setAttribute('data-ready', '');
       ScrollTrigger.batch(items, {
         start: 'top 92%',
         once: true,
-        onEnter: (batch) =>
-          gsap.to(batch, {
+        onEnter: (batch) => {
+          const elements = batch as HTMLElement[];
+          gsap.to(elements, {
             opacity: 1,
             y: 0,
-            duration: 1.1,
+            duration: 0.95,
             ease: 'expo.out',
-            stagger: 0.09,
+            stagger: 0.075,
             overwrite: true,
             clearProps: 'transform,opacity',
-          }),
+          });
+          const mediaImgs = elements
+            .map((el) => el.querySelector<HTMLElement>('.card__media > img:first-child, .category-card__media > img:first-child'))
+            .filter((img): img is HTMLElement => Boolean(img));
+          if (mediaImgs.length) {
+            gsap.fromTo(
+              mediaImgs,
+              { scale: 1.05 },
+              {
+                scale: 1,
+                duration: 1.25,
+                ease: 'expo.out',
+                stagger: 0.075,
+                overwrite: 'auto',
+                clearProps: 'transform',
+              },
+            );
+          }
+        },
       });
     }, this);
     this.#revert = () => context.revert();

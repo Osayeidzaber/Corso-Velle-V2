@@ -1,0 +1,84 @@
+{%- doc -%}
+  Renders sibling product links (colorway / edition switcher) on the product page when either
+  `product.metafields.custom.color_siblings` is populated or matching-title editions exist in the
+  product's primary collection.
+
+  @param {object} product - Current product
+  @param {object} [primary_collection] - Primary collection for edition fallback
+{%- enddoc -%}
+{%- liquid
+  assign color_siblings = product.metafields.custom.color_siblings.value
+  assign sibling_count = 0
+  if color_siblings == blank and primary_collection != blank
+    assign current_title_clean = product.title | strip | downcase
+    for col_prod in primary_collection.products limit: 24
+      assign col_title_clean = col_prod.title | strip | downcase
+      if col_title_clean == current_title_clean and col_prod.id != product.id
+        assign sibling_count = sibling_count | plus: 1
+      endif
+    endfor
+  endif
+-%}
+
+{%- if color_siblings != blank -%}
+  <div class="product__siblings">
+    <span class="option__legend spec">
+      Color: <span class="option__selected-label">{{ product.metafields.custom.color_name.value | default: product.title | escape }}</span>
+    </span>
+    <div class="product__siblings-list">
+      {%- for sibling in color_siblings -%}
+        <a
+          href="{{ sibling.url }}"
+          class="product__sibling{% if sibling.id == product.id %} is-active{% endif %}"
+          aria-label="{{ sibling.title | escape }}"
+          {% if sibling.id == product.id %}aria-current="page"{% endif %}
+        >
+          {%- if sibling.featured_media -%}
+            {{
+              sibling.featured_media
+              | image_url: width: 120
+              | image_tag:
+                width: 44,
+                height: 56,
+                loading: 'lazy',
+                alt: sibling.title
+            }}
+          {%- else -%}
+            <span class="spec">{{ sibling.title | truncate: 12 | escape }}</span>
+          {%- endif -%}
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- elsif sibling_count > 0 and primary_collection != blank -%}
+  <div class="product__siblings">
+    <span class="option__legend spec">Edition</span>
+    <div class="product__siblings-list">
+      {%- for col_prod in primary_collection.products limit: 24 -%}
+        {%- assign col_title_clean = col_prod.title | strip | downcase -%}
+        {%- if col_title_clean == current_title_clean -%}
+          <a
+            href="{{ col_prod.url }}"
+            class="product__sibling{% if col_prod.id == product.id %} is-active{% endif %}"
+            aria-label="{{ col_prod.title | escape }}"
+            {% if col_prod.id == product.id %}aria-current="page"{% endif %}
+          >
+            {%- if col_prod.featured_media -%}
+              {{
+                col_prod.featured_media
+                | image_url: width: 120
+                | image_tag:
+                  width: 44,
+                  height: 56,
+                  loading: 'lazy',
+                  alt: col_prod.title
+              }}
+            {%- else -%}
+              <span class="spec">{{ forloop.index }}</span>
+            {%- endif -%}
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}

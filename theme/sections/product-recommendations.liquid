@@ -15,7 +15,7 @@
             assign heading_html = section.settings.heading | escape
             assign italic = section.settings.heading_italic | escape
           -%}
-          {% render 'reveal-heading', text: heading_html, italic: italic, entrance: 'blur', class: 'display' %}
+          {% render 'reveal-heading', text: heading_html, italic: italic, entrance: 'cut', class: 'display' %}
         </div>
         <nk-stagger>
           <ul class="product-grid" role="list" style="--nk-cols-desktop: {{ section.settings.columns_desktop }};">

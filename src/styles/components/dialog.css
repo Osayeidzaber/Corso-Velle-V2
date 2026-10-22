@@ -124,6 +124,7 @@
   margin: 0;
   padding: 0;
   border: 0;
+  border-bottom: 1px solid var(--nk-color-line);
   background: var(--nk-color-bg);
   color: var(--nk-color-text);
   opacity: 0;
@@ -133,6 +134,10 @@
     translate var(--nk-dur-overlay-out) var(--nk-ease-in),
     overlay var(--nk-dur-overlay-out) allow-discrete,
     display var(--nk-dur-overlay-out) allow-discrete;
+}
+
+.search-modal:not([open]) {
+  display: none;
 }
 
 .search-modal[open] {
@@ -211,6 +216,13 @@
   margin: 8px 0 0;
   padding: 0;
   list-style: none;
+}
+
+.search-modal__error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 @media (min-width: 990px) {

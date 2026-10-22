@@ -1,60 +1,90 @@
 {%- comment -%}
-  Collection tabs (rewrite of the supplied tabswithtransctition example): one tab per chosen
-  collection, each panel a product grid using the shared card. ARIA tabs with JS; stacked
-  sections with headings without JS. Images in hidden panels stay lazy.
+  Collection tabs (master-plan/05 T4): architectural tabbed collection showcase with a sliding
+  active indicator, live piece counts, staggered card reveals, and a structured footer bar.
+  ARIA tabs with JS; stacked sections with headings without JS. Images in hidden panels stay lazy.
 {%- endcomment -%}
 {%- assign tabs = section.blocks | where: 'type', 'tab' -%}
 {%- if tabs.size > 0 -%}
-  <div class="section-spacing color-{{ section.settings.color_scheme }} full-width">
-    <div style="width: var(--content-width); margin-inline: auto;">
-      <div class="section-head" style="margin-bottom: 8px;">
-        <div class="flex flex-col gap-4">
-          {%- if section.settings.eyebrow != blank -%}<span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
-          {%- if section.settings.heading != blank -%}
-            {%- liquid
+  <div class="collection-tabs section-spacing color-{{ section.settings.color_scheme }} full-width">
+    <div class="collection-tabs__inner">
+      <nk-tabs class="collection-tabs__root">
+        <div class="collection-tabs__top">
+          <div class="collection-tabs__title-wrap">
+            {%- if section.settings.eyebrow != blank -%}
+              <nk-reveal mode="fade">
+                <span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>
+              </nk-reveal>
+            {%- endif -%}
+            {%- if section.settings.heading != blank -%}
+              {%- liquid
                 assign heading_html = section.settings.heading | escape
                 assign italic = section.settings.heading_italic | escape
               -%}
-            {% render 'reveal-heading', text: heading_html, italic: italic, entrance: section.settings.entrance, class: 'display' %}
-          {%- endif -%}
-        </div>
-      </div>
-      <nk-tabs>
-        <div class="tabs__list" data-ref="tablist" hidden>
-          {%- for block in tabs -%}
-            {%- assign label = block.settings.label | default: block.settings.collection.title | default: 'Collection' -%}
-            <button
-              type="button"
-              class="tabs__tab"
-              id="Tab-{{ block.id }}"
-              data-ref="tab"
-              {% if forloop.first %}data-selected{% endif %}
-            >
-              <span class="tabs__tab-label">{{- label | escape -}}</span>
-              {%- if block.settings.collection.products_count > 0 -%}<sup class="tabs__count">{{ block.settings.collection.products_count }}</sup>{%- endif -%}
-            </button>
-          {%- endfor -%}
-          <span class="tabs__indicator" data-ref="indicator" aria-hidden="true"></span>
+              {% render 'reveal-heading', text: heading_html, italic: italic, entrance: section.settings.entrance, class: 'display collection-tabs__heading' %}
+            {%- endif -%}
+          </div>
+
+          <div class="tabs__list collection-tabs__tablist" data-ref="tablist" hidden>
+            {%- for block in tabs -%}
+              {%- liquid
+                assign col = block.settings.collection
+                assign label = block.settings.label | default: col.title | default: 'Collection'
+                assign item_count = col.all_products_count | default: col.products_count | default: 0
+              -%}
+              <button
+                type="button"
+                class="tabs__tab collection-tabs__tab"
+                id="Tab-{{ section.id }}-{{ block.id }}"
+                data-ref="tab"
+                {% if forloop.first %}data-selected{% endif %}
+              >
+                <span class="tabs__tab-label">{{- label | escape -}}</span>
+                {%- if item_count > 0 -%}
+                  <span class="tabs__count">({{ item_count }})</span>
+                {%- endif -%}
+              </button>
+            {%- endfor -%}
+            <span class="tabs__indicator" data-ref="indicator" aria-hidden="true"></span>
+          </div>
         </div>
 
         {%- for block in tabs -%}
-          {%- assign collection_source = block.settings.collection -%}
-          {%- assign label = block.settings.label | default: collection_source.title | default: 'Collection' -%}
-          <div class="tabs__panel" id="TabPanel-{{ block.id }}" data-ref="panel" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
+          {%- liquid
+            assign collection_source = block.settings.collection
+            assign label = block.settings.label | default: collection_source.title | default: 'Collection'
+            assign total_count = collection_source.all_products_count | default: collection_source.products_count | default: 0
+          -%}
+          <div
+            class="tabs__panel collection-tabs__panel"
+            id="TabPanel-{{ section.id }}-{{ block.id }}"
+            data-ref="panel"
+            data-block-id="{{ block.id }}"
+            {{ block.shopify_attributes }}
+          >
             <h3 class="tabs__panel-heading">{{ label | escape }}</h3>
             {%- if collection_source.products.size > 0 -%}
-              {%- comment -%}
-                Only the first panel reveals on scroll; other panels are hidden until chosen, so the
-                tabs component plays their cards in when they open.
-              {%- endcomment -%}
               {%- if forloop.first %}<nk-stagger>{% endif -%}
-                <ul class="product-grid" role="list" style="--nk-cols-desktop: {{ section.settings.columns_desktop }};">
+                <ul
+                  class="product-grid collection-tabs__grid"
+                  role="list"
+                  style="--nk-cols-mobile: 2; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
+                >
                   {%- for product in collection_source.products limit: section.settings.limit -%}
-                    <li {% if forloop.parentloop.first %}data-stagger-item{% else %}data-tab-item{% endif %}>{% render 'product-card', product: product %}</li>
+                    <li {% if forloop.parentloop.first %}data-stagger-item{% else %}data-tab-item{% endif %}>
+                      {% render 'product-card', product: product %}
+                    </li>
                   {%- endfor -%}
                 </ul>
               {%- if forloop.first %}</nk-stagger>{% endif -%}
-              <p class="collection-tabs__more"><a class="spec link-underline" href="{{ collection_source.url }}">{% render 'letter-swap', text: label %} — {{ 'collection.view_all' | t }}</a></p>
+
+              <div class="collection-tabs__footer">
+                <span class="spec text-muted">
+                  {{- label | escape }} · {{ 'collection.product_count' | t: count: total_count -}}
+                </span>
+                <a class="button button--secondary collection-tabs__cta" href="{{ collection_source.url }}" data-magnetic>
+                  {{- 'collection.view_all' | t }} ({{ total_count }}) →
+                </a>
+              </div>
             {%- elsif request.design_mode -%}
               <p class="text-muted">{{ 'collection.choose_collection' | t }}</p>
             {%- endif -%}
@@ -66,39 +96,117 @@
 {%- endif -%}
 
 {% stylesheet %}
-  .collection-tabs-section .tabs__list {
-    gap: clamp(18px, 3vw, 40px);
-    margin: 28px 0 36px;
-    border-bottom: 0;
-    padding-bottom: 10px;
+  .collection-tabs__inner {
+    width: var(--content-width);
+    margin-inline: auto;
   }
-  .collection-tabs-section .tabs__tab {
-    display: inline-flex;
-    align-items: flex-start;
-    gap: 4px;
+
+  .collection-tabs__top {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 36px;
+    padding-bottom: 0;
+    border-bottom: 1px solid var(--nk-color-line);
+  }
+
+  @media (min-width: 990px) {
+    .collection-tabs__top {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 32px;
+    }
+  }
+
+  .collection-tabs__title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 18px;
+  }
+
+  .collection-tabs__heading {
+    margin: 0;
+    font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  }
+
+  .collection-tabs-section .collection-tabs__tablist {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: clamp(20px, 2.5vw, 36px);
+    margin: 0;
     padding: 0;
-    font-family: var(--nk-font-heading);
-    font-size: clamp(1.375rem, 2.6vw, 2.125rem);
-    letter-spacing: -0.015em;
-    text-transform: none;
-    color: color-mix(in oklab, var(--nk-color-text) 38%, transparent);
-    transition: color 300ms var(--nk-ease-out);
+    border-bottom: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
-  .collection-tabs-section .tabs__tab:hover { color: color-mix(in oklab, var(--nk-color-text) 70%, transparent); }
-  .collection-tabs-section .tabs__tab[aria-selected='true'] { color: var(--nk-color-text); font-style: italic; }
-  .tabs__count {
+
+  .collection-tabs-section .collection-tabs__tablist::-webkit-scrollbar {
+    display: none;
+  }
+
+  .collection-tabs-section .collection-tabs__tab {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    min-height: 48px;
+    padding: 12px 2px 16px;
+    font-family: var(--nk-font-spec);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: color-mix(in oklab, var(--nk-color-text) 48%, transparent);
+    transition: color 260ms var(--nk-ease-out);
+  }
+
+  .collection-tabs-section .collection-tabs__tab:hover {
+    color: color-mix(in oklab, var(--nk-color-text) 82%, transparent);
+  }
+
+  .collection-tabs-section .collection-tabs__tab[aria-selected='true'] {
+    color: var(--nk-color-text);
+    font-style: normal;
+  }
+
+  .collection-tabs-section .tabs__count {
     font-family: var(--nk-font-spec);
     font-size: 0.625rem;
     font-style: normal;
-    letter-spacing: 0.1em;
-    top: 0.2em;
+    letter-spacing: 0.08em;
+    color: var(--nk-color-text-muted);
+    font-variant-numeric: tabular-nums;
   }
+
   .collection-tabs-section .tabs__indicator {
-    height: 1px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
     background: var(--nk-color-text);
-    transition: transform 520ms cubic-bezier(.2,.7,.2,1), width 520ms cubic-bezier(.2,.7,.2,1);
+    transition:
+      transform 460ms cubic-bezier(0.22, 1, 0.36, 1),
+      width 460ms cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .collection-tabs__more { margin-top: 32px; text-align: center; }
+
+  .collection-tabs__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--nk-color-line);
+  }
+
+  .collection-tabs__cta {
+    min-height: 46px;
+    padding-inline: 24px;
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -116,7 +224,8 @@
       "label": "Heading entrance",
       "options": [
         { "value": "none", "label": "None" },
-        { "value": "rise", "label": "Rise letter by letter (Split Text)" },
+        { "value": "cut", "label": "Editorial masked reveal" },
+        { "value": "rise", "label": "Rise word by word (Split Text)" },
         { "value": "blur", "label": "Blur in word by word (Text Effect)" },
         { "value": "fold", "label": "Paper fold (Fold Text)" },
         { "value": "flip", "label": "Flip up" },
@@ -124,7 +233,7 @@
         { "value": "pop", "label": "Pop" },
         { "value": "fade", "label": "Fade" }
       ],
-      "default": "blur"
+      "default": "cut"
     },
     { "type": "range", "id": "limit", "label": "Products per tab", "min": 2, "max": 12, "step": 1, "default": 8 },
     { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 5, "step": 1, "default": 4 },

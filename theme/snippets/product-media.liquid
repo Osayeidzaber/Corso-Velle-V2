@@ -1,58 +1,145 @@
 {%- doc -%}
-  Product gallery (master-plan/08 PR-01): native scroll-snap track on phones, stacked grid on
-  desktop. First media is eager with high fetch priority (LCP); the rest are lazy. Video plays
-  only on request (controls, muted, playsinline) and pauses when its slide stops being current.
+  Product gallery (master-plan/08 PR-01): native scroll-snap track on phones, editorial grid on
+  desktop, interactive thumbnail navigation, and high-resolution lightbox zoom dialog.
+  First media is eager with high fetch priority (LCP); the rest are lazy with no redundant fetchpriority.
+  Video plays only on request (controls, muted, playsinline) and pauses when its slide stops being current.
 
   @param {object} product - The product
+  @param {object} [selected_variant] - Currently selected variant (optional)
 
   @example
-  {% render 'product-media', product: product %}
+  {% render 'product-media', product: product, selected_variant: variant %}
 {%- enddoc -%}
-<nk-gallery class="product__media" aria-label="{{ 'product.gallery' | t }}" role="region">
-  <ul class="gallery__track" data-ref="track" role="list">
-    {%- for media in product.media -%}
-      <li class="gallery__slide" data-ref="slide" data-media-id="{{ media.id }}">
-        {%- liquid
-          assign loading = 'lazy'
-          assign priority = 'auto'
-          if forloop.first
-            assign loading = 'eager'
-            assign priority = 'high'
-          endif
-          assign alt = media.alt | default: product.title
-        -%}
-        {%- case media.media_type -%}
-          {%- when 'image' -%}
+{%- liquid
+  assign media_count = product.media.size
+  assign initial_media_id = selected_variant.featured_media.id
+-%}
+<nk-gallery
+  class="product__media{% if media_count <= 1 %} product__media--single{% endif %}"
+  aria-label="{{ 'product.gallery' | t }}"
+  role="region"
+  data-media-count="{{ media_count }}"
+  {% if initial_media_id %}data-initial-media-id="{{ initial_media_id }}"{% endif %}
+>
+  <div class="gallery__stage">
+    {%- if media_count > 1 -%}
+      <div class="gallery__thumbs" data-ref="thumbs" role="tablist" aria-label="{{ 'product.gallery' | t }}">
+        {%- for media in product.media -%}
+          {%- assign thumb_alt = media.alt | default: product.title -%}
+          <button
+            type="button"
+            class="gallery__thumb{% if forloop.first %} is-active{% endif %}"
+            data-gallery-thumb="{{ forloop.index0 }}"
+            data-media-id="{{ media.id }}"
+            aria-label="{{ 'product.media_position' | t: index: forloop.index, count: media_count }}"
+            aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+          >
             {{
-              media
-              | image_url: width: 1800
+              media.preview_image
+              | image_url: width: 180
               | image_tag:
-                loading: loading,
-                fetchpriority: priority,
-                alt: alt,
-                widths: '360, 540, 720, 900, 1080, 1440, 1800',
-                sizes: '(min-width: 990px) 58vw, 100vw'
+                loading: 'lazy',
+                alt: thumb_alt,
+                widths: '90, 140, 180',
+                sizes: '72px'
             }}
-          {%- when 'video' -%}
-            {{ media | video_tag: controls: true, muted: true, playsinline: true, preload: 'none', image_size: '1200x' }}
-          {%- else -%}
-            {{ media.preview_image | image_url: width: 1200 | image_tag: loading: loading, alt: alt }}
-        {%- endcase -%}
-      </li>
-    {%- else -%}
-      <li class="gallery__slide" data-ref="slide">{{ 'product-1' | placeholder_svg_tag }}</li>
-    {%- endfor -%}
-  </ul>
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
 
-  {%- if product.media.size > 1 -%}
-    <div class="gallery__controls">
-      <button type="button" class="icon-button" data-gallery-step="-1" aria-label="{{ 'product.previous_media' | t }}">
-        {% render 'icon', name: 'arrow-left' %}
-      </button>
-      <span class="spec" data-ref="counter">1 / {{ product.media.size }}</span>
-      <button type="button" class="icon-button" data-gallery-step="1" aria-label="{{ 'product.next_media' | t }}">
-        {% render 'icon', name: 'arrow-right' %}
-      </button>
+    <div class="gallery__main">
+      <ul class="gallery__track" data-ref="track" role="list">
+        {%- for media in product.media -%}
+          {%- assign alt = media.alt | default: product.title -%}
+          <li
+            class="gallery__slide"
+            data-ref="slide"
+            data-media-id="{{ media.id }}"
+            data-slide-index="{{ forloop.index0 }}"
+            {% if media.media_type == 'image' %}
+              data-zoom-src="{{ media | image_url: width: 2200 }}"
+              data-zoom-alt="{{ alt | escape }}"
+            {% endif %}
+          >
+            {%- case media.media_type -%}
+              {%- when 'image' -%}
+                {%- if forloop.first -%}
+                  {{
+                    media
+                    | image_url: width: 1800
+                    | image_tag:
+                      loading: 'eager',
+                      fetchpriority: 'high',
+                      alt: alt,
+                      widths: '360, 540, 720, 900, 1080, 1440, 1800',
+                      sizes: '(min-width: 990px) 58vw, 100vw'
+                  }}
+                {%- else -%}
+                  {{
+                    media
+                    | image_url: width: 1800
+                    | image_tag:
+                      loading: 'lazy',
+                      alt: alt,
+                      widths: '360, 540, 720, 900, 1080, 1440, 1800',
+                      sizes: '(min-width: 990px) 58vw, 100vw'
+                  }}
+                {%- endif -%}
+                <button
+                  type="button"
+                  class="gallery__zoom-trigger icon-button"
+                  data-gallery-zoom="{{ forloop.index0 }}"
+                  aria-label="{{ 'product.zoom' | t }} ({{ forloop.index }} / {{ media_count }})"
+                >
+                  {% render 'icon', name: 'plus', size: 16 %}
+                </button>
+              {%- when 'video' -%}
+                {{ media | video_tag: controls: true, muted: true, playsinline: true, preload: 'none', image_size: '1200x' }}
+              {%- else -%}
+                {{ media.preview_image | image_url: width: 1200 | image_tag: loading: 'lazy', alt: alt }}
+            {%- endcase -%}
+          </li>
+        {%- else -%}
+          <li class="gallery__slide gallery__slide--placeholder" data-ref="slide">
+            {{ 'product-1' | placeholder_svg_tag }}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if media_count > 1 -%}
+        <div class="gallery__controls">
+          <button type="button" class="icon-button" data-gallery-step="-1" aria-label="{{ 'product.previous_media' | t }}">
+            {% render 'icon', name: 'arrow-left' %}
+          </button>
+          <span class="spec" data-ref="counter">1 / {{ media_count }}</span>
+          <button type="button" class="icon-button" data-gallery-step="1" aria-label="{{ 'product.next_media' | t }}">
+            {% render 'icon', name: 'arrow-right' %}
+          </button>
+        </div>
+      {%- endif -%}
     </div>
+  </div>
+
+  {%- if media_count > 0 -%}
+    <dialog class="gallery-lightbox" data-ref="lightbox" closedby="any" aria-label="{{ 'product.gallery' | t }}">
+      <div class="gallery-lightbox__bar">
+        <span class="spec" data-ref="lightbox-counter">1 / {{ media_count }}</span>
+        <div class="gallery-lightbox__actions">
+          {%- if media_count > 1 -%}
+            <button type="button" class="icon-button" data-lightbox-step="-1" aria-label="{{ 'product.previous_media' | t }}">
+              {% render 'icon', name: 'arrow-left' %}
+            </button>
+            <button type="button" class="icon-button" data-lightbox-step="1" aria-label="{{ 'product.next_media' | t }}">
+              {% render 'icon', name: 'arrow-right' %}
+            </button>
+          {%- endif -%}
+          <button type="button" class="icon-button" data-lightbox-close aria-label="{{ 'general.close' | t }}">
+            {% render 'icon', name: 'close' %}
+          </button>
+        </div>
+      </div>
+      <div class="gallery-lightbox__stage" data-ref="lightbox-stage"></div>
+    </dialog>
   {%- endif -%}
 </nk-gallery>

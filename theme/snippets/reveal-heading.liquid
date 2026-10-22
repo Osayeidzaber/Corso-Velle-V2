@@ -26,8 +26,6 @@
   assign effect = entrance | default: 'none'
   assign by = split
   case effect
-    when 'cut'
-      assign effect = 'blur'
     when 'split-lines'
       assign effect = 'rise'
       if by == blank
@@ -43,10 +41,10 @@
   endcase
   if by == blank
     case effect
-      when 'blur', 'fade', 'skew'
-        assign by = 'words'
-      else
+      when 'flip', 'pop', 'fold'
         assign by = 'chars'
+      else
+        assign by = 'words'
     endcase
   endif
   assign text_class = ''
@@ -63,7 +61,7 @@
       {{- text -}}
       {%- if italic != blank -%}
         {%- if italic_break %}<br>{% else %} {% endif -%}
-        <em>{%- if italic_style == 'gradient' -%}<span class="nk-text-gradient nk-text-gradient--glow">{{ italic }}</span>{%- else -%}{{ italic }}{%- endif -%}</em>
+        <em>{%- if italic_style == 'gradient' -%}<span class="nk-text-gradient">{{ italic }}</span>{%- else -%}{{ italic }}{%- endif -%}</em>
       {%- endif -%}
     {%- endcapture -%}
     {%- if text_class != blank -%}<span class="{{ text_class }}">{{ body }}</span>{%- else -%}{{ body }}{%- endif -%}

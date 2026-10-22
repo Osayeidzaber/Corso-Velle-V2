@@ -1,83 +1,258 @@
-{% comment %}
-  This section is used in the list-collections template to render a list of
-  collections.
+{%- comment -%}
+  All Collections index (/collections): architectural studio directory inspired by wrclo.com.
+  Displays each collection in a numbered gallery frame with live item count, uncropped studio
+  imagery, and staggered GSAP entrance animation.
+{%- endcomment -%}
+<div class="collections-index section-spacing">
+  <header class="collections-index__header">
+    <nk-reveal entrance="rise" duration="0.65">
+      <p class="eyebrow">Directory</p>
+    </nk-reveal>
+    <div class="collections-index__title-row">
+      {%- assign page_title = 'collections.title' | t -%}
+      {% render 'reveal-heading',
+        text: page_title,
+        entrance: 'words',
+        class: 'collections-index__title display',
+        tag: 'h1',
+        play_on_load: true
+      %}
+      <nk-reveal entrance="rise" delay="0.16" duration="0.7">
+        <span class="collections-index__total spec">({{ collections.size }})</span>
+      </nk-reveal>
+    </div>
+  </header>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
-{% endcomment %}
+  <nk-stagger>
+    <ul
+      class="collections-index__grid {{ section.settings.grid_item_width }}"
+      role="list"
+      style="--grid-gap: {{ section.settings.grid_gap }}px"
+    >
+      {%- assign index_num = 0 -%}
+      {%- for collection in collections -%}
+        {%- if collection.all_products_count > 0 or request.design_mode -%}
+          {%- assign index_num = index_num | plus: 1 -%}
+          {%- assign card_image = collection.featured_image | default: collection.products.first.featured_media.preview_image -%}
+          <li data-stagger-item>
+            <a class="collections-card" href="{{ collection.url }}" data-cursor="{{ 'cursor.view' | t }}">
+              <div class="collections-card__top">
+                <span class="collections-card__index spec">{{ index_num | prepend: '0' | slice: -2, 2 }}</span>
+                <span class="collections-card__count spec">
+                  {{- 'collection.product_count' | t: count: collection.all_products_count -}}
+                </span>
+              </div>
 
-<h1>{{ 'collections.title' | t }}</h1>
+              <div class="collections-card__media">
+                {%- if card_image != blank -%}
+                  {% render 'image',
+                    class: 'collections-card__image',
+                    image: card_image,
+                    width: 1200
+                  %}
+                {%- else -%}
+                  <span class="collections-card__placeholder spec text-muted">{{ collection.title | escape }}</span>
+                {%- endif -%}
+              </div>
 
-<div
-  class="collections {{ section.settings.grid_item_width }}"
-  style="--grid-gap: {{ section.settings.grid_gap }}px"
->
-  {% for collection in collections %}
-    <a class="collection-card" href="{{ collection.url }}">
-      {% if collection.featured_image %}
-        {% render 'image',
-          class: 'collection-card__image',
-          image: collection.featured_image,
-          width: 600,
-          height: 600,
-          crop: 'center'
-        %}
-      {% endif %}
-
-      <div class="collection-card__content">
-        <p>{{ collection.title }}</p>
-
-        {% if collection.description %}
-          <p>{{ collection.description | strip_html | truncatewords: 15 }}</p>
-        {% endif %}
-      </div>
-    </a>
-  {% endfor %}
+              <div class="collections-card__footer">
+                <div class="collections-card__meta">
+                  <h2 class="collections-card__title">{{ collection.title | escape }}</h2>
+                  {%- if collection.description != blank -%}
+                    <p class="collections-card__desc text-muted">{{ collection.description | strip_html | truncatewords: 14 }}</p>
+                  {%- endif -%}
+                </div>
+                <span class="collections-card__arrow" aria-hidden="true">↗</span>
+              </div>
+            </a>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </nk-stagger>
 </div>
 
 {% stylesheet %}
-  .collections {
+  .collections-index__header {
+    display: grid;
+    gap: 10px;
+    padding-bottom: clamp(20px, 3vw, 32px);
+    margin-bottom: clamp(28px, 4vw, 44px);
+    border-bottom: 1px solid var(--nk-color-line);
+  }
+
+  .collections-index__title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .collections-index__title {
+    margin: 0;
+    font-size: clamp(2.25rem, 5.5vw, 4.25rem);
+    line-height: 0.96;
+  }
+
+  .collections-index__total {
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    color: var(--nk-color-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .collections-index__grid {
+    --collection-card-size: 300px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(var(--collection-card-size), 100%), 1fr));
-    gap: var(--grid-gap);
+    gap: var(--grid-gap, 20px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
+
   .collections--compact {
-    --collection-card-size: 160px;
+    --collection-card-size: 240px;
   }
+
   .collections--full {
-    --collection-card-size: 280px;
+    --collection-card-size: 320px;
   }
-  .collection-card {
+
+  .collections-card {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    border: 1px solid var(--nk-color-line);
+    background: var(--nk-color-bg);
+    color: var(--nk-color-text);
+    text-decoration: none;
+    transition:
+      border-color 380ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 480ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .collections-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--nk-color-line);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    color: var(--nk-color-text-muted);
+  }
+
+  .collections-card__media {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .collections-card__media .collections-card__image {
     width: 100%;
+    height: 100%;
+  }
+
+  .collections-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: clamp(12px, 2vw, 24px);
+    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .collections-card__placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .collections-card__footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: auto;
+    padding: 16px 14px;
+    border-top: 1px solid var(--nk-color-line);
+  }
+
+  .collections-card__meta {
+    display: grid;
+    gap: 4px;
+  }
+
+  .collections-card__title {
+    margin: 0;
+    font-family: var(--nk-font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .collections-card__desc {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  .collections-card__arrow {
+    font-size: 0.9375rem;
+    line-height: 1;
+    color: var(--nk-color-text-muted);
+    transition:
+      transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 260ms var(--nk-ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .collections-card:hover {
+      border-color: var(--nk-color-text);
+      transform: translateY(-3px);
+    }
+
+    .collections-card:hover .collections-card__media img {
+      transform: scale(1.045);
+    }
+
+    .collections-card:hover .collections-card__arrow {
+      transform: translate(2px, -2px);
+      color: var(--nk-color-text);
+    }
   }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.collections_grid",
+  "name": "Collections grid",
   "settings": [
     {
       "type": "select",
       "id": "grid_item_width",
-      "label": "t:labels.grid_item_width",
+      "label": "Card size",
       "options": [
-        { "value": "collections--compact", "label": "t:options.size.small" },
-        { "value": "collections--full", "label": "t:options.size.large" }
+        { "value": "collections--compact", "label": "Compact" },
+        { "value": "collections--full", "label": "Large" }
       ],
       "default": "collections--full"
     },
     {
       "type": "range",
       "id": "grid_gap",
-      "label": "t:labels.grid_gap",
+      "label": "Grid gap",
       "min": 0,
       "max": 50,
       "step": 5,
       "unit": "px",
-      "default": 10
+      "default": 20
     }
   ],
-  "presets": [{ "name": "t:general.collections_grid" }]
+  "presets": [{ "name": "Collections grid" }]
 }
 {% endschema %}

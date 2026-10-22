@@ -1,5 +1,3 @@
-import './predictive-search.css';
-
 import { config } from '../../core/config';
 import { define } from '../../core/define';
 import { parseHTML } from '../../core/dom';

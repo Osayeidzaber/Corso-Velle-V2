@@ -33,13 +33,33 @@
   else
     assign availability = 'sold-out'
   endif
+
+  assign primary_collection = collection
+  if primary_collection == blank
+    for c in product.collections
+      unless c.handle == 'all' or c.handle == 'frontpage'
+        assign primary_collection = c
+        break
+      endunless
+    endfor
+  endif
 -%}
 
 <div class="section-spacing product-section" data-product-section data-section-id="{{ section.id }}">
   <div class="product">
-    {% render 'product-media', product: product %}
+    {% render 'product-media', product: product, selected_variant: variant %}
 
     <div class="product__info">
+      <nav class="product__breadcrumb spec" aria-label="Breadcrumb">
+        <a href="{{ routes.all_products_collection_url }}">{{ 'collections.title' | t }}</a>
+        {%- if primary_collection != blank -%}
+          <span aria-hidden="true">/</span>
+          <a href="{{ primary_collection.url }}">{{ primary_collection.title | escape }}</a>
+        {%- endif -%}
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ product.title | truncate: 36 | escape }}</span>
+      </nav>
+
       {%- for block in section.blocks -%}
         {%- case block.type -%}
           {%- when '@app' -%}
@@ -51,31 +71,56 @@
               if eyebrow == blank
                 assign eyebrow = product.type
               endif
+              if eyebrow == blank and primary_collection != blank
+                assign eyebrow = primary_collection.title
+              endif
               if eyebrow == blank
-                for c in product.collections
-                  unless c.handle contains 'all'
-                    assign eyebrow = c.title
-                    break
-                  endunless
-                endfor
+                assign eyebrow = product.vendor
               endif
             -%}
-            {%- if eyebrow != blank -%}
-              <p class="product__eyebrow eyebrow" {{ block.shopify_attributes }}><span class="nk-text-shine">{{ eyebrow | escape }}</span></p>
-            {%- endif -%}
+            <div class="product__eyebrow-row" {{ block.shopify_attributes }}>
+              {%- if eyebrow != blank -%}
+                <p class="product__eyebrow eyebrow">{{ eyebrow | escape }}</p>
+              {%- endif -%}
+              <div class="product__badges">
+                {%- if product.available == false -%}
+                  <span class="badge badge--sold-out">{{ 'product.sold_out' | t }}</span>
+                {%- elsif variant.compare_at_price > variant.price -%}
+                  <span class="badge badge--sale">{{ 'product.sale' | t }}</span>
+                {%- endif -%}
+                {%- for tag in product.tags -%}
+                  {%- assign tag_down = tag | downcase | strip -%}
+                  {%- if tag_down == 'new' or tag_down == 'new arrival' -%}
+                    <span class="badge">New</span>
+                    {%- break -%}
+                  {%- elsif tag_down == 'bestseller' or tag_down == 'best seller' -%}
+                    <span class="badge">Bestseller</span>
+                    {%- break -%}
+                  {%- elsif tag_down == 'limited' or tag_down == 'limited edition' -%}
+                    <span class="badge">Limited</span>
+                    {%- break -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </div>
 
           {%- when 'title' -%}
             {%- if request.design_mode -%}
               <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
             {%- else -%}
-              <nk-text effect="rise" split="chars" hover="lift" stagger="0.022" play-on-load {{ block.shopify_attributes }}>
+              <nk-text effect="cut" split="words" play-on-load {{ block.shopify_attributes }}>
                 <h1 class="product__title" data-text-target>{{ product.title | escape }}</h1>
               </nk-text>
             {%- endif -%}
 
           {%- when 'price' -%}
-            <div class="product__price" data-region="price" {{ block.shopify_attributes }}>
-              {% render 'price', product: product, variant: variant %}
+            <div class="product__price-row" data-region="price" {{ block.shopify_attributes }}>
+              <div class="product__price">
+                {% render 'price', product: product, variant: variant %}
+              </div>
+              {%- if variant.sku != blank -%}
+                <span class="product__sku spec text-muted" data-product-sku>Ref. {{ variant.sku | escape }}</span>
+              {%- endif -%}
             </div>
 
           {%- when 'text' -%}
@@ -84,6 +129,19 @@
             {%- endif -%}
 
           {%- when 'variant_picker' -%}
+            {%- liquid
+              assign size_modal_id = ''
+              capture size_chart_html
+                render 'size-chart', product: product, page: block.settings.size_guide_page, table_csv: block.settings.size_table, unit: block.settings.size_unit, note: block.settings.size_note, option: block.settings.size_guide_option
+              endcapture
+              assign size_chart_html = size_chart_html | strip
+              if size_chart_html != blank
+                assign size_modal_id = 'SizeGuide-' | append: section.id
+              endif
+            -%}
+
+            {% render 'product-siblings', product: product, primary_collection: primary_collection %}
+
             {%- unless product.has_only_default_variant -%}
               <nk-variant-picker
                 class="picker"
@@ -95,16 +153,46 @@
                 {{ block.shopify_attributes }}
               >
                 {%- for option in product.options_with_values -%}
-                  {%- assign option_index = forloop.index -%}
-                  {%- assign option_name = option.name | downcase -%}
-                  {%- assign size_names = block.settings.size_guide_option | downcase -%}
-                  <fieldset class="option" data-option-position="{{ option_index }}" data-option-name="{{ option.name | escape }}">
-                    <legend class="option__legend">
-                      <span class="spec">
-                        {{- option.name | escape }}: <span data-selected-value>{{ option.selected_value | escape }}</span>
-                      </span>
-                    </legend>
-                    <div class="option__values">
+                  {%- liquid
+                    assign option_index = forloop.index
+                    assign option_name = option.name | downcase | strip
+                    assign size_names = block.settings.size_guide_option | downcase | strip
+                    assign is_size_option = false
+                    if option_name == size_names or option_name contains 'size'
+                      assign is_size_option = true
+                    endif
+                    assign is_color_option = false
+                    if option_name contains 'color' or option_name contains 'colour'
+                      assign is_color_option = true
+                    endif
+                  -%}
+                  <fieldset
+                    class="option{% if is_size_option %} option--size{% endif %}{% if is_color_option %} option--color{% endif %}"
+                    data-option-position="{{ option_index }}"
+                    data-option-name="{{ option.name | escape }}"
+                    {% if is_size_option %}data-size-fieldset{% endif %}
+                  >
+                    <div class="option__header">
+                      <legend class="option__legend">
+                        <span class="spec">
+                          {{- option.name | escape }}:
+                          <span class="option__selected-label" data-selected-value>
+                            {%- if needs_choice and is_size_option -%}
+                              {{ 'product.select_size_prompt' | t }}
+                            {%- else -%}
+                              {{ option.selected_value | escape }}
+                            {%- endif -%}
+                          </span>
+                        </span>
+                      </legend>
+                      {%- if is_size_option and size_modal_id != blank -%}
+                        <button type="button" class="size-guide-link spec" data-nk-open="{{ size_modal_id }}" aria-haspopup="dialog">
+                          {{- 'product.size_guide' | t -}}
+                        </button>
+                      {%- endif -%}
+                    </div>
+
+                    <div class="option__values{% if is_size_option %} option__values--size{% endif %}" {% if is_size_option %}data-size-values{% endif %}>
                       {%- for value in option.values -%}
                         {%- liquid
                           assign state = 'available'
@@ -118,7 +206,12 @@
                           endif
                           assign input_id = section.id | append: '-' | append: option_index | append: '-' | append: forloop.index
                         -%}
-                        <div class="option__value option__value--{{ state }}{% if value.swatch %} option__value--swatch{% endif %}">
+                        {%- capture swatch_bg -%}{%- render 'swatch-color', value: value, is_color_option: is_color_option -%}{%- endcapture -%}
+                        {%- assign swatch_bg = swatch_bg | strip -%}
+                        <div
+                          class="option__value option__value--{{ state }}{% if swatch_bg != blank %} option__value--swatch{% endif %}"
+                          {% if is_size_option %}data-size-pill="{{ value | strip | upcase | escape }}"{% endif %}
+                        >
                           <input
                             type="radio"
                             id="{{ input_id }}"
@@ -129,15 +222,10 @@
                             {% if value.selected %}checked{% endif %}
                           >
                           <label for="{{ input_id }}">
-                            {%- if value.swatch -%}
-                              {%- if value.swatch.image -%}
-                                {%- assign swatch_bg = value.swatch.image | image_url: width: 60 | prepend: 'url(' | append: ')' -%}
-                              {%- else -%}
-                                {%- assign swatch_bg = value.swatch.color -%}
-                              {%- endif -%}
+                            {%- if swatch_bg != blank -%}
                               <span class="option__swatch" style="--swatch: {{ swatch_bg }}" aria-hidden="true"></span>
                             {%- endif -%}
-                            {{- value | escape -}}
+                            <span class="option__label-text">{{- value | escape -}}</span>
                             {%- if state == 'sold-out' -%}
                               <span class="visually-hidden">{{ 'product.value_sold_out' | t }}</span>
                             {%- elsif state == 'missing' -%}
@@ -146,14 +234,20 @@
                           </label>
                         </div>
                       {%- endfor -%}
-                    </div>
-                    {%- if option_name == size_names -%}
-                      {%- assign has_chart = product.metafields.custom.size_chart.value -%}
-                      {%- if has_chart or block.settings.size_guide_page != blank or block.settings.size_table != blank -%}
-                        <button type="button" class="size-guide-link spec" data-nk-open="SizeGuide-{{ section.id }}" aria-haspopup="dialog">
-                          {{- 'product.size_guide' | t -}}
-                        </button>
+                      {%- if is_size_option -%}
+                        <span class="option__underline" data-size-indicator aria-hidden="true"></span>
                       {%- endif -%}
+                    </div>
+
+                    {%- if is_size_option -%}
+                      {% render 'product-measurements',
+                        product: product,
+                        size_option: option,
+                        table_csv: block.settings.size_table,
+                        unit: block.settings.size_unit,
+                        heading: block.settings.size_heading,
+                        modal_id: size_modal_id
+                      %}
                     {%- endif -%}
                   </fieldset>
                 {%- endfor -%}
@@ -163,8 +257,8 @@
                 </p>
               </nk-variant-picker>
 
-              {%- if block.settings.size_guide_page != blank or block.settings.size_table != blank or product.metafields.custom.size_chart.value -%}
-                <nk-modal id="SizeGuide-{{ section.id }}">
+              {%- if size_modal_id != blank -%}
+                <nk-modal id="{{ size_modal_id }}">
                   <dialog class="drawer drawer--right" aria-labelledby="SizeGuideTitle-{{ section.id }}">
                     <div class="drawer__header">
                       <h2 class="drawer__title spec" id="SizeGuideTitle-{{ section.id }}" tabindex="-1" data-autofocus>{{ 'product.size_guide' | t }}</h2>
@@ -174,7 +268,7 @@
                     </div>
                     <div class="drawer__body size-guide__body">
                       {%- if block.settings.size_heading != blank -%}<p class="size-guide__heading">{{ block.settings.size_heading | escape }}</p>{%- endif -%}
-                      {% render 'size-chart', product: product, page: block.settings.size_guide_page, table_csv: block.settings.size_table, unit: block.settings.size_unit, note: block.settings.size_note, option: block.settings.size_guide_option %}
+                      {{ size_chart_html }}
                     </div>
                   </dialog>
                 </nk-modal>
@@ -185,21 +279,77 @@
             <div class="inventory-note" data-region="inventory" {{ block.shopify_attributes }}>
               {%- liquid
                 assign threshold = settings.inventory_threshold
-                if variant and threshold > 0 and variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny' and variant.inventory_quantity > 0 and variant.inventory_quantity <= threshold
-                  echo 'product.low_stock' | t: count: variant.inventory_quantity
+                if threshold == 0
+                  assign threshold = 5
                 endif
+                assign available_sizes_list = ''
+                for v in product.variants
+                  if v.available
+                    if available_sizes_list != ''
+                      assign available_sizes_list = available_sizes_list | append: ', '
+                    endif
+                    assign available_sizes_list = available_sizes_list | append: v.title
+                  endif
+                endfor
               -%}
+              {%- if variant and variant.available -%}
+                {%- if variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny' and variant.inventory_quantity > 0 and variant.inventory_quantity <= threshold -%}
+                  <span class="inventory-status inventory-status--low spec">
+                    <span class="inventory-status__dot" aria-hidden="true"></span>
+                    {{ 'product.low_stock' | t: count: variant.inventory_quantity }}
+                  </span>
+                {%- else -%}
+                  <span class="inventory-status inventory-status--in-stock spec">
+                    <span class="inventory-status__dot" aria-hidden="true"></span>
+                    {{ 'product.in_stock' | t }}
+                  </span>
+                {%- endif -%}
+              {%- elsif availability == 'sold-out' -%}
+                <span class="inventory-status inventory-status--sold-out spec">
+                  <span class="inventory-status__dot" aria-hidden="true"></span>
+                  {{ 'product.sold_out' | t }}
+                  {%- if available_sizes_list != '' -%}
+                    <span class="text-muted"> · Available in {{ available_sizes_list | escape }}</span>
+                  {%- endif -%}
+                </span>
+              {%- endif -%}
             </div>
 
           {%- when 'buy_buttons' -%}
             <nk-product-form data-source-id="{{ section.id }}" {{ block.shopify_attributes }}>
               {%- assign form_id = 'ProductForm-' | append: section.id -%}
               {%- form 'product', product, id: form_id, novalidate: 'novalidate' -%}
+                {%- if block.settings.show_quantity -%}
+                  <div class="product__quantity-row">
+                    <label class="spec" for="Quantity-{{ section.id }}">{{ 'product.quantity' | t }}</label>
+                    <div class="quantity">
+                      <button type="button" class="icon-button" data-qty-step="-1" aria-label="{{ 'product.decrease_quantity' | t }}">
+                        {% render 'icon', name: 'minus', size: 16 %}
+                      </button>
+                      <input
+                        id="Quantity-{{ section.id }}"
+                        type="number"
+                        inputmode="numeric"
+                        name="quantity"
+                        value="{{ variant.quantity_rule.min | default: 1 }}"
+                        min="{{ variant.quantity_rule.min | default: 1 }}"
+                        {% if variant.quantity_rule.max %}max="{{ variant.quantity_rule.max }}"{% endif %}
+                        step="{{ variant.quantity_rule.increment | default: 1 }}"
+                      >
+                      <button type="button" class="icon-button" data-qty-step="1" aria-label="{{ 'product.increase_quantity' | t }}">
+                        {% render 'icon', name: 'plus', size: 16 %}
+                      </button>
+                    </div>
+                  </div>
+                {%- endif -%}
+
                 <div
                   class="buy"
                   data-region="buy"
                   data-availability="{{ availability }}"
                   data-variant-media-id="{{ variant.featured_media.id }}"
+                  data-variant-title="{{ variant.title | escape }}"
+                  data-variant-price="{{ variant.price | money | escape }}"
                 >
                   {%- unless needs_choice -%}
                     <input type="hidden" name="id" value="{{ variant.id }}">
@@ -214,8 +364,12 @@
                         assign label = 'product.unavailable' | t
                     endcase
                   -%}
-                  <button type="submit" name="add" class="button button--full" {% if availability != 'available' %}disabled{% endif %}>
+                  <button type="submit" name="add" class="button button--full buy__submit" {% if availability != 'available' %}disabled{% endif %}>
                     <span data-button-label>{{ label }}</span>
+                    {%- if availability == 'available' -%}
+                      <span class="buy__submit-sep" aria-hidden="true">·</span>
+                      <span class="buy__submit-price" data-button-price>{{ variant.price | money }}</span>
+                    {%- endif -%}
                   </button>
                   {%- comment -%}
                     Accelerated checkout buys whatever variant the form holds, so it only appears once
@@ -240,39 +394,55 @@
                   </noscript>
                 {%- endif -%}
 
-                {%- if block.settings.show_quantity -%}
-                  <label class="spec" for="Quantity-{{ section.id }}">{{ 'product.quantity' | t }}</label>
-                  <div class="quantity">
-                    <button type="button" class="icon-button" data-qty-step="-1" aria-label="{{ 'product.decrease_quantity' | t }}">
-                      {% render 'icon', name: 'minus', size: 16 %}
-                    </button>
-                    <input
-                      id="Quantity-{{ section.id }}"
-                      type="number"
-                      inputmode="numeric"
-                      name="quantity"
-                      value="{{ variant.quantity_rule.min | default: 1 }}"
-                      min="{{ variant.quantity_rule.min | default: 1 }}"
-                      {% if variant.quantity_rule.max %}max="{{ variant.quantity_rule.max }}"{% endif %}
-                      step="{{ variant.quantity_rule.increment | default: 1 }}"
-                    >
-                    <button type="button" class="icon-button" data-qty-step="1" aria-label="{{ 'product.increase_quantity' | t }}">
-                      {% render 'icon', name: 'plus', size: 16 %}
-                    </button>
-                  </div>
-                {%- endif -%}
-
               {%- endform -%}
               <p class="message message--error" data-form-error role="alert" hidden></p>
             </nk-product-form>
 
           {%- when 'description' -%}
-            {%- if product.description != blank -%}
+            {%- liquid
+              assign fabric_meta = product.metafields.custom.fabric.value | default: product.metafields.custom.materials.value
+              assign fit_meta = product.metafields.custom.fit.value
+              assign origin_meta = product.metafields.custom.origin.value
+              assign care_meta = product.metafields.custom.care.value | default: product.metafields.custom.care_instructions.value
+            -%}
+            {%- if product.description != blank or fabric_meta != blank or fit_meta != blank or origin_meta != blank -%}
               <nk-disclosure {{ block.shopify_attributes }}>
                 <details class="disclosure" {% if block.settings.open %}open{% endif %}>
                   {%- assign details_heading = 'product.details' | t -%}
                   <summary>{{ block.settings.heading | default: details_heading | escape }}</summary>
-                  <div class="disclosure__content rte">{{ product.description }}</div>
+                  <div class="disclosure__content rte">
+                    {%- if fabric_meta != blank or fit_meta != blank or origin_meta != blank -%}
+                      <dl class="product__specs">
+                        {%- if fabric_meta != blank -%}
+                          <div class="product__spec-item">
+                            <dt class="spec text-muted">Composition</dt>
+                            <dd>{{ fabric_meta | escape }}</dd>
+                          </div>
+                        {%- endif -%}
+                        {%- if fit_meta != blank -%}
+                          <div class="product__spec-item">
+                            <dt class="spec text-muted">Fit</dt>
+                            <dd>{{ fit_meta | escape }}</dd>
+                          </div>
+                        {%- endif -%}
+                        {%- if origin_meta != blank -%}
+                          <div class="product__spec-item">
+                            <dt class="spec text-muted">Origin</dt>
+                            <dd>{{ origin_meta | escape }}</dd>
+                          </div>
+                        {%- endif -%}
+                      </dl>
+                    {%- endif -%}
+                    {{ product.description }}
+                  </div>
+                </details>
+              </nk-disclosure>
+            {%- endif -%}
+            {%- if care_meta != blank -%}
+              <nk-disclosure>
+                <details class="disclosure">
+                  <summary>Fabric &amp; Care</summary>
+                  <div class="disclosure__content rte">{{ care_meta | metafield_tag }}</div>
                 </details>
               </nk-disclosure>
             {%- endif -%}
@@ -299,6 +469,41 @@
       {%- endfor -%}
     </div>
   </div>
+
+  <nk-sticky-buy class="sticky-buy" data-section-id="{{ section.id }}" hidden>
+    <div class="sticky-buy__inner">
+      <div class="sticky-buy__product">
+        {%- if product.featured_media -%}
+          <img
+            class="sticky-buy__thumb"
+            src="{{ product.featured_media | image_url: width: 120 }}"
+            alt="{{ product.title | escape }}"
+            width="44"
+            height="56"
+            loading="lazy"
+          >
+        {%- endif -%}
+        <div class="sticky-buy__info">
+          <p class="sticky-buy__title">{{ product.title | escape }}</p>
+          <p class="sticky-buy__meta spec text-muted" data-sticky-meta>
+            {%- unless product.has_only_default_variant -%}
+              <span data-sticky-variant>{{ variant.title | escape }}</span>
+              <span aria-hidden="true">·</span>
+            {%- endunless -%}
+            <span data-sticky-price>{{ variant.price | money }}</span>
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="button sticky-buy__cta"
+        data-sticky-cta
+        {% unless variant.available %}disabled{% endunless %}
+      >
+        <span data-sticky-label>{{ 'product.add_to_cart' | t }}</span>
+      </button>
+    </div>
+  </nk-sticky-buy>
 </div>
 
 {% schema %}

@@ -1,5 +1,3 @@
-import './cursor.css';
-
 import { t } from '../../core/config';
 import { decorativeMotionAllowed } from '../../core/motion';
 
@@ -9,8 +7,11 @@ import { decorativeMotionAllowed } from '../../core/motion';
  * - magnetic pull on [data-magnetic] buttons.
  * Purely decorative: the badge is aria-hidden and the real link/button is unchanged.
  */
+let installed = false;
+
 export async function installCursor(): Promise<void> {
-  if (!decorativeMotionAllowed() || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  if (installed || !decorativeMotionAllowed() || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  installed = true;
   const { gsap } = await import('../../motion/gsap');
 
   const badge = document.createElement('div');
@@ -39,15 +40,16 @@ export async function installCursor(): Promise<void> {
 
   // Magnetic buttons: drift toward the pointer, spring back on leave.
   document.addEventListener('pointerover', (event) => {
-    const button = (event.target as Element).closest?.<HTMLElement>('[data-magnetic]');
+    const button = (event.target as Element).closest?.<HTMLElement>('[data-magnetic], nk-magnetic');
     if (!button || button.dataset.magneticBound) return;
     button.dataset.magneticBound = '1';
+    const strength = Number(button.getAttribute('strength') || button.dataset.magnetic) || 0.25;
     const toX = gsap.quickTo(button, 'x', { duration: 0.4, ease: 'power3' });
     const toY = gsap.quickTo(button, 'y', { duration: 0.4, ease: 'power3' });
     button.addEventListener('pointermove', (move) => {
       const rect = button.getBoundingClientRect();
-      toX((move.clientX - rect.left - rect.width / 2) * 0.25);
-      toY((move.clientY - rect.top - rect.height / 2) * 0.35);
+      toX((move.clientX - rect.left - rect.width / 2) * strength);
+      toY((move.clientY - rect.top - rect.height / 2) * (strength * 1.35));
     });
     button.addEventListener('pointerleave', () => {
       gsap.to(button, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' });

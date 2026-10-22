@@ -4,8 +4,10 @@ import '../styles/product.css';
 import { define } from '../core/define';
 import { NkGallery } from '../components/product/gallery';
 import { NkProductForm } from '../components/product/product-form';
+import { NkStickyBuy } from '../components/product/sticky-buy';
 import { NkVariantPicker } from '../components/product/variant-picker';
 
 define('nk-variant-picker', NkVariantPicker);
 define('nk-product-form', NkProductForm);
 define('nk-gallery', NkGallery);
+define('nk-sticky-buy', NkStickyBuy);

@@ -3,10 +3,10 @@
   data-nk-open="SearchModal"; those links still go to the search page without JS. The form is a
   plain GET search form, so Enter always works even if suggestions fail.
 
-  @param {object[]} [collections] - Collections suggested before anything is typed
+  @param {object[]} [suggested_collections] - Collections suggested before anything is typed
 
   @example
-  {% render 'search-modal', collections: section.settings.search_collections %}
+  {% render 'search-modal', suggested_collections: section.settings.search_collections %}
 {%- enddoc -%}
 <nk-modal id="SearchModal">
   <dialog class="search-modal" aria-labelledby="SearchModalTitle">
@@ -38,10 +38,16 @@
 
       <div class="search-modal__body">
         <div data-ref="suggestions">
-          {%- if collections.size > 0 -%}
+          {%- liquid
+            assign chip_collections = suggested_collections
+            if chip_collections == blank or chip_collections.size == 0
+              assign chip_collections = collections
+            endif
+          -%}
+          {%- if chip_collections.size > 0 -%}
             <p class="spec text-muted">{{ 'search.popular_collections' | t }}</p>
             <ul class="collection-pills search-modal__chips" role="list">
-              {%- for collection in collections -%}
+              {%- for collection in chip_collections limit: 6 -%}
                 <li><a href="{{ collection.url }}">{{ collection.title | escape }}</a></li>
               {%- endfor -%}
             </ul>

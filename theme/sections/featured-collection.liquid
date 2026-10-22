@@ -1,52 +1,148 @@
 {%- comment -%}
-  Featured collection (master-plan/10 CS-03): bounded product grid using the shared card.
+  Featured collection (master-plan/10 CS-03): signature editorial product grid showcase with
+  eyebrow, italic heading accent, live piece count, optional description, and staggered card reveals.
   In the editor an empty collection shows placeholder cards; on the storefront it renders nothing.
 {%- endcomment -%}
 {%- assign featured = section.settings.collection -%}
 {%- if featured.products.size > 0 or request.design_mode -%}
-  <div class="section-spacing color-{{ section.settings.color_scheme }} full-width">
-    <div style="width: var(--content-width); margin-inline: auto;">
-      <div class="section-head">
-        {%- if section.settings.heading != blank -%}
-          {% render 'reveal-heading', text: section.settings.heading, entrance: 'rise', hover: 'lift', class: 'display' %}
-        {%- endif -%}
+  {%- liquid
+    assign eyebrow = section.settings.eyebrow
+    if eyebrow == blank and featured != blank
+      assign eyebrow = 'Featured drop'
+    endif
+    assign total_count = featured.all_products_count | default: featured.products_count | default: 0
+    assign description = section.settings.description
+    if description == blank and section.settings.show_collection_description and featured.description != blank
+      assign description = featured.description | strip_html | truncatewords: 28
+    endif
+  -%}
+  <div class="featured-collection section-spacing color-{{ section.settings.color_scheme }} full-width">
+    <div class="featured-collection__inner">
+      <div class="featured-collection__header">
+        <div class="featured-collection__title-group">
+          {%- if eyebrow != blank -%}
+            <nk-reveal mode="fade">
+              <span class="eyebrow">{{ eyebrow | escape }}</span>
+            </nk-reveal>
+          {%- endif -%}
+          {%- if section.settings.heading != blank -%}
+            {%- liquid
+              assign heading_html = section.settings.heading | escape
+              assign italic = section.settings.heading_italic | escape
+            -%}
+            <div class="featured-collection__title-row">
+              {% render 'reveal-heading', text: heading_html, italic: italic, entrance: 'cut', class: 'display featured-collection__heading' %}
+              {%- if total_count > 0 -%}
+                <span class="featured-collection__count spec">({{ total_count }})</span>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+          {%- if description != blank -%}
+            <nk-reveal mode="fade" delay="0.1">
+              <p class="featured-collection__desc text-muted">{{ description | escape }}</p>
+            </nk-reveal>
+          {%- endif -%}
+        </div>
+
         {%- if featured != blank and section.settings.show_view_all -%}
-          <a class="spec link-underline" href="{{ featured.url }}">{{ 'collection.view_all' | t }}</a>
+          <nk-reveal mode="fade" delay="0.14">
+            <a class="button button--secondary featured-collection__cta" href="{{ featured.url }}" data-magnetic>
+              {{- 'collection.view_all' | t }}{% if total_count > 0 %} ({{ total_count }}){% endif %} →
+            </a>
+          </nk-reveal>
         {%- endif -%}
       </div>
 
       <nk-stagger>
-      <ul
-        class="product-grid"
-        role="list"
-        style="--nk-cols-mobile: {{ section.settings.columns_mobile }}; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
-      >
-        {%- if featured.products.size > 0 -%}
-          {%- for product in featured.products limit: section.settings.limit -%}
-            <li data-stagger-item>{% render 'product-card', product: product %}</li>
-          {%- endfor -%}
-        {%- else -%}
-          {%- for i in (1..4) -%}
-            <li>
-              <article class="card">
-                <span class="card__media">{{ 'product-1' | placeholder_svg_tag }}</span>
-                <p class="card__title">{{ 'collection.placeholder_product' | t }}</p>
-              </article>
-            </li>
-          {%- endfor -%}
-        {%- endif -%}
-      </ul>
+        <ul
+          class="product-grid"
+          role="list"
+          style="--nk-cols-mobile: {{ section.settings.columns_mobile }}; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
+        >
+          {%- if featured.products.size > 0 -%}
+            {%- for product in featured.products limit: section.settings.limit -%}
+              <li data-stagger-item>{% render 'product-card', product: product %}</li>
+            {%- endfor -%}
+          {%- else -%}
+            {%- for i in (1..4) -%}
+              <li data-stagger-item>
+                <article class="card">
+                  <span class="card__media">{{ 'product-1' | placeholder_svg_tag }}</span>
+                  <p class="card__title">{{ 'collection.placeholder_product' | t }}</p>
+                </article>
+              </li>
+            {%- endfor -%}
+          {%- endif -%}
+        </ul>
       </nk-stagger>
     </div>
   </div>
 {%- endif -%}
+
+{% stylesheet %}
+  .featured-collection__inner {
+    width: var(--content-width);
+    margin-inline: auto;
+  }
+
+  .featured-collection__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px 32px;
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--nk-color-line);
+  }
+
+  .featured-collection__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 64ch;
+  }
+
+  .featured-collection__title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .featured-collection__heading {
+    margin: 0;
+    font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  }
+
+  .featured-collection__count {
+    color: var(--nk-color-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .featured-collection__desc {
+    margin: 4px 0 0;
+    max-width: 54ch;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .featured-collection__cta {
+    min-height: 46px;
+    padding-inline: 24px;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "Featured collection",
   "class": "featured-collection-section",
   "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Featured drop" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "New in" },
+    { "type": "text", "id": "heading_italic", "label": "Heading (italic part)" },
+    { "type": "text", "id": "description", "label": "Description" },
+    { "type": "checkbox", "id": "show_collection_description", "label": "Use collection description when empty", "default": true },
     { "type": "collection", "id": "collection", "label": "Collection" },
     { "type": "range", "id": "limit", "label": "Products to show", "min": 2, "max": 16, "step": 1, "default": 8 },
     {
@@ -60,7 +156,7 @@
       "default": "2"
     },
     { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 5, "step": 1, "default": 4 },
-    { "type": "checkbox", "id": "show_view_all", "label": "Show \"View all\" link", "default": true },
+    { "type": "checkbox", "id": "show_view_all", "label": "Show 'View all' button", "default": true },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
   ],
   "presets": [{ "name": "Featured collection" }],

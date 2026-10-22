@@ -22,6 +22,7 @@ function apply(sections: Record<string, string | null> | null | undefined): stri
     const focusKey = captureFocus(target);
     target.replaceChildren(...[...next.childNodes].map((node) => document.importNode(node, true)));
     restoreFocus(target, focusKey);
+    target.dispatchEvent(new CustomEvent('nk:section:replaced', { bubbles: true, detail: { regions: [id] } }));
   }
   return missing;
 }
