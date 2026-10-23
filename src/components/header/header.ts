@@ -114,7 +114,7 @@ export class NkHeader extends NkElement {
     // Hover intent opens panels for a mouse (click/keyboard always work). Touch and pen pointers on
     // hybrid devices are ignored here: their tap already toggles the native <details>, and a
     // following pointerleave would otherwise close the panel they just opened.
-    if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    if (this.dataset.navTrigger !== 'click' && matchMedia('(hover: hover) and (pointer: fine)').matches) {
       for (const details of panels) {
         const item = details.closest('.nav__item') ?? details;
         const summary = details.querySelector('summary');

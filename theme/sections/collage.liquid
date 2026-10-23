@@ -1,0 +1,449 @@
+{%- comment -%}
+  Collage of images, products and collections. Adapted from Shopify Dawn sections/collage.liquid.
+  Source and license: docs/SECTION-SOURCES.md.
+{%- endcomment -%}
+<section class="collage kit-section full-width section-spacing section-presentation color-{{ section.settings.color_scheme }}" data-heading="{{ section.settings.heading_size }}" data-corners="{{ section.settings.corner_style }}" data-buttons="{{ section.settings.button_size }}" data-layout="{{ section.settings.layout }}" data-mobile="{{ section.settings.mobile_layout }}" data-caption="{{ section.settings.caption_position }}" style="{% render 'section-presentation', presentation: section.settings %}--collage-gap:{{ section.settings.gap }}px;--collage-row:{{ section.settings.row_height }}px;">
+  {%- case section.settings.entrance -%}{%- when 'fade' -%}<nk-reveal class="kit-entrance" mode="fade">{%- when 'stagger' -%}<nk-stagger class="kit-entrance">{%- endcase -%}
+  <div class="collage__inner">
+    {% render 'section-heading', heading: section.settings.heading, text: section.settings.text, align: section.settings.alignment %}
+    <div class="collage__grid">
+      {%- for block in section.blocks -%}
+        <div class="collage__item"{% if section.settings.entrance == 'stagger' %} data-stagger-item{% endif %} {{ block.shopify_attributes }}>
+          {%- liquid
+            assign card_url = blank
+            assign card_title = blank
+            assign card_image = blank
+            assign placeholder = 'lifestyle-1'
+            case block.type
+              when 'image'
+                assign card_url = block.settings.link
+                assign card_title = block.settings.caption
+                assign card_image = block.settings.image
+              when 'product'
+                assign card_url = block.settings.product.url
+                assign card_title = block.settings.product.title | default: 'Product'
+                assign card_image = block.settings.product.featured_media.preview_image
+                assign placeholder = 'product-1'
+              when 'collection'
+                assign card_url = block.settings.collection.url
+                assign card_title = block.settings.collection.title | default: 'Collection'
+                assign card_image = block.settings.collection.featured_image
+                assign placeholder = 'collection-1'
+            endcase
+          -%}
+          {%- if card_url != blank -%}<a class="collage__card" href="{{ card_url }}">{%- else -%}<div class="collage__card">{%- endif -%}
+            <div class="collage__media kit-media"{% if section.settings.hover_zoom %} data-zoom{% endif %}>
+              {%- if card_image != blank -%}{{ card_image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '360, 540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 990px) 50vw, 100vw', class: 'collage__image' }}{%- else -%}{{ placeholder | placeholder_svg_tag: 'collage__image kit-placeholder' }}{%- endif -%}
+            </div>
+            {%- if card_title != blank -%}
+              <span class="collage__caption">{{ card_title | escape }}{%- if block.type == 'product' and block.settings.product -%}<span class="spec collage__price">{{ block.settings.product.price | money }}</span>{%- endif -%}{%- if card_url != blank -%}<span aria-hidden="true">→</span>{%- endif -%}</span>
+            {%- endif -%}
+          {%- if card_url != blank -%}</a>{%- else -%}</div>{%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+  {%- case section.settings.entrance -%}{%- when 'fade' -%}</nk-reveal>{%- when 'stagger' -%}</nk-stagger>{%- endcase -%}
+</section>
+
+{% stylesheet %}
+.collage__inner { width: var(--content-width); margin-inline: auto; display: grid; gap: 28px; }
+.collage__grid { display: grid; gap: var(--collage-gap, 12px); }
+.collage__item { min-width: 0; }
+.collage__card { position: relative; display: flex; flex-direction: column; gap: 10px; height: 100%; color: inherit; text-decoration: none; }
+.collage__media { position: relative; flex: 1; min-height: calc(var(--collage-row, 320px) * 0.8); }
+.collage__image, .collage__media .kit-placeholder { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.collage__caption { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-family: var(--nk-font-heading); font-size: 1.25rem; }
+.collage__price { font-family: var(--nk-font-spec); font-size: 0.75rem; }
+.collage[data-caption='overlay'] .collage__caption { position: absolute; inset-inline: 0; bottom: 0; z-index: 1; padding: 48px 20px 18px; background: linear-gradient(transparent, rgb(0 0 0 / 0.6)); color: #fff; border-radius: 0 0 var(--kit-radius) var(--kit-radius); }
+.collage[data-mobile='collage'] .collage__grid { grid-template-columns: 1fr 1fr; }
+.collage[data-mobile='collage'] .collage__item:first-child { grid-column: 1 / -1; }
+@media (min-width: 750px) {
+  .collage .collage__grid { grid-template-columns: 3fr 2fr; grid-auto-rows: minmax(160px, var(--collage-row, 320px)); }
+  .collage .collage__grid .collage__item:first-child { grid-column: auto; grid-row: span 2; }
+  .collage[data-layout='right'] .collage__grid { grid-template-columns: 2fr 3fr; }
+  .collage[data-layout='right'] .collage__grid .collage__item:first-child { grid-column: 2; grid-row: 1 / span 2; }
+  .collage[data-layout='even'] .collage__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: calc(var(--collage-row, 320px) * 1.6); }
+  .collage[data-layout='even'] .collage__grid .collage__item:first-child { grid-row: auto; }
+  .collage .collage__grid .collage__item:only-child { grid-column: 1 / -1; }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collage",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop the edit"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Desktop layout",
+      "options": [
+        {
+          "value": "left",
+          "label": "Large block left"
+        },
+        {
+          "value": "right",
+          "label": "Large block right"
+        },
+        {
+          "value": "even",
+          "label": "Equal columns"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Phone layout",
+      "options": [
+        {
+          "value": "collage",
+          "label": "Collage"
+        },
+        {
+          "value": "column",
+          "label": "Single column"
+        }
+      ],
+      "default": "collage"
+    },
+    {
+      "type": "range",
+      "id": "row_height",
+      "label": "Row height (desktop)",
+      "min": 160,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "default": 320
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "select",
+      "id": "caption_position",
+      "label": "Caption",
+      "options": [
+        {
+          "value": "overlay",
+          "label": "Over the image"
+        },
+        {
+          "value": "below",
+          "label": "Below the image"
+        }
+      ],
+      "default": "overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_zoom",
+      "label": "Zoom images on hover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "xlarge",
+          "label": "Extra large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "corner_style",
+      "label": "Corners",
+      "options": [
+        {
+          "value": "theme",
+          "label": "Theme default"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "soft",
+          "label": "Soft"
+        },
+        {
+          "value": "round",
+          "label": "Round"
+        }
+      ],
+      "default": "theme",
+      "info": "Applies to images, cards and buttons in this section."
+    },
+    {
+      "type": "select",
+      "id": "button_size",
+      "label": "Button size",
+      "options": [
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "regular",
+          "label": "Theme default"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "select",
+      "id": "entrance",
+      "label": "Entrance animation",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fade",
+          "label": "Fade in section"
+        },
+        {
+          "value": "stagger",
+          "label": "Items rise one by one"
+        }
+      ],
+      "default": "none",
+      "info": "Skipped when visitors prefer reduced motion or motion is off in Theme settings."
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (1200px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (1440px)"
+        },
+        {
+          "value": "full",
+          "label": "Full width with page gutters"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    },
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        }
+      ]
+    },
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Collage",
+      "blocks": [
+        {
+          "type": "image"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "collection"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
+}
+{% endschema %}

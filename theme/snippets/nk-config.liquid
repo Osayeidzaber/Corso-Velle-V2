@@ -18,6 +18,12 @@
       "search": {{ routes.search_url | json }}
     },
     "motion": {{ settings.motion_level | default: 'standard' | json }},
+    "motionOptions": {
+      "tempo": {{ settings.motion_tempo | default: 'balanced' | json }},
+      "stagger": {{ settings.motion_stagger | default: 'medium' | json }},
+      "scrollEffects": {% if settings.motion_scroll_effects == false %}false{% else %}true{% endif %},
+      "mobile": {{ settings.motion_mobile | default: 'simple' | json }}
+    },
     "cart": {
       "afterAdd": {{ settings.cart_after_add | default: 'drawer' | json }},
       "sections": []

@@ -5,9 +5,9 @@
 {%- endcomment -%}
 {%- assign tabs = section.blocks | where: 'type', 'tab' -%}
 {%- if tabs.size > 0 -%}
-  <div class="collection-tabs section-spacing color-{{ section.settings.color_scheme }} full-width">
+  <div class="collection-tabs section-spacing section-presentation color-{{ section.settings.color_scheme }} full-width" style="{% render 'section-presentation', presentation: section.settings %}--tabs-gap:{{ section.settings.grid_gap | default: 8 }}px;" data-tabs-style="{{ section.settings.tab_style }}">
     <div class="collection-tabs__inner">
-      <nk-tabs class="collection-tabs__root">
+      <nk-tabs class="collection-tabs__root" label="{{ section.settings.heading | escape }}" {% if section.settings.tab_style == 'sidebar' %}data-orientation="vertical"{% endif %} {% if section.settings.transitions == false %}no-transition{% endif %}>
         <div class="collection-tabs__top">
           <div class="collection-tabs__title-wrap">
             {%- if section.settings.eyebrow != blank -%}
@@ -29,7 +29,11 @@
               {%- liquid
                 assign col = block.settings.collection
                 assign label = block.settings.label | default: col.title | default: 'Collection'
-                assign item_count = col.all_products_count | default: col.products_count | default: 0
+                assign tab_limit = block.settings.limit | default: 0 | plus: 0
+                if tab_limit == 0
+                  assign tab_limit = section.settings.limit
+                endif
+                assign item_count = col.products.size | at_most: tab_limit
               -%}
               <button
                 type="button"
@@ -53,6 +57,11 @@
             assign collection_source = block.settings.collection
             assign label = block.settings.label | default: collection_source.title | default: 'Collection'
             assign total_count = collection_source.all_products_count | default: collection_source.products_count | default: 0
+            assign tab_limit = block.settings.limit | default: 0 | plus: 0
+            if tab_limit == 0
+              assign tab_limit = section.settings.limit
+            endif
+            assign shown_count = collection_source.products.size | at_most: tab_limit
           -%}
           <div
             class="tabs__panel collection-tabs__panel"
@@ -67,11 +76,11 @@
                 <ul
                   class="product-grid collection-tabs__grid"
                   role="list"
-                  style="--nk-cols-mobile: 1; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
+                  style="--nk-cols-mobile: {{ section.settings.columns_mobile | default: 1 }}; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
                 >
-                  {%- for product in collection_source.products limit: section.settings.limit -%}
+                  {%- for product in collection_source.products limit: tab_limit -%}
                     <li {% if forloop.parentloop.first %}data-stagger-item{% else %}data-tab-item{% endif %}>
-                      {% render 'product-card', product: product %}
+                      {% render 'product-card', product: product, card_options: section.settings %}
                     </li>
                   {%- endfor -%}
                 </ul>
@@ -79,7 +88,7 @@
 
               <div class="collection-tabs__footer">
                 <span class="spec text-muted">
-                  {{- label | escape }} · {{ 'collection.product_count' | t: count: total_count -}}
+                  {{- 'collection.showing_count' | t: shown: shown_count, total: total_count -}}
                 </span>
                 <a class="button button--secondary collection-tabs__cta" href="{{ collection_source.url }}" data-magnetic>
                   {{- 'collection.view_all' | t }} ({{ total_count }}) →
@@ -96,6 +105,19 @@
 {%- endif -%}
 
 {% stylesheet %}
+  .collection-tabs .product-grid { column-gap: var(--tabs-gap, 8px); }
+  .collection-tabs[data-tabs-style='pills'] .collection-tabs__tab { border: 1px solid var(--nk-color-line); border-radius: 999px; padding: 12px 18px; margin-block: 8px; }
+  .collection-tabs[data-tabs-style='pills'] .collection-tabs__tab[aria-selected='true'] { background: var(--nk-color-text); color: var(--nk-color-bg); }
+  .collection-tabs[data-tabs-style='pills'] .tabs__indicator { display: none; }
+  .collection-tabs nk-tabs[no-transition] .tabs__indicator { transition: none; }
+  @media (min-width: 990px) {
+    .collection-tabs[data-tabs-style='sidebar'] nk-tabs[data-enhanced] { display: grid; grid-template-columns: minmax(160px, 240px) minmax(0, 1fr); gap: 32px; }
+    .collection-tabs[data-tabs-style='sidebar'] .collection-tabs__top { display: block; align-self: start; border: 0; }
+    .collection-tabs[data-tabs-style='sidebar'] .collection-tabs__heading { font-size: 2rem; }
+    .collection-tabs[data-tabs-style='sidebar'] .collection-tabs__tablist { flex-direction: column; align-items: stretch; gap: 8px; }
+    .collection-tabs[data-tabs-style='sidebar'] .tabs__indicator { display: none; }
+    .collection-tabs[data-tabs-style='sidebar'] .collection-tabs__panel { grid-column: 2; grid-row: 1; min-width: 0; }
+  }
   .collection-tabs__inner {
     width: var(--content-width);
     margin-inline: auto;
@@ -215,43 +237,492 @@
 {
   "name": "Collection tabs",
   "class": "collection-tabs-section",
-  "max_blocks": 6,
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "New arrivals" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Just" },
-    { "type": "text", "id": "heading_italic", "label": "Heading (italic part)", "default": "landed" },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "New arrivals"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Just"
+    },
+    {
+      "type": "text",
+      "id": "heading_italic",
+      "label": "Heading (italic part)",
+      "default": "landed"
+    },
     {
       "type": "select",
       "id": "entrance",
       "label": "Heading entrance",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "cut", "label": "Editorial masked reveal" },
-        { "value": "rise", "label": "Rise word by word (Split Text)" },
-        { "value": "blur", "label": "Blur in word by word (Text Effect)" },
-        { "value": "fold", "label": "Paper fold (Fold Text)" },
-        { "value": "flip", "label": "Flip up" },
-        { "value": "skew", "label": "Skew in" },
-        { "value": "pop", "label": "Pop" },
-        { "value": "fade", "label": "Fade" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "cut",
+          "label": "Editorial masked reveal"
+        },
+        {
+          "value": "rise",
+          "label": "Rise word by word (Split Text)"
+        },
+        {
+          "value": "blur",
+          "label": "Blur in word by word (Text Effect)"
+        },
+        {
+          "value": "fold",
+          "label": "Paper fold (Fold Text)"
+        },
+        {
+          "value": "flip",
+          "label": "Flip up"
+        },
+        {
+          "value": "skew",
+          "label": "Skew in"
+        },
+        {
+          "value": "pop",
+          "label": "Pop"
+        },
+        {
+          "value": "fade",
+          "label": "Fade"
+        }
       ],
       "default": "cut"
     },
-    { "type": "range", "id": "limit", "label": "Products per tab", "min": 2, "max": 12, "step": 1, "default": 8 },
-    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 5, "step": 1, "default": 4 },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Products per tab",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "card_appearance",
+      "label": "Card appearance",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        },
+        {
+          "value": "editorial",
+          "label": "Editorial"
+        },
+        {
+          "value": "bordered",
+          "label": "Bordered"
+        },
+        {
+          "value": "image-led",
+          "label": "Image focused"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_ratio",
+      "label": "Image ratio",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (2:3)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "cover",
+          "label": "Fill"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_hover",
+      "label": "Alternate media",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "auto",
+          "label": "Video with image fallback"
+        },
+        {
+          "value": "image",
+          "label": "Second image only"
+        },
+        {
+          "value": "off",
+          "label": "Off"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_vendor",
+      "label": "Show vendor",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_price",
+      "label": "Show price",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_badges",
+      "label": "Show badges",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_sizes",
+      "label": "Show sizes",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "tab_style",
+      "label": "Tab appearance",
+      "options": [
+        {
+          "value": "underline",
+          "label": "Underline"
+        },
+        {
+          "value": "pills",
+          "label": "Pills"
+        },
+        {
+          "value": "sidebar",
+          "label": "Desktop sidebar"
+        }
+      ],
+      "default": "underline"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on phones",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Column gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "transitions",
+      "label": "Animate tab changes",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (1200px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (1440px)"
+        },
+        {
+          "value": "full",
+          "label": "Full width with page gutters"
+        }
+      ],
+      "default": "inherit",
+      "info": "Sets the width of the image and text together. Background stays full width. All options keep the theme's responsive page gutters."
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px. Custom values are exact and are not multiplied by the global smaller-screen spacing setting."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    }
   ],
   "blocks": [
     {
       "type": "tab",
       "name": "Tab",
       "settings": [
-        { "type": "collection", "id": "collection", "label": "Collection" },
-        { "type": "text", "id": "label", "label": "Tab label", "info": "Defaults to the collection title." }
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tab label",
+          "info": "Defaults to the collection title."
+        },
+        {
+          "type": "range",
+          "id": "limit",
+          "label": "Products in this tab",
+          "min": 0,
+          "max": 12,
+          "step": 1,
+          "default": 0,
+          "info": "Zero uses the section products-per-tab setting."
+        }
       ]
     }
   ],
-  "presets": [{ "name": "Collection tabs", "blocks": [{ "type": "tab" }, { "type": "tab" }] }],
-  "disabled_on": { "groups": ["header", "footer"] }
+  "presets": [
+    {
+      "name": "Collection tabs",
+      "blocks": [
+        {
+          "type": "tab"
+        },
+        {
+          "type": "tab"
+        }
+      ]
+    },
+    {
+      "name": "Pill collection tabs",
+      "settings": {
+        "tab_style": "pills"
+      },
+      "blocks": [
+        {
+          "type": "tab"
+        },
+        {
+          "type": "tab"
+        }
+      ]
+    },
+    {
+      "name": "Sidebar collections",
+      "settings": {
+        "tab_style": "sidebar"
+      },
+      "blocks": [
+        {
+          "type": "tab"
+        },
+        {
+          "type": "tab"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
 }
 {% endschema %}

@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "theme-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 9292
+    },
+    {
+      "name": "theme-dev-alt",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["shopify", "theme", "dev", "--path", "theme", "--store", "gbhr1g-hm.myshopify.com", "--port", "9393"],
+      "port": 9393,
+      "autoPort": false
+    }
+  ]
+}

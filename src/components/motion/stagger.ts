@@ -1,6 +1,6 @@
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
-import { decorativeMotionAllowed } from '../../core/motion';
+import { motionMode } from '../../core/motion';
 
 /**
  * <nk-stagger> — children marked [data-stagger-item] rise in sequence as each row scrolls into
@@ -12,7 +12,7 @@ export class NkStagger extends NkElement {
   #revert: (() => void) | null = null;
 
   protected mount(): void {
-    if (!decorativeMotionAllowed()) {
+    if (motionMode() === 'off') {
       this.setAttribute('data-ready', '');
       return;
     }
@@ -24,11 +24,12 @@ export class NkStagger extends NkElement {
 
   protected override unmount(): void {
     this.#revert?.();
+    this.#revert = null;
   }
 
   async #start(): Promise<void> {
     const connection = this.signal;
-    const { gsap, ScrollTrigger } = await import('../../motion/gsap');
+    const { gsap, ScrollTrigger, motionTempo, motionStagger } = await import('../../motion/gsap');
     if (!this.connectionIsCurrent(connection)) return;
     const items = [...this.querySelectorAll<HTMLElement>('[data-stagger-item]')];
     if (!items.length) {
@@ -36,40 +37,36 @@ export class NkStagger extends NkElement {
       return;
     }
     const context = gsap.context((self) => {
-      gsap.set(items, { opacity: 0, y: 34 });
+      gsap.set(items, { opacity: 0, y: 16 });
       this.setAttribute('data-ready', '');
+      const finish = (elements: Element[]) => {
+        gsap.killTweensOf(elements);
+        gsap.set(elements, { clearProps: 'transform,opacity' });
+      };
+      this.on(this, 'nk:stagger:finish', () => finish(items));
+      // Keyboard focus always exposes a card immediately, including before its scroll entrance.
+      this.on(this, 'focusin', (event) => {
+        const item = (event.target as Element).closest('[data-stagger-item]');
+        if (item) finish([item]);
+      });
       ScrollTrigger.batch(items, {
         start: 'top 92%',
         once: true,
+        interval: 0.05,
+        onLeave: finish,
         onEnter: (batch) => {
           self.add(() => {
             const elements = batch as HTMLElement[];
             gsap.to(elements, {
               opacity: 1,
               y: 0,
-              duration: 0.95,
+              duration: 0.45 * motionTempo(),
               ease: 'expo.out',
-              stagger: 0.075,
+              stagger: { each: Math.min(0.05, motionStagger()), amount: Math.min(0.18, Math.max(0, elements.length - 1) * motionStagger()) },
               overwrite: true,
               clearProps: 'transform,opacity',
             });
-            const mediaImgs = elements
-              .map((el) => el.querySelector<HTMLElement>('.card__media > img:first-child, .category-card__media > img:first-child'))
-              .filter((img): img is HTMLElement => Boolean(img));
-            if (mediaImgs.length) {
-              gsap.fromTo(
-                mediaImgs,
-                { scale: 1.05 },
-                {
-                  scale: 1,
-                  duration: 1.25,
-                  ease: 'expo.out',
-                  stagger: 0.075,
-                  overwrite: 'auto',
-                  clearProps: 'transform',
-                },
-              );
-            }
+            // Images belong to the card hover system; reveal only the card wrapper.
           });
         },
       });

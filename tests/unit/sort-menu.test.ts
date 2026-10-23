@@ -28,3 +28,15 @@ it('supports keyboard navigation, Escape and outside dismissal',()=>{
  document.activeElement!.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));expect(menu.open).toBe(false);expect(document.activeElement).toBe(summary);
  menu.open=true;document.querySelector('[data-outside]')!.dispatchEvent(new Event('pointerdown',{bubbles:true}));expect(menu.open).toBe(false);
 });
+
+it('does not scroll the grid when restoring collection history', async () => {
+ mount();
+ const facets = document.querySelector('nk-facets') as HTMLElement;
+ vi.spyOn(facets, 'getBoundingClientRect').mockReturnValue({top:-900} as DOMRect);
+ const scroll = vi.fn(); facets.scrollIntoView = scroll;
+ vi.stubGlobal('fetch', async () => new Response('<nk-facets><div data-results-label>Restored products</div></nk-facets>'));
+ history.replaceState(null, '', '/collections/all?sort_by=manual');
+ window.dispatchEvent(new PopStateEvent('popstate'));
+ await vi.waitFor(() => expect(document.querySelector('[data-results-label]')?.textContent).toBe('Restored products'));
+ expect(scroll).not.toHaveBeenCalled();
+});

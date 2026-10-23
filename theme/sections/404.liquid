@@ -5,21 +5,82 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/404
 {% endcomment %}
 
-<div class="section-spacing cart-empty">
+<div class="section-spacing cart-empty utility-page color-{{ section.settings.color_scheme }}" data-width="{{ section.settings.width }}">
   <h1 class="display">{{ '404.title' | t }}</h1>
 
   <p class="cart-empty__title">
-    {{ '404.not_found' | t }}
+    {% if section.settings.message != blank %}{{ section.settings.message | escape }}{% else %}{{ '404.not_found' | t }}{% endif %}
   </p>
 
-  <a class="button" href="{{ routes.all_products_collection_url }}">
-    {{ '404.back_to_shopping' | t }}
+  <a class="button" href="{{ section.settings.link | default: routes.all_products_collection_url }}">
+    {% if section.settings.link_label != blank %}{{ section.settings.link_label | escape }}{% else %}{{ '404.back_to_shopping' | t }}{% endif %}
   </a>
+  {% if section.settings.show_search %}
+    <form class="search-page__form" action="{{ routes.search_url }}" method="get" role="search">
+      <label class="visually-hidden" for="NotFoundSearch-{{ section.id }}">{{ 'search.placeholder' | t }}</label>
+      <input type="search" id="NotFoundSearch-{{ section.id }}" name="q" placeholder="{{ 'search.placeholder' | t }}">
+      <button type="submit" class="button">{{ 'search.submit' | t }}</button>
+    </form>
+  {% endif %}
 </div>
 
 {% schema %}
 {
   "name": "t:general.404",
-  "settings": []
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow reading width"
+        },
+        {
+          "value": "regular",
+          "label": "Regular reading width"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "text",
+      "id": "message",
+      "label": "Message override"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Button destination override"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Button label override"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search form",
+      "default": false
+    }
+  ],
+  "limit": 1,
+  "enabled_on": {
+    "templates": [
+      "404"
+    ]
+  }
 }
 {% endschema %}

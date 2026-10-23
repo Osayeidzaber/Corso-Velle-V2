@@ -25,6 +25,7 @@ export class NkTabs extends NkElement {
     list.hidden = false;
     this.setAttribute('data-enhanced', '');
     list.setAttribute('role', 'tablist');
+    list.setAttribute('aria-label', this.getAttribute('label') ?? '');
     this.#tabs.forEach((tab, i) => {
       const panel = this.#panels[i]!;
       tab.setAttribute('role', 'tab');
@@ -42,6 +43,7 @@ export class NkTabs extends NkElement {
       const keys: Record<string, number> = {
         ArrowRight: this.#index + 1,
         ArrowLeft: this.#index - 1,
+        ...(list.getAttribute('aria-orientation') === 'vertical' ? { ArrowDown: this.#index + 1, ArrowUp: this.#index - 1 } : {}),
         Home: 0,
         End: this.#tabs.length - 1,
       };
@@ -55,6 +57,11 @@ export class NkTabs extends NkElement {
 
     const initial = Math.max(0, this.#tabs.findIndex((tab) => tab.hasAttribute('data-selected')));
     this.select(initial, false);
+    this.dispose(() => {
+      list.hidden = true;
+      this.removeAttribute('data-enhanced');
+      this.#panels.forEach((panel) => { panel.hidden = false; panel.removeAttribute('role'); panel.removeAttribute('aria-labelledby'); panel.removeAttribute('tabindex'); });
+    });
   }
 
   override onEditorSelect(blockId?: string): void {
@@ -74,7 +81,7 @@ export class NkTabs extends NkElement {
       this.#panels[i]!.hidden = !active;
     });
     this.#moveIndicator(animated);
-    if (animated && previous !== index) {
+    if (animated && previous !== index && !this.hasAttribute('no-transition')) {
       const panel = this.#panels[index]!;
       animate(
         panel,
@@ -112,6 +119,7 @@ export class NkTabs extends NkElement {
     const tab = this.#tabs[this.#index];
     const list = this.ref('tablist');
     if (!indicator || !tab || !list) return;
+    list.setAttribute('aria-orientation', this.dataset.orientation === 'vertical' && matchMedia('(min-width: 990px)').matches ? 'vertical' : 'horizontal');
     indicator.style.transition = animated ? '' : 'none';
     indicator.style.width = `${tab.offsetWidth}px`;
     indicator.style.transform = `translateX(${tab.offsetLeft - list.scrollLeft}px)`;

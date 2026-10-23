@@ -14,6 +14,12 @@ export interface ThemeConfig {
     search: string;
   };
   motion: 'off' | 'minimal' | 'standard';
+  motionOptions: {
+    tempo: 'relaxed' | 'balanced' | 'brisk';
+    stagger: 'none' | 'short' | 'medium' | 'long';
+    scrollEffects: boolean;
+    mobile: 'simple' | 'full' | 'off';
+  };
   cart: {
     afterAdd: 'drawer' | 'notification' | 'page';
     sections: string[];
@@ -35,6 +41,7 @@ const fallback: ThemeConfig = {
     search: '/search',
   },
   motion: 'standard',
+  motionOptions: { tempo: 'balanced', stagger: 'medium', scrollEffects: true, mobile: 'simple' },
   cart: { afterAdd: 'drawer', sections: [] },
   strings: {},
 };
@@ -55,6 +62,7 @@ export function config(): ThemeConfig {
       ...value,
       routes: { ...fallback.routes, ...value.routes },
       cart: { ...fallback.cart, ...value.cart },
+      motionOptions: { ...fallback.motionOptions, ...value.motionOptions },
       strings: { ...fallback.strings, ...value.strings },
     };
   } catch (error) {
@@ -78,6 +86,6 @@ export function t(key: string, replacements: Record<string, string | number> = {
 }
 
 /** Test hook. */
-export function setConfigForTests(value: ThemeConfig | null): void {
-  cached = value;
+export function setConfigForTests(value: (Omit<ThemeConfig, 'motionOptions'> & Partial<Pick<ThemeConfig, 'motionOptions'>>) | null): void {
+  cached = value ? { ...value, motionOptions: { ...fallback.motionOptions, ...value.motionOptions } } : null;
 }

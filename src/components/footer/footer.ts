@@ -1,6 +1,6 @@
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
-import { decorativeMotionAllowed } from '../../core/motion';
+import { decorativeMotionAllowed, motionMode } from '../../core/motion';
 
 /** Responsive native footer menus and a reveal that is enabled only when the footer fits. */
 export class NkFooter extends NkElement {
@@ -14,9 +14,9 @@ export class NkFooter extends NkElement {
     };
     const layout = () => {
       menus.forEach((menu) => {
-        menu.open = desktop.matches;
+        menu.open = desktop.matches || this.dataset.mobileMenus === 'open';
         const summary = menu.querySelector('summary');
-        if (summary) summary.tabIndex = desktop.matches ? -1 : 0;
+        if (summary) summary.tabIndex = desktop.matches || this.dataset.mobileMenus === 'open' ? -1 : 0;
       });
       update();
     };
@@ -35,7 +35,7 @@ export class NkFooter extends NkElement {
     this.observeResize(this, () => { fitWordmark(); update(); });
     this.#beam();
     this.on(this, 'click', (event) => {
-      if (desktop.matches && (event.target as Element).closest('[data-footer-menu] > summary')) {
+      if ((desktop.matches || this.dataset.mobileMenus === 'open') && (event.target as Element).closest('[data-footer-menu] > summary')) {
         event.preventDefault(); event.stopPropagation();
       }
     }, { capture: true });
@@ -72,7 +72,8 @@ export class NkFooter extends NkElement {
       const spacing = (parseFloat(style.letterSpacing) || 0) / (parseFloat(style.fontSize) || 100) * 100;
       const measured = metrics.width + Math.max(0, Array.from(text).length - 1) * spacing;
       if (measured <= 0) return;
-      const size = Math.min(300, 100 * available / measured);
+      const scale = Math.max(.7, Math.min(1, Number(this.dataset.wordmarkScale || 100) / 100));
+      const size = Math.min(300, 100 * available / measured) * scale;
       word.style.fontSize = `${size}px`;
       this.style.setProperty('--footer-word-size', `${size}px`);
       const ascent = metrics.fontBoundingBoxAscent;
@@ -111,7 +112,7 @@ export class NkFooter extends NkElement {
     let beam = 58; let x = this.clientWidth / 2; let y = 0; let glow = 0;
     let targetX = x; let targetY = y; let u = .5;
     let last = 0; let time = 0;
-    const allowed = () => decorativeMotionAllowed() && !this.hasAttribute('data-editor-selected');
+    const allowed = () => motionMode() !== 'off' && !this.hasAttribute('data-editor-selected');
     const paint = () => {
       this.style.setProperty('--footer-beam', `${beam.toFixed(2)}%`);
       this.style.setProperty('--footer-pointer-x', `${x.toFixed(1)}px`);
@@ -137,7 +138,7 @@ export class NkFooter extends NkElement {
       const uncovered = !this.hasAttribute('data-reveal-ready') || !main || main.getBoundingClientRect().bottom < innerHeight - 16;
       const exposed = visible && uncovered && !document.hidden;
       if (exposed && !this.hasAttribute('data-entered')) this.setAttribute('data-entered', '');
-      if (exposed && allowed() && this.hasAttribute('data-beam')) {
+      if (exposed && allowed() && motionMode() === 'full' && this.hasAttribute('data-beam')) {
         if (!frame) { last = performance.now(); frame = requestAnimationFrame(tick); }
       } else if (frame || !allowed()) {
         cancelAnimationFrame(frame); frame = 0;

@@ -1,8 +1,8 @@
 nk-expand-media {
-  --e: 0;
-  --title: 1;
-  --overlay: 0;
-  --hint: 1;
+  --e: 1;
+  --title: 0;
+  --overlay: 1;
+  --hint: 0;
   --start-w: 42;
   --start-h: 58;
   --zoom: 1.35;
@@ -124,8 +124,17 @@ nk-expand-media[data-static] .expand__track {
 
 nk-expand-media[data-static] .expand__stage {
   position: relative;
-  height: min(100svh, 820px);
+  height: auto;
+  min-height: min(100svh, 820px);
 }
+
+nk-expand-media[data-static][data-static-height='compact'] .expand__stage { min-height: min(60svh, 520px); }
+nk-expand-media[data-static] .expand__frame { position: relative; min-height: inherit; }
+nk-expand-media[data-static] .expand__overlay { position: relative; min-height: inherit; }
+nk-expand-media .expand__overlay { pointer-events: none; }
+nk-expand-media .expand__overlay > * { max-width: min(100%, var(--expand-copy-width, 60ch)); min-width: 0; overflow-wrap: anywhere; pointer-events: auto; }
+nk-expand-media[data-align='left'] .expand__overlay { text-align: left; justify-items: start; }
+nk-expand-media[data-align='right'] .expand__overlay { text-align: right; justify-items: end; }
 
 nk-expand-media[data-static] .expand__title,
 nk-expand-media[data-static] .expand__hint {

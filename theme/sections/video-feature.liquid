@@ -1,0 +1,512 @@
+{%- comment -%}
+  Poster that loads a Shopify, YouTube or Vimeo video on click, or a silent looping video. Adapted from Shopify Dawn sections/video.liquid + deferred-media.
+  Source and license: docs/SECTION-SOURCES.md.
+{%- endcomment -%}
+{%- liquid
+  assign video = section.settings.video
+  assign external = section.settings.video_url
+  assign poster = section.settings.cover_image | default: video.preview_image
+  assign title = section.settings.description | default: section.settings.heading | default: 'Video'
+  assign ambient = false
+  if section.settings.play_mode == 'ambient' and video != blank and external == blank
+    assign ambient = true
+  endif
+-%}
+<section class="video-feature kit-section full-width section-spacing section-presentation color-{{ section.settings.color_scheme }}" data-heading="{{ section.settings.heading_size }}" data-corners="{{ section.settings.corner_style }}" data-buttons="{{ section.settings.button_size }}" data-ratio="{{ section.settings.ratio }}" data-width="{{ section.settings.video_width }}" data-play="{{ section.settings.play_button }}" data-align="{{ section.settings.alignment }}" style="{% render 'section-presentation', presentation: section.settings %}">
+  {%- case section.settings.entrance -%}{%- when 'fade' -%}<nk-reveal class="kit-entrance" mode="fade">{%- when 'stagger' -%}<nk-stagger class="kit-entrance">{%- endcase -%}
+  <div class="video-feature__inner">
+    {% render 'section-heading', heading: section.settings.heading, text: section.settings.text, align: section.settings.alignment %}
+    {%- if ambient -%}
+      <div class="video-feature__frame">
+        {{ video | video_tag: autoplay: true, muted: true, loop: true, playsinline: true, controls: false, image_size: '1600x' }}
+      </div>
+    {%- else -%}
+      <nk-video class="video-feature__frame">
+        {%- capture poster_markup -%}
+          {%- if poster != blank -%}{{ poster | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '360, 540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 1200px) 1200px, 100vw', class: 'video-feature__poster-image' }}{%- else -%}{{ 'lifestyle-2' | placeholder_svg_tag: 'video-feature__poster-image kit-placeholder' }}{%- endif -%}
+          <span class="video-feature__play" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+          {%- if section.settings.poster_label != blank -%}<span class="video-feature__label" aria-hidden="true">{{ section.settings.poster_label | escape }}</span>{%- endif -%}
+        {%- endcapture -%}
+        {%- assign play_label = 'sections.video.play' | t: title: title -%}
+        {%- if external != blank -%}
+          <a class="video-feature__poster" data-ref="play" href="{{ external }}" aria-label="{{ play_label | escape }}">{{ poster_markup }}</a>
+        {%- else -%}
+          <button type="button" class="video-feature__poster" data-ref="play" aria-label="{{ play_label | escape }}" {% if video == blank %}disabled{% endif %}>{{ poster_markup }}</button>
+        {%- endif -%}
+        <template data-ref="media">
+          {%- if external.type == 'youtube' -%}
+            <iframe src="https://www.youtube-nocookie.com/embed/{{ external.id }}?autoplay=1&rel=0&playsinline=1{% if section.settings.loop %}&loop=1&playlist={{ external.id }}{% endif %}" title="{{ title | escape }}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+          {%- elsif external.type == 'vimeo' -%}
+            <iframe src="https://player.vimeo.com/video/{{ external.id }}?autoplay=1&dnt=1{% if section.settings.loop %}&loop=1{% endif %}" title="{{ title | escape }}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+          {%- elsif video != blank -%}
+            {{ video | video_tag: controls: true, playsinline: true, loop: section.settings.loop, image_size: '1600x' }}
+          {%- endif -%}
+        </template>
+      </nk-video>
+    {%- endif -%}
+    {%- assign button_blocks = section.blocks | where: 'type', 'button' -%}
+      {%- if button_blocks.size > 0 -%}
+        <div class="kit-buttons">
+          {%- for block in button_blocks -%}<div {{ block.shopify_attributes }}>{% render 'nk-button', label: block.settings.label, link: block.settings.link, style: block.settings.style, new_tab: block.settings.new_tab %}</div>{%- endfor -%}
+        </div>
+      {%- endif -%}
+  </div>
+  {%- case section.settings.entrance -%}{%- when 'fade' -%}</nk-reveal>{%- when 'stagger' -%}</nk-stagger>{%- endcase -%}
+</section>
+
+{% stylesheet %}
+.video-feature__inner { width: var(--content-width); margin-inline: auto; display: grid; gap: 28px; }
+.video-feature[data-align='center'] .kit-buttons { justify-content: center; }
+.video-feature__frame { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: var(--nk-color-surface); border-radius: var(--kit-radius); justify-self: center; }
+.video-feature[data-width='narrow'] .video-feature__frame { max-width: 960px; }
+.video-feature[data-ratio='cinema'] .video-feature__frame { aspect-ratio: 21 / 9; }
+.video-feature[data-ratio='classic'] .video-feature__frame { aspect-ratio: 4 / 3; }
+.video-feature[data-ratio='square'] .video-feature__frame { aspect-ratio: 1; max-width: min(100%, 85svh); }
+.video-feature[data-ratio='portrait'] .video-feature__frame { aspect-ratio: 9 / 16; max-width: min(100%, 48svh); }
+.video-feature__poster { position: absolute; inset: 0; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; color: inherit; }
+.video-feature__poster[disabled] { cursor: default; }
+.video-feature__poster-image { width: 100%; height: 100%; object-fit: cover; }
+.video-feature__play { position: absolute; inset: 0; margin: auto; display: grid; place-items: center; width: 72px; height: 72px; border-radius: 50%; background: #fff; color: #111; box-shadow: 0 6px 24px rgb(0 0 0 / 0.2); }
+.video-feature[data-play='dark'] .video-feature__play { background: #111; color: #fff; }
+.video-feature[data-play='outline'] .video-feature__play { background: rgb(0 0 0 / 0.2); color: #fff; box-shadow: inset 0 0 0 2px #fff; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.video-feature[data-play='large'] .video-feature__play { width: 112px; height: 112px; }
+.video-feature__label { position: absolute; left: 50%; top: calc(50% + 52px); translate: -50% 0; padding: 4px 12px; background: rgb(0 0 0 / 0.5); color: #fff; font-family: var(--nk-font-spec); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+.video-feature[data-play='large'] .video-feature__label { top: calc(50% + 72px); }
+.video-feature__frame iframe, .video-feature__frame video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Video",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Video"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Shopify-hosted video"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "label": "Or YouTube / Vimeo URL",
+      "accept": [
+        "youtube",
+        "vimeo"
+      ],
+      "info": "Used instead of the uploaded video when set."
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Video description",
+      "info": "Describes the video for screen readers."
+    },
+    {
+      "type": "select",
+      "id": "play_mode",
+      "label": "Playback",
+      "options": [
+        {
+          "value": "click",
+          "label": "Poster, plays on click"
+        },
+        {
+          "value": "ambient",
+          "label": "Silent loop, starts automatically"
+        }
+      ],
+      "default": "click",
+      "info": "The silent loop works with Shopify-hosted video only."
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop after playing",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Poster"
+    },
+    {
+      "type": "image_picker",
+      "id": "cover_image",
+      "label": "Cover image"
+    },
+    {
+      "type": "select",
+      "id": "play_button",
+      "label": "Play button",
+      "options": [
+        {
+          "value": "light",
+          "label": "Light"
+        },
+        {
+          "value": "dark",
+          "label": "Dark"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        },
+        {
+          "value": "large",
+          "label": "Large light"
+        }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "text",
+      "id": "poster_label",
+      "label": "Label under the play button",
+      "info": "For example the running time, such as 1:24."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "ratio",
+      "label": "Aspect ratio",
+      "options": [
+        {
+          "value": "landscape",
+          "label": "16:9"
+        },
+        {
+          "value": "cinema",
+          "label": "Cinema 21:9"
+        },
+        {
+          "value": "classic",
+          "label": "4:3"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait 9:16"
+        }
+      ],
+      "default": "landscape"
+    },
+    {
+      "type": "select",
+      "id": "video_width",
+      "label": "Video width",
+      "options": [
+        {
+          "value": "full",
+          "label": "Full content width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (960px)"
+        }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "xlarge",
+          "label": "Extra large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "corner_style",
+      "label": "Corners",
+      "options": [
+        {
+          "value": "theme",
+          "label": "Theme default"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "soft",
+          "label": "Soft"
+        },
+        {
+          "value": "round",
+          "label": "Round"
+        }
+      ],
+      "default": "theme",
+      "info": "Applies to images, cards and buttons in this section."
+    },
+    {
+      "type": "select",
+      "id": "button_size",
+      "label": "Button size",
+      "options": [
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "regular",
+          "label": "Theme default"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "select",
+      "id": "entrance",
+      "label": "Entrance animation",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fade",
+          "label": "Fade in section"
+        },
+        {
+          "value": "stagger",
+          "label": "Items rise one by one"
+        }
+      ],
+      "default": "none",
+      "info": "Skipped when visitors prefer reduced motion or motion is off in Theme settings."
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (1200px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (1440px)"
+        },
+        {
+          "value": "full",
+          "label": "Full width with page gutters"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "button",
+      "name": "Button",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Shop now"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "default": "/collections/all"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            {
+              "value": "solid",
+              "label": "Solid"
+            },
+            {
+              "value": "outline",
+              "label": "Outline"
+            },
+            {
+              "value": "pill",
+              "label": "Pill"
+            },
+            {
+              "value": "sweep",
+              "label": "Center sweep"
+            },
+            {
+              "value": "offset",
+              "label": "Offset shadow"
+            },
+            {
+              "value": "press",
+              "label": "3D press"
+            },
+            {
+              "value": "link",
+              "label": "Text link"
+            }
+          ],
+          "default": "solid"
+        },
+        {
+          "type": "checkbox",
+          "id": "new_tab",
+          "label": "Open link in a new tab",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video",
+      "settings": {
+        "heading": "Behind the seams"
+      }
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
+}
+{% endschema %}

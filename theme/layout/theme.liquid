@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}" class="no-js">
+<html lang="{{ request.locale.iso_code }}" class="no-js" data-button-motion="{{ settings.button_motion | default: 'expressive' }}">
   <head>
     {%- # Flag JS support before first paint; motion/reveal styles key off these classes. -%}
     <script>
@@ -7,7 +7,7 @@
       {%- if settings.motion_level == 'off' %}
         document.documentElement.classList.add('nk-motion-off');
       {%- elsif settings.motion_level == 'standard' and request.design_mode == false %}
-        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('nk-anim');
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches{% if settings.motion_mobile == 'off' %} && !matchMedia('(max-width: 749px)').matches{% endif %}) document.documentElement.classList.add('nk-anim');
       {%- endif %}
     </script>
 

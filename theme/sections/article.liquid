@@ -6,15 +6,14 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/article
 {% endcomment %}
 
-<article class="section-spacing" style="max-width: 72ch; margin-inline: auto;">
+<article class="section-spacing color-{{ section.settings.color_scheme }}" style="max-width: {{ section.settings.width | default: 72 }}ch; margin-inline: auto;">
   <div class="collection-header">
-    <h1 class="display">{{ article.title }}</h1>
+    <h1 class="display">{{ article.title | escape }}</h1>
   </div>
 
-  {% assign date = article.published_at | time_tag: format: 'date' %}
-  <p class="spec text-muted" style="margin-bottom: 24px;">{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
+  <div style="margin-bottom: 24px;">{% render 'article-meta', article: article, show_date: section.settings.show_date, show_author: section.settings.show_author %}</div>
 
-  {% if article.image %}
+  {% if article.image and section.settings.show_image != false %}
     <div style="margin-bottom: 32px;">
       {{ article.image | image_url: width: 1400 | image_tag: widths: '600, 1000, 1400', sizes: '(min-width: 750px) 72ch, 100vw', alt: article.image.alt }}
     </div>
@@ -22,7 +21,7 @@
 
   <div class="rte">{{ article.content }}</div>
 
-  {% if blog.comments_enabled? %}
+  {% if blog.comments_enabled? and section.settings.show_comments != false %}
     <div style="margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--nk-color-line);">
       <h2 style="margin-bottom: 20px;">{{ 'blog.article_comments' | t }}</h2>
 
@@ -30,7 +29,7 @@
         {% paginate article.comments by 10 %}
           {% for comment in article.comments %}
             <div style="padding-bottom: 16px; border-bottom: 1px solid var(--nk-color-line);">
-              <p class="spec">{{ comment.author }} · {{- comment.created_at | time_tag: format: 'date' -}}</p>
+              <p class="spec">{{ comment.author | escape }} · {{- comment.created_at | time_tag: format: 'date' -}}</p>
               <div class="rte">{{ comment.content }}</div>
             </div>
           {% endfor %}
@@ -41,8 +40,10 @@
         {% endpaginate %}
       </div>
 
-      {% form 'new_comment', article %}
+      {% assign comment_form_id = 'CommentForm-' | append: section.id %}
+      {% form 'new_comment', article, id: comment_form_id %}
         <h2 style="margin-bottom: 16px;">{{ 'blog.comment_form_title' | t }}</h2>
+        {% if form.posted_successfully? %}<p class="message" role="status">{{ 'blog.comment_received' | t }}</p>{% endif %}
 
         {% if form.errors %}
           <div class="message message--error" style="margin-bottom: 16px;">{{ form.errors | default_errors }}</div>
@@ -50,18 +51,18 @@
 
         <div style="display: grid; gap: 16px;">
           <div style="display: grid; gap: 6px;">
-            <label class="spec" for="author">{{ 'blog.comment_form_name' | t }}</label>
-            <input type="text" name="comment[author]" id="author" value="{{ form.author }}" required style="min-height: 48px; padding: 0 12px; border: 1px solid var(--nk-color-line); background: transparent;">
+            <label class="spec" for="CommentAuthor-{{ section.id }}">{{ 'blog.comment_form_name' | t }}</label>
+            <input type="text" name="comment[author]" id="CommentAuthor-{{ section.id }}" value="{{ form.author | escape }}" required style="min-height: 48px; padding: 0 12px; border: 1px solid var(--nk-color-line); background: transparent;">
           </div>
 
           <div style="display: grid; gap: 6px;">
-            <label class="spec" for="email">{{ 'blog.comment_form_email' | t }}</label>
-            <input type="email" name="comment[email]" id="email" value="{{ form.email }}" required style="min-height: 48px; padding: 0 12px; border: 1px solid var(--nk-color-line); background: transparent;">
+            <label class="spec" for="CommentEmail-{{ section.id }}">{{ 'blog.comment_form_email' | t }}</label>
+            <input type="email" name="comment[email]" id="CommentEmail-{{ section.id }}" value="{{ form.email | escape }}" required style="min-height: 48px; padding: 0 12px; border: 1px solid var(--nk-color-line); background: transparent;">
           </div>
 
           <div style="display: grid; gap: 6px;">
-            <label class="spec" for="body">{{ 'blog.comment_form_body' | t }}</label>
-            <textarea name="comment[body]" id="body" rows="4" required style="padding: 12px; border: 1px solid var(--nk-color-line); background: transparent;">{{ form.body }}</textarea>
+            <label class="spec" for="CommentBody-{{ section.id }}">{{ 'blog.comment_form_body' | t }}</label>
+            <textarea name="comment[body]" id="CommentBody-{{ section.id }}" rows="4" required style="padding: 12px; border: 1px solid var(--nk-color-line); background: transparent;">{{ form.body | escape }}</textarea>
           </div>
 
           <div>
@@ -76,6 +77,54 @@
 {% schema %}
 {
   "name": "t:general.article",
-  "settings": []
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "width",
+      "label": "Reading width",
+      "min": 56,
+      "max": 96,
+      "step": 4,
+      "default": 72,
+      "unit": "ch"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show article image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_comments",
+      "label": "Show comments and comment form",
+      "default": true,
+      "info": "Requires comments to be enabled for this blog in Shopify."
+    }
+  ],
+  "limit": 1,
+  "enabled_on": {
+    "templates": [
+      "article"
+    ]
+  }
 }
 {% endschema %}

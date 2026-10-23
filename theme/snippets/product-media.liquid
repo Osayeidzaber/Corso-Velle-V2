@@ -6,6 +6,7 @@
 
   @param {object} product - The product
   @param {object} [selected_variant] - Currently selected variant (optional)
+  @param {object} [options] - Section gallery layout, ratio, fit, controls and zoom choices
 
   @example
   {% render 'product-media', product: product, selected_variant: variant %}
@@ -19,10 +20,14 @@
   aria-label="{{ 'product.gallery' | t }}"
   role="region"
   data-media-count="{{ media_count }}"
+  data-layout="{{ options.gallery_layout | default: 'slider' }}"
+  data-ratio="{{ options.gallery_ratio | default: 'square' }}"
+  data-fit="{{ options.gallery_fit | default: 'contain' }}"
+  data-backdrop="{{ options.gallery_background | default: 'white' }}"
   {% if initial_media_id %}data-initial-media-id="{{ initial_media_id }}"{% endif %}
 >
   <div class="gallery__stage">
-    {%- if media_count > 1 -%}
+    {%- if media_count > 1 and options.show_thumbnails != false -%}
       <div class="gallery__thumbs" data-ref="thumbs" role="group" aria-label="{{ 'product.gallery' | t }}">
         {%- for media in product.media -%}
           {%- assign thumb_alt = media.alt | default: product.title -%}
@@ -57,7 +62,7 @@
             data-ref="slide"
             data-media-id="{{ media.id }}"
             data-slide-index="{{ forloop.index0 }}"
-            {% if media.media_type == 'image' %}
+            {% if media.media_type == 'image' and options.enable_zoom != false %}
               data-zoom-src="{{ media | image_url: width: 2200 }}"
               data-zoom-alt="{{ alt | escape }}"
             {% endif %}
@@ -86,14 +91,14 @@
                       sizes: '(min-width: 990px) 58vw, 100vw'
                   }}
                 {%- endif -%}
-                <button
+                {% if options.enable_zoom != false %}<button
                   type="button"
                   class="gallery__zoom-trigger icon-button"
                   data-gallery-zoom="{{ forloop.index0 }}"
                   aria-label="{{ 'product.zoom' | t }} ({{ forloop.index }} / {{ media_count }})"
                 >
                   {% render 'icon', name: 'plus', size: 16 %}
-                </button>
+                </button>{% endif %}
               {%- when 'video' -%}
                 {{ media | video_tag: controls: true, muted: true, playsinline: true, preload: 'none', image_size: '1200x' }}
               {%- when 'external_video' -%}
@@ -111,7 +116,7 @@
         {%- endfor -%}
       </ul>
 
-      {%- if media_count > 1 -%}
+      {%- if media_count > 1 and options.show_gallery_controls != false -%}
         <div class="gallery__controls">
           <button type="button" class="icon-button" data-gallery-step="-1" aria-label="{{ 'product.previous_media' | t }}">
             {% render 'icon', name: 'arrow-left' %}
@@ -125,7 +130,7 @@
     </div>
   </div>
 
-  {%- if media_count > 0 -%}
+  {%- if media_count > 0 and options.enable_zoom != false -%}
     <dialog class="gallery-lightbox" data-ref="lightbox" closedby="any" aria-label="{{ 'product.gallery' | t }}">
       <div class="gallery-lightbox__bar">
         <span class="spec" data-ref="lightbox-counter">1 / {{ media_count }}</span>

@@ -1,0 +1,26 @@
+import { afterEach, expect, it, vi } from 'vitest';
+const animate = vi.hoisted(() => vi.fn());
+vi.mock('../../src/core/motion', () => ({ animate, transitionsAllowed: () => true }));
+import { measurementDisclosure } from '../../src/components/product/measurement-disclosure';
+afterEach(() => { document.body.innerHTML = ''; vi.clearAllMocks(); });
+it('reverses a closing panel without hiding it or leaving an inaccessible open chart', () => {
+  const animations: { cancel: ReturnType<typeof vi.fn>; onfinish?: () => void }[] = [];
+  animate.mockImplementation(() => { const a = { cancel: vi.fn() }; animations.push(a); return a; });
+  const panel = document.createElement('div'); panel.hidden = true; document.body.append(panel);
+  const disclosure = measurementDisclosure(panel); const shell = panel.parentElement!;
+  disclosure.setOpen(true);
+  expect(panel.hidden).toBe(false);
+  expect(shell.inert).toBe(false);
+  animations[0]!.onfinish?.();
+  disclosure.setOpen(false);
+  expect(panel.hidden).toBe(false);
+  expect(shell.inert).toBe(true);
+  disclosure.setOpen(true);
+  expect(animations[1]!.cancel).toHaveBeenCalledOnce();
+  animations[2]!.onfinish?.();
+  expect(panel.hidden).toBe(false);
+  expect(shell.style.height).toBe('auto');
+  expect(shell.inert).toBe(false);
+  disclosure.dispose();
+  expect(panel.parentElement).toBe(document.body);
+});

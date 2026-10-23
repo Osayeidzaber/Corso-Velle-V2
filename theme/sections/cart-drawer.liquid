@@ -4,7 +4,7 @@
   Only the [data-cart-section] region is replaced; the dialog shell and its focus stay put.
 {%- endcomment -%}
 <nk-cart-drawer id="CartDrawer">
-  <dialog class="drawer drawer--right cart-drawer" aria-labelledby="CartDrawerTitle">
+  <dialog class="drawer drawer--right cart-drawer color-{{ section.settings.color_scheme }}" data-line-density="{{ section.settings.density }}" data-width="{{ section.settings.width }}" aria-labelledby="CartDrawerTitle">
     <div class="drawer__header">
       <h2 class="drawer__title spec" id="CartDrawerTitle" tabindex="-1" data-autofocus>{{ 'cart.title' | t }}</h2>
       <button type="button" class="icon-button" data-nk-close aria-label="{{ 'general.close' | t }}">
@@ -29,7 +29,7 @@
             <p class="visually-hidden">{{ 'cart.item_count' | t: count: cart.item_count }}</p>
             <ul class="cart-lines" role="list">
               {%- for item in cart.items -%}
-                {% render 'line-item', item: item, context: 'drawer' %}
+                {% render 'line-item', item: item, context: 'drawer', show_image: section.settings.show_images %}
               {%- endfor -%}
             </ul>
           </div>
@@ -58,6 +58,60 @@
 {% schema %}
 {
   "name": "Cart drawer",
-  "settings": []
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "density",
+      "label": "Cart line spacing",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Regular"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "airy",
+          "label": "Airy"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_images",
+      "label": "Show product images",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Drawer width",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Regular (420px)"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (360px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (560px)"
+        }
+      ],
+      "default": "regular"
+    }
+  ],
+  "limit": 1
 }
 {% endschema %}

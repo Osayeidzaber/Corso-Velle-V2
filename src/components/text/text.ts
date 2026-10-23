@@ -1,6 +1,6 @@
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
-import { decorativeMotionAllowed } from '../../core/motion';
+import { motionMode, motionTempo, motionStagger } from '../../core/motion';
 
 type Effect = 'cut' | 'rise' | 'blur' | 'flip' | 'pop' | 'skew' | 'fold' | 'fade';
 type SplitBy = 'chars' | 'words' | 'lines';
@@ -25,7 +25,7 @@ export class NkText extends NkElement {
   #frame = 0;
 
   protected mount(): void {
-    if (!decorativeMotionAllowed() || this.hasAttribute('data-done')) {
+    if (motionMode() === 'off' || this.hasAttribute('data-done')) {
       this.#show();
       return;
     }
@@ -64,8 +64,9 @@ export class NkText extends NkElement {
     const target = this.querySelector<HTMLElement>('[data-text-target]') ?? (this.firstElementChild as HTMLElement | null);
     if (!target) return this.#show();
 
-    const effect = (this.getAttribute('effect') ?? 'cut') as Effect;
-    const by = (this.getAttribute('split') ?? 'words') as SplitBy;
+    const simple = motionMode() === 'simple';
+    const effect = (simple ? 'fade' : this.getAttribute('effect') ?? 'cut') as Effect;
+    const by = (simple ? 'words' : this.getAttribute('split') ?? 'words') as SplitBy;
     const hover = (this.getAttribute('hover') ?? 'none') as Hover;
     const from = (this.getAttribute('stagger-from') ?? 'start') as 'start' | 'center' | 'end';
 
@@ -84,8 +85,9 @@ export class NkText extends NkElement {
     const em = Number.parseFloat(getComputedStyle(target).fontSize) || 16;
     const pieces = by === 'chars' ? chars : words;
     const look = effectVars(effect, em);
-    const each = Number(this.getAttribute('stagger')) || (by === 'chars' ? 0.024 : 0.065);
-    const duration = Number(this.getAttribute('duration')) || look.duration;
+    const requestedStagger = this.hasAttribute('stagger') ? Number(this.getAttribute('stagger')) : motionStagger();
+    const each = Math.min(Math.max(0, requestedStagger), 0.35 / Math.max(1, pieces.length - 1));
+    const duration = (Number(this.getAttribute('duration')) || (simple ? 0.45 : look.duration)) * motionTempo();
 
     const context = gsap.context(() => {
       gsap.set(pieces, look.from);
@@ -104,7 +106,7 @@ export class NkText extends NkElement {
       if (by === 'lines') {
         // Words that share a line move together; lines follow each other.
         lineGroups(words).forEach((line, index) => {
-          timeline.to(line, { ...look.to, duration, ease: look.ease }, index * 0.11);
+          timeline.to(line, { ...look.to, duration, ease: look.ease }, index * each);
         });
       } else {
         timeline.to(pieces, { ...look.to, duration, ease: look.ease, stagger: { each, from } }, 0);
@@ -113,7 +115,11 @@ export class NkText extends NkElement {
       if (this.hasAttribute('play-on-load')) {
         timeline.play(0);
       } else {
-        ScrollTrigger.create({ trigger: this, start: 'top 88%', once: true, onEnter: () => timeline.play(0) });
+        ScrollTrigger.create({
+          trigger: this, start: 'top 90%', once: true,
+          onEnter: () => timeline.play(0),
+          onLeave: () => { timeline.progress(1); },
+        });
       }
     }, this);
     this.#revert = () => { context.revert(); target.innerHTML = originalHTML; };

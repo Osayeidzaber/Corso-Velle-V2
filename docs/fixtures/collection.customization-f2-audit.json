@@ -1,0 +1,10 @@
+{
+  "sections": {
+    "inherited": { "type": "media-text", "settings": { "collection": "timeless-basics-26", "heading": "Inherited presentation", "text": "<p>Theme width, theme spacing. This instance should remain independent of its neighbours.</p>", "scene_preset": "off", "color_scheme": "scheme-1" } },
+    "narrow": { "type": "media-text", "settings": { "collection": "timeless-basics-26", "heading": "Narrow editorial", "text": "<p>Custom padding includes a true zero at the top on desktop.</p>", "content_width": "narrow", "spacing_mode": "custom", "padding_top": 0, "padding_bottom": 200, "padding_top_small": 12, "padding_bottom_small": 28, "scene_preset": "off", "color_scheme": "scheme-2" } },
+    "wide": { "type": "media-text", "settings": { "collection": "timeless-basics-26", "heading": "Wide editorial", "heading_italic": "AReallyLongUnbrokenHeadingForNarrowScreenTesting", "text": "<p>Independent padding, image order and appearance. Zero padding on smaller screens remains zero.</p>", "media_right": true, "text_first_mobile": true, "content_width": "wide", "spacing_mode": "custom", "padding_top": 96, "padding_bottom": 32, "padding_top_small": 0, "padding_bottom_small": 200, "scene_preset": "off", "color_scheme": "scheme-1" } },
+    "full": { "type": "media-text", "settings": { "collection": "timeless-basics-26", "heading": "Full width overlay", "text": "<p>The background spans the viewport while image and copy keep the page gutters.</p>", "content_width": "full", "layout": "overlay", "scene_preset": "off", "color_scheme": "scheme-2" } },
+    "control": { "type": "featured-collection", "settings": { "collection": "shackets", "heading": "Unchanged neighbour", "limit": 4, "color_scheme": "scheme-1" } }
+  },
+  "order": ["inherited", "narrow", "wide", "full", "control"]
+}

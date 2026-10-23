@@ -19,6 +19,11 @@
   --color-line: var(--nk-color-line);
   --color-accent: var(--nk-color-accent);
   --color-on-accent: var(--nk-color-accent-text);
+  --color-accent-hover: var(--nk-accent-hover);
+  --color-accent-active: var(--nk-accent-active);
+  --color-accent-subtle: var(--nk-accent-subtle);
+  --color-accent-selected: var(--nk-accent-selected);
+  --color-accent-border: var(--nk-accent-border);
   --font-serif: var(--nk-font-heading);
   --font-sans: var(--nk-font-body);
   --font-label: var(--nk-font-spec);

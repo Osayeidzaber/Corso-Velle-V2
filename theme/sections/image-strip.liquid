@@ -6,11 +6,11 @@
 {%- assign items = section.blocks | where: 'type', 'image' -%}
 {%- assign source = section.settings.collection -%}
 {%- if items.size > 0 or source.products.size > 0 -%}
-  <div class="image-strip full-width section-spacing color-{{ section.settings.color_scheme }}">
+  <div class="image-strip full-width section-spacing section-presentation color-{{ section.settings.color_scheme }}" data-layout="{{ section.settings.layout }}" data-shape="{{ section.settings.image_shape }}" data-fit="{{ section.settings.image_fit }}" data-phone-height="{{ section.settings.height_mobile }}" {% if section.settings.grayscale %}data-grayscale{% endif %} style="{% render 'section-presentation', presentation: section.settings %}--strip-h-input:{{ section.settings.height }}px;">
     {%- if section.settings.heading != blank -%}
       <h2 class="image-strip__heading spec">{{ section.settings.heading | escape }}</h2>
     {%- endif -%}
-    <nk-marquee speed="{{ section.settings.speed }}" hover-speed="0.2" {% if section.settings.reverse %}direction="right"{% endif %} fade-edges style="--nk-marquee-gap: {{ section.settings.gap | divided_by: 2 }}px; --strip-h: {{ section.settings.height }}px;">
+    <nk-marquee speed="{{ section.settings.speed }}" hover-speed="0.2" {% if section.settings.layout == 'grid' %}static{% endif %} {% if section.settings.static_mobile %}static-on-phone{% endif %} {% if section.settings.reverse %}direction="right"{% endif %} {% if section.settings.fade_edges != false %}fade-edges{% endif %} style="--nk-marquee-gap: {{ section.settings.gap | divided_by: 2 }}px;">
       <div class="marquee__track" data-ref="track">
         <ul class="marquee__list" data-ref="list" role="list">
           {%- if source.products.size > 0 -%}
@@ -35,6 +35,7 @@
                   {{ 'image' | placeholder_svg_tag: 'image-strip__placeholder' }}
                 {%- endif -%}
               {%- endcapture -%}
+              {% if section.settings.show_labels and block.settings.label != blank %}{% capture media %}{{ media }}<span class="image-strip__label spec">{{ block.settings.label | escape }}</span>{% endcapture %}{% endif %}
               {%- if block.settings.link != blank -%}
                 <a href="{{ block.settings.link }}">{{ media }}</a>
               {%- else -%}
@@ -44,11 +45,29 @@
           {%- endfor -%}
         </ul>
       </div>
+      <button type="button" class="marquee__pause" data-ref="pause" aria-pressed="false" aria-label="{{ 'marquee.pause' | t }}" hidden>❚❚</button>
     </nk-marquee>
   </div>
 {%- endif -%}
 
 {% stylesheet %}
+  .image-strip { --strip-h: var(--strip-h-input, 140px); }
+  .image-strip[data-grayscale] img { filter: grayscale(1); }
+  .image-strip[data-fit='contain'] .image-strip__item img { object-fit: contain; }
+  .image-strip[data-shape='square'] .image-strip__item img { width: var(--strip-h); }
+  .image-strip[data-shape='portrait'] .image-strip__item img { width: calc(var(--strip-h) * .8); }
+  .image-strip[data-shape='landscape'] .image-strip__item img { width: calc(var(--strip-h) * 1.5); }
+  .image-strip .image-strip__label { display: block; margin-top: 12px; text-align: center; white-space: normal; }
+  .image-strip[data-layout='grid'] nk-marquee { overflow: visible; mask-image: none; }
+  .image-strip[data-layout='grid'] .marquee__track { width: var(--content-width); margin-inline: auto; }
+  .image-strip[data-layout='grid'] .marquee__list { width: 100%; flex-wrap: wrap; justify-content: center; row-gap: 24px; }
+  .image-strip[data-layout='grid'] .image-strip__item img { max-width: min(100%, 240px); }
+  .image-strip[data-layout='grid'] .image-strip__item { max-width: 100%; }
+  @media (max-width: 749px) {
+    .image-strip[data-phone-height='small'] { --strip-h: 80px; }
+    .image-strip[data-phone-height='medium'] { --strip-h: 120px; }
+    .image-strip[data-phone-height='large'] { --strip-h: 180px; }
+  }
   .image-strip__heading { width: var(--content-width); margin: 0 auto 16px; }
   .image-strip__item img, .image-strip__placeholder {
     display: block;
@@ -64,31 +83,353 @@
 {
   "name": "Image strip",
   "class": "image-strip-section",
-  "max_blocks": 20,
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading" },
-    { "type": "collection", "id": "collection", "label": "Show products from collection", "info": "Uses each product's main image. Image blocks are added after these." },
-    { "type": "range", "id": "limit", "label": "Products to show", "min": 4, "max": 20, "step": 1, "default": 12 },
-    { "type": "range", "id": "height", "label": "Image height", "min": 40, "max": 300, "step": 10, "unit": "px", "default": 140 },
-    { "type": "range", "id": "gap", "label": "Gap", "min": 0, "max": 64, "step": 4, "unit": "px", "default": 24 },
-    { "type": "range", "id": "speed", "label": "Speed", "min": 10, "max": 120, "step": 10, "unit": "px", "default": 40 },
-    { "type": "checkbox", "id": "reverse", "label": "Move left to right", "default": false },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Show products from collection",
+      "info": "Uses each product's main image. Image blocks are added after these."
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Products to show",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Image height",
+      "min": 40,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 140
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Speed",
+      "min": 10,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "reverse",
+      "label": "Move left to right",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Display",
+      "options": [
+        {
+          "value": "ticker",
+          "label": "Moving strip"
+        },
+        {
+          "value": "grid",
+          "label": "Static wrapped grid"
+        }
+      ],
+      "default": "ticker"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "label": "Image shape",
+      "options": [
+        {
+          "value": "natural",
+          "label": "Natural width"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape"
+        }
+      ],
+      "default": "natural"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Fill and crop"
+        },
+        {
+          "value": "contain",
+          "label": "Entire image"
+        }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "height_mobile",
+      "label": "Phone image height",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "small",
+          "label": "80px"
+        },
+        {
+          "value": "medium",
+          "label": "120px"
+        },
+        {
+          "value": "large",
+          "label": "180px"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "checkbox",
+      "id": "static_mobile",
+      "label": "Static on phones",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "grayscale",
+      "label": "Monochrome images",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_labels",
+      "label": "Show image labels",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "fade_edges",
+      "label": "Fade ticker edges",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (1200px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (1440px)"
+        },
+        {
+          "value": "full",
+          "label": "Full width with page gutters"
+        }
+      ],
+      "default": "inherit",
+      "info": "Sets the width of the image and text together. Background stays full width. All options keep the theme's responsive page gutters."
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px. Custom values are exact and are not multiplied by the global smaller-screen spacing setting."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    }
   ],
   "blocks": [
     {
       "type": "image",
       "name": "Image",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "text", "id": "label", "label": "Accessible label", "info": "Used when the image has no alt text, e.g. a press logo name." },
-        { "type": "url", "id": "link", "label": "Link" }
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Accessible label",
+          "info": "Used when the image has no alt text, e.g. a press logo name."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
       ]
     }
   ],
   "presets": [
-    { "name": "Image strip", "blocks": [{ "type": "image" }, { "type": "image" }, { "type": "image" }, { "type": "image" }] }
+    {
+      "name": "Image strip",
+      "blocks": [
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        }
+      ]
+    },
+    {
+      "name": "Logo grid",
+      "settings": {
+        "layout": "grid",
+        "height": 80,
+        "image_fit": "contain",
+        "grayscale": true
+      },
+      "blocks": [
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        }
+      ]
+    },
+    {
+      "name": "Portrait image strip",
+      "settings": {
+        "image_shape": "portrait",
+        "height": 300
+      },
+      "blocks": [
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        }
+      ]
+    }
   ],
-  "disabled_on": { "groups": ["header", "footer"] }
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
 }
 {% endschema %}

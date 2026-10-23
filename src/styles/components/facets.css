@@ -3,6 +3,10 @@ nk-facets {
   display: block;
 }
 
+nk-facets[data-toolbar='contained'] .facets__toolbar-wrap { margin-inline: 0; padding-inline: 16px; }
+nk-facets[data-toolbar-sticky='false'] .facets__toolbar-wrap { position: static; }
+nk-facets[data-results-gap] .product-grid { column-gap: var(--results-gap, 8px); }
+
 nk-facets[aria-busy='true'] .facets__results-grid {
   opacity: 0.45;
   pointer-events: none;

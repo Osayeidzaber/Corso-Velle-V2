@@ -1,3 +1,6 @@
+import { measurementDisclosure } from './measurement-disclosure';
+import { applyPanelUnit, panelBaseUnit, showMeasurementRow, storedUnit, storeUnit, unitFromEvent, type MeasureUnit } from './measure-units';
+import { installSizeGlide } from './size-glide';
 import { t } from '../../core/config';
 import { parseHTML } from '../../core/dom';
 import { NkElement } from '../../core/element';
@@ -7,10 +10,8 @@ import { Sequencer } from '../../services/request';
 import { MissingFragmentError, replaceRegions, renderSection } from '../../services/sections';
 import { namespaceProductHTML } from './product-dom';
 
-const CM_PER_INCH = 2.54;
-const UNIT_STORAGE_KEY = 'nk:measure-unit';
 /** Grace period before an unselected preview panel collapses, so sweeping across pills never flickers. */
-const PANEL_HIDE_DELAY = 180;
+const PANEL_HIDE_DELAY = 220;
 const OTHER_REGIONS = ['price', 'inventory', 'quantity', 'buy', 'badges'];
 
 /**
@@ -40,9 +41,10 @@ export class NkVariantPicker extends NkElement {
   #sequencer = new Sequencer();
   #chosen = new Set<string>();
   #state: PickerState = 'incomplete';
-  #measureUnit: 'in' | 'cm' | null = null;
+  #measureUnit: MeasureUnit | null = null;
   #shownSize: string | null = null;
-  #panelAnimations: Animation[] = [];
+  #panelDisclosures = new Map<HTMLElement, ReturnType<typeof measurementDisclosure>>();
+  #indicatorAnimation: Animation | null = null;
   #hideTimer = 0;
   #hoverSize: string | undefined;
   #focusSize: string | undefined;
@@ -61,12 +63,7 @@ export class NkVariantPicker extends NkElement {
     this.#hoverSize = undefined;
     this.#focusSize = undefined;
     this.#shownSize = null;
-    try {
-      const savedUnit = sessionStorage.getItem(UNIT_STORAGE_KEY);
-      if (savedUnit === 'in' || savedUnit === 'cm') this.#measureUnit = savedUnit;
-    } catch {
-      // ignore storage errors
-    }
+    this.#measureUnit = storedUnit() ?? this.#measureUnit;
 
     const preselected = this.hasAttribute('data-preselected');
     for (const fieldset of this.#fieldsets()) {
@@ -135,21 +132,23 @@ export class NkVariantPicker extends NkElement {
     });
 
     this.on(document, 'nk:unit:changed', (event) => {
-      const detail = (event as CustomEvent<{ unit: 'in' | 'cm'; source?: Element }>).detail;
-      if (detail?.source !== this && (detail?.unit === 'in' || detail?.unit === 'cm')) {
-        this.#setMeasureUnit(detail.unit, false);
-      }
+      const unit = unitFromEvent(event, this);
+      if (unit) this.#setMeasureUnit(unit, false);
     });
 
     const sizeValues = this.#sizeFieldset()?.querySelector<HTMLElement>('[data-size-values]');
-    if (sizeValues) this.observeResize(sizeValues, () => this.#updateIndicator(true));
+    if (sizeValues) {
+      this.observeResize(sizeValues, () => this.#updateIndicator(true));
+      this.dispose(installSizeGlide(sizeValues, this.signal));
+    }
     // Pill widths follow the web font; re-measure once it has loaded.
     document.fonts?.ready.then(() => {
       if (this.isConnected) this.#updateIndicator(true);
     });
     this.dispose(() => this.#sequencer.cancel());
     this.dispose(() => window.clearTimeout(this.#hideTimer));
-    this.dispose(() => this.#panelAnimations.splice(0).forEach((animation) => animation.cancel()));
+    this.dispose(() => { this.#panelDisclosures.forEach(disclosure => disclosure.dispose()); this.#panelDisclosures.clear(); });
+    this.dispose(() => this.#indicatorAnimation?.cancel());
   }
 
   /** First option group the shopper still has to choose, for focusing from the buy button. */
@@ -341,7 +340,7 @@ export class NkVariantPicker extends NkElement {
     const fieldset = this.#sizeFieldset();
     if (!fieldset) return;
     const selected = (fieldset.querySelector<HTMLInputElement>('input[type="radio"]:checked')?.value ?? '').trim().toUpperCase();
-    const preview = (this.#hoverSize ?? this.#focusSize ?? '').trim().toUpperCase();
+    const preview = this.hasAttribute('data-measure-preview-disabled') ? '' : (this.#hoverSize ?? this.#focusSize ?? '').trim().toUpperCase();
     this.#updateIndicator(false);
     this.#updateMeasurementPanel(fieldset, preview || selected, !!preview && preview !== selected);
   }
@@ -360,11 +359,17 @@ export class NkVariantPicker extends NkElement {
       indicator.removeAttribute('data-active');
       return;
     }
-    const x = `${pill.offsetLeft}px`;
-    const w = `${pill.offsetWidth}px`;
+    const x = `${pill.offsetLeft + (pill.offsetWidth - 14) / 2}px`;
+    const w = '14px';
     const wasActive = indicator.hasAttribute('data-active');
     if (wasActive && indicator.style.getPropertyValue('--indicator-x') === x && indicator.style.getPropertyValue('--indicator-w') === w) return;
 
+    const previousX = parseFloat(indicator.style.getPropertyValue('--indicator-x')) || 0;
+    const live = indicator.getBoundingClientRect();
+    const row = pill.parentElement!;
+    const fromX = live.width ? live.left - row.getBoundingClientRect().left + row.scrollLeft : previousX;
+    const fromScale = live.width ? live.width / 14 : 1;
+    this.#indicatorAnimation?.cancel();
     const jump = instant || !wasActive;
     if (jump) indicator.setAttribute('data-instant', '');
     indicator.style.setProperty('--indicator-x', x);
@@ -374,7 +379,17 @@ export class NkVariantPicker extends NkElement {
       void indicator.offsetWidth; // commit the jump before transitions are restored
       indicator.removeAttribute('data-instant');
     }
-    if (!wasActive) this.#revealPill(pill);
+    if (!jump) {
+      const nextX = parseFloat(x);
+      const stretch = Math.min(3, 1 + Math.abs(nextX - fromX) / 110);
+      // Adapt the supplied segmented control's stretch/settle to the screenshot's short underline.
+      this.#indicatorAnimation = animate(indicator, [
+        { transform: `translate3d(${fromX}px,0,0) scaleX(${fromScale})` },
+        { transform: `translate3d(${(fromX + nextX) / 2 - 7 * (stretch - 1)}px,0,0) scaleX(${stretch})`, offset: .42 },
+        { transform: `translate3d(${nextX}px,0,0) scaleX(1)` },
+      ], { duration: 280, easing: 'cubic-bezier(.23,1,.32,1)' });
+    }
+    this.#revealPill(pill);
   }
 
   /** Keep the selected pill visible inside a sideways-scrolling size row without scrolling the page. */
@@ -390,15 +405,16 @@ export class NkVariantPicker extends NkElement {
   #updateMeasurementPanel(sizeFieldset: HTMLElement, activeSize: string, isPreview: boolean): void {
     const panel = sizeFieldset.querySelector<HTMLElement>('[data-measurement-panel]');
     if (!panel) return;
+    let disclosure = this.#panelDisclosures.get(panel);
+    if (!disclosure) { disclosure = measurementDisclosure(panel); this.#panelDisclosures.set(panel, disclosure); }
 
-    const baseUnit = panel.dataset.baseUnit === 'cm' ? 'cm' : 'in';
-    this.#applyPanelUnit(panel, baseUnit, this.#measureUnit ?? baseUnit);
+    applyPanelUnit(panel, this.#measureUnit ?? panelBaseUnit(panel));
 
     if (!activeSize) {
       // Collapse after a short grace period: moving between pills never flashes the panel shut.
       window.clearTimeout(this.#hideTimer);
       this.#hideTimer = window.setTimeout(() => {
-        panel.hidden = true;
+        disclosure.setOpen(false);
         panel.removeAttribute('data-preview');
         this.#shownSize = null;
       }, PANEL_HIDE_DELAY);
@@ -406,73 +422,21 @@ export class NkVariantPicker extends NkElement {
     }
     window.clearTimeout(this.#hideTimer);
     panel.toggleAttribute('data-preview', isPreview);
-    const wasHidden = panel.hidden;
-    if (!wasHidden && this.#shownSize === activeSize) return;
-    panel.hidden = false;
+    if (this.#shownSize === activeSize) { disclosure.setOpen(true); return; }
 
-    const rows = [...panel.querySelectorAll<HTMLElement>('[data-measurement-row]')];
-    const matchedRow = rows.find((row) => (row.dataset.measurementRow ?? '').trim().toUpperCase() === activeSize);
-    const activeLabel = panel.querySelector<HTMLElement>('[data-measurement-active-size]');
-    if (activeLabel) activeLabel.textContent = activeSize;
-    for (const row of rows) row.hidden = row !== matchedRow;
-    const empty = panel.querySelector<HTMLElement>('[data-measurement-empty]');
-    if (empty) empty.hidden = !!matchedRow;
-    for (const detail of panel.querySelectorAll<HTMLElement>('.measurement-panel__basis, .measurement-panel__actions')) detail.hidden = !matchedRow;
+    // Another size while the panel is open crossfades instead of snapping; a closed panel just fills.
+    disclosure.swap(() => showMeasurementRow(panel, activeSize));
     this.#shownSize = activeSize;
 
-    this.#panelAnimations.splice(0).forEach((animation) => animation.cancel());
-    const push = (animation: Animation | null | undefined): void => {
-      if (animation) this.#panelAnimations.push(animation);
-    };
-    if (wasHidden) {
-      push(animate(panel, [{ opacity: 0, transform: 'translateY(-4px)' }, { opacity: 1, transform: 'none' }], { duration: 220, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }));
-    }
-    // A single quick crossfade of the values; never a staggered replay while the pointer sweeps.
-    const target = matchedRow ?? empty;
-    if (target) push(animate(target, [{ opacity: 0.35 }, { opacity: 1 }], { duration: 160, easing: 'ease-out' }));
+    disclosure.setOpen(true);
   }
 
-  #setMeasureUnit(unit: 'in' | 'cm', broadcast: boolean): void {
+  #setMeasureUnit(unit: MeasureUnit, broadcast: boolean): void {
     this.#measureUnit = unit;
-    try {
-      sessionStorage.setItem(UNIT_STORAGE_KEY, unit);
-    } catch {
-      // ignore
-    }
+    storeUnit(unit);
     const panel = this.querySelector<HTMLElement>('[data-measurement-panel]');
-    if (panel) {
-      const baseUnit = panel.dataset.baseUnit === 'cm' ? 'cm' : 'in';
-      this.#applyPanelUnit(panel, baseUnit, unit);
-    }
-    if (broadcast) {
-      this.emit('nk:unit:changed', { unit, source: this });
-    }
-  }
-
-  #applyPanelUnit(panel: HTMLElement, baseUnit: 'in' | 'cm', unit: 'in' | 'cm'): void {
-    if (panel.dataset.shownUnit === unit) return;
-    panel.dataset.shownUnit = unit;
-    for (const btn of panel.querySelectorAll<HTMLButtonElement>('[data-measure-unit]')) {
-      btn.setAttribute('aria-pressed', String(btn.dataset.measureUnit === unit));
-    }
-    for (const suffix of panel.querySelectorAll<HTMLElement>('[data-measure-suffix]')) {
-      suffix.textContent = unit;
-    }
-    for (const valEl of panel.querySelectorAll<HTMLElement>('[data-measure-value]')) {
-      const source = valEl.dataset.measureValue?.trim() ?? '';
-      const raw = Number(source);
-      if (!source || !Number.isFinite(raw)) {
-        valEl.textContent = source;
-        const suffix = valEl.parentElement?.querySelector<HTMLElement>('[data-measure-suffix]');
-        if (suffix) suffix.textContent = baseUnit;
-        continue;
-      }
-      let converted = raw;
-      if (unit !== baseUnit) {
-        converted = unit === 'cm' ? raw * CM_PER_INCH : raw / CM_PER_INCH;
-      }
-      valEl.textContent = String(Math.round(converted * 10) / 10);
-    }
+    if (panel) applyPanelUnit(panel, unit);
+    if (broadcast) this.emit('nk:unit:changed', { unit, source: this });
   }
 
   #restoreFocus(valueId: string | null): void {

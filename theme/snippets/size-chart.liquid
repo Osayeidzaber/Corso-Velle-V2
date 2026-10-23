@@ -13,6 +13,9 @@
   Renders nothing when none exists. Numbers switch between inches and centimetres in <nk-size-guide>.
 
   @param {object} product - The product
+  @param {object} [chart] - Reusable chart resolved from product, collection or global assignment
+  @param {boolean} [show_units] - Allow unit switching (default true)
+  @param {boolean} [highlight] - Mark the selected size (default true)
   @param {object} [page] - Fallback page
   @param {string} [table_csv] - Inline table, e.g. "Size,Chest\nS,40"
   @param {string} [unit] - Unit the inline table is written in: in or cm
@@ -25,7 +28,9 @@
   {% render 'size-chart', product: product, page: block.settings.size_guide_page %}
 {%- enddoc -%}
 {%- liquid
-  assign chart = product.metafields.custom.size_chart.value
+  assign chart = chart | default: product.metafields.custom.size_chart.value
+  assign chart_fallback = chart.fallback.value | default: ''
+  assign chart_notes = chart.notes.value | default: ''
   assign custom_json = product.metafields.custom.measurements.value
   assign option_name = option | default: 'Size'
   assign source = ''
@@ -35,14 +40,14 @@
   if chart.table.value.rows.size > 0 and chart.table.value.columns.size > 0
     assign source = 'metaobject'
     assign table = chart.table.value
-  elsif chart.fallback != blank or chart.notes != blank
+  elsif chart_fallback != blank or chart_notes != blank
     assign source = 'metaobject'
   endif
 
   if source == 'metaobject'
-    assign base_unit = chart.unit | default: base_unit | downcase
-    if chart.measurement_basis != blank
-      assign basis = chart.measurement_basis
+    assign base_unit = chart.unit.value | default: base_unit | downcase
+    if chart.measurement_basis.value != blank
+      assign basis = chart.measurement_basis.value
     endif
   elsif custom_json and custom_json.rows.size > 0 and custom_json.columns.size > 0
     assign source = 'json'
@@ -77,6 +82,7 @@
           break
         endif
       endfor
+      if head.size > 1 and lines.size > 1
       for line in lines offset: 1
         assign cells = line | strip | split: ','
         assign row_size = cells.first | strip | downcase
@@ -95,6 +101,7 @@
           break
         endif
       endfor
+      endif
     endif
   endif
 
@@ -109,15 +116,17 @@
 {%- if source == 'page' -%}
   <div class="size-chart size-chart--page rte">{{ page.content }}</div>
 {%- elsif source != '' -%}
-  <nk-size-guide class="size-chart" unit="{{ base_unit }}" option="{{ option_name | escape }}">
+  <nk-size-guide class="size-chart" unit="{{ base_unit }}" option="{{ option_name | escape }}"{% if highlight == false %} data-highlight-disabled{% endif %}{% if show_units == false %} data-unit-switch-disabled{% endif %}>
     <div class="size-chart__toolbar">
       <p class="size-chart__basis">
         {%- if basis != blank -%}{{ basis | escape }}{%- else -%}{{ 'product.size_table_heading' | t }}{%- endif -%}
       </p>
+      {%- unless show_units == false -%}
       <div class="size-guide__units" role="group" aria-label="{{ 'product.units' | t }}">
         <button type="button" class="size-guide__unit" data-ref="unit" value="in" aria-pressed="{% if base_unit == 'in' %}true{% else %}false{% endif %}" hidden>{{ 'product.inches' | t }}</button>
         <button type="button" class="size-guide__unit" data-ref="unit" value="cm" aria-pressed="{% if base_unit == 'cm' %}true{% else %}false{% endif %}" hidden>{{ 'product.centimetres' | t }}</button>
       </div>
+      {%- endunless -%}
     </div>
 
     {%- if source == 'csv' or table.rows.size > 0 -%}
@@ -182,11 +191,11 @@
           </tbody>
         </table>
       </div>
-    {%- elsif chart.fallback != blank -%}
+    {%- elsif chart_fallback != blank -%}
       <div class="size-chart__fallback rte">{{ chart.fallback | metafield_tag }}</div>
     {%- endif -%}
 
-    {%- if source == 'metaobject' and chart.notes != blank -%}
+    {%- if source == 'metaobject' and chart_notes != blank -%}
       <div class="size-chart__notes rte">{{ chart.notes | metafield_tag }}</div>
     {%- elsif source == 'csv' and note != blank -%}
       <p class="size-chart__notes">{{ note | escape }}</p>

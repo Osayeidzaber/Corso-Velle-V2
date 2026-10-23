@@ -1,0 +1,14 @@
+{%- doc -%}
+  Localized article date/author with independent visibility.
+  @param {object} article - Article
+  @param {boolean} [show_date] - Date (default true)
+  @param {boolean} [show_author] - Author (default true)
+{%- enddoc -%}
+{% unless show_date == false and show_author == false %}
+  {%- assign published = article.published_at | time_tag: format: 'date' -%}
+  {%- assign author = article.author | escape -%}
+  <p class="spec text-muted">
+    {% if show_date != false and show_author != false %}{{ 'blog.article_metadata_html' | t: date: published, author: author }}
+    {% elsif show_date != false %}{{ published }}{% else %}{{ author }}{% endif %}
+  </p>
+{% endunless %}

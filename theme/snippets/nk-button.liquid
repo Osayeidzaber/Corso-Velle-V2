@@ -1,0 +1,33 @@
+{%- doc -%}
+  Section call-to-action link in one of the theme's button styles. The sweep, offset and press
+  styles adapt Uiverse buttons and pill adapts HyperUI marketing/buttons (docs/SECTION-SOURCES.md),
+  rebuilt on theme tokens. Without a link it renders only in the theme editor, as a disabled
+  placeholder.
+
+  @param {string} label - Button text
+  @param {string} [link] - Destination URL
+  @param {string} [style] - solid, outline, pill, sweep, offset, press or link (default solid)
+  @param {string} [class] - Extra classes
+  @param {boolean} [new_tab] - Open the link in a new tab
+
+  @example
+  {% render 'nk-button', label: 'Shop now', link: '/collections/all', style: 'sweep' %}
+{%- enddoc -%}
+{%- assign style = style | default: 'solid' -%}
+{%- if label != blank and link != blank or request.design_mode -%}
+  <a
+    class="nk-btn nk-btn--{{ style }}{% if class != blank %} {{ class }}{% endif %}"
+    {% if link != blank %}
+      href="{{ link }}"
+      {% if new_tab %}target="_blank" rel="noopener"{% endif %}
+    {% else %}
+      role="link" aria-disabled="true"
+    {% endif %}
+  >
+    <span class="nk-btn__label">{{ label | default: 'Button' | escape }}</span>
+    {%- if style == 'offset' or style == 'link' -%}
+      <span class="nk-btn__arrow" aria-hidden="true">→</span>
+    {%- endif -%}
+  </a>
+{%- endif -%}
+

@@ -28,6 +28,10 @@
   width: 100%;
 }
 
+.button--corners-square { --nk-button-radius: 0px; }
+.button--corners-soft { --nk-button-radius: 8px; }
+.button--corners-pill { --nk-button-radius: 999px; }
+
 .button[aria-disabled='true'],
 .button:disabled {
   border-color: var(--nk-color-disabled);

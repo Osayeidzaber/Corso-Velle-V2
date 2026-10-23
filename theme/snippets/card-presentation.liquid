@@ -1,0 +1,8 @@
+{%- comment -%}Optional scoped product-card media tokens. Missing/inherit values emit no override.{%- endcomment -%}
+{%- case options.card_ratio -%}
+  {%- when 'square' -%}--nk-card-ratio:1;
+  {%- when 'portrait' -%}--nk-card-ratio:4/5;
+  {%- when 'tall' -%}--nk-card-ratio:2/3;
+  {%- when 'landscape' -%}--nk-card-ratio:4/3;
+{%- endcase -%}
+{%- if options.card_fit == 'cover' or options.card_fit == 'contain' -%}--nk-card-fit:{{ options.card_fit }};{%- endif -%}

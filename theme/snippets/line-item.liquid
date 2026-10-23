@@ -5,6 +5,7 @@
 
   @param {object} item - The line item
   @param {string} context - 'drawer' or 'page' (used for unique ids)
+  @param {boolean} [show_image] - Render line photography (default true)
 
   @example
   {% render 'line-item', item: item, context: 'drawer' %}
@@ -14,12 +15,14 @@
   assign line_id = item.key | replace: ':', '-'
   assign id_prefix = context | append: '-' | append: line_id
 -%}
-<li class="cart-line" data-line-key="{{ item.key }}">
+<li class="cart-line" data-line-key="{{ item.key }}" {% if show_image == false %}data-no-image{% endif %}>
+  {% unless show_image == false %}
   <a class="cart-line__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
     {%- if item.image -%}
       {{ item.image | image_url: width: 240 | image_tag: loading: 'lazy', sizes: '84px', alt: '' }}
     {%- endif -%}
   </a>
+  {% endunless %}
 
   <div class="cart-line__info">
     <div class="cart-line__top">

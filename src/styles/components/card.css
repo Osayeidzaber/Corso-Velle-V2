@@ -26,7 +26,18 @@
   display: grid;
   gap: 8px;
   align-content: start;
+  padding: var(--nk-card-surface-padding, 0px);
+  border: var(--nk-card-surface-border, 0px) solid var(--nk-color-line);
+  box-shadow: var(--nk-card-surface-shadow, none);
 }
+
+.card[data-appearance='bordered'] { border-width: 1px; padding: 12px; }
+.card[data-appearance='editorial'] .card__title { font-family: var(--nk-font-heading); font-size: clamp(1.125rem, 2vw, 1.5rem); }
+.card[data-appearance='editorial'] .card__meta { border-top: 1px solid var(--nk-color-line); padding-top: 12px; }
+.card[data-appearance='image-led'] .card__meta { text-align: center; }
+.card[data-appearance='image-led'] :is(.card__price-row, .card__swatches) { justify-content: center; }
+.card__vendor { margin: 0; overflow-wrap: anywhere; }
+.card__heading { min-width: 0; overflow-wrap: anywhere; }
 
 .card__media-wrap {
   position: relative;
@@ -65,18 +76,48 @@
   background: #fff;
 }
 
-/* Playback readiness triggers the same curtain reveal used by the hover photograph. */
-.card--has-video[data-video-playing] .card__media video.card__video {
-  clip-path: inset(0);
-  transform: translateY(0);
+/* One transition owns alternate media. CSS transitions reverse from the current frame on re-entry.
+   Video readiness and photo fallback use the same preset, so there is no photo-then-video reveal. */
+.card {
+  --card-alt-opacity: 0;
+  --card-alt-clip: inset(0);
+  --card-alt-transform: none;
+  --card-alt-filter: blur(8px);
+  --card-alt-duration: 550ms;
 }
-
-/* Second image wipes up like a curtain and settles from a slight zoom. */
-.card__media--has-second .card__secondary {
-  z-index: 1;
-  opacity: 1;
-  clip-path: inset(100% 0 0 0);
-  transform: none;
+.card[data-hover-animation='fade'] { --card-alt-filter: none; }
+.card[data-hover-animation='zoom'] { --card-alt-filter: none; --card-alt-transform: scale(1.06); }
+.card[data-hover-animation='slide'] { --card-alt-filter: none; --card-alt-transform: translateX(6%); }
+.card[data-hover-animation='curtain'] {
+  --card-alt-opacity: 1;
+  --card-alt-clip: inset(100% 0 0 0);
+  --card-alt-filter: none;
+  --card-alt-duration: 700ms;
+}
+.card .card__media :is(.card__secondary, video.card__video) {
+  opacity: var(--card-alt-opacity);
+  clip-path: var(--card-alt-clip);
+  transform: var(--card-alt-transform);
+  filter: var(--card-alt-filter);
+  transition: opacity var(--card-alt-duration) ease,
+    filter var(--card-alt-duration) ease,
+    transform var(--card-alt-duration) var(--nk-ease-out),
+    clip-path var(--card-alt-duration) cubic-bezier(.76,0,.24,1);
+  pointer-events: none;
+}
+.card .card__secondary { z-index: 1; }
+.card[data-video-playing] .card__media video.card__video,
+.card:has(:focus-visible) .card__media--has-second .card__secondary {
+  opacity: 1; clip-path: inset(0); transform: none; filter: blur(0);
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .card__media--has-second .card__secondary {
+    opacity: 1; clip-path: inset(0); transform: none; filter: blur(0);
+  }
+}
+/* Hold the primary photo while the video buffers, even during keyboard focus. */
+html.nk-anim .card--has-video:not([data-video-failed]) .card__media--has-second .card__secondary {
+  opacity: 0; clip-path: inset(100% 0 0 0); transform: none; filter: none;
 }
 
 .card__placeholder {
@@ -297,22 +338,13 @@
 
 /* Keyboard focus mirrors hover. :focus-visible (not :focus-within) so a mouse click on quick add
    does not hold the second image up after the pointer has left the card. */
-.card:has(:focus-visible) .card__media--has-second .card__secondary {
-  clip-path: inset(0 0 0 0);
-}
 
-html.nk-anim .card--has-video:not([data-video-failed]):has(:focus-visible) .card__media--has-second .card__secondary {
-  clip-path: inset(100% 0 0 0);
-}
 
 .card:has(:focus-visible) .card__title {
   background-size: 100% 1px;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .card:hover .card__media--has-second .card__secondary {
-    clip-path: inset(0 0 0 0);
-  }
 
   .card:hover .card__title {
     background-size: 100% 1px;
@@ -321,9 +353,6 @@ html.nk-anim .card--has-video:not([data-video-failed]):has(:focus-visible) .card
   /* Video cards reveal one layer: the video. Stacking the second photo's curtain under it played
      photo-then-video on every hover. The photo comes back if the video fails or motion is off
      (html.nk-anim is only set when decorative motion runs). */
-  html.nk-anim .card--has-video:not([data-video-failed]):hover .card__media--has-second .card__secondary {
-    clip-path: inset(100% 0 0 0);
-  }
 
   .card__swatch:hover {
     transform: scale(1.12);
@@ -427,3 +456,7 @@ html.no-js .card__tray button { display: none; }
 .card__tray-pill--action:focus-visible { background: transparent; color: var(--nk-color-text); border-bottom-color: currentColor; }
 .card__tray-pill--single { padding-inline: 0; }
 .card__tray a { text-underline-offset: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card .card__media :is(.card__secondary, video.card__video) { transition: none; filter: none; transform: none; }
+}

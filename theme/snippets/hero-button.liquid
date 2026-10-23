@@ -8,7 +8,7 @@
   @param {string} [style] - solid, outline, glass or link (default solid)
   @param {string} [size] - small, medium or large (default medium)
   @param {boolean} [arrow] - Show a trailing arrow (always shown for link)
-  @param {boolean} [magnetic] - Let the desktop cursor pull the button
+  @param {string} [corners] - inherit, square, soft or pill; boxed buttons only
 
   @example
   {% render 'hero-button', label: 'Shop now', link: '/collections/all', style: 'outline', arrow: true %}
@@ -23,6 +23,9 @@
   assign classes = 'hero-cta hero-cta--' | append: style | append: ' hero-cta--' | append: size
   if style != 'link'
     assign classes = 'button ' | append: classes
+    if corners != blank and corners != 'inherit'
+      assign classes = classes | append: ' button--corners-' | append: corners
+    endif
   endif
 -%}
 {%- comment -%} Liquid reads this as: label and (link or editor). {%- endcomment -%}
@@ -31,7 +34,6 @@
     class="{{ classes }}"
     {% if link != blank %}
       href="{{ link }}"
-      {%- if magnetic and style != 'link' %} data-magnetic{% endif %}
     {% else %}
       role="link" aria-disabled="true"
     {% endif %}

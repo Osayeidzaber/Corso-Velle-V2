@@ -10,7 +10,7 @@ function mount(html: string): void {
     el.disconnectedCallback(); el.connectedCallback();
   });
 }
-const rail = `<nk-carousel><div data-ref="viewport"><ul data-ref="track">
+const rail = `<nk-carousel data-effect="native" data-autoplay><div data-ref="viewport"><ul data-ref="track">
   <li class="slide"><a id="product-a" href="/products/a">A</a><button>Quick add</button></li>
   <li class="slide"><a id="product-b" href="/products/b">B</a></li>
 </ul></div><button data-carousel-pause data-play-label="Play" data-pause-label="Pause" hidden><span data-carousel-pause-label>Pause</span></button></nk-carousel>`;
@@ -77,6 +77,17 @@ describe('infinite product carousel', () => {
 });
 
 describe('footer menu lifecycle', () => {
+  it('keeps always-expanded phone menus open without duplicate toggle behavior', () => {
+    const query = new EventTarget() as MediaQueryList;
+    Object.defineProperty(query, 'matches', {value:false});
+    vi.stubGlobal('matchMedia', () => query);
+    mount('<nk-footer data-mobile-menus="open"><footer><details data-footer-menu><summary>Explore</summary><a href="/collections/all">Shop</a></details></footer></nk-footer>');
+    const details = document.querySelector('details')!;
+    expect(details.open).toBe(true);
+    expect(details.querySelector('summary')!.tabIndex).toBe(-1);
+    details.querySelector('summary')!.click();
+    expect(details.open).toBe(true);
+  });
   it('opens desktop menus, collapses mobile menus, and exposes selected editor content', () => {
     const query = new EventTarget() as MediaQueryList;
     let desktop = true;

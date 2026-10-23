@@ -1,0 +1,7 @@
+nk-scene { display: block; position: relative; }
+/* Decorative wash fades over the existing scheme, leaving text contrast unchanged. */
+[data-scene-wash] { position: absolute; inset: 0; pointer-events: none; background: var(--nk-color-accent); opacity: 0; }
+nk-scene:focus-within [data-scene-copy] { opacity: 1 !important; }
+@media (prefers-reduced-motion: reduce) {
+  nk-scene [data-scene-copy], nk-scene [data-scene-media] { transform: none !important; opacity: 1 !important; clip-path: none !important; }
+}

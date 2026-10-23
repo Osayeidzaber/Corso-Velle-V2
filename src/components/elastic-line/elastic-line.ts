@@ -1,6 +1,6 @@
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
-import { decorativeMotionAllowed } from '../../core/motion';
+import { motionMode } from '../../core/motion';
 
 /**
  * <nk-elastic-line> — decorative divider that bends toward the pointer and springs back
@@ -26,12 +26,13 @@ export class NkElasticLine extends NkElement {
     this.setAttribute('aria-hidden', 'true');
     this.#path = this.querySelector('path');
     this.#draw();
-    if (!decorativeMotionAllowed() || !this.#path) return;
+    if (motionMode() !== 'full' || !this.#path) return;
 
     const grab = Number(this.getAttribute('grab') ?? 12);
     const release = Number(this.getAttribute('release') ?? 60);
     const zone = this.parentElement ?? this;
     this.on(zone, 'pointermove', (event) => {
+      if (event.pointerType !== 'mouse') return;
       const rect = this.getBoundingClientRect();
       const dy = event.clientY - (rect.top + rect.height / 2);
       const inside = event.clientX >= rect.left && event.clientX <= rect.right;

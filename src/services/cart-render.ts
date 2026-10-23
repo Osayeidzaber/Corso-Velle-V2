@@ -68,8 +68,9 @@ export function installCartRenderer(): void {
       count.textContent = String(state.item_count);
       count.hidden = state.item_count === 0;
     }
+    // One announcement per add, whichever confirmation the merchant chose ('page' navigates away).
+    if (kind === 'add' && config().cart.afterAdd !== 'page') announce.polite(t('cart.added'));
     if (kind === 'add' && config().cart.afterAdd === 'notification') {
-      announce.polite(t('cart.added'));
       const notification = document.querySelector<HTMLElement>('[data-cart-notification]');
       if (notification) {
         notification.hidden = false;

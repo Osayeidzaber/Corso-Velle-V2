@@ -35,22 +35,16 @@
     assign availability = 'sold-out'
   endif
 
-  assign primary_collection = collection
-  if primary_collection == blank
-    for c in product.collections
-      unless c.handle == 'all' or c.handle == 'frontpage'
-        assign primary_collection = c
-        break
-      endunless
-    endfor
-  endif
+  assign eligible_collections = product.collections | reject: 'handle', 'all' | reject: 'handle', 'frontpage'
+  assign primary_collection = collection | default: eligible_collections.first
 -%}
 
-<div class="section-spacing product-section" data-product-section data-section-id="{{ section.id }}">
+<div class="section-spacing section-presentation product-section color-{{ section.settings.color_scheme }}" data-product-section data-section-id="{{ section.id }}" data-proportions="{{ section.settings.proportions }}" data-sticky-info="{{ section.settings.sticky_info }}" data-media-right="{{ section.settings.media_right }}" data-text-first="{{ section.settings.text_first_mobile }}" style="{% render 'section-presentation', presentation: section.settings %}--product-info-gap:{{ section.settings.info_gap | default: 20 }}px;">
   <div class="product">
-    {% render 'product-media', product: product, selected_variant: variant %}
+    {% render 'product-media', product: product, selected_variant: variant, options: section.settings %}
 
     <div class="product__info">
+      {%- unless section.settings.show_breadcrumb == false -%}
       <nav class="product__breadcrumb spec" aria-label="Breadcrumb">
         <a href="{{ routes.all_products_collection_url }}">{{ 'collections.title' | t }}</a>
         {%- if primary_collection != blank -%}
@@ -60,6 +54,7 @@
         <span aria-hidden="true">/</span>
         <span aria-current="page">{{ product.title | truncate: 36 | escape }}</span>
       </nav>
+      {%- endunless -%}
 
       {%- for block in section.blocks -%}
         {%- case block.type -%}
@@ -106,11 +101,11 @@
             </div>
 
           {%- when 'title' -%}
-            {%- if request.design_mode -%}
-              <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
+            {%- if request.design_mode or block.settings.animate == false -%}
+              <h1 class="product__title" style="--product-title-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }};" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
             {%- else -%}
               <nk-text effect="cut" split="words" play-on-load {{ block.shopify_attributes }}>
-                <h1 class="product__title" data-text-target>{{ product.title | escape }}</h1>
+                <h1 class="product__title" style="--product-title-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }};" data-text-target>{{ product.title | escape }}</h1>
               </nk-text>
             {%- endif -%}
 
@@ -119,7 +114,7 @@
               <div class="product__price">
                 {% render 'price', product: product, variant: variant %}
               </div>
-              {%- if variant.sku != blank -%}
+              {%- if variant.sku != blank and block.settings.show_sku != false -%}
                 <span class="product__sku spec text-muted" data-product-sku>Ref. {{ variant.sku | escape }}</span>
               {%- endif -%}
             </div>
@@ -132,10 +127,23 @@
           {%- when 'variant_picker' -%}
             {%- liquid
               assign size_modal_id = ''
-              capture chart_rule
-                render 'measurement-chart-rule', product: product
+              capture chart_assignment
+                render 'size-chart-assignment', product: product
               endcapture
-              assign chart_rule = chart_rule | strip
+              assign chart_assignment = chart_assignment | strip
+              assign assignment_parts = chart_assignment | split: ':'
+              assign chart_rule = ''
+              assign assigned_chart = product.metafields.custom.size_chart.value
+              case assignment_parts.first
+                when 'collection'
+                  assign chart_collection = collections[assignment_parts.last]
+                  assign assigned_chart = chart_collection.metafields.custom.size_chart.value
+                when 'default'
+                  assign default_chart_handle = settings.size_chart_default_handle | strip
+                  assign assigned_chart = metaobjects.size_chart[default_chart_handle]
+                when 'rule'
+                  assign chart_rule = assignment_parts.last
+              endcase
               assign size_table = block.settings.size_table
               assign size_unit = block.settings.size_unit
               assign size_heading = block.settings.size_heading
@@ -152,10 +160,24 @@
                 assign size_note = settings[note_key]
               endif
               capture size_chart_html
-                render 'size-chart', product: product, page: block.settings.size_guide_page, table_csv: size_table, unit: size_unit, note: size_note, heading: size_heading, option: block.settings.size_guide_option, verified_chart: chart_rule
+                render 'size-chart', product: product, chart: assigned_chart, page: block.settings.size_guide_page, table_csv: size_table, unit: size_unit, note: size_note, heading: size_heading, option: block.settings.size_guide_option, verified_chart: chart_rule, show_units: block.settings.show_unit_switch, highlight: block.settings.highlight_selected
               endcapture
               assign size_chart_html = size_chart_html | strip
-              if size_chart_html != blank
+              assign fit_option = nil
+              if block.settings.show_fit_finder != false
+                for fit_candidate in product.options_with_values
+                  capture fit_is_size
+                    render 'size-option', name: fit_candidate.name, extra: block.settings.size_guide_option
+                  endcapture
+                  if fit_is_size == 'true'
+                    assign fit_option = fit_candidate
+                    break
+                  endif
+                endfor
+              endif
+              if size_chart_html != blank and block.settings.show_size_guide != false
+                assign size_modal_id = 'SizeGuide-' | append: section.id
+              elsif fit_option
                 assign size_modal_id = 'SizeGuide-' | append: section.id
               endif
             -%}
@@ -170,6 +192,7 @@
                 data-product-url="{{ product.url }}"
                 data-required-options="{{ settings.product_required_options | escape }}"
                 data-explicit-size-choice
+                {% if block.settings.measure_preview == false %}data-measure-preview-disabled{% endif %}
                 {% unless needs_choice %}data-preselected{% endunless %}
                 {{ block.shopify_attributes }}
               >
@@ -177,9 +200,11 @@
                   {%- liquid
                     assign option_index = forloop.index
                     assign option_name = option.name | downcase | strip
-                    assign size_names = block.settings.size_guide_option | downcase | strip
+                    capture is_size_option
+                      render 'size-option', name: option.name, extra: block.settings.size_guide_option
+                    endcapture
                     assign is_size_option = false
-                    if option_name == size_names or option_name contains 'size'
+                    if is_size_option == 'true'
                       assign is_size_option = true
                     endif
                     assign is_color_option = false
@@ -209,6 +234,9 @@
                       {%- if is_size_option and size_modal_id != blank -%}
                         <button type="button" class="size-guide-link spec" data-nk-open="{{ size_modal_id }}" aria-haspopup="dialog">
                           {{- 'product.size_guide' | t -}}
+                          {%- if fit_option -%}
+                            <span class="fit-hint" data-fit-hint hidden>{{ 'product.fit_finder.hint' | t }} <span data-part="size"></span></span>
+                          {%- endif -%}
                         </button>
                       {%- endif -%}
                     </div>
@@ -262,14 +290,16 @@
                       {%- endif -%}
                     </div>
 
-                    {%- if is_size_option -%}
+                    {%- if is_size_option and block.settings.show_measurements != false -%}
                       {% render 'product-measurements',
                         product: product,
+                        chart: assigned_chart,
                         size_option: option,
                         table_csv: size_table,
                         unit: size_unit,
                         heading: size_heading,
                         verified_chart: chart_rule,
+                        show_units: block.settings.show_unit_switch,
                         modal_id: size_modal_id
                       %}
                     {%- endif -%}
@@ -291,7 +321,7 @@
                     <div class="size-guide-dialog__header" data-drag-handle>
                       <span class="size-guide-dialog__grip" aria-hidden="true"></span>
                       <div class="size-guide-dialog__titles">
-                        <p class="size-guide-dialog__eyebrow spec">{{ 'product.size_guide' | t }}</p>
+                        <p class="size-guide-dialog__eyebrow spec">{%- if fit_option -%}{{ 'product.fit_finder.eyebrow' | t }}{%- else -%}{{ 'product.size_guide' | t }}{%- endif -%}</p>
                         <h2 class="size-guide-dialog__title" id="SizeGuideTitle-{{ section.id }}" tabindex="-1" data-autofocus>
                           {{- product.title | escape -}}
                         </h2>
@@ -301,7 +331,12 @@
                       </button>
                     </div>
                     <div class="drawer__body size-guide__body">
-                      {{ size_chart_html }}
+                      {%- if fit_option -%}
+                        {% render 'fit-finder', product: product, size_option: fit_option, id: section.id %}
+                      {%- endif -%}
+                      {%- if size_chart_html != blank and block.settings.show_size_guide != false -%}
+                        {{ size_chart_html }}
+                      {%- endif -%}
                     </div>
                   </dialog>
                 </nk-modal>
@@ -400,53 +435,9 @@
             </nk-product-form>
 
           {%- when 'description' -%}
-            {%- liquid
-              assign fabric_meta = product.metafields.custom.fabric | default: product.metafields.custom.materials
-              assign fit_meta = product.metafields.custom.fit.value
-              assign origin_meta = product.metafields.custom.origin.value
-              assign care_meta = product.metafields.custom.care.value | default: product.metafields.custom.care_instructions.value
-            -%}
-            {%- if product.description != blank or fabric_meta != blank or fit_meta != blank or origin_meta != blank -%}
-              <nk-disclosure {{ block.shopify_attributes }}>
-                <details class="disclosure" {% if block.settings.open %}open{% endif %}>
-                  {%- assign details_heading = 'product.details' | t -%}
-                  <summary>{{ block.settings.heading | default: details_heading | escape }}</summary>
-                  <div class="disclosure__content rte">
-                    {%- if fabric_meta != blank or fit_meta != blank or origin_meta != blank -%}
-                      <dl class="product__specs">
-                        {%- if fabric_meta != blank -%}
-                          <div class="product__spec-item">
-                            <dt class="spec text-muted">Composition</dt>
-                            <dd>{{ fabric_meta | metafield_tag }}</dd>
-                          </div>
-                        {%- endif -%}
-                        {%- if fit_meta != blank -%}
-                          <div class="product__spec-item">
-                            <dt class="spec text-muted">Fit</dt>
-                            <dd>{{ fit_meta | escape }}</dd>
-                          </div>
-                        {%- endif -%}
-                        {%- if origin_meta != blank -%}
-                          <div class="product__spec-item">
-                            <dt class="spec text-muted">Origin</dt>
-                            <dd>{{ origin_meta | escape }}</dd>
-                          </div>
-                        {%- endif -%}
-                      </dl>
-                    {%- endif -%}
-                    {{ product.description }}
-                  </div>
-                </details>
-              </nk-disclosure>
-            {%- endif -%}
-            {%- if care_meta != blank -%}
-              <nk-disclosure>
-                <details class="disclosure">
-                  <summary>Fabric &amp; Care</summary>
-                  <div class="disclosure__content rte">{{ product.metafields.custom.care | default: product.metafields.custom.care_instructions | metafield_tag }}</div>
-                </details>
-              </nk-disclosure>
-            {%- endif -%}
+            {% render 'product-description', product: product, block: block %}
+          {% when 'feature' %}
+            {% render 'product-feature', block: block %}
 
           {%- when 'accordion' -%}
             {%- liquid
@@ -457,7 +448,7 @@
             -%}
             {%- if accordion_content != blank -%}
               <nk-disclosure {{ block.shopify_attributes }}>
-                <details class="disclosure">
+                <details class="disclosure" {% if block.settings.open %}open{% endif %}>
                   <summary>{{ block.settings.heading | escape }}</summary>
                   <div class="disclosure__content rte">{{ accordion_content }}</div>
                 </details>
@@ -477,27 +468,333 @@
 {
   "name": "Product information",
   "class": "main-product-section",
-  "settings": [],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Show breadcrumbs",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "gallery_layout",
+      "label": "Desktop gallery",
+      "options": [
+        {
+          "value": "slider",
+          "label": "Single image slider"
+        },
+        {
+          "value": "stack",
+          "label": "Stacked images"
+        },
+        {
+          "value": "grid",
+          "label": "Editorial grid"
+        }
+      ],
+      "default": "slider"
+    },
+    {
+      "type": "select",
+      "id": "gallery_ratio",
+      "label": "Media shape",
+      "options": [
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape"
+        }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "select",
+      "id": "gallery_fit",
+      "label": "Media fit",
+      "options": [
+        {
+          "value": "contain",
+          "label": "Entire media"
+        },
+        {
+          "value": "cover",
+          "label": "Fill and crop"
+        }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "select",
+      "id": "gallery_background",
+      "label": "Media background",
+      "options": [
+        {
+          "value": "white",
+          "label": "White studio"
+        },
+        {
+          "value": "scheme",
+          "label": "Scheme surface"
+        }
+      ],
+      "default": "white"
+    },
+    {
+      "type": "select",
+      "id": "proportions",
+      "label": "Desktop columns",
+      "options": [
+        {
+          "value": "media",
+          "label": "Larger gallery"
+        },
+        {
+          "value": "balanced",
+          "label": "Balanced"
+        },
+        {
+          "value": "content",
+          "label": "Larger information column"
+        }
+      ],
+      "default": "media"
+    },
+    {
+      "type": "checkbox",
+      "id": "media_right",
+      "label": "Gallery on the right (desktop)",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "text_first_mobile",
+      "label": "Information first on smaller screens",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_info",
+      "label": "Sticky product information",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_thumbnails",
+      "label": "Show media thumbnails",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_gallery_controls",
+      "label": "Show media arrows and counter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_zoom",
+      "label": "Enable image zoom",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px. Custom values are exact and are not multiplied by the global smaller-screen spacing setting."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "info_gap",
+      "label": "Space between information blocks",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    }
+  ],
   "blocks": [
-    { "type": "@app" },
+    {
+      "type": "@app"
+    },
     {
       "type": "eyebrow",
       "name": "Eyebrow",
       "limit": 1,
       "settings": [
-        { "type": "text", "id": "text", "label": "Text", "info": "Leave empty to show the product type, or its first collection." }
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "info": "Leave empty to show the product type, or its first collection."
+        }
       ]
     },
-    { "type": "title", "name": "Title", "limit": 1 },
-    { "type": "price", "name": "Price", "limit": 1 },
+    {
+      "type": "title",
+      "name": "Title",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "animate",
+          "label": "Animate title",
+          "default": true
+        },
+        {
+          "type": "range",
+          "id": "scale",
+          "label": "Title size",
+          "min": 70,
+          "max": 130,
+          "step": 5,
+          "default": 100,
+          "unit": "%"
+        }
+      ]
+    },
+    {
+      "type": "price",
+      "name": "Price",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_sku",
+          "label": "Show SKU when available",
+          "default": true
+        }
+      ]
+    },
     {
       "type": "variant_picker",
       "name": "Variant picker",
       "limit": 1,
       "settings": [
-        { "type": "text", "id": "size_guide_option", "label": "Show size guide next to option", "default": "Size" },
-        { "type": "page", "id": "size_guide_page", "label": "Size guide page (fallback)", "info": "Used when a product has no size_chart metafield." },
-        { "type": "text", "id": "size_heading", "label": "Size guide heading", "default": "Measured flat, garment in hand" },
+        {
+          "type": "text",
+          "id": "size_guide_option",
+          "label": "Show size guide next to option",
+          "default": "Size"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_size_guide",
+          "label": "Show full size guide",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_fit_finder",
+          "label": "Show size finder",
+          "info": "Estimates a letter size from height, weight, shape and fit preference. Answers stay on the shopper's device.",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_measurements",
+          "label": "Show inline measurements",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "measure_preview",
+          "label": "Preview measurements on hover or focus",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_unit_switch",
+          "label": "Allow inch and centimetre switching",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "highlight_selected",
+          "label": "Highlight selected size in guide",
+          "default": true
+        },
+        {
+          "type": "page",
+          "id": "size_guide_page",
+          "label": "Size guide page (fallback)",
+          "info": "Used only when no assigned chart or template table is available."
+        },
+        {
+          "type": "text",
+          "id": "size_heading",
+          "label": "Size guide heading",
+          "default": "Measured flat, garment in hand"
+        },
         {
           "type": "textarea",
           "id": "size_table",
@@ -509,35 +806,64 @@
           "id": "size_unit",
           "label": "Table is written in",
           "options": [
-            { "value": "in", "label": "Inches" },
-            { "value": "cm", "label": "Centimetres" }
+            {
+              "value": "in",
+              "label": "Inches"
+            },
+            {
+              "value": "cm",
+              "label": "Centimetres"
+            }
           ],
           "default": "in"
         },
-        { "type": "text", "id": "size_note", "label": "Note under the table" }
+        {
+          "type": "text",
+          "id": "size_note",
+          "label": "Note under the table"
+        }
       ]
     },
-    { "type": "inventory", "name": "Inventory status", "limit": 1 },
+    {
+      "type": "inventory",
+      "name": "Inventory status",
+      "limit": 1
+    },
     {
       "type": "buy_buttons",
       "name": "Buy buttons",
       "limit": 1,
       "settings": [
-        { "type": "checkbox", "id": "show_quantity", "label": "Show quantity", "default": false }
+        {
+          "type": "checkbox",
+          "id": "show_quantity",
+          "label": "Show quantity",
+          "default": false
+        }
       ]
     },
     {
       "type": "text",
       "name": "Text",
       "settings": [
-        { "type": "richtext", "id": "text", "label": "Text" },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        },
         {
           "type": "select",
           "id": "style",
           "label": "Style",
           "options": [
-            { "value": "", "label": "Body" },
-            { "value": "spec", "label": "Label" }
+            {
+              "value": "",
+              "label": "Body"
+            },
+            {
+              "value": "spec",
+              "label": "Label"
+            }
           ],
           "default": ""
         }
@@ -548,25 +874,144 @@
       "name": "Description",
       "limit": 1,
       "settings": [
-        { "type": "text", "id": "heading", "label": "Heading" },
-        { "type": "checkbox", "id": "open", "label": "Open by default", "default": true }
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_care",
+          "label": "Show care metafield when available",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "care_heading",
+          "label": "Care heading",
+          "default": "Fabric & Care"
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open by default",
+          "default": true
+        },
+        {
+          "type": "select",
+          "id": "presentation",
+          "label": "Description presentation",
+          "options": [
+            {
+              "value": "accordion",
+              "label": "Collapsible row"
+            },
+            {
+              "value": "inline",
+              "label": "Always visible"
+            }
+          ],
+          "default": "accordion"
+        }
       ]
     },
     {
       "type": "accordion",
       "name": "Collapsible row",
       "settings": [
-        { "type": "text", "id": "heading", "label": "Heading", "default": "Fabric & care" },
-        { "type": "richtext", "id": "content", "label": "Content" },
-        { "type": "page", "id": "page", "label": "Content from page" }
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Fabric & care"
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open by default",
+          "default": false
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content"
+        },
+        {
+          "type": "page",
+          "id": "page",
+          "label": "Content from page"
+        }
       ]
     },
     {
       "type": "custom_liquid",
       "name": "Custom Liquid",
-      "settings": [{ "type": "liquid", "id": "custom_liquid", "label": "Custom Liquid" }]
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "custom_liquid",
+          "label": "Custom Liquid"
+        }
+      ]
+    },
+    {
+      "type": "feature",
+      "name": "Product feature",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Decorative icon or image"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Product feature"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "select",
+          "id": "appearance",
+          "label": "Appearance",
+          "options": [
+            {
+              "value": "plain",
+              "label": "Plain"
+            },
+            {
+              "value": "bordered",
+              "label": "Bordered"
+            },
+            {
+              "value": "surface",
+              "label": "Surface"
+            }
+          ],
+          "default": "plain"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Link label"
+        }
+      ]
     }
   ],
-  "enabled_on": { "templates": ["product"] }
+  "enabled_on": {
+    "templates": [
+      "product"
+    ]
+  },
+  "limit": 1
 }
 {% endschema %}

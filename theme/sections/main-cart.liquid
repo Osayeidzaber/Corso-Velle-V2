@@ -2,7 +2,15 @@
   Cart page (master-plan/09 CA-03). A complete cart that works without JavaScript:
   updates[] inputs + Update button, remove links, note, and a submit named "checkout".
 {%- endcomment -%}
-<div class="section-spacing">
+{%- liquid
+  assign show_note = settings.cart_show_note
+  if section.settings.note == 'show'
+    assign show_note = true
+  elsif section.settings.note == 'hide'
+    assign show_note = false
+  endif
+-%}
+<div class="section-spacing cart-page-shell color-{{ section.settings.color_scheme }}" data-line-density="{{ section.settings.density }}" data-summary="{{ section.settings.summary_style }}" data-summary-sticky="{{ section.settings.sticky_summary }}">
   <h1>{{ 'cart.title' | t }}</h1>
 
   <nk-cart-items id="MainCartItems">
@@ -16,17 +24,18 @@
           <p class="cart-empty__title">{{ 'cart.empty' | t }}</p>
           {%- assign continue_url = settings.cart_empty_collection.url | default: routes.all_products_collection_url -%}
           <a class="button" href="{{ continue_url }}">{{ 'cart.continue_shopping' | t }}</a>
+          {% if section.settings.show_empty_recommendations %}{% render 'cart-empty-recommendations', collection: section.settings.recommendation_collection, heading: section.settings.recommendation_heading %}{% endif %}
         </div>
       {%- else -%}
         <div class="cart-page">
           <ul class="cart-lines" role="list">
             {%- for item in cart.items -%}
-              {% render 'line-item', item: item, context: 'page' %}
+              {% render 'line-item', item: item, context: 'page', show_image: section.settings.show_images %}
             {%- endfor -%}
           </ul>
 
           <div class="cart-page__summary cart-summary">
-            {%- if settings.cart_show_note -%}
+            {%- if show_note -%}
               <div class="cart-note">
                 <label for="CartNote">{{ 'cart.note' | t }}</label>
                 <textarea id="CartNote" name="note" data-cart-note data-focus-key="cart-note">{{ cart.note | escape }}</textarea>
@@ -46,7 +55,7 @@
             </p>
             <button type="submit" name="update" class="button button--secondary button--full no-js-only">{{ 'cart.update' | t }}</button>
             <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
-            {%- if additional_checkout_buttons -%}
+            {%- if additional_checkout_buttons and section.settings.show_accelerated != false -%}
               <div class="cart-summary__accelerated">{{ content_for_additional_checkout_buttons }}</div>
             {%- endif -%}
           </div>
@@ -59,7 +68,114 @@
 {% schema %}
 {
   "name": "Cart",
-  "settings": [],
-  "enabled_on": { "templates": ["cart"] }
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "density",
+      "label": "Cart line spacing",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Regular"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "airy",
+          "label": "Airy"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_images",
+      "label": "Show product images",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "note",
+      "label": "Order note",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme setting"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "summary_style",
+      "label": "Summary appearance",
+      "options": [
+        {
+          "value": "bordered",
+          "label": "Bordered"
+        },
+        {
+          "value": "plain",
+          "label": "Plain"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        }
+      ],
+      "default": "bordered"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_summary",
+      "label": "Sticky summary (desktop)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accelerated",
+      "label": "Show accelerated checkout buttons",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_empty_recommendations",
+      "label": "Show collection when cart is empty",
+      "default": false
+    },
+    {
+      "type": "collection",
+      "id": "recommendation_collection",
+      "label": "Empty cart collection"
+    },
+    {
+      "type": "text",
+      "id": "recommendation_heading",
+      "label": "Empty cart collection heading",
+      "default": "Explore the collection"
+    }
+  ],
+  "enabled_on": {
+    "templates": [
+      "cart"
+    ]
+  },
+  "limit": 1
 }
 {% endschema %}

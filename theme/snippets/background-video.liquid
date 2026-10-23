@@ -1,0 +1,14 @@
+{%- comment -%}
+  Decorative, muted video. No native controls (they showed as a player bar until the script
+  loaded); the lazy element plays it and reveals its own play/pause button.
+{%- endcomment -%}
+<nk-background-video {% unless autoplay == false %}autoplay{% endunless %} {% if toggle_id != blank %}toggle-id="{{ toggle_id }}"{% endif %}>
+  {% if video %}
+    {{ video | video_tag: autoplay: false, muted: true, loop: true, playsinline: true, controls: false, preload: 'metadata', image_size: '1600x', class: video_class }}
+  {% elsif video_url != blank %}
+    <video class="{{ video_class }}" muted loop playsinline preload="metadata" {% if poster_url != blank %}poster="{{ poster_url | escape }}"{% endif %}>
+      <source src="{{ video_url | escape }}" type="video/mp4">
+    </video>
+  {% endif %}
+  {% if toggle_id == blank %}<button type="button" class="background-video__toggle spec" data-ref="toggle" aria-label="{{ 'media.play' | t }}" data-play-label="{{ 'media.play' | t }}" data-pause-label="{{ 'media.pause' | t }}" hidden>▶</button>{% endif %}
+</nk-background-video>

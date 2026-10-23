@@ -1,0 +1,32 @@
+{%- doc -%}
+  One hero media: a Shopify video, a video file URL, or an image.
+  @param {object} [video] - Shopify-hosted video
+  @param {string} [video_url] - MP4 file URL, used when no video is picked
+  @param {string} [poster] - Poster image URL for video_url
+  @param {object} [image] - Image, also the poster of a video file URL when no poster is given
+  @param {boolean} [phone] - Phone-only media (smaller image widths)
+  @param {string} [sizes] - Image sizes attribute
+  @param {string} [loading] - lazy | eager
+  @param {string} [priority] - fetchpriority for the image
+  @param {boolean} [autoplay] - Autoplay a background video
+{%- enddoc -%}
+{%- if video or video_url != blank -%}
+  {%- liquid
+    assign poster_src = poster
+    if poster_src == blank and image
+      assign poster_src = image | image_url: width: 1600
+    endif
+  -%}
+  {% render 'background-video', video: video, video_url: video_url, poster_url: poster_src, autoplay: autoplay, video_class: 'hero__video' %}
+{%- elsif image -%}
+  {%- liquid
+    assign alt = image.alt | escape
+    assign widths = '750, 1100, 1500, 1920, 2400, 2880'
+    if phone
+      assign widths = '600, 750, 1100, 1500'
+    endif
+  -%}
+  {{ image | image_url: width: 2880 | image_tag: loading: loading, fetchpriority: priority, widths: widths, sizes: sizes, alt: alt }}
+{%- else -%}
+  {{ 'lifestyle-1' | placeholder_svg_tag: 'hero__placeholder' }}
+{%- endif -%}

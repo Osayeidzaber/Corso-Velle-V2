@@ -1,7 +1,8 @@
 {%- doc -%}
-  Purchase data for one product in the featured carousel (src/components/carousel/size-sheet.ts).
-  The size option is the first option named in the "Size option name(s)" theme setting, otherwise
-  the product's first option. Shopify re-checks availability when the variant is added.
+  Purchase data for one product in the featured carousel (src/components/carousel/product-data.ts).
+  The size option is the first option recognised by snippets/size-option.liquid (the same rule as
+  product cards and the product page), otherwise the product's first option. Shopify re-checks
+  availability when the variant is added.
 
   @param {object} product - The product
 
@@ -9,18 +10,13 @@
   {% render 'carousel-product-data', product: product %}
 {%- enddoc -%}
 {%- liquid
-  assign size_names = settings.card_size_option_names | downcase | split: ','
   assign choice = nil
   for option in product.options_with_values
-    assign option_name = option.name | downcase | strip
-    for size_name in size_names
-      assign clean = size_name | strip
-      if option_name == clean
-        assign choice = option
-        break
-      endif
-    endfor
-    if choice
+    capture is_size
+      render 'size-option', name: option.name
+    endcapture
+    if is_size == 'true'
+      assign choice = option
       break
     endif
   endfor
@@ -55,3 +51,6 @@
     ]
   }
 </script>
+{%- if choice -%}
+  {% render 'carousel-measurements', product: product, size_option: choice %}
+{%- endif -%}
