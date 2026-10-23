@@ -12,10 +12,22 @@
   are <nk-reveal>, which checks the same policy.
   Overlay-eligible (a transparent header can sit on top when it is the first section) unless the
   layout is split, where the header would land on the text panel.
+  Type styles (hero--type-*) restyle the copy only: fonts, size, case and tracking. Custom fonts
+  from the Fonts settings override the family of whichever type style is picked.
 {%- endcomment -%}
 {%- liquid
+  assign type_style = section.settings.type_style | default: 'signature'
+  assign custom_heading = section.settings.custom_heading_font
+  assign custom_text = section.settings.custom_text_font
+-%}
+{%- if custom_heading or custom_text -%}
+  <style>
+    {%- if custom_heading -%}{{ section.settings.heading_font | font_face: font_display: 'swap' }}{% assign heading_italic_font = section.settings.heading_font | font_modify: 'style', 'italic' %}{% if heading_italic_font %}{{ heading_italic_font | font_face: font_display: 'swap' }}{% endif %}{%- endif -%}
+    {%- if custom_text -%}{{ section.settings.text_font | font_face: font_display: 'swap' }}{%- endif -%}
+  </style>
+{%- endif -%}
+{%- liquid
   assign desktop = section.settings.image | default: section.settings.collection.featured_image
-  assign mobile = section.settings.image_mobile | default: desktop
   assign video = section.settings.video
   assign is_first = false
   if section.index == 1
@@ -72,43 +84,66 @@
     assign position_classes = position_classes | append: ' hero--text-' | append: section.settings.text_align
   endif
 -%}
-<div
-  class="hero full-width color-{{ section.settings.color_scheme }} hero--{{ layout }} hero--{{ section.settings.height }}{{ position_classes }} hero--media-{{ section.settings.media_position }} hero--enter-{{ entrance }}"
+<nk-scene
+  preset="{% if section.settings.scroll_exit == false %}none{% else %}hero{% endif %}"
+  class="hero full-width color-{{ section.settings.color_scheme }} hero--{{ layout }} hero--{{ section.settings.height }}{{ position_classes }} hero--media-{{ section.settings.media_position }} hero--enter-{{ entrance }} hero--phone-{{ section.settings.height_mobile }} hero--fit-{{ section.settings.media_fit }} hero--tint-{{ section.settings.tint_direction }} hero--type-{{ type_style }}{% if custom_heading %} hero--custom-heading{% endif %}{% if custom_text %} hero--custom-text{% endif %}"
   {% unless layout == 'split' %}
     data-overlay-eligible
   {% endunless %}
-  style="--nk-scrim: {{ section.settings.scrim | divided_by: 100.0 }}; --hero-width: {{ section.settings.content_width | default: 1100 }}px; --hero-gap: {{ section.settings.block_gap | default: 22 }}px;"
+  style="--nk-scrim: {{ section.settings.scrim | divided_by: 100.0 }}; --hero-width: {{ section.settings.content_width | default: 1100 }}px; --hero-gap: {{ section.settings.block_gap | default: 22 }}px;{% if custom_heading %} --hero-custom-heading: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }}; --hero-custom-heading-weight: {{ section.settings.heading_font.weight }};{% endif %}{% if custom_text %} --hero-custom-text: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};{% endif %}"
 >
-  <nk-parallax class="hero__media" strength="{{ section.settings.parallax }}">
+  {%- liquid
+    assign slides = section.blocks | where: 'type', 'slide'
+    assign media_sizes = '100vw'
+    if layout == 'split'
+      assign media_sizes = '(min-width: 990px) 55vw, 100vw'
+    endif
+  -%}
+  <nk-parallax class="hero__media" strength="{% if section.settings.media_fit == 'contain' %}0{% else %}{{ section.settings.parallax }}{% endif %}">
     <div class="hero__media-inner" data-parallax-media>
-      {%- if video -%}
-        {{ video | video_tag: autoplay: true, muted: true, loop: true, playsinline: true, controls: false, preload: 'metadata', image_size: '1600x', class: 'hero__video' }}
-      {%- elsif section.settings.video_url != blank -%}
-        <video class="hero__video" autoplay muted loop playsinline preload="metadata" {% if section.settings.poster_url != blank %}poster="{{ section.settings.poster_url }}"{% endif %}>
-          <source src="{{ section.settings.video_url }}" type="video/mp4">
-        </video>
-      {%- elsif desktop -%}
-        {%- liquid
-          assign loading = 'lazy'
-          assign priority = 'auto'
-          if is_first
-            assign loading = 'eager'
-            assign priority = 'high'
-          endif
-          assign alt = desktop.alt | escape
-          assign sizes = '100vw'
-          if layout == 'split'
-            assign sizes = '(min-width: 990px) 55vw, 100vw'
-          endif
-        -%}
-        <picture>
-          {%- if section.settings.image_mobile -%}
-            <source media="(max-width: 749px)" srcset="{{ mobile | image_url: width: 750 }} 750w, {{ mobile | image_url: width: 1100 }} 1100w, {{ mobile | image_url: width: 1500 }} 1500w" sizes="100vw">
-          {%- endif -%}
-          {{ desktop | image_url: width: 2880 | image_tag: loading: loading, fetchpriority: priority, widths: '750, 1100, 1500, 1920, 2400, 2880', sizes: sizes, alt: alt }}
-        </picture>
+      {%- if slides.size > 0 -%}
+        <nk-hero-slides
+          class="hero__slides"
+          data-interval="{{ section.settings.slide_interval }}"
+          data-transition="{{ section.settings.slide_transition }}"
+          {% if section.settings.slide_autoplay %}data-autoplay{% endif %}
+        >
+          {%- for block in slides -%}
+            {%- liquid
+              assign slide_first = false
+              if is_first and forloop.first
+                assign slide_first = true
+              endif
+            -%}
+            <div class="hero__slide" data-slide data-block-id="{{ block.id }}" {% if forloop.first %}data-active{% endif %} {{ block.shopify_attributes }}>
+              {% render 'hero-media',
+                video: block.settings.video,
+                video_url: block.settings.video_url,
+                image: block.settings.image,
+                video_mobile: block.settings.video_mobile,
+                video_url_mobile: block.settings.video_url_mobile,
+                image_mobile: block.settings.image_mobile,
+                sizes: media_sizes,
+                first: slide_first,
+                autoplay: section.settings.video_autoplay
+              %}
+            </div>
+          {%- endfor -%}
+        </nk-hero-slides>
       {%- else -%}
-        {{ 'lifestyle-1' | placeholder_svg_tag: 'hero__placeholder' }}
+        {% render 'hero-media',
+          video: video,
+          video_url: section.settings.video_url,
+          poster: section.settings.poster_url,
+          image: desktop,
+          video_mobile: section.settings.video_mobile,
+          video_url_mobile: section.settings.video_url_mobile,
+          poster_mobile: section.settings.poster_url_mobile,
+          image_mobile: section.settings.image_mobile,
+          sizes: media_sizes,
+          first: is_first,
+          autoplay: section.settings.video_autoplay
+        %}
       {%- endif -%}
     </div>
   </nk-parallax>
@@ -116,8 +151,20 @@
     {%- when 'solid' -%}<span class="hero__scrim" aria-hidden="true"></span>
     {%- when 'blur' -%}<span class="nk-scrim-blur" aria-hidden="true"></span>
   {%- endcase -%}
+  {%- if slides.size > 1 -%}
+    <div class="hero__slide-controls" data-slides-controls{% if section.settings.slide_dots == false %} data-no-dots{% endif %}>
+      <button type="button" class="hero__slide-arrow" data-slides-prev aria-label="{{ 'media.previous_slide' | t }}"><span aria-hidden="true">←</span></button>
+      <div class="hero__slide-dots" role="group" aria-label="{{ 'media.slides' | t }}">
+        {%- for block in slides -%}
+          <button type="button" class="hero__slide-dot" data-slides-dot="{{ forloop.index0 }}" aria-label="{{ 'media.slide_n' | t: number: forloop.index, count: slides.size }}"{% if forloop.first %} aria-current="true"{% endif %}><span></span></button>
+        {%- endfor -%}
+      </div>
+      <button type="button" class="hero__slide-arrow" data-slides-next aria-label="{{ 'media.next_slide' | t }}"><span aria-hidden="true">→</span></button>
+      <button type="button" class="hero__slide-pause" data-slides-pause aria-label="{{ 'media.pause_slideshow' | t }}" data-pause-label="{{ 'media.pause_slideshow' | t }}" data-play-label="{{ 'media.play_slideshow' | t }}"{% unless section.settings.slide_autoplay %} hidden{% endunless %}><span aria-hidden="true">❚❚</span></button>
+    </div>
+  {%- endif -%}
 
-  <div class="hero__content">
+  <div class="hero__content" data-scene-copy>
     <div class="hero__copy">
       {%- for block in section.blocks -%}
         {%- case block.type -%}
@@ -191,14 +238,15 @@
                   link: block.settings.link_1,
                   style: block.settings.style_1,
                   size: block.settings.size,
-                  arrow: block.settings.arrow,
-                  magnetic: true
+                  corners: block.settings.corners,
+                  arrow: block.settings.arrow
                 %}
                 {% render 'hero-button',
                   label: block.settings.label_2,
                   link: block.settings.link_2,
                   style: block.settings.style_2,
                   size: block.settings.size,
+                  corners: block.settings.corners,
                   arrow: false
                 %}
               </div>
@@ -213,22 +261,36 @@
       </span>
     {%- endif -%}
   </div>
-</div>
+</nk-scene>
 
 {% schema %}
 {
   "name": "Campaign hero",
   "class": "hero-section",
-  "max_blocks": 6,
+  "max_blocks": 16,
   "settings": [
+    { "type": "checkbox", "id": "scroll_exit", "label": "Gentle scroll exit", "default": true, "info": "Copy subtly drifts and fades as the hero leaves. Full motion only; separate from the entrance setting." },
     { "type": "header", "content": "Media" },
     { "type": "video", "id": "video", "label": "Video", "info": "Shopify-hosted video. Plays muted." },
+    { "type": "checkbox", "id": "video_autoplay", "label": "Autoplay background video", "default": true, "info": "Muted. Pauses offscreen and when hidden. Reduced motion and the editor require pressing Play. Native controls remain available without JavaScript." },
     { "type": "url", "id": "video_url", "label": "Video file URL", "info": "Optional MP4 address from Content › Files, used when no video is picked above." },
     { "type": "url", "id": "poster_url", "label": "Video poster image URL" },
-    { "type": "image_picker", "id": "image", "label": "Image" },
-    { "type": "image_picker", "id": "image_mobile", "label": "Phone image" },
+    { "type": "image_picker", "id": "image", "label": "Image", "info": "Also the video poster when no poster URL is set." },
     { "type": "collection", "id": "collection", "label": "Use collection image", "info": "Shown when no video or image is set." },
+    { "type": "header", "content": "Phone media", "info": "Optional. Shown on screens under 750px instead of the media above, so a tall phone picture or video isn't cropped from a wide one." },
+    { "type": "video", "id": "video_mobile", "label": "Phone video" },
+    { "type": "url", "id": "video_url_mobile", "label": "Phone video file URL", "info": "Used when no phone video is picked above." },
+    { "type": "url", "id": "poster_url_mobile", "label": "Phone video poster image URL" },
+    { "type": "image_picker", "id": "image_mobile", "label": "Phone image" },
+    { "type": "header", "content": "Slideshow", "info": "Add Slide blocks to turn the media into a slideshow. Each slide can have its own desktop and phone image or video; the text and buttons stay the same." },
+    { "type": "checkbox", "id": "slide_autoplay", "label": "Change slides automatically", "default": true, "info": "Visitors can pause it. Off for visitors who prefer reduced motion and in the theme editor." },
+    { "type": "range", "id": "slide_interval", "label": "Time per slide", "min": 3, "max": 15, "step": 1, "unit": "s", "default": 6 },
+    { "type": "select", "id": "slide_transition", "label": "Transition", "options": [{ "value": "fade", "label": "Crossfade" }, { "value": "zoom", "label": "Fade with slow zoom" }, { "value": "slide", "label": "Slide sideways" }], "default": "fade" },
+    { "type": "checkbox", "id": "slide_dots", "label": "Show slide dots", "default": true },
     { "type": "header", "content": "Layout" },
+    { "type": "select", "id": "height_mobile", "label": "Height on phones", "options": [{ "value": "inherit", "label": "Use desktop choice" }, { "value": "compact", "label": "Compact (55% of screen)" }, { "value": "full", "label": "Full screen" }], "default": "inherit", "info": "Content can grow taller. Split layouts apply this to the image panel." },
+    { "type": "select", "id": "media_fit", "label": "Media fit", "options": [{ "value": "cover", "label": "Fill and crop" }, { "value": "contain", "label": "Show entire image or video" }], "default": "cover", "info": "Show entire media disables parallax to avoid cropping. Set image focal points in Shopify's image picker." },
+    { "type": "select", "id": "tint_direction", "label": "Tint distribution", "options": [{ "value": "bottom", "label": "Stronger at bottom" }, { "value": "top", "label": "Stronger at top" }, { "value": "uniform", "label": "Even tint" }], "default": "bottom" },
     {
       "type": "select",
       "id": "layout",
@@ -310,7 +372,7 @@
     { "type": "range", "id": "content_width", "label": "Content width", "min": 360, "max": 1400, "step": 20, "unit": "px", "default": 1100 },
     { "type": "range", "id": "block_gap", "label": "Space between blocks", "min": 8, "max": 56, "step": 2, "unit": "px", "default": 22 },
     { "type": "range", "id": "parallax", "label": "Parallax depth", "min": 0, "max": 30, "step": 2, "unit": "%", "default": 14 },
-    { "type": "checkbox", "id": "show_scroll_cue", "label": "Show scroll cue", "default": true },
+    { "type": "checkbox", "id": "show_scroll_cue", "label": "Show scroll cue", "default": false },
     {
       "type": "select",
       "id": "scrim_style",
@@ -324,6 +386,29 @@
     },
     { "type": "range", "id": "scrim", "label": "Tint strength", "min": 0, "max": 80, "step": 5, "unit": "%", "default": 30 },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" },
+    { "type": "header", "content": "Typography" },
+    {
+      "type": "select",
+      "id": "type_style",
+      "label": "Type style",
+      "options": [
+        { "value": "signature", "label": "Signature: large display serif" },
+        { "value": "quiet", "label": "Quiet: small and understated" },
+        { "value": "lowercase", "label": "Nonchalant: relaxed lowercase" },
+        { "value": "caption", "label": "Caption: tiny spaced capitals" },
+        { "value": "poster", "label": "Poster: heavy capitals, outlined second line" },
+        { "value": "romantic", "label": "Romantic: light italic serif" },
+        { "value": "typewriter", "label": "Typewriter: monospace notes" },
+        { "value": "classic", "label": "Classic caps: spaced serif capitals" },
+        { "value": "mixed", "label": "Mixed: small sans over a big italic" }
+      ],
+      "default": "signature",
+      "info": "Changes the fonts, size and case of the eyebrow, heading and text. The heading block's Size setting still scales it."
+    },
+    { "type": "checkbox", "id": "custom_heading_font", "label": "Use a custom heading font", "default": false },
+    { "type": "font_picker", "id": "heading_font", "label": "Heading font", "default": "newsreader_n4", "visible_if": "{{ section.settings.custom_heading_font }}" },
+    { "type": "checkbox", "id": "custom_text_font", "label": "Use a custom text font", "default": false },
+    { "type": "font_picker", "id": "text_font", "label": "Text font", "default": "inter_n4", "visible_if": "{{ section.settings.custom_text_font }}" },
     { "type": "header", "content": "Animation" },
     {
       "type": "select",
@@ -341,6 +426,22 @@
     }
   ],
   "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "limit": 10,
+      "settings": [
+        { "type": "paragraph", "content": "Slide media. Text and buttons come from the section's other blocks." },
+        { "type": "header", "content": "Desktop" },
+        { "type": "image_picker", "id": "image", "label": "Image", "info": "Also the video poster." },
+        { "type": "video", "id": "video", "label": "Video" },
+        { "type": "url", "id": "video_url", "label": "Video file URL", "info": "Used when no video is picked." },
+        { "type": "header", "content": "Phone" },
+        { "type": "image_picker", "id": "image_mobile", "label": "Phone image", "info": "Optional. Uses the desktop media when empty." },
+        { "type": "video", "id": "video_mobile", "label": "Phone video" },
+        { "type": "url", "id": "video_url_mobile", "label": "Phone video file URL" }
+      ]
+    },
     {
       "type": "eyebrow",
       "name": "Eyebrow",
@@ -448,6 +549,7 @@
           "default": "outline"
         },
         { "type": "header", "content": "Size and position" },
+        { "type": "select", "id": "corners", "label": "Button corners", "options": [{ "value": "inherit", "label": "Use theme button corners" }, { "value": "square", "label": "Square" }, { "value": "soft", "label": "Rounded" }, { "value": "pill", "label": "Pill" }], "default": "inherit", "info": "Boxed styles only; text links keep their underline." },
         {
           "type": "select",
           "id": "size",
@@ -491,7 +593,14 @@
     {
       "name": "Campaign hero",
       "blocks": [{ "type": "eyebrow" }, { "type": "heading" }, { "type": "buttons" }]
-    }
+    },
+    { "name": "Centered hero", "settings": { "position": "center", "text_align": "center", "content_width": 800, "height": "medium" }, "blocks": [{ "type": "heading" }, { "type": "text" }, { "type": "buttons" }] },
+    { "name": "Minimal split hero", "settings": { "layout": "split", "color_scheme": "scheme-1", "entrance": "none", "parallax": 0, "scroll_exit": false, "show_scroll_cue": false }, "blocks": [{ "type": "heading", "settings": { "size": 70 } }, { "type": "text" }, { "type": "buttons" }] },
+    { "name": "Image-led hero", "settings": { "position": "bottom-left", "scrim": 20, "content_width": 640 }, "blocks": [{ "type": "eyebrow" }, { "type": "buttons" }] },
+    { "name": "Quiet hero", "settings": { "type_style": "quiet", "position": "bottom-left", "scrim": 20, "content_width": 560 }, "blocks": [{ "type": "eyebrow" }, { "type": "heading" }, { "type": "text" }, { "type": "buttons", "settings": { "style_1": "link", "label_2": "" } }] },
+    { "name": "Nonchalant hero", "settings": { "type_style": "lowercase", "position": "bottom-left", "scrim": 25 }, "blocks": [{ "type": "heading" }, { "type": "text" }, { "type": "buttons", "settings": { "style_1": "link" } }] },
+    { "name": "Slideshow hero", "settings": { "position": "bottom-left", "scrim": 30 }, "blocks": [{ "type": "slide" }, { "type": "slide" }, { "type": "slide" }, { "type": "eyebrow" }, { "type": "heading" }, { "type": "buttons" }] },
+    { "name": "Poster hero", "settings": { "type_style": "poster", "position": "center", "text_align": "center", "scrim": 40 }, "blocks": [{ "type": "eyebrow" }, { "type": "heading" }, { "type": "buttons" }] }
   ],
   "disabled_on": { "groups": ["header", "footer"] }
 }

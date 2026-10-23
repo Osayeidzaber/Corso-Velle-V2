@@ -9,6 +9,8 @@
   Never invents measurements if no matching data exists for the product's sizes.
 
   @param {object} product - The product
+  @param {object} [chart] - Same resolved reusable chart used by the full guide
+  @param {boolean} [show_units] - Allow unit switching (default true)
   @param {object} [size_option] - The product option object for Size
   @param {string} [table_csv] - Fallback CSV for tops (e.g. "Size,Chest,Length,Shoulder,Sleeves\nS,40,27,17.5,24.5")
   @param {string} [bottoms_csv] - Fallback CSV for bottoms (e.g. "Size,Waist,Length,Thigh,Leg Opening\nS,30,40,24,16")
@@ -21,7 +23,9 @@
   {% render 'product-measurements', product: product, size_option: option, table_csv: block.settings.size_table, unit: block.settings.size_unit, modal_id: size_guide_modal_id %}
 {%- enddoc -%}
 {%- liquid
-  assign chart = product.metafields.custom.size_chart.value
+  assign chart = chart | default: product.metafields.custom.size_chart.value
+  assign chart_fallback = chart.fallback.value | default: ''
+  assign chart_notes = chart.notes.value | default: ''
   assign custom_json = product.metafields.custom.measurements.value
   assign base_unit = unit | default: 'in' | downcase
   assign basis_label = heading
@@ -33,12 +37,16 @@
 
   if chart and chart.table.value.rows.size > 0 and chart.table.value.columns.size > 0
     assign table_data = chart.table.value
-    assign base_unit = chart.unit | default: base_unit | downcase
-    if chart.measurement_basis != blank
-      assign basis_label = chart.measurement_basis
+    assign base_unit = chart.unit.value | default: base_unit | downcase
+    if chart.measurement_basis.value != blank
+      assign basis_label = chart.measurement_basis.value
     endif
     assign has_valid_data = true
     assign use_metaobject = true
+  elsif chart_fallback != blank or chart_notes != blank
+    comment
+      An assigned instructions-only chart must not mix in measurements from a lower priority source.
+    endcomment
   elsif custom_json and custom_json.rows.size > 0 and custom_json.columns.size > 0
     assign table_data = custom_json
     assign base_unit = custom_json.unit | default: base_unit | downcase
@@ -105,50 +113,18 @@
     class="measurement-panel"
     data-measurement-panel
     data-base-unit="{{ base_unit }}"
+    {% if show_units == false %}data-unit-switch-disabled{% endif %}
     hidden
   >
+    {%- for size_value in size_option.values -%}
+      <template data-measurement-size-label="{{ size_value | strip | upcase | escape }}">{% render 'size-display-label', value: size_value %}</template>
+    {%- endfor -%}
     <div class="measurement-panel__header">
       <div class="measurement-panel__title-group">
         <span class="measurement-panel__badge spec">
-          <span class="measurement-panel__dot" aria-hidden="true"></span>
-          <span>{{ 'product.size' | t }} <strong data-measurement-active-size>—</strong></span>
+          <strong data-measurement-active-size>—</strong>
         </span>
-        <span class="measurement-panel__basis">{{ basis_label | escape }}</span>
       </div>
-
-      {%- if has_valid_data -%}
-      <div class="measurement-panel__actions">
-        <div class="measurement-panel__units" role="group" aria-label="{{ 'product.units' | t }}">
-          <button
-            type="button"
-            class="measurement-panel__unit"
-            data-measure-unit="in"
-            aria-pressed="{% if base_unit == 'in' %}true{% else %}false{% endif %}"
-          >
-            {{ 'product.inches' | t }}
-          </button>
-          <button
-            type="button"
-            class="measurement-panel__unit"
-            data-measure-unit="cm"
-            aria-pressed="{% if base_unit == 'cm' %}true{% else %}false{% endif %}"
-          >
-            {{ 'product.centimetres' | t }}
-          </button>
-        </div>
-
-        {%- if modal_id != blank -%}
-          <button
-            type="button"
-            class="measurement-panel__chart-btn spec"
-            data-nk-open="{{ modal_id }}"
-            aria-haspopup="dialog"
-          >
-            {{ 'product.size_guide' | t }} ↗
-          </button>
-        {%- endif -%}
-      </div>
-      {%- endif -%}
     </div>
 
     <p class="measurement-panel__empty" data-measurement-empty hidden>{{ 'product.measurements_unavailable' | t }}</p>
@@ -179,11 +155,7 @@
           {%- assign cells = line | strip | split: ',' -%}
           {%- if cells.size > 1 -%}
             {%- assign row_key = cells.first | strip | upcase -%}
-            <div
-              class="measurement-panel__grid"
-              data-measurement-row="{{ row_key | escape }}"
-              hidden
-            >
+            <div class="measurement-panel__grid" data-measurement-row="{{ row_key | escape }}" hidden>
               {%- for cell in cells offset: 1 -%}
                 {%- assign col_idx = forloop.index -%}
                 {%- assign col_label = csv_head[col_idx] | strip -%}
@@ -203,4 +175,43 @@
         {%- endfor -%}
       {%- endif -%}
     </div>
+
+    {%- if has_valid_data -%}
+    <div class="measurement-panel__footer" data-measurement-footer>
+      <span class="measurement-panel__basis">{{ basis_label | escape }}</span>
+      <div class="measurement-panel__actions">
+        {%- unless show_units == false -%}
+        <div class="measurement-panel__units" role="group" aria-label="{{ 'product.units' | t }}">
+          <button
+            type="button"
+            class="measurement-panel__unit"
+            data-measure-unit="in"
+            aria-pressed="{% if base_unit == 'in' %}true{% else %}false{% endif %}"
+          >
+            {{ 'product.inches' | t }}
+          </button>
+          <button
+            type="button"
+            class="measurement-panel__unit"
+            data-measure-unit="cm"
+            aria-pressed="{% if base_unit == 'cm' %}true{% else %}false{% endif %}"
+          >
+            {{ 'product.centimetres' | t }}
+          </button>
+        </div>
+        {%- endunless -%}
+
+        {%- if modal_id != blank -%}
+          <button
+            type="button"
+            class="measurement-panel__chart-btn spec"
+            data-nk-open="{{ modal_id }}"
+            aria-haspopup="dialog"
+          >
+            {{ 'product.size_guide' | t }} ↗
+          </button>
+        {%- endif -%}
+      </div>
+    </div>
+    {%- endif -%}
   </div>

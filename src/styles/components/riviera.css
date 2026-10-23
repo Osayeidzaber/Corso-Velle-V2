@@ -8,9 +8,9 @@ h1,
 h2,
 h3,
 h4 {
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1;
+  font-weight: var(--nk-font-heading-weight, 400);
+  letter-spacing: var(--nk-heading-tracking, -0.02em);
+  line-height: var(--nk-heading-leading, 1);
 }
 
 em,
@@ -23,7 +23,7 @@ em,
   font-family: var(--nk-font-spec);
   font-size: 0.6875rem;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: var(--nk-label-tracking, 0.18em);
   text-transform: uppercase;
 }
 
@@ -37,9 +37,9 @@ em,
 
 .display {
   font-family: var(--nk-font-heading);
-  font-weight: 400;
-  letter-spacing: -0.035em;
-  line-height: 0.92;
+  font-weight: var(--nk-font-heading-weight, 400);
+  letter-spacing: var(--nk-display-tracking, -0.035em);
+  line-height: var(--nk-display-leading, 0.92);
 }
 
 /* ---------- Buttons: sliding fill ---------- */
@@ -47,9 +47,9 @@ em,
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  min-height: 54px;
-  padding: 0 30px;
-  border-radius: 0;
+  min-height: var(--nk-button-height, 54px);
+  padding: 10px var(--nk-button-padding, 30px);
+  border-radius: var(--nk-button-radius, var(--nk-radius));
   font-family: var(--nk-font-spec);
   font-size: 0.6875rem;
   font-weight: 500;
@@ -93,6 +93,11 @@ em,
     border-color: var(--nk-color-accent);
     color: var(--nk-color-accent-text);
   }
+}
+
+/* Pressed: one step deeper than the fill (derived from the scheme accent). */
+.button:not(:disabled, [aria-disabled='true']):active::before {
+  background: var(--nk-accent-active, var(--nk-color-accent));
 }
 
 .button:disabled::before,

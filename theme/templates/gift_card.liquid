@@ -1,7 +1,7 @@
 {% layout none %}
 
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}">
+<html lang="{{ request.locale.iso_code }}" data-button-motion="{{ settings.button_motion | default: 'expressive' }}">
   <head>
     {% # Inlined CSS Variables %}
     {% render 'css-variables' %}
@@ -19,12 +19,15 @@
       main img {
         display: unset;
       }
+      .gift-card-page--bordered main { width: min(calc(100% - 32px), 640px); margin: 32px auto; padding: 32px 16px; border: 1px solid var(--nk-color-line); }
+      .gift-card-page--minimal main { width: min(calc(100% - 32px), 640px); margin: 32px auto; }
+      .gift-card-page--minimal main h1 { font-size: 2.5rem; }
     {% endstyle %}
 
     {{ content_for_header }}
   </head>
 
-  <body>
+  <body class="gift-card-page--{{ settings.gift_card_style | default: 'classic' }}">
     <main>
       <div class="shopify-section">
         <h1>{{ gift_card.balance | money }}</h1>

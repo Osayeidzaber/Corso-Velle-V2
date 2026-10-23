@@ -27,7 +27,7 @@
     </form>
 
     {%- if search.performed -%}
-      <nk-facets data-section-id="{{ section.id }}">
+      <nk-facets data-section-id="{{ section.id }}" data-toolbar="{{ section.settings.toolbar_width }}" data-toolbar-sticky="{{ section.settings.toolbar_sticky }}" data-results-gap style="--results-gap:{{ section.settings.grid_gap | default: 8 }}px;" {% if section.settings.show_layout_switch == false %}data-layout-locked{% endif %}>
         {% render 'facets',
           results: search,
           section_id: section.id,
@@ -35,7 +35,10 @@
           count: search.results_count,
           terms: terms,
           show_filters: section.settings.show_filters,
-          show_sort: section.settings.show_sort
+          show_sort: section.settings.show_sort,
+          show_layout_switch: section.settings.show_layout_switch,
+          columns_mobile: section.settings.columns_mobile,
+          columns_desktop: section.settings.columns_desktop
         %}
 
         <div class="facets__results-grid" data-facets-results>
@@ -45,17 +48,18 @@
               <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'collection.shop_all' | t }}</a>
             </div>
           {%- else -%}
+            <nk-stagger>
             <ul
               class="product-grid"
               role="list"
               style="--nk-cols-mobile: {{ section.settings.columns_mobile }}; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
             >
               {%- for item in search.results -%}
-                <li>
+                <li data-stagger-item>
                   {%- if item.object_type == 'product' -%}
                     {%- assign eager = false -%}
                     {%- if forloop.index <= 4 and paginate.current_page == 1 -%}{%- assign eager = true -%}{%- endif -%}
-                    {% render 'product-card', product: item, eager: eager, heading_tag: 'h2' %}
+                    {% render 'product-card', product: item, eager: eager, heading_tag: 'h2', card_options: section.settings %}
                   {%- else -%}
                     <article class="card search-card">
                       {%- assign item_image = item.image | default: item.featured_image -%}
@@ -79,6 +83,7 @@
                 </li>
               {%- endfor -%}
             </ul>
+            </nk-stagger>
           {%- endif -%}
 
           {%- if paginate.pages > 1 -%}
@@ -94,21 +99,278 @@
 {
   "name": "t:general.search",
   "settings": [
-    { "type": "range", "id": "per_page", "label": "Results per page", "min": 8, "max": 48, "step": 4, "default": 24 },
+    {
+      "type": "range",
+      "id": "per_page",
+      "label": "Results per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
     {
       "type": "select",
       "id": "columns_mobile",
       "label": "Columns on phones",
       "options": [
-        { "value": "1", "label": "1" },
-        { "value": "2", "label": "2" }
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
       ],
       "default": "1"
     },
-    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 3, "max": 5, "step": 1, "default": 4 },
-    { "type": "checkbox", "id": "show_filters", "label": "Show filters", "default": true, "info": "Filters apply to product results." },
-    { "type": "checkbox", "id": "show_sort", "label": "Show sort", "default": true }
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 3,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Show filters",
+      "default": true,
+      "info": "Filters apply to product results."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "Show sort",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "card_appearance",
+      "label": "Card appearance",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        },
+        {
+          "value": "editorial",
+          "label": "Editorial"
+        },
+        {
+          "value": "bordered",
+          "label": "Bordered"
+        },
+        {
+          "value": "image-led",
+          "label": "Image focused"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_ratio",
+      "label": "Image ratio",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (2:3)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "cover",
+          "label": "Fill"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_hover",
+      "label": "Alternate media",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "auto",
+          "label": "Video with image fallback"
+        },
+        {
+          "value": "image",
+          "label": "Second image only"
+        },
+        {
+          "value": "off",
+          "label": "Off"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_vendor",
+      "label": "Show vendor",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_price",
+      "label": "Show price",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_badges",
+      "label": "Show badges",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_sizes",
+      "label": "Show sizes",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_layout_switch",
+      "label": "Allow shoppers to change grid columns",
+      "default": true,
+      "info": "Off uses merchant columns and ignores previous shopper grid preferences."
+    },
+    {
+      "type": "select",
+      "id": "toolbar_width",
+      "label": "Filter toolbar width",
+      "options": [
+        {
+          "value": "full",
+          "label": "Full bleed"
+        },
+        {
+          "value": "contained",
+          "label": "Within content"
+        }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "checkbox",
+      "id": "toolbar_sticky",
+      "label": "Sticky filter toolbar",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Product column gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    }
   ],
-  "enabled_on": { "templates": ["search"] }
+  "enabled_on": {
+    "templates": [
+      "search"
+    ]
+  },
+  "limit": 1
 }
 {% endschema %}

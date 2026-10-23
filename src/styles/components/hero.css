@@ -1,6 +1,8 @@
 /* Campaign hero (theme/sections/hero.liquid): layouts, media entrances and call-to-action styles.
    Loaded after riviera.css so the call-to-action styles can refine the shared .button. */
 .hero {
+  --hero-heading-size: clamp(3.5rem, 13vw, 11.5rem);
+  --hero-text-size: clamp(1.0625rem, 1.6vw, 1.375rem);
   position: relative;
   display: grid;
   min-height: 60svh;
@@ -38,6 +40,21 @@
   inset: 0;
 }
 
+nk-background-video { display: block; width: 100%; height: 100%; }
+.hero:has(nk-background-video) .hero__content { pointer-events: none; }
+.hero:has(nk-background-video) .hero__copy > * { pointer-events: auto; }
+.background-video__toggle { position: absolute; bottom: 18px; right: 18px; z-index: 2; min-width: 44px; min-height: 44px; background: var(--nk-color-bg); color: var(--nk-color-text); border: 1px solid var(--nk-color-line); cursor: pointer; }
+.hero--fit-contain .hero__media :is(img, video) { object-fit: contain; }
+.hero--tint-top .hero__scrim { rotate: 180deg; }
+.hero--tint-uniform .hero__scrim { background: rgb(0 0 0 / var(--nk-scrim, .3)); }
+.hero__copy { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 749px) {
+  .hero.hero--phone-compact:not(.hero--split) { min-height: 55svh; }
+  .hero.hero--phone-full:not(.hero--split) { min-height: 100svh; }
+  .hero--split.hero--phone-compact .hero__media { min-height: 55svh; aspect-ratio: auto; }
+  .hero--split.hero--phone-full .hero__media { min-height: 100svh; max-height: none; aspect-ratio: auto; }
+}
+
 .hero__media img,
 .hero__media video,
 .hero__placeholder {
@@ -51,6 +68,7 @@
 .hero__scrim,
 .hero .nk-scrim-blur {
   z-index: -1;
+  pointer-events: none;
 }
 
 .hero__scrim {
@@ -65,12 +83,7 @@
 }
 
 /* Content position: --hero-v places the copy vertically, --hero-h horizontally; the section
-   prints hero--v-*/hero--h-* (and hero--mv-*/hero--mh-* for phones) from its settings. */
-.hero {
-  --hero-heading-size: clamp(3.5rem, 13vw, 11.5rem);
-  --hero-text-size: clamp(1.0625rem, 1.6vw, 1.375rem);
-}
-
+   prints vertical/horizontal position classes (and mobile equivalents) from its settings. */
 .hero--v-top {
   --hero-v: flex-start;
 }
@@ -152,7 +165,8 @@
   flex-direction: column;
   align-items: var(--hero-item-align, var(--hero-h, flex-start));
   gap: var(--hero-gap, 22px);
-  max-width: min(var(--hero-width, 1100px), 100%);
+  width: 100%;
+  max-width: var(--hero-width, 1100px);
   text-align: var(--hero-text-override, var(--hero-text, start));
 }
 
@@ -176,7 +190,7 @@
 }
 
 .hero__heading em {
-  font-weight: 400;
+  font-weight: var(--nk-font-heading-weight, 400);
 }
 
 .hero__text {
@@ -534,6 +548,11 @@ html.nk-motion-off .hero__cue-line::after {
 }
 
 @media (max-width: 749px) {
+  /* Box buttons that wrap onto their own row fill it, so a pair never ends up ragged. */
+  .hero__buttons--row .hero-cta.button {
+    flex: 1 1 auto;
+  }
+
   .hero__buttons--fill-mobile {
     flex-direction: column;
     align-items: stretch;
@@ -860,4 +879,116 @@ html.nk-motion-off .hero-cta__arrow svg {
 
 html.nk-motion-off .hero-cta:not([aria-disabled='true']):active {
   scale: 1;
+}
+
+/* ---------- Type styles (Typography > Type style, hero--type-*) ----------
+   Each restyles the copy only. .hero.hero--type-* outranks the layout rules that set
+   --hero-heading-size, so a type style keeps its scale in every layout. */
+.hero.hero--type-quiet { --hero-heading-size: clamp(1.75rem, 3.4vw, 3rem); --hero-text-size: 0.9375rem; }
+.hero--type-quiet .hero__heading { font-family: var(--nk-font-body); font-weight: 400; letter-spacing: -0.015em; line-height: 1.12; }
+.hero--type-quiet .hero__heading em { font-family: var(--nk-font-heading); font-weight: 400; opacity: 0.8; }
+.hero--type-quiet .hero__text { font-family: var(--nk-font-body); font-style: normal; line-height: 1.6; opacity: 0.85; }
+.hero--type-quiet .hero__eyebrow { letter-spacing: 0.14em; }
+
+.hero.hero--type-lowercase { --hero-heading-size: clamp(2.5rem, 6vw, 5.5rem); --hero-text-size: 1rem; }
+.hero--type-lowercase .hero__heading { font-family: var(--nk-font-body); font-weight: 400; text-transform: lowercase; letter-spacing: -0.05em; line-height: 0.95; }
+.hero--type-lowercase .hero__heading em { font-family: var(--nk-font-heading); font-weight: 400; letter-spacing: -0.03em; }
+.hero--type-lowercase .hero__text { font-family: var(--nk-font-body); font-style: normal; text-transform: lowercase; line-height: 1.5; }
+.hero--type-lowercase .hero__eyebrow { text-transform: lowercase; letter-spacing: 0.02em; font-family: var(--nk-font-body); font-size: calc(0.875rem * var(--hero-eyebrow-scale, 1)); }
+
+.hero.hero--type-caption { --hero-heading-size: clamp(0.875rem, 1.1vw, 1.0625rem); --hero-text-size: 0.75rem; }
+.hero--type-caption .hero__heading { font-family: var(--nk-font-spec); font-weight: 500; text-transform: uppercase; letter-spacing: 0.26em; line-height: 1.7; }
+.hero--type-caption .hero__heading em { font-style: normal; font-weight: 400; opacity: 0.7; }
+.hero--type-caption .hero__text { font-family: var(--nk-font-spec); font-style: normal; text-transform: uppercase; letter-spacing: 0.14em; line-height: 1.8; }
+
+.hero.hero--type-poster { --hero-heading-size: clamp(3.5rem, 12.5vw, 11rem); --hero-text-size: 1rem; }
+.hero--type-poster .hero__heading { font-family: var(--nk-font-body); font-weight: 800; text-transform: uppercase; letter-spacing: -0.045em; line-height: 0.84; }
+.hero--type-poster .hero__heading em { font-style: normal; font-weight: 800; -webkit-text-fill-color: transparent; -webkit-text-stroke: max(1px, 0.012em) currentColor; }
+.hero--type-poster .hero__text { font-family: var(--nk-font-body); font-style: normal; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1.5; }
+
+.hero.hero--type-romantic { --hero-heading-size: clamp(3rem, 9vw, 8.5rem); --hero-text-size: clamp(1.125rem, 1.6vw, 1.5rem); }
+.hero--type-romantic .hero__heading { font-style: italic; font-weight: 300; letter-spacing: -0.025em; line-height: 0.98; }
+.hero--type-romantic .hero__heading em { font-weight: 300; opacity: 0.78; }
+.hero--type-romantic .hero__eyebrow { font-family: var(--nk-font-heading); font-style: italic; text-transform: none; letter-spacing: 0.01em; font-size: calc(1rem * var(--hero-eyebrow-scale, 1)); }
+
+.hero--type-typewriter { --hero-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', 'Courier New', monospace; }
+.hero.hero--type-typewriter { --hero-heading-size: clamp(1.625rem, 3.6vw, 3.25rem); --hero-text-size: 0.875rem; }
+.hero--type-typewriter .hero__heading { font-family: var(--hero-mono); font-weight: 400; letter-spacing: -0.03em; line-height: 1.12; }
+.hero--type-typewriter .hero__heading em { font-style: normal; font-weight: 400; opacity: 0.65; }
+.hero--type-typewriter .hero__text { font-family: var(--hero-mono); font-style: normal; line-height: 1.65; }
+.hero--type-typewriter .hero__eyebrow { font-family: var(--hero-mono); letter-spacing: 0.04em; text-transform: none; }
+.hero--type-typewriter .hero__eyebrow > span::before { content: '— '; }
+
+.hero.hero--type-classic { --hero-heading-size: clamp(2.25rem, 6vw, 5.75rem); --hero-text-size: 1rem; }
+.hero--type-classic .hero__heading { text-transform: uppercase; letter-spacing: 0.08em; line-height: 1.02; font-weight: 400; }
+.hero--type-classic .hero__heading em { letter-spacing: 0.04em; text-transform: none; }
+.hero--type-classic .hero__text { font-style: normal; letter-spacing: 0.02em; }
+
+.hero.hero--type-mixed { --hero-heading-size: clamp(1rem, 1.5vw, 1.375rem); --hero-text-size: 1rem; }
+.hero--type-mixed .hero__heading { font-family: var(--nk-font-body); font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; line-height: 1.2; }
+.hero--type-mixed .hero__heading em { display: block; margin-top: 0.15em; font-family: var(--nk-font-heading); font-size: 5.2em; font-weight: 400; text-transform: none; letter-spacing: -0.035em; line-height: 0.9; }
+.hero--type-mixed .hero__text { font-family: var(--nk-font-body); font-style: normal; }
+
+/* Custom fonts (Typography > Use a custom heading/text font) win over any type style. */
+.hero.hero--custom-heading .hero__heading,
+.hero.hero--custom-heading .hero__heading em { font-family: var(--hero-custom-heading); }
+.hero.hero--custom-heading:is(.hero--type-signature, .hero--type-classic, .hero--type-romantic) .hero__heading { font-weight: var(--hero-custom-heading-weight, 400); }
+.hero.hero--custom-text .hero__text { font-family: var(--hero-custom-text); }
+
+/* ---------- Phone media (Phone media settings, snippets/hero-media.liquid) ---------- */
+.hero__media-layer { position: absolute; inset: 0; }
+.hero__media-layer--phone { display: none; }
+@media (max-width: 749px) {
+  .hero__media-layer--desktop { display: none; }
+  .hero__media-layer--phone { display: block; }
+}
+
+/* ---------- Slideshow (Slide blocks, <nk-hero-slides>) ----------
+   Slides stack; [data-active] is shown. data-transition picks fade, zoom or slide. Before the
+   script runs only the first slide shows, so the hero is never empty. */
+nk-hero-slides { position: absolute; inset: 0; display: block; }
+.hero__slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; }
+.hero__slide[data-active] { opacity: 1; visibility: visible; z-index: 1; }
+.hero__slide .background-video__toggle { display: none; }
+nk-hero-slides[data-ready] .hero__slide { transition: opacity 1200ms cubic-bezier(.65, 0, .35, 1), visibility 0s linear 1200ms, transform 1200ms cubic-bezier(.65, 0, .35, 1); }
+nk-hero-slides[data-ready] .hero__slide[data-active] { transition: opacity 1200ms cubic-bezier(.65, 0, .35, 1), visibility 0s, transform 1200ms cubic-bezier(.65, 0, .35, 1); }
+nk-hero-slides[data-transition='zoom'] .hero__slide :is(img, video) { transform: scale(1.08); transition: transform 1600ms cubic-bezier(.22, .61, .36, 1); }
+nk-hero-slides[data-transition='zoom'] .hero__slide[data-active] :is(img, video) { transform: scale(1); transition-duration: calc(var(--slide-interval, 6000ms) + 1200ms); }
+nk-hero-slides[data-transition='slide'] .hero__slide { opacity: 1; transform: translateX(100%); }
+nk-hero-slides[data-transition='slide'] .hero__slide[data-active] { transform: translateX(0); }
+nk-hero-slides[data-transition='slide'] .hero__slide[data-active] ~ .hero__slide:not([data-active]) { transform: translateX(100%); }
+nk-hero-slides[data-transition='slide'] .hero__slide:not([data-active]):has(~ .hero__slide[data-active]) { transform: translateX(-100%); }
+
+.hero__slide-controls {
+  position: absolute; z-index: 3;
+  right: max(var(--nk-gutter), env(safe-area-inset-right, 0px));
+  /* --hero-controls-lift (set by <nk-hero-slides>) is how far the hero runs below the first
+     screen, e.g. a full-screen hero under the announcement bar, so the controls stay in view. */
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px) + var(--hero-controls-lift, 0px));
+  display: flex; align-items: center; gap: 6px;
+  color: var(--nk-color-text);
+}
+.hero__slide-arrow, .hero__slide-pause, .hero__slide-dot { display: grid; place-items: center; min-width: 36px; min-height: 36px; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
+.hero__slide-arrow, .hero__slide-pause { border: 1px solid color-mix(in oklab, currentColor 40%, transparent); border-radius: 50%; font-size: 14px; transition: background 250ms, color 250ms; }
+.hero__slide-pause { font-size: 10px; margin-inline-start: 6px; }
+.hero__slide-dots { display: flex; align-items: center; }
+.hero__slide-controls[data-no-dots] .hero__slide-dots { display: none; }
+.hero__slide-dot { min-width: 28px; }
+.hero__slide-dot > span { position: relative; display: block; width: 18px; height: 2px; overflow: hidden; background: color-mix(in oklab, currentColor 35%, transparent); }
+.hero__slide-dot > span::after { content: ''; position: absolute; inset: 0; background: currentColor; transform: scaleX(0); transform-origin: left; }
+.hero__slide-dot[aria-current] > span::after { transform: scaleX(1); }
+/* The active dot fills over the slide's time while the slideshow runs. */
+.hero:has(nk-hero-slides[data-running]) .hero__slide-dot[aria-current] > span::after { animation: hero-slide-progress var(--hero-slide-interval, 6s) linear; }
+@keyframes hero-slide-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+:is(.hero__slide-arrow, .hero__slide-pause, .hero__slide-dot):focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  :is(.hero__slide-arrow, .hero__slide-pause):hover { background: var(--nk-color-text); color: var(--nk-color-bg); }
+}
+@media (max-width: 749px) {
+  .hero__slide-controls { bottom: calc(14px + env(safe-area-inset-bottom, 0px) + var(--hero-controls-lift, 0px)); gap: 2px; }
+  .hero__slide-arrow { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  nk-hero-slides .hero__slide, nk-hero-slides .hero__slide :is(img, video) { transition: none !important; transform: none !important; }
+  .hero__slide-dot > span::after { animation: none !important; }
 }

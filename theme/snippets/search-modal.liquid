@@ -4,13 +4,16 @@
   plain GET search form, so Enter always works even if suggestions fail.
 
   @param {object[]} [suggested_collections] - Collections suggested before anything is typed
+  @param {string} [resources] - Shopify predictive resource types
+  @param {number} [limit] - Results per resource type (default 6)
+  @param {number} [suggestion_limit] - Initial collection chips (default 6)
 
   @example
   {% render 'search-modal', suggested_collections: section.settings.search_collections %}
 {%- enddoc -%}
 <nk-modal id="SearchModal">
   <dialog class="search-modal" aria-labelledby="SearchModalTitle">
-    <nk-predictive-search class="search-modal__inner" data-resources="query,product,collection,page" data-limit="6">
+    <nk-predictive-search class="search-modal__inner" data-resources="{{ resources | default: 'query,product,collection,page' }}" data-limit="{{ limit | default: 6 }}">
       <h2 class="visually-hidden" id="SearchModalTitle">{{ 'header.search' | t }}</h2>
       <form id="SearchModalForm" class="search-modal__field" action="{{ routes.search_url }}" method="get" role="search">
         {% render 'icon', name: 'search' %}
@@ -47,7 +50,8 @@
           {%- if chip_collections.size > 0 -%}
             <p class="spec text-muted">{{ 'search.popular_collections' | t }}</p>
             <ul class="collection-pills search-modal__chips" role="list">
-              {%- for collection in chip_collections limit: 6 -%}
+              {%- assign chip_limit = suggestion_limit | default: 6 -%}
+              {%- for collection in chip_collections limit: chip_limit -%}
                 <li><a href="{{ collection.url }}">{{ collection.title | escape }}</a></li>
               {%- endfor -%}
             </ul>

@@ -1,6 +1,6 @@
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
-import { decorativeMotionAllowed } from '../../core/motion';
+import { motionMode } from '../../core/motion';
 
 /**
  * <nk-reveal mode="cut|fade|wipe|split|fold" by="line|word|char"> — GSAP entrance for headings
@@ -17,11 +17,16 @@ export class NkReveal extends NkElement {
   #context: { revert(): void } | null = null;
 
   protected mount(): void {
-    if (!decorativeMotionAllowed()) {
+    if (motionMode() === 'off') {
       this.setAttribute('data-done', '');
       return;
     }
-    void this.#start().catch(console.error);
+    void this.#start().catch((error: unknown) => {
+      this.#context?.revert();
+      this.removeAttribute('data-armed');
+      this.setAttribute('data-done', '');
+      console.error(error);
+    });
   }
 
   protected override unmount(): void {
@@ -36,18 +41,23 @@ export class NkReveal extends NkElement {
 
   async #start(): Promise<void> {
     const connection = this.signal;
-    const { gsap, SplitText } = await import('../../motion/gsap');
+    const { gsap, SplitText, motionTempo, motionStagger } = await import('../../motion/gsap');
     if (!this.connectionIsCurrent(connection)) return;
-    await document.fonts?.ready;
+    if (document.fonts?.status !== 'loaded') {
+      await Promise.race([document.fonts?.ready, new Promise((resolve) => this.later(() => resolve(undefined), 1200))]);
+    }
     if (!this.connectionIsCurrent(connection)) return;
 
-    const mode = this.getAttribute('mode') ?? this.getAttribute('entrance') ?? 'fade';
+    const mode = motionMode() === 'simple' ? 'fade' : this.getAttribute('mode') ?? this.getAttribute('entrance') ?? 'fade';
     const by = this.getAttribute('by') ?? (mode === 'fold' ? 'word' : 'line');
     const delay = Number(this.getAttribute('delay')) || 0;
     const customDuration = Number(this.getAttribute('duration')) || 0;
     const playOnLoad = this.hasAttribute('play-on-load');
     const target = this.querySelector<HTMLElement>('[data-reveal-target]') ?? (this.firstElementChild as HTMLElement | null) ?? this;
-    const scrollTrigger = playOnLoad ? undefined : { trigger: this, start: 'top 88%', once: true };
+    const scrollTrigger = playOnLoad ? undefined : {
+      trigger: this, start: 'top 90%', once: true, fastScrollEnd: true,
+      onLeave: (self: import('gsap/ScrollTrigger').ScrollTrigger) => { self.animation?.progress(1); },
+    };
 
     this.#context = gsap.context(() => {
       this.setAttribute('data-armed', '');
@@ -75,8 +85,8 @@ export class NkReveal extends NkElement {
             return gsap.from(pieces, {
               ...from,
               delay,
-              duration: customDuration || (mode === 'fold' ? 0.85 : 1.05),
-              stagger: by === 'char' ? 0.025 : by === 'word' ? 0.065 : 0.1,
+              duration: (customDuration || 0.75) * motionTempo(),
+              stagger: { amount: Math.min(0.3, Math.max(0, pieces.length - 1) * motionStagger()) },
               ease: mode === 'fold' ? 'power3.out' : 'expo.out',
               scrollTrigger,
               onComplete: done,
@@ -96,7 +106,7 @@ export class NkReveal extends NkElement {
       gsap.fromTo(this, presets[mode] ?? presets.fade!, {
         ...to,
         delay,
-        duration: customDuration || (mode === 'wipe' ? 1.15 : 0.95),
+        duration: (customDuration || 0.65) * motionTempo(),
         ease: 'expo.out',
         scrollTrigger,
         onComplete: done,

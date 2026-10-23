@@ -7,7 +7,7 @@ import { namespaceProductHTML } from '../../src/components/product/product-dom';
 import { replaceRegions } from '../../src/services/sections';
 import '../../src/components/size-guide/size-guide';
 import { installCardInteractions } from '../../src/components/product/card-interactions';
-import { cart } from '../../src/services/cart';
+import { cart, type CartResult } from '../../src/services/cart';
 
 define('nk-variant-picker', NkVariantPicker);
 define('nk-product-form', NkProductForm);
@@ -39,6 +39,43 @@ beforeEach(() => {
 afterEach(() => { document.body.replaceChildren(); vi.restoreAllMocks(); vi.unstubAllGlobals(); setConfigForTests(null); });
 
 describe('product purchase regressions', () => {
+  it('uses the full display name while matching measurements by the unchanged actual size', () => {
+    mount(sectionMarkup('M').replace('</fieldset>', `<div data-measurement-panel data-base-unit="cm" hidden>
+      <template data-measurement-size-label="M">Medium (M)</template><span data-measurement-active-size></span>
+      <p data-measurement-empty hidden>No chart</p><div data-measurement-row="M" hidden><span data-measure-value="104">104</span></div>
+      <div data-measurement-footer>Units</div></div></fieldset>`));
+    expect(document.querySelector('[data-measurement-active-size]')!.textContent).toBe('Medium (M)');
+    expect(document.querySelector<HTMLElement>('[data-measurement-row="M"]')!.hidden).toBe(false);
+    expect(document.querySelector<HTMLElement>('[data-measurement-footer]')!.hidden).toBe(false);
+    expect(document.querySelector<HTMLInputElement>('input:checked')!.value).toBe('M');
+  });
+  it('can disable hover previews while retaining selected measurements', () => {
+    mount(sectionMarkup('M').replace('data-preselected', 'data-preselected data-measure-preview-disabled')
+      .replace('</fieldset>', '<div data-measurement-panel data-base-unit="cm" hidden><span data-measurement-active-size></span><div data-measurement-row="M" hidden><span data-measure-value="104">104</span></div><div data-measurement-row="L" hidden><span data-measure-value="110">110</span></div></div></fieldset>'));
+    document.querySelector('[data-size-pill="L"]')!.dispatchEvent(new Event('pointerover', { bubbles: true }));
+    expect(document.querySelector('[data-measurement-active-size]')!.textContent).toBe('M');
+    expect(document.querySelector<HTMLElement>('[data-measurement-row="M"]')!.hidden).toBe(false);
+    expect(document.querySelector<HTMLElement>('[data-measurement-row="L"]')!.hidden).toBe(true);
+  });
+
+  it('keeps a fixed-unit chart in its authored unit despite saved or broadcast preferences', () => {
+    sessionStorage.setItem('nk:measure-unit', 'cm');
+    document.body.innerHTML = '<nk-size-guide unit="in" data-unit-switch-disabled data-highlight-disabled><table><tbody><tr data-size-row="M"><td data-value="40">40</td></tr></tbody></table></nk-size-guide>';
+    const guide = document.querySelector<any>('nk-size-guide'); guide.disconnectedCallback(); guide.connectedCallback();
+    document.dispatchEvent(new CustomEvent('nk:unit:changed', { detail: { unit: 'cm' } }));
+    expect(document.querySelector('td')!.textContent).toBe('40');
+    expect(document.querySelector('[data-current]')).toBeNull();
+  });
+  it('preserves a chosen size when Shopify changes the rendered option set', async () => {
+    mount(sectionMarkup().replace('data-preselected', 'data-preselected data-explicit-size-choice'));
+    const incoming = sectionMarkup('M', 'available', '102')
+      .replace('data-preselected', 'data-preselected data-explicit-size-choice')
+      .replace(/<div data-size-pill="S">.*?<\/div>/, '');
+    vi.stubGlobal('fetch', vi.fn(async () => response(incoming)));
+    choose('M');
+    await vi.waitFor(() => expect(document.querySelector<NkVariantPicker>('nk-variant-picker')!.resolvedVariantId).toBe('102'));
+    expect(document.querySelector<HTMLInputElement>('input:checked')?.value).toBe('M');
+  });
   it('shows an honest missing-measurement state and restores the selected size after hover', () => {
     mount(sectionMarkup('M').replace('</fieldset>', `<div data-measurement-panel data-base-unit="cm" hidden>
       <span data-measurement-active-size></span><div class="measurement-panel__actions">Units</div>
@@ -54,6 +91,25 @@ describe('product purchase regressions', () => {
     picker.dispatchEvent(new Event('pointerleave'));
     expect(document.querySelector('[data-measurement-active-size]')!.textContent).toBe('M');
     expect(document.querySelector<HTMLElement>('[data-measurement-row="M"]')!.hidden).toBe(false);
+  });
+  it('keeps waiting for a slow video and reveals it when playback becomes ready', async () => {
+    vi.useFakeTimers();
+    try {
+      setConfigForTests({ ...config(), motion: 'standard' });
+      document.body.innerHTML = '<article class="card"><video data-card-video></video></article>';
+      const card = document.querySelector<HTMLElement>('.card')!;
+      let finish!: () => void;
+      vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(() => new Promise<void>(resolve => { finish = resolve; }));
+      const pause = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
+      card.dispatchEvent(new Event('pointerover', { bubbles: true }));
+      await vi.advanceTimersByTimeAsync(1200);
+      expect(card.hasAttribute('data-video-failed')).toBe(false);
+      expect(card.hasAttribute('data-video-intent')).toBe(true);
+      expect(pause).not.toHaveBeenCalled();
+      finish();
+      await Promise.resolve();
+      expect(card.hasAttribute('data-video-playing')).toBe(true);
+    } finally { vi.useRealTimers(); }
   });
   it('ignores an old playback failure after the pointer leaves and re-enters the same card', async () => {
     setConfigForTests({ ...config(), motion: 'standard' });
@@ -116,14 +172,32 @@ describe('product purchase regressions', () => {
   });
   it('quick-adds the exact size and minimum quantity once under repeated clicks', async () => {
     document.body.innerHTML = '<article class="card"><div class="card__meta"><button data-quick-add="123" data-quick-add-quantity="3">M</button></div></article>';
-    let resolve!: (value: any) => void;
+    let resolve!: (value: CartResult) => void;
     const add = vi.spyOn(cart, 'add').mockImplementation(() => new Promise(done => { resolve = done; }));
     const button = document.querySelector<HTMLButtonElement>('button')!;
     button.click(); button.click();
     expect(add).toHaveBeenCalledExactlyOnceWith([{ id: 123, quantity: 3 }], 'quick-add');
     expect(button.disabled).toBe(true);
-    resolve({});
+    resolve({} as CartResult);
     await vi.waitFor(() => expect(button.textContent).toBe('✓'));
+  });
+  it('restores the size label after a repeat quick add made during the confirmation', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      document.body.innerHTML = '<article class="card"><div class="card__meta"><button data-quick-add="123">M</button></div></article>';
+      vi.spyOn(cart, 'add').mockResolvedValue({} as CartResult);
+      const button = document.querySelector<HTMLButtonElement>('button')!;
+      button.click();
+      await vi.waitFor(() => expect(button.textContent).toBe('✓'));
+      button.click();
+      await vi.waitFor(() => expect(button.hasAttribute('data-busy')).toBe(false));
+      expect(button.textContent).toBe('✓');
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(button.textContent).toBe('M');
+      expect(button.hasAttribute('data-added')).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
   });
   it('requires an explicit Shoe size choice under the default Size policy', () => {
     mount(sectionMarkup().replace('data-preselected', '').replace('data-option-name="Size"', 'data-option-name="Shoe size"'));

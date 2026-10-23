@@ -1,11 +1,10 @@
-import { config, t } from '../../core/config';
-import { announce } from '../../services/announce';
+import { config } from '../../core/config';
 import type { CartResult } from '../../services/cart';
 import { NkModal } from '../modal/modal';
 
 /**
  * <nk-cart-drawer> (master-plan/09 CA-02). Opening never mutates the cart. After a successful
- * add from a product form it opens (when the merchant chose "drawer") and announces the result.
+ * add it opens (when the merchant chose "drawer"); the cart renderer announces the result once.
  * Its contents are a cart section region refreshed by the cart renderer.
  */
 export class NkCartDrawer extends NkModal {
@@ -14,7 +13,6 @@ export class NkCartDrawer extends NkModal {
     this.on(document, 'nk:cart:updated', (event) => {
       const detail = (event as CustomEvent<CartResult & { kind: string; sourceId: string }>).detail;
       if (detail.kind !== 'add') return;
-      announce.polite(t('cart.added'));
       if (config().cart.afterAdd === 'drawer' && !this.isOpen) {
         // Wait one frame so the renderer has swapped in the new lines.
         this.later(() => this.open(document.querySelector<HTMLElement>(`[data-nk-open="${this.id}"]`)), 0);

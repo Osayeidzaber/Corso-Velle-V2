@@ -1,7 +1,6 @@
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
-
-const CM_PER_INCH = 2.54;
+import { convertMeasure, storedUnit, storeUnit, unitFromEvent, type MeasureUnit } from '../product/measure-units';
 
 /**
  * <nk-size-guide unit="in"> — switches a size table between inches and centimetres and
@@ -10,17 +9,11 @@ const CM_PER_INCH = 2.54;
  * Unit labels ([data-ref="unit-label"]) follow the toggle.
  */
 export class NkSizeGuide extends NkElement {
-  #base: 'in' | 'cm' = 'in';
+  #base: MeasureUnit = 'in';
 
   protected mount(): void {
     this.#base = this.getAttribute('unit') === 'cm' ? 'cm' : 'in';
-    let initialUnit = this.#base;
-    try {
-      const saved = sessionStorage.getItem('nk:measure-unit');
-      if (saved === 'in' || saved === 'cm') initialUnit = saved;
-    } catch {
-      // ignore
-    }
+    const initialUnit = storedUnit() ?? this.#base;
     for (const button of this.refs<HTMLButtonElement>('unit')) {
       button.hidden = false;
       this.on(button, 'click', () => {
@@ -39,14 +32,13 @@ export class NkSizeGuide extends NkElement {
       if (this.closest('dialog[open]')) this.#highlight(true);
     });
     this.on(document, 'nk:unit:changed', (event) => {
-      const detail = (event as CustomEvent<{ unit: 'in' | 'cm'; source?: Element }>).detail;
-      if (detail?.source !== this && (detail?.unit === 'in' || detail?.unit === 'cm')) {
-        this.#show(detail.unit, false);
-      }
+      const unit = unitFromEvent(event, this);
+      if (unit) this.#show(unit, false);
     });
   }
 
-  #show(unit: 'in' | 'cm', broadcast = false): void {
+  #show(unit: MeasureUnit, broadcast = false): void {
+    if (this.hasAttribute('data-unit-switch-disabled')) unit = this.#base;
     for (const cell of this.querySelectorAll<HTMLElement>('[data-value]')) {
       const source = cell.dataset.value?.trim() ?? '';
       const value = Number(source);
@@ -54,9 +46,7 @@ export class NkSizeGuide extends NkElement {
         cell.textContent = source && unit !== this.#base ? `${source} (${this.#base})` : source;
         continue;
       }
-      let shown = value;
-      if (unit !== this.#base) shown = unit === 'cm' ? value * CM_PER_INCH : value / CM_PER_INCH;
-      cell.textContent = String(Math.round(shown * 10) / 10);
+      cell.textContent = String(convertMeasure(value, this.#base, unit));
     }
     const label = this.refs<HTMLButtonElement>('unit').find((button) => button.value === unit)?.textContent?.trim() ?? unit;
     for (const el of this.refs('unit-label')) el.textContent = label;
@@ -64,11 +54,7 @@ export class NkSizeGuide extends NkElement {
       button.setAttribute('aria-pressed', String(button.value === unit));
     }
     if (broadcast) {
-      try {
-        sessionStorage.setItem('nk:measure-unit', unit);
-      } catch {
-        // ignore
-      }
+      storeUnit(unit);
       this.emit('nk:unit:changed', { unit, source: this });
     }
   }
@@ -83,7 +69,7 @@ export class NkSizeGuide extends NkElement {
     const chosen = fieldset?.querySelector<HTMLInputElement>('input:checked')?.value.trim().toLowerCase();
     let current: HTMLElement | null = null;
     for (const row of this.querySelectorAll<HTMLElement>('[data-size-row]')) {
-      const match = !!chosen && row.dataset.sizeRow?.trim().toLowerCase() === chosen;
+      const match = !this.hasAttribute('data-highlight-disabled') && !!chosen && row.dataset.sizeRow?.trim().toLowerCase() === chosen;
       row.toggleAttribute('data-current', match);
       if (match) {
         row.setAttribute('aria-current', 'true');

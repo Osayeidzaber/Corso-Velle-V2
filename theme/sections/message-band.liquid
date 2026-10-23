@@ -5,13 +5,17 @@
 {%- endcomment -%}
 {%- assign messages = section.blocks | where: 'type', 'message' -%}
 {%- if messages.size > 0 -%}
-  <div class="message-band full-width color-{{ section.settings.color_scheme }}" style="--band-size: {{ section.settings.size }}px;">
+  <div class="message-band full-width color-{{ section.settings.color_scheme }}" data-layout="{{ section.settings.layout }}" data-marquee-group style="--band-size: {{ section.settings.size }}px;--band-mobile-factor:{{ section.settings.mobile_scale | default: 55 | divided_by: 100.0 }};">
     {%- assign rows = section.settings.rows | plus: 0 -%}
     {%- for row in (1..rows) -%}
       {%- liquid
-        assign direction = 'left'
+        assign direction = section.settings.direction | default: 'left'
         if row == 2
-          assign direction = 'right'
+          if direction == 'left'
+            assign direction = 'right'
+          else
+            assign direction = 'left'
+          endif
         endif
       -%}
       <nk-marquee
@@ -19,6 +23,9 @@
         direction="{{ direction }}"
         speed="{{ section.settings.speed }}"
         hover-speed="0.3"
+        pause-group
+        {% if section.settings.layout == 'static' %}static{% endif %}
+        {% if section.settings.static_mobile %}static-on-phone{% endif %}
         {% if section.settings.scroll_react %}scroll-react{% endif %}
         {% if row == 2 %}aria-hidden="true"{% endif %}
       >
@@ -35,6 +42,7 @@
             {%- endfor -%}
           </ul>
         </div>
+        {% if row == 1 %}<button type="button" class="marquee__pause" data-ref="pause" aria-pressed="false" aria-label="{{ 'marquee.pause' | t }}" hidden>❚❚</button>{% endif %}
       </nk-marquee>
     {%- endfor -%}
   </div>
@@ -54,46 +62,186 @@
   .message-band__item a { text-decoration: none; }
   .message-band__item--outline { font-style: normal; color: transparent; -webkit-text-stroke: max(1px, 0.02em) var(--nk-color-text); }
   @media (max-width: 749px) {
-    .message-band__item { font-size: calc(var(--band-size, 72px) * 0.55); }
+    .message-band__item { font-size: calc(var(--band-size, 72px) * var(--band-mobile-factor, .55)); }
     .message-band__row--second { display: none; }
   }
+  .message-band[data-layout='static'] .message-band__row--second { display: none; }
+  .message-band[data-layout='static'] .marquee__track { width: 100%; }
+  .message-band[data-layout='static'] .marquee__list { width: 100%; flex-wrap: wrap; justify-content: center; row-gap: 16px; }
+  .message-band[data-layout='static'] .marquee__item { max-width: 100%; overflow-wrap: anywhere; }
 {% endstylesheet %}
 
 {% schema %}
 {
   "name": "Message band",
   "class": "message-band-section",
-  "max_blocks": 10,
   "settings": [
     {
       "type": "select",
       "id": "rows",
       "label": "Rows",
       "options": [
-        { "value": "1", "label": "One" },
-        { "value": "2", "label": "Two (opposite directions, desktop)" }
+        {
+          "value": "1",
+          "label": "One"
+        },
+        {
+          "value": "2",
+          "label": "Two (opposite directions, desktop)"
+        }
       ],
       "default": "2"
     },
-    { "type": "range", "id": "size", "label": "Text size", "min": 32, "max": 140, "step": 4, "unit": "px", "default": 80 },
-    { "type": "range", "id": "speed", "label": "Speed", "min": 20, "max": 160, "step": 10, "unit": "px", "default": 50, "info": "Pixels per second." },
-    { "type": "checkbox", "id": "scroll_react", "label": "Speed up while scrolling", "default": true },
-    { "type": "checkbox", "id": "outline_second", "label": "Outline text on second row", "default": true },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" }
+    {
+      "type": "range",
+      "id": "size",
+      "label": "Text size",
+      "min": 32,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Speed",
+      "min": 20,
+      "max": 160,
+      "step": 10,
+      "unit": "px",
+      "default": 50,
+      "info": "Pixels per second."
+    },
+    {
+      "type": "checkbox",
+      "id": "scroll_react",
+      "label": "Speed up while scrolling",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "outline_second",
+      "label": "Outline text on second row",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Ticker direction",
+      "options": [
+        {
+          "value": "left",
+          "label": "Right to left"
+        },
+        {
+          "value": "right",
+          "label": "Left to right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Display",
+      "options": [
+        {
+          "value": "ticker",
+          "label": "Moving ticker"
+        },
+        {
+          "value": "static",
+          "label": "Static wrapped text"
+        }
+      ],
+      "default": "ticker"
+    },
+    {
+      "type": "select",
+      "id": "mobile_scale",
+      "label": "Phone text size",
+      "options": [
+        {
+          "value": "55",
+          "label": "Compact"
+        },
+        {
+          "value": "75",
+          "label": "Medium"
+        },
+        {
+          "value": "100",
+          "label": "Same as desktop"
+        }
+      ],
+      "default": "55"
+    },
+    {
+      "type": "checkbox",
+      "id": "static_mobile",
+      "label": "Static on phones",
+      "default": true
+    }
   ],
   "blocks": [
     {
       "type": "message",
       "name": "Message",
       "settings": [
-        { "type": "text", "id": "text", "label": "Text", "default": "New drop" },
-        { "type": "url", "id": "link", "label": "Link" }
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "New drop"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
       ]
     }
   ],
   "presets": [
-    { "name": "Message band", "blocks": [{ "type": "message" }, { "type": "message" }, { "type": "message" }] }
+    {
+      "name": "Message band",
+      "blocks": [
+        {
+          "type": "message"
+        },
+        {
+          "type": "message"
+        },
+        {
+          "type": "message"
+        }
+      ]
+    },
+    {
+      "name": "Static text band",
+      "settings": {
+        "layout": "static",
+        "rows": "1"
+      },
+      "blocks": [
+        {
+          "type": "message"
+        }
+      ]
+    }
   ],
-  "disabled_on": { "groups": ["header", "footer"] }
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
 }
 {% endschema %}

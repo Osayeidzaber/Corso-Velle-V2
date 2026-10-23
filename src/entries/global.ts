@@ -33,6 +33,7 @@ registerLazy('nk-reveal', () => import('../components/reveal/reveal'));
 registerLazy('nk-text', () => import('../components/text/text'));
 registerLazy('nk-marquee', () => import('../components/marquee/marquee'));
 registerLazy('nk-carousel', () => import('../components/carousel/carousel'));
+registerLazy('nk-accordion-gallery', () => import('../components/accordion-gallery/accordion-gallery'));
 registerLazy('nk-footer', () => import('../components/footer/footer'));
 registerLazy('nk-tabs', () => import('../components/tabs/tabs'));
 registerLazy('nk-expand-media', () => import('../components/expand-media/expand-media'));
@@ -41,9 +42,19 @@ registerLazy('nk-search-pill', () => import('../components/search-pill/search-pi
 registerLazy('nk-predictive-search', () => import('../components/predictive-search/predictive-search'));
 registerLazy('nk-facets', () => import('../components/facets/facets'));
 registerLazy('nk-parallax', () => import('../components/motion/parallax'));
+registerLazy('nk-background-video', () => import('../components/media/background-video'));
+registerLazy('nk-hero-slides', () => import('../components/media/hero-slides'));
+registerLazy('nk-scene', () => import('../components/motion/scene'));
 registerLazy('nk-stagger', () => import('../components/motion/stagger'));
 registerLazy('nk-size-guide', () => import('../components/size-guide/size-guide'));
+registerLazy('nk-fit-finder', () => import('../components/fit-finder/fit-finder'));
 registerLazy('nk-recommendations', () => import('../components/recommendations/recommendations'));
+// Optional section kit (docs/SECTION-SOURCES.md): only the sections that need behaviour.
+registerLazy('nk-countdown', () => import('../components/countdown/countdown'));
+registerLazy('nk-dismissible', () => import('../components/dismissible/dismissible'));
+registerLazy('nk-count-up', () => import('../components/count-up/count-up'));
+registerLazy('nk-video', () => import('../components/video/video'));
+registerLazy('nk-image-compare', () => import('../components/image-compare/image-compare'));
 for (const tag of ['nk-variant-picker', 'nk-product-form', 'nk-gallery', 'nk-sticky-buy']) {
   registerLazy(tag, () => import('./product'));
 }

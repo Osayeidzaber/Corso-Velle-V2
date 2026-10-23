@@ -30,7 +30,7 @@
       </nav>
     {%- endif -%}
 
-    <nk-facets data-section-id="{{ section.id }}">
+    <nk-facets data-section-id="{{ section.id }}" data-toolbar="{{ section.settings.toolbar_width }}" data-toolbar-sticky="{{ section.settings.toolbar_sticky }}" data-results-gap style="--results-gap:{{ section.settings.grid_gap | default: 8 }}px;" {% if section.settings.show_layout_switch == false %}data-layout-locked{% endif %}>
       {% render 'facets',
         results: collection,
         section_id: section.id,
@@ -38,6 +38,7 @@
         count: collection.products_count,
         show_filters: section.settings.show_filters,
         show_sort: section.settings.show_sort,
+          show_layout_switch: section.settings.show_layout_switch,
         columns_mobile: section.settings.columns_mobile,
         columns_desktop: section.settings.columns_desktop
       %}
@@ -54,7 +55,7 @@
                 <li data-stagger-item>
                   {%- assign eager = false -%}
                   {%- if forloop.index <= 4 and paginate.current_page == 1 -%}{%- assign eager = true -%}{%- endif -%}
-                  {% render 'product-card', product: product, eager: eager, heading_tag: 'h2' %}
+                  {% render 'product-card', product: product, eager: eager, heading_tag: 'h2', card_options: section.settings %}
                 </li>
               {%- endfor -%}
             </ul>
@@ -130,24 +131,297 @@
   "name": "Product grid",
   "class": "main-collection-section",
   "settings": [
-    { "type": "checkbox", "id": "show_header", "label": "Show title and description", "default": true, "info": "Turn off when a Collection banner section is above." },
-    { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 8, "max": 48, "step": 4, "default": 24 },
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show title and description",
+      "default": true,
+      "info": "Turn off when a Collection banner section is above."
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
     {
       "type": "select",
       "id": "columns_mobile",
       "label": "Columns on phones",
       "options": [
-        { "value": "1", "label": "1" },
-        { "value": "2", "label": "2" }
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
       ],
       "default": "1"
     },
-    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 5, "step": 1, "default": 3 },
-    { "type": "link_list", "id": "pills_menu", "label": "Category links menu", "info": "Optional row of links to related collections." },
-    { "type": "checkbox", "id": "show_description", "label": "Show collection description", "default": true },
-    { "type": "checkbox", "id": "show_filters", "label": "Show filters", "default": true, "info": "Filters come from Shopify's Search & Discovery app." },
-    { "type": "checkbox", "id": "show_sort", "label": "Show sort", "default": true }
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "link_list",
+      "id": "pills_menu",
+      "label": "Category links menu",
+      "info": "Optional row of links to related collections."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show collection description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Show filters",
+      "default": true,
+      "info": "Filters come from Shopify's Search & Discovery app."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "Show sort",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "card_appearance",
+      "label": "Card appearance",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        },
+        {
+          "value": "editorial",
+          "label": "Editorial"
+        },
+        {
+          "value": "bordered",
+          "label": "Bordered"
+        },
+        {
+          "value": "image-led",
+          "label": "Image focused"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_ratio",
+      "label": "Image ratio",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (2:3)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "cover",
+          "label": "Fill"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_hover",
+      "label": "Alternate media",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "auto",
+          "label": "Video with image fallback"
+        },
+        {
+          "value": "image",
+          "label": "Second image only"
+        },
+        {
+          "value": "off",
+          "label": "Off"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_vendor",
+      "label": "Show vendor",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_price",
+      "label": "Show price",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_badges",
+      "label": "Show badges",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_sizes",
+      "label": "Show sizes",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_layout_switch",
+      "label": "Allow shoppers to change grid columns",
+      "default": true,
+      "info": "Off uses merchant columns and ignores previous shopper grid preferences."
+    },
+    {
+      "type": "select",
+      "id": "toolbar_width",
+      "label": "Filter toolbar width",
+      "options": [
+        {
+          "value": "full",
+          "label": "Full bleed"
+        },
+        {
+          "value": "contained",
+          "label": "Within content"
+        }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "checkbox",
+      "id": "toolbar_sticky",
+      "label": "Sticky filter toolbar",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Product column gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    }
   ],
-  "enabled_on": { "templates": ["collection"] }
+  "enabled_on": {
+    "templates": [
+      "collection"
+    ]
+  },
+  "limit": 1
 }
 {% endschema %}

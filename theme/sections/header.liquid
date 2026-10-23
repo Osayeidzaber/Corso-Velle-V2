@@ -21,6 +21,10 @@
 <nk-header
   class="color-{{ section.settings.color_scheme }} full-width"
   data-sticky="{{ section.settings.sticky }}"
+  data-nav-trigger="{{ section.settings.nav_trigger }}"
+  data-dropdown="{{ section.settings.dropdown_layout }}"
+  data-logo-treatment="{{ section.settings.logo_treatment }}"
+  style="--header-height:{{ section.settings.height | default: 76 }}px;--header-height-mobile:{{ section.settings.height_mobile | default: 64 }}px;"
   {% if section.settings.overlay_home and is_home %}
     data-overlay data-surface="overlay"
   {% endif %}
@@ -38,14 +42,14 @@
       >
         {% render 'icon', name: 'menu' %}
       </button>
-      <a
+      {% if section.settings.show_search != false %}<a
         class="icon-button header__search-icon--phone"
         href="{{ routes.search_url }}"
         {{ search_trigger }}
         aria-label="{{ 'header.search' | t }}"
       >
         {% render 'icon', name: 'search' %}
-      </a>
+      </a>{% endif %}
 
       {%- if menu.links.size > 0 -%}
         <nav class="header__nav" aria-label="{{ 'header.primary_navigation' | t }}">
@@ -107,15 +111,22 @@
     <a class="header__logo" href="{{ routes.root_url }}">
       {%- if settings.logo -%}
         {%- assign logo_alt = settings.logo.alt | default: shop.name -%}
-        {{ settings.logo | image_url: width: 600 | image_tag: alt: logo_alt, loading: 'eager', sizes: '(min-width: 990px) 300px, 200px' }}
+        {%- assign inverse_logo = false -%}
+        {%- if settings.logo_inverse and section.settings.overlay_home and is_home -%}{%- assign inverse_logo = true -%}{%- endif -%}
+        {{ settings.logo | image_url: width: 600 | image_tag: alt: logo_alt, loading: 'eager', sizes: '(min-width: 990px) 300px, 200px', class: 'header__logo-primary' }}
+        {%- if inverse_logo -%}
+          {%- comment -%} Shown instead of the main logo only while the header is transparent over the hero. {%- endcomment -%}
+          {{ settings.logo_inverse | image_url: width: 600 | image_tag: alt: '', loading: 'eager', sizes: '(min-width: 990px) 300px, 200px', class: 'header__logo-inverse', aria-hidden: 'true' }}
+        {%- endif -%}
       {%- else -%}
         {{ shop.name | escape }}
       {%- endif -%}
     </a>
 
     <div class="header__end">
+      {% if section.settings.show_search != false %}
       {%- if section.settings.search_style == 'pill' -%}
-        <nk-search-pill class="header__search-pill" {% if section.settings.predictive_search %}data-predictive{% endif %}>
+        <nk-search-pill class="header__search-pill" data-resources="{{ section.settings.search_resources }}" data-limit="{{ section.settings.search_limit }}" {% if section.settings.predictive_search %}data-predictive{% endif %}>
           <button
             type="button"
             class="icon-button search-pill__toggle"
@@ -156,8 +167,9 @@
           {% render 'icon', name: 'search' %}
         </a>
       {%- endif -%}
+      {% endif %}
 
-      {%- if shop.customer_accounts_enabled -%}
+      {%- if shop.customer_accounts_enabled and section.settings.show_account != false -%}
         <span class="header__account">
           <shopify-account menu="{{ section.settings.customer_account_menu }}">
             {% render 'icon', name: 'account' %}
@@ -185,7 +197,7 @@
 {% render 'nav-drawer', menu: menu, section: section %}
 
 {%- if section.settings.predictive_search -%}
-  {% render 'search-modal', suggested_collections: section.settings.search_collections %}
+  {% render 'search-modal', suggested_collections: section.settings.search_collections, resources: section.settings.search_resources, limit: section.settings.search_limit, suggestion_limit: section.settings.suggestion_limit %}
 {%- endif -%}
 
 {% schema %}
@@ -193,15 +205,35 @@
   "name": "Header",
   "class": "header-section",
   "settings": [
-    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
-    { "type": "link_list", "id": "customer_account_menu", "label": "Customer account menu", "default": "customer-account-main-menu" },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "link_list",
+      "id": "customer_account_menu",
+      "label": "Customer account menu",
+      "default": "customer-account-main-menu"
+    },
     {
       "type": "select",
       "id": "layout",
       "label": "Desktop layout",
       "options": [
-        { "value": "center", "label": "Logo centered" },
-        { "value": "left", "label": "Logo left" }
+        {
+          "value": "center",
+          "label": "Logo centered"
+        },
+        {
+          "value": "left",
+          "label": "Logo left"
+        },
+        {
+          "value": "two-row",
+          "label": "Centered logo with navigation below"
+        }
       ],
       "default": "center"
     },
@@ -210,9 +242,18 @@
       "id": "sticky",
       "label": "Sticky header",
       "options": [
-        { "value": "off", "label": "Off" },
-        { "value": "always", "label": "Always visible" },
-        { "value": "reveal", "label": "Show when scrolling up" }
+        {
+          "value": "off",
+          "label": "Off"
+        },
+        {
+          "value": "always",
+          "label": "Always visible"
+        },
+        {
+          "value": "reveal",
+          "label": "Show when scrolling up"
+        }
       ],
       "default": "reveal"
     },
@@ -221,8 +262,14 @@
       "id": "panel_style",
       "label": "Desktop menu panels",
       "options": [
-        { "value": "attached", "label": "Full width" },
-        { "value": "floating", "label": "Floating card (morphs between items)" }
+        {
+          "value": "attached",
+          "label": "Full width"
+        },
+        {
+          "value": "floating",
+          "label": "Floating card (morphs between items)"
+        }
       ],
       "default": "attached"
     },
@@ -231,8 +278,14 @@
       "id": "link_hover",
       "label": "Menu link hover",
       "options": [
-        { "value": "underline", "label": "Underline" },
-        { "value": "swap", "label": "Letter swap" }
+        {
+          "value": "underline",
+          "label": "Underline"
+        },
+        {
+          "value": "swap",
+          "label": "Letter swap"
+        }
       ],
       "default": "underline"
     },
@@ -241,9 +294,18 @@
       "id": "drawer_style",
       "label": "Phone menu style",
       "options": [
-        { "value": "standard", "label": "Standard list" },
-        { "value": "editorial", "label": "Editorial (large numbered items)" },
-        { "value": "cards", "label": "Cards" }
+        {
+          "value": "standard",
+          "label": "Standard list"
+        },
+        {
+          "value": "editorial",
+          "label": "Editorial (large numbered items)"
+        },
+        {
+          "value": "cards",
+          "label": "Cards"
+        }
       ],
       "default": "standard"
     },
@@ -252,38 +314,213 @@
       "id": "search_style",
       "label": "Desktop search",
       "options": [
-        { "value": "icon", "label": "Icon" },
-        { "value": "pill", "label": "Expanding field" }
+        {
+          "value": "icon",
+          "label": "Icon"
+        },
+        {
+          "value": "pill",
+          "label": "Expanding field"
+        }
       ],
       "default": "icon"
     },
-    { "type": "checkbox", "id": "predictive_search", "label": "Show search suggestions as you type", "default": true, "info": "Search opens a panel with products, collections and suggested queries." },
-    { "type": "collection_list", "id": "search_collections", "label": "Collections suggested in search", "limit": 8 },
-    { "type": "checkbox", "id": "overlay_home", "label": "Overlay the homepage hero", "default": false, "info": "Only applies when the first homepage section supports overlay (for example the campaign hero)." },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
+    {
+      "type": "checkbox",
+      "id": "predictive_search",
+      "label": "Show search suggestions as you type",
+      "default": true,
+      "info": "Search opens a panel with products, collections and suggested queries."
+    },
+    {
+      "type": "collection_list",
+      "id": "search_collections",
+      "label": "Collections suggested in search"
+    },
+    {
+      "type": "checkbox",
+      "id": "overlay_home",
+      "label": "Overlay the homepage hero",
+      "default": false,
+      "info": "Only applies when the first homepage section supports overlay (for example the campaign hero)."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "nav_trigger",
+      "label": "Desktop submenu opening",
+      "options": [
+        {
+          "value": "hover",
+          "label": "Hover or click"
+        },
+        {
+          "value": "click",
+          "label": "Click only"
+        }
+      ],
+      "default": "hover"
+    },
+    {
+      "type": "select",
+      "id": "dropdown_layout",
+      "label": "Dropdown links",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Automatic grouping"
+        },
+        {
+          "value": "list",
+          "label": "Stacked groups"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "logo_treatment",
+      "label": "Logo image colors",
+      "options": [
+        {
+          "value": "ink",
+          "label": "Original theme ink treatment"
+        },
+        {
+          "value": "original",
+          "label": "Preserve uploaded colors"
+        }
+      ],
+      "default": "ink"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Minimum desktop header height",
+      "min": 60,
+      "max": 120,
+      "step": 4,
+      "default": 76,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Minimum phone header height",
+      "min": 56,
+      "max": 88,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show customer account",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show header search",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "search_resources",
+      "label": "Search suggestions",
+      "options": [
+        {
+          "value": "query,product,collection,page",
+          "label": "Products, collections, pages and queries"
+        },
+        {
+          "value": "query,product,collection",
+          "label": "Products, collections and queries"
+        },
+        {
+          "value": "product",
+          "label": "Products only"
+        }
+      ],
+      "default": "query,product,collection,page"
+    },
+    {
+      "type": "range",
+      "id": "search_limit",
+      "label": "Results per suggestion type",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "suggestion_limit",
+      "label": "Initial collection suggestions",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    }
   ],
   "blocks": [
     {
       "type": "group_description",
       "name": "Menu card description",
-      "limit": 8,
       "settings": [
-        { "type": "text", "id": "menu_item", "label": "Menu item title", "info": "Shown in the Cards phone menu under this top-level item." },
-        { "type": "text", "id": "text", "label": "Description" }
+        {
+          "type": "text",
+          "id": "menu_item",
+          "label": "Menu item title",
+          "info": "Shown in the Cards phone menu under this top-level item."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Description"
+        }
       ]
     },
     {
       "type": "promo",
       "name": "Menu promo card",
-      "limit": 8,
       "settings": [
-        { "type": "text", "id": "menu_item", "label": "Show under menu item", "info": "Type the exact title of a top-level menu item." },
-        { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "text", "id": "title", "label": "Title", "default": "Campaign" },
-        { "type": "url", "id": "link", "label": "Link" }
+        {
+          "type": "text",
+          "id": "menu_item",
+          "label": "Show under menu item",
+          "info": "Type the exact title of a top-level menu item."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Campaign"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
       ]
     }
   ],
-  "enabled_on": { "groups": ["header"] }
+  "enabled_on": {
+    "groups": [
+      "header"
+    ]
+  },
+  "limit": 1
 }
 {% endschema %}

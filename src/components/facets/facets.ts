@@ -1,7 +1,7 @@
 import { define } from '../../core/define';
 import { captureFocus, parseHTML, restoreFocus } from '../../core/dom';
 import { NkElement } from '../../core/element';
-import { animate } from '../../core/motion';
+import { animate, motionStagger, motionTempo } from '../../core/motion';
 import { announce } from '../../services/announce';
 import { overlay } from '../../services/overlay';
 import { Sequencer } from '../../services/request';
@@ -138,6 +138,7 @@ export class NkFacets extends NkElement {
   }
 
   #restoreGridLayout(): void {
+    if (this.hasAttribute('data-layout-locked')) return;
     try {
       const savedMobile = sessionStorage.getItem(STORAGE_MOBILE_KEY);
       if (savedMobile) this.#setGridLayout('mobile', savedMobile, false);
@@ -179,37 +180,29 @@ export class NkFacets extends NkElement {
   }
 
   #animateGridItems(container: HTMLElement): void {
-    const items = container.querySelectorAll<HTMLElement>(':scope > li, [data-stagger-item]');
+    // Layout changes are direct interactions: finish pending scroll reveals first. The shared
+    // stagger component alone owns entrances after a filter/sort response replaces the grid.
+    container.closest('nk-stagger')?.dispatchEvent(new Event('nk:stagger:finish'));
+    const items = [...container.querySelectorAll<HTMLElement>(':scope > li, [data-stagger-item]')].filter((item) => {
+      const bounds = item.getBoundingClientRect();
+      return bounds.bottom > 0 && bounds.top < window.innerHeight;
+    }).slice(0, 16);
     items.forEach((item, index) => {
-      if (index > 15) return;
+      item.getAnimations?.().forEach((animation) => animation.cancel());
       animate(
         item,
         [
-          { opacity: 0, transform: 'translateY(18px)' },
+          { opacity: 0.65, transform: 'translateY(8px)' },
           { opacity: 1, transform: 'none' },
         ],
         {
-          duration: 520,
-          delay: index * 32,
+          duration: 280 * motionTempo(),
+          delay: Math.min(180, index * motionStagger() * 1000),
           easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
           fill: 'backwards',
         },
         { decorative: true },
       );
-      const img = item.querySelector<HTMLElement>('.card__media > img:first-child');
-      if (img) {
-        animate(
-          img,
-          [{ transform: 'scale(1.04)' }, { transform: 'scale(1)' }],
-          {
-            duration: 720,
-            delay: index * 32,
-            easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-            fill: 'backwards',
-          },
-          { decorative: true },
-        );
-      }
     });
   }
 
@@ -260,12 +253,10 @@ export class NkFacets extends NkElement {
       this.dispatchEvent(new CustomEvent('nk:section:replaced', { bubbles: true, detail: { regions: ['facets'] } }));
       this.removeAttribute('aria-busy');
 
-      const grid = this.querySelector<HTMLElement>('.product-grid');
-      if (grid) this.#animateGridItems(grid);
-
       const label = this.querySelector('[data-results-label]')?.textContent?.trim();
       if (label) announce.polite(label);
-      if (this.getBoundingClientRect().top < 0) this.scrollIntoView({ block: 'start' });
+      // History restoration belongs to the browser; only an explicit filter/sort should move it.
+      if (push && this.getBoundingClientRect().top < 0) this.scrollIntoView({ block: 'start' });
     } catch (error) {
       console.error(error);
       this.removeAttribute('aria-busy');

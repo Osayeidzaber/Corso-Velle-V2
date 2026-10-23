@@ -35,7 +35,9 @@ export class NkGallery extends NkElement {
           (entry) => {
             if (entry.intersectionRatio >= 0.6) this.#setCurrent(this.#slides.indexOf(slide));
           },
-          { root: this.#track, threshold: [0.6] },
+          // Viewport root also handles vertical grid/stack layouts; clipping ancestors still
+          // restrict horizontal slides on phones without a breakpoint-specific observer reset.
+          { root: null, threshold: [0.6] },
         );
       }
     }
@@ -94,10 +96,12 @@ export class NkGallery extends NkElement {
 
     const section = this.closest('[data-product-section]');
     if (section) {
-      this.on(section, 'nk:variant:changed', () => {
+      this.on(section, 'nk:variant:changed', (event) => {
+        const state = (event as CustomEvent<{ state: string }>).detail?.state;
+        if (state !== 'available' && state !== 'sold-out') return;
         const mediaId = section.querySelector<HTMLElement>('[data-region="buy"]')?.dataset.variantMediaId;
         const target = mediaId ? this.#slides.findIndex((s) => s.dataset.mediaId === mediaId) : -1;
-        if (target >= 0) this.go(target, true);
+        if (target >= 0 && target !== this.#index) this.go(target, true);
       });
     }
 

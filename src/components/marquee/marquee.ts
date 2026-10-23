@@ -1,7 +1,7 @@
 import { t } from '../../core/config';
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
-import { decorativeMotionAllowed } from '../../core/motion';
+import { motionMode, PHONE_QUERY } from '../../core/motion';
 
 /**
  * <nk-marquee> — endless ticker / message band / image strip / vertical reviews wall
@@ -40,8 +40,13 @@ export class NkMarquee extends NkElement {
     this.#pointerInside = false;
     this.#focusInside = false;
     this.#rate = 1;
+    this.#scrollBoost = 1;
+    this.removeAttribute('data-moving');
+    const pause = this.ref<HTMLButtonElement>('pause');
+    if (pause) pause.hidden = true;
 
-    if (!decorativeMotionAllowed()) {
+    if (motionMode() === 'off' || this.hasAttribute('static') ||
+      (this.hasAttribute('static-on-phone') && matchMedia(PHONE_QUERY).matches)) {
       this.setAttribute('data-static', '');
       return;
     }
@@ -72,9 +77,13 @@ export class NkMarquee extends NkElement {
       this.#pointerInside = false;
       this.#easeRate();
     });
-    this.on(this, 'focusin', () => {
+    this.on(this, 'focusin', (event) => {
       this.#focusInside = true;
-      this.#easeRate();
+      // Keyboard links in the original list may sit outside the animated viewport.
+      const item = (event.target as Element).closest<HTMLElement>('.marquee__item');
+      if (item) this.#seek(item);
+      this.#rate = 0;
+      this.#applyPlayback();
     });
     this.on(this, 'focusout', (event) => {
       if (this.contains(event.relatedTarget as Node | null)) return;
@@ -82,20 +91,25 @@ export class NkMarquee extends NkElement {
       this.#easeRate();
     });
 
-    const pause = this.ref<HTMLButtonElement>('pause');
     if (pause) {
       pause.hidden = false;
+      pause.setAttribute('aria-pressed', String(this.#userPaused));
+      pause.setAttribute('aria-label', this.#userPaused ? t('marquee.play') : t('marquee.pause'));
       this.on(pause, 'click', () => {
-        this.#userPaused = !this.#userPaused;
-        pause.setAttribute('aria-pressed', String(this.#userPaused));
-        pause.setAttribute('aria-label', this.#userPaused ? t('marquee.play') : t('marquee.pause'));
-        this.#sync();
+        const paused = !this.#userPaused;
+        const group = this.hasAttribute('pause-group') ? this.closest('[data-marquee-group]') : null;
+        if (group) group.querySelectorAll<NkMarquee>('nk-marquee').forEach((marquee) => marquee.setPaused(paused));
+        else this.setPaused(paused);
       });
     }
 
     if (this.hasAttribute('scroll-react')) this.#reactToScroll();
     this.dispose(() => {
       this.#animation?.cancel();
+      this.#animation = null;
+      this.removeAttribute('data-moving');
+      if (pause) pause.hidden = true;
+      this.style.removeProperty('--nk-marquee-skew');
       cancelAnimationFrame(this.#frame);
       cancelAnimationFrame(this.#rateFrame);
       this.#frame = 0;
@@ -109,12 +123,23 @@ export class NkMarquee extends NkElement {
     this.#sync();
     if (!blockId || !this.#animation) return;
     const block = this.ref('list')?.querySelector<HTMLElement>(`[data-block-id="${CSS.escape(blockId)}"]`);
+    if (block) this.#seek(block);
+  }
+
+  setPaused(paused: boolean): void {
+    this.#userPaused = paused;
+    const button = this.ref('pause');
+    button?.setAttribute('aria-pressed', String(paused));
+    button?.setAttribute('aria-label', paused ? t('marquee.play') : t('marquee.pause'));
+    this.#sync();
+  }
+
+  #seek(item: HTMLElement): void {
     const distance = Number(this.dataset.distance ?? 0);
-    const duration = Number(this.#animation.effect?.getTiming().duration ?? 0);
-    if (block && distance && duration) {
-      const offset = this.#vertical ? block.offsetTop : block.offsetLeft;
-      this.#animation.currentTime = (offset / distance) * duration;
-    }
+    const duration = Number(this.#animation?.effect?.getTiming().duration ?? 0);
+    const offset = this.#vertical ? item.offsetTop : item.offsetLeft;
+    const reverse = ['right', 'down'].includes(this.getAttribute('direction') ?? '');
+    if (distance && duration && this.#animation) this.#animation.currentTime = (reverse ? 1 - offset / distance : offset / distance) * duration;
   }
 
   override onEditorDeselect(): void {
@@ -159,6 +184,7 @@ export class NkMarquee extends NkElement {
       [{ transform: `${axis}(0)` }, { transform: `${axis}(-${distance}px)` }],
       { duration: (distance / speed) * 1000, iterations: Infinity, direction: reverse ? 'reverse' : 'normal' },
     );
+    this.setAttribute('data-moving', '');
     this.#applyPlayback(); // a rebuild mid-hover keeps the slowed rate
   }
 
@@ -173,7 +199,7 @@ export class NkMarquee extends NkElement {
   }
 
   #targetRate(): number {
-    return this.#hovered ? Math.max(0, Number(this.getAttribute('hover-speed') ?? '0') || 0) : 1;
+    return this.#focusInside ? 0 : this.#hovered ? Math.max(0, Number(this.getAttribute('hover-speed') ?? '0') || 0) : 1;
   }
 
   #applyPlayback(): void {

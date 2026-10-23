@@ -83,14 +83,15 @@
           {
             "type": "color",
             "id": "accent",
-            "label": "Accent (focus, active, emphasis)",
-            "default": "#2338E0"
+            "label": "Accent (buttons, links, focus, selected states)",
+            "default": "#432D23",
+            "info": "Defaults to the footer brown. Hover, active, selected, border and focus shades are derived from it automatically."
           },
           {
             "type": "color",
             "id": "accent_text",
             "label": "Text on accent",
-            "default": "#FFFFFF"
+            "default": "#F5ECDF"
           }
         ],
         "role": {
@@ -174,9 +175,70 @@
           {
             "value": "16",
             "label": "Regular"
+          },
+          {
+            "value": "17",
+            "label": "Comfortable"
+          },
+          {
+            "value": "18",
+            "label": "Large"
           }
         ],
         "default": "16"
+      },
+      {
+        "type": "select",
+        "id": "heading_tracking",
+        "label": "Shared heading letter spacing",
+        "options": [
+          {
+            "value": "editorial",
+            "label": "Editorial (current style)"
+          },
+          {
+            "value": "natural",
+            "label": "Natural"
+          },
+          {
+            "value": "tight",
+            "label": "Tight"
+          }
+        ],
+        "default": "editorial",
+        "info": "Shared headings and display text; specialized product/navigation typography keeps its own treatment."
+      },
+      {
+        "type": "select",
+        "id": "heading_leading",
+        "label": "Shared heading line spacing",
+        "options": [
+          {
+            "value": "editorial",
+            "label": "Editorial (current style)"
+          },
+          {
+            "value": "comfortable",
+            "label": "Comfortable"
+          }
+        ],
+        "default": "editorial"
+      },
+      {
+        "type": "select",
+        "id": "label_tracking",
+        "label": "Shared label letter spacing",
+        "options": [
+          {
+            "value": "editorial",
+            "label": "Editorial (current style)"
+          },
+          {
+            "value": "natural",
+            "label": "Natural"
+          }
+        ],
+        "default": "editorial"
       }
     ]
   },
@@ -242,12 +304,170 @@
           }
         ],
         "default": "2"
+      },
+      {
+        "type": "header",
+        "content": "Responsive spacing"
+      },
+      {
+        "type": "paragraph",
+        "content": "Page gutters set the side space used by shared content containers. Full-width media and sections with their own spacing keep their layout."
+      },
+      {
+        "type": "range",
+        "id": "gutter_mobile",
+        "label": "Page gutter on phones",
+        "min": 12,
+        "max": 32,
+        "step": 2,
+        "unit": "px",
+        "default": 16,
+        "info": "Screens below 750px."
+      },
+      {
+        "type": "range",
+        "id": "gutter_tablet",
+        "label": "Page gutter on tablets",
+        "min": 16,
+        "max": 48,
+        "step": 2,
+        "unit": "px",
+        "default": 24,
+        "info": "Screens from 750px to 1199px."
+      },
+      {
+        "type": "range",
+        "id": "gutter_desktop",
+        "label": "Page gutter on large screens",
+        "min": 24,
+        "max": 80,
+        "step": 4,
+        "unit": "px",
+        "default": 48,
+        "info": "Screens from 1200px."
+      },
+      {
+        "type": "select",
+        "id": "section_spacing_mobile",
+        "label": "Section spacing on smaller screens",
+        "options": [
+          {
+            "value": "50",
+            "label": "Compact"
+          },
+          {
+            "value": "66",
+            "label": "Regular"
+          },
+          {
+            "value": "85",
+            "label": "Airy"
+          },
+          {
+            "value": "100",
+            "label": "Same as desktop"
+          }
+        ],
+        "default": "66",
+        "info": "Below 990px, sections using shared spacing use 50%, 66%, 85% or 100% of Space between sections."
+      }
+    ]
+  },
+  {
+    "name": "Buttons",
+    "settings": [
+      {
+        "type": "select",
+        "id": "button_size",
+        "label": "Default button size",
+        "options": [
+          {
+            "value": "compact",
+            "label": "Compact"
+          },
+          {
+            "value": "regular",
+            "label": "Regular"
+          },
+          {
+            "value": "large",
+            "label": "Large"
+          }
+        ],
+        "default": "regular",
+        "info": "Applies to shared boxed buttons. Product purchase buttons retain a 56px minimum; hero Small/Large choices override this size."
+      },
+      {
+        "type": "select",
+        "id": "button_corners",
+        "label": "Default button corners",
+        "options": [
+          {
+            "value": "inherit",
+            "label": "Use Layout corner setting"
+          },
+          {
+            "value": "square",
+            "label": "Square"
+          },
+          {
+            "value": "soft",
+            "label": "Rounded"
+          },
+          {
+            "value": "pill",
+            "label": "Pill"
+          }
+        ],
+        "default": "inherit"
+      },
+      {
+        "type": "select",
+        "id": "button_motion",
+        "label": "Button hover effects",
+        "options": [
+          {
+            "value": "expressive",
+            "label": "Sliding fill and hero label roll"
+          },
+          {
+            "value": "subtle",
+            "label": "Subtle fade"
+          },
+          {
+            "value": "none",
+            "label": "Instant states (no animation)"
+          }
+        ],
+        "default": "expressive",
+        "info": "Keyboard focus keeps its visible outline in all modes. Reduced motion and global Motion off always suppress travel."
       }
     ]
   },
   {
     "name": "Product cards",
     "settings": [
+      {
+        "type": "select",
+        "id": "card_surface",
+        "label": "Card surface",
+        "options": [
+          {
+            "value": "flat",
+            "label": "Flat"
+          },
+          {
+            "value": "bordered",
+            "label": "Bordered"
+          },
+          {
+            "value": "raised",
+            "label": "Raised"
+          }
+        ],
+        "default": "flat",
+        "info": "Applies to shared product and article cards; custom category cards retain their own design."
+      },
       {
         "type": "select",
         "id": "card_image_ratio",
@@ -308,6 +528,91 @@
         "id": "card_show_badges",
         "label": "Show sale and sold-out badges",
         "default": true
+      },
+      {
+        "type": "select",
+        "id": "card_appearance",
+        "label": "Product card appearance",
+        "options": [
+          {
+            "value": "minimal",
+            "label": "Minimal"
+          },
+          {
+            "value": "editorial",
+            "label": "Editorial"
+          },
+          {
+            "value": "bordered",
+            "label": "Bordered"
+          },
+          {
+            "value": "image-led",
+            "label": "Image focused"
+          }
+        ],
+        "default": "minimal"
+      },
+      {
+        "type": "select",
+        "id": "card_hover",
+        "label": "Product media on hover",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Video when available, otherwise second image"
+          },
+          {
+            "value": "image",
+            "label": "Second image only"
+          },
+          {
+            "value": "off",
+            "label": "No alternate media"
+          }
+        ],
+        "default": "auto"
+      },
+      {
+        "type": "select",
+        "id": "card_hover_animation",
+        "label": "Product hover animation",
+        "options": [
+          {
+            "value": "blur",
+            "label": "Smooth blur crossfade"
+          },
+          {
+            "value": "fade",
+            "label": "Soft crossfade"
+          },
+          {
+            "value": "zoom",
+            "label": "Gentle zoom crossfade"
+          },
+          {
+            "value": "slide",
+            "label": "Slide across"
+          },
+          {
+            "value": "curtain",
+            "label": "Curtain reveal (original)"
+          }
+        ],
+        "default": "blur",
+        "info": "Applies to alternate images and video. Videos appear only when playback is ready."
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_vendor",
+        "label": "Show product vendor",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_price",
+        "label": "Show product price",
+        "default": true
       }
     ]
   },
@@ -352,6 +657,12 @@
   {
     "name": "Size charts",
     "settings": [
+      {
+        "type": "text",
+        "id": "size_chart_default_handle",
+        "label": "Default reusable chart handle",
+        "info": "Handle of a size_chart metaobject from Content > Metaobjects, e.g. classic-shirt. Used only when no product or collection assignment applies. Leave blank to preserve template fallbacks."
+      },
       {
         "type": "paragraph",
         "content": "Assign verified measurements to collections or specific products. Product metafields override these rules. Product assignments override collection assignments; the first matching chart wins. Purchasable sizes and stock still come from Shopify product variants."
@@ -667,6 +978,80 @@
         ],
         "default": "standard",
         "info": "Shoppers who ask their device for reduced motion always get minimal motion."
+      },
+      {
+        "type": "select",
+        "id": "motion_tempo",
+        "label": "Animation tempo",
+        "options": [
+          {
+            "value": "relaxed",
+            "label": "Relaxed"
+          },
+          {
+            "value": "balanced",
+            "label": "Balanced"
+          },
+          {
+            "value": "brisk",
+            "label": "Brisk"
+          }
+        ],
+        "default": "balanced",
+        "info": "Overall speed of entrance animations. Scroll-linked scenes always follow the scroll."
+      },
+      {
+        "type": "select",
+        "id": "motion_stagger",
+        "label": "Stagger between items",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "short",
+            "label": "Short"
+          },
+          {
+            "value": "medium",
+            "label": "Medium"
+          },
+          {
+            "value": "long",
+            "label": "Long"
+          }
+        ],
+        "default": "medium",
+        "info": "Delay between cards, words and lines that reveal one after another."
+      },
+      {
+        "type": "checkbox",
+        "id": "motion_scroll_effects",
+        "label": "Scroll-linked effects",
+        "default": true,
+        "info": "Parallax, cinematic section scenes and pinning. Turn off for simple entrance animations only."
+      },
+      {
+        "type": "select",
+        "id": "motion_mobile",
+        "label": "Phone animations",
+        "options": [
+          {
+            "value": "simple",
+            "label": "Simplified"
+          },
+          {
+            "value": "full",
+            "label": "Same as desktop"
+          },
+          {
+            "value": "off",
+            "label": "Off"
+          }
+        ],
+        "default": "simple",
+        "info": "Simplified keeps quick fades and reveals but skips pinning, parallax and scroll-linked scenes on screens under 750px."
       }
     ]
   },
@@ -692,6 +1077,31 @@
         "type": "url",
         "id": "social_youtube",
         "label": "YouTube"
+      }
+    ]
+  },
+  {
+    "name": "Gift card page",
+    "settings": [
+      {
+        "type": "select",
+        "id": "gift_card_style",
+        "label": "Presentation",
+        "options": [
+          {
+            "value": "classic",
+            "label": "Classic"
+          },
+          {
+            "value": "minimal",
+            "label": "Minimal"
+          },
+          {
+            "value": "bordered",
+            "label": "Bordered panel"
+          }
+        ],
+        "default": "classic"
       }
     ]
   }

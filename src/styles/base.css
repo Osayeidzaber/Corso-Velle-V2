@@ -6,28 +6,28 @@
  */
 :root {
   --nk-header-h: 64px;
-  --nk-gutter: 16px;
-  --nk-radius: 2px;
-  --nk-focus: var(--nk-color-accent, #2338e0);
+  --nk-gutter: var(--nk-gutter-mobile, 16px);
+  --nk-radius: var(--nk-corner-radius, 2px);
+  /* Fallback only; snippets/css-variables.liquid sets --nk-focus per colour scheme. */
+  --nk-focus: var(--nk-color-accent, #432d23);
   --nk-dur-instant: 120ms;
   --nk-dur-small: 200ms;
   --nk-dur-overlay-in: 280ms;
   --nk-dur-overlay-out: 200ms;
   --nk-ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
   --nk-ease-in: cubic-bezier(0.4, 0, 1, 1);
-  --nk-space-section: 72px;
   --nk-tap: 44px;
 }
 
 @media (min-width: 750px) {
   :root {
-    --nk-gutter: 24px;
+    --nk-gutter: var(--nk-gutter-tablet, 24px);
   }
 }
 
 @media (min-width: 1200px) {
   :root {
-    --nk-gutter: 48px;
+    --nk-gutter: var(--nk-gutter-desktop, 48px);
   }
 }
 
@@ -176,12 +176,29 @@ h4 {
 }
 
 .section-spacing {
-  padding-block: calc(var(--nk-space-section) * 0.66);
+  padding-block: calc(var(--nk-space-section, 72px) * var(--nk-section-spacing-mobile-scale, 0.66));
 }
 
 @media (min-width: 990px) {
   .section-spacing {
-    padding-block: var(--nk-space-section);
+    padding-block: var(--nk-space-section, 72px);
+  }
+}
+
+/* Opt-in presentation contract. Inputs live on each section root, never on :root. */
+.section-presentation {
+  --content-width: min(calc(var(--nk-section-page-width, var(--nk-page-width, 1440px)) - var(--nk-gutter) * 2), calc(100% - var(--nk-gutter) * 2));
+}
+
+.section-presentation.section-spacing {
+  padding-block-start: var(--nk-section-padding-top-small, calc(var(--nk-space-section, 72px) * var(--nk-section-spacing-mobile-scale, 0.66)));
+  padding-block-end: var(--nk-section-padding-bottom-small, calc(var(--nk-space-section, 72px) * var(--nk-section-spacing-mobile-scale, 0.66)));
+}
+
+@media (min-width: 990px) {
+  .section-presentation.section-spacing {
+    padding-block-start: var(--nk-section-padding-top, var(--nk-space-section, 72px));
+    padding-block-end: var(--nk-section-padding-bottom, var(--nk-space-section, 72px));
   }
 }
 
@@ -196,6 +213,12 @@ h4 {
 .text-muted {
   color: var(--nk-color-text-muted);
 }
+
+.utility-page { width: 100%; min-width: 0; margin-inline: auto; overflow-wrap: anywhere; }
+.utility-page[data-width='narrow'] { max-width: 60ch; }
+.utility-page[data-width='regular'] { max-width: 80ch; }
+.utility-page__signup { margin-top: 40px; }
+.utility-page__signup h2 { margin-bottom: 20px; }
 
 @media (prefers-reduced-motion: reduce) {
   *,

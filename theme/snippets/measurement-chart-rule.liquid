@@ -5,12 +5,15 @@
 {%- liquid
   assign matched_rule = ''
   assign scopes = 'products,collections' | split: ','
+  if rule_scope != blank
+    assign scopes = rule_scope | split: ','
+  endif
   for scope in scopes
     for index in (1..5)
       assign prefix = 'size_chart_' | append: index
       assign table_key = prefix | append: '_table'
       assign scope_key = prefix | append: '_' | append: scope
-      if settings[table_key] == blank
+      if settings[table_key] == blank or settings[table_key] == nil
         continue
       endif
       for resource in settings[scope_key]

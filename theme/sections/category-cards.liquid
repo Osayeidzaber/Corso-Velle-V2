@@ -4,7 +4,7 @@
 {%- endcomment -%}
 {%- assign cards = section.blocks | where: 'type', 'category' -%}
 {%- if cards.size > 0 -%}
-  <div class="category-cards full-width section-spacing color-{{ section.settings.color_scheme }}">
+  <div class="category-cards full-width section-spacing section-presentation color-{{ section.settings.color_scheme }}" data-palette="{{ section.settings.card_palette }}" data-style="{{ section.settings.card_style | default: 'studio' }}"{% if section.settings.card_outline %} data-outline{% endif %} style="{% render 'section-presentation', presentation: section.settings %}--cc-fit:{{ section.settings.image_fit | default: 'contain' }};--cc-radius:{{ section.settings.card_radius | default: 0 }}px;">
     <div class="category-cards__inner">
       <div class="section-head category-cards__head">
         <div class="category-cards__heading">
@@ -13,7 +13,7 @@
             assign heading_html = section.settings.heading | escape
             assign italic = section.settings.heading_italic | escape
           -%}
-          {% render 'reveal-heading', text: heading_html, italic: italic, entrance: 'fold', hover: 'refold', class: 'display' %}
+          {% render 'reveal-heading', text: heading_html, italic: italic, entrance: section.settings.heading_entrance, class: 'display' %}
         </div>
         {%- if section.settings.link != blank -%}
           <a class="category-cards__cta spec" href="{{ section.settings.link }}">{{ section.settings.link_label | escape }} <span aria-hidden="true">↗</span></a>
@@ -51,13 +51,13 @@
               assign image = c.products.first.featured_media.preview_image
             endif
             assign title = block.settings.title | default: c.title
-            assign url = c.url | default: block.settings.link
+            assign url = block.settings.link | default: c.url
             assign idx = forloop.index | prepend: '0' | slice: -2, 2
           -%}
-          <article class="category-card{% if forloop.first and uses_lead %} category-card--lead{% endif %}" data-stagger-item {{ block.shopify_attributes }}>
+          <article class="category-card{% if forloop.first and uses_lead %} category-card--lead{% endif %}{% if block.settings.custom_colors %} color-{{ block.settings.color_scheme }}{% endif %}" {% if block.settings.custom_colors %}data-custom-colors{% endif %} data-fit="{{ block.settings.image_fit }}" data-stagger-item {{ block.shopify_attributes }}>
             <div class="category-card__index spec">
-              <span>{{ idx }} /</span>
-              {%- if c != blank -%}<span>{{ 'collection.product_count' | t: count: c.all_products_count }}</span>{%- endif -%}
+              {% if section.settings.show_index != false %}<span>{{ idx }} /</span>{% endif %}
+              {%- if c != blank and section.settings.show_count != false -%}<span>{{ 'collection.product_count' | t: count: c.all_products_count }}</span>{%- endif -%}
             </div>
             <div class="category-card__media" aria-hidden="true">
               {%- if image -%}
@@ -68,14 +68,14 @@
             </div>
             <div class="category-card__content">
               <div class="category-card__title-row">
-                <h3 class="category-card__title display"><a href="{{ url }}"><em>{{ title | escape }}</em></a></h3>
-                <span class="category-card__arrow" aria-hidden="true">↗</span>
+                <h3 class="category-card__title display">{% if url != blank %}<a href="{{ url }}">{% endif %}<em>{{ title | escape }}</em>{% if url != blank %}</a>{% endif %}</h3>
+                {% if url != blank %}<span class="category-card__arrow" aria-hidden="true">↗</span>{% endif %}
               </div>
-              {%- if block.settings.description != blank -%}<p class="category-card__description">{{ block.settings.description | escape }}</p>{%- endif -%}
+              {%- if block.settings.description != blank and section.settings.show_description != false -%}<p class="category-card__description">{{ block.settings.description | escape }}</p>{%- endif -%}
               {%- assign sub = block.settings.menu -%}
               {%- if sub.links.size > 0 -%}
                 <ul class="category-card__links" role="list">
-                  {%- for link in sub.links limit: 4 -%}<li><a class="spec link-underline" href="{{ link.url }}">{{ link.title | escape }} ↗</a></li>{%- endfor -%}
+                  {%- for link in sub.links limit: section.settings.menu_limit -%}<li><a class="spec link-underline" href="{{ link.url }}">{{ link.title | escape }} ↗</a></li>{%- endfor -%}
                 </ul>
               {%- endif -%}
             </div>
@@ -87,6 +87,17 @@
 {%- endif -%}
 
 {% stylesheet %}
+  .category-cards[data-palette='scheme'] .category-card:nth-child(n),
+  .category-cards .category-card[data-custom-colors]:nth-child(n) { background: var(--nk-color-surface); color: var(--nk-color-text); }
+  .category-cards[data-outline][data-palette='scheme'] .category-card:nth-child(n),
+  .category-cards[data-outline] .category-card[data-custom-colors]:nth-child(n) { border-color: var(--nk-color-line); }
+  .category-cards[data-palette] .category-card__media > img { object-fit: var(--cc-fit, contain); }
+  .category-cards .category-card[data-fit='cover'] .category-card__media > img { object-fit: cover; }
+  .category-cards .category-card[data-fit='contain'] .category-card__media > img { object-fit: contain; }
+  .category-cards[data-palette='scheme'] .category-card__arrow,
+  .category-cards .category-card[data-custom-colors] .category-card__arrow { border-color: var(--nk-color-line); }
+  @media (hover: hover) { .category-cards[data-palette='scheme'] .category-card:hover .category-card__arrow,
+  .category-cards .category-card[data-custom-colors]:hover .category-card__arrow { background: var(--nk-color-text); color: var(--nk-color-bg); } }
   .category-cards__inner { width: var(--content-width); margin-inline: auto; }
   .category-cards__head { align-items: end; padding-bottom: 24px; }
   .category-cards__heading { display: grid; gap: 16px; }
@@ -94,17 +105,16 @@
   .category-cards__cta span { font-size: 20px; }
 
   /* ---------- Card ---------- */
-  .category-cards .category-card { position: relative; display: flex; flex-direction: column; isolation: isolate; overflow: hidden; min-width: 0; background: #f0eee9; color: #24211d; border: 1px solid rgba(36,33,29,.08); }
+  .category-cards .category-card { position: relative; display: flex; flex-direction: column; isolation: isolate; overflow: hidden; min-width: 0; background: #f0eee9; color: #24211d; border: 1px solid transparent; border-radius: var(--cc-radius, 0px); }
+  .category-cards[data-outline] .category-card { border-color: rgba(36,33,29,.16); }
   .category-cards .category-card:nth-child(5n + 2) { background: #e9e6df; }
   .category-cards .category-card:nth-child(5n + 3) { background: #e9ebea; }
   .category-cards .category-card:nth-child(5n + 4) { background: #e7e9ed; }
   .category-cards .category-card:nth-child(5n + 5) { background: #eae4dc; }
   .category-card__index { position: relative; z-index: 2; display: flex; justify-content: space-between; gap: 12px; padding: 18px 20px 0; font-size: 10px; letter-spacing: .16em; }
-  /* Photos fill the card edge to edge: the media grows into all the height between the index row
-     and the title (cards in a row stretch to equal height) and the image covers it, cropped from
-     the top so heads and collars stay in frame. The shape comes from the "Image shape" setting. */
+  /* Fit the complete photograph inside each tile, including on hover. */
   .category-cards .category-card__media { position: relative; flex: 1 1 auto; min-height: 140px; margin: 12px 0 0; aspect-ratio: var(--cc-ratio, 6 / 5); overflow: hidden; }
-  .category-cards .category-card__media > img, .category-cards .category-card__media > svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; transition: transform 900ms cubic-bezier(.22,1,.36,1); }
+  .category-cards .category-card__media > img, .category-cards .category-card__media > svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; }
   .category-cards .category-card__media > svg { object-fit: contain; }
   .category-card__content { padding: 12px 20px 22px; }
   .category-card__title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -116,7 +126,6 @@
   .category-card__links { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px 16px; list-style: none; margin: 12px 0 0; padding: 0; }
   .category-card:focus-within { outline: 2px solid currentColor; outline-offset: -3px; }
   @media (hover: hover) and (pointer: fine) {
-    .category-card:hover .category-card__media > img { transform: scale(1.04); }
     .category-card:hover .category-card__arrow { background: #24211d; color: #faf8f5; transform: rotate(45deg); }
   }
 
@@ -195,8 +204,75 @@
     .category-card--lead .category-card__description { font-size: 14px; }
   }
 
+  /* ---------- Card styles (Card style setting, data-style) ----------
+     Each style is scoped to .category-cards[data-style] and uses :nth-child(n) where it must beat
+     the palette rules above. Layout (data-layout) still decides where cards sit. */
+  .category-cards .category-card__media > img { transition: transform 900ms cubic-bezier(.22,.61,.36,1); }
+
+  /* Full photo: the image fills the card; index and text sit over it on a shade. */
+  .category-cards[data-style='overlay'] .category-card { display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); color: #fff; background: #24211d; }
+  .category-cards[data-style='overlay'] .category-card > * { grid-area: 1 / 1; }
+  .category-cards[data-style='overlay'] .category-card > .category-card__media { margin: 0; min-height: 240px; height: 100%; }
+  .category-cards[data-style='overlay'] .category-card:not([data-fit='contain']) .category-card__media > img { object-fit: cover; }
+  .category-cards[data-style='overlay'] .category-card > .category-card__index { align-self: start; padding-bottom: 40px; background: linear-gradient(rgb(20 18 16 / .45), transparent); }
+  .category-cards[data-style='overlay'] .category-card > .category-card__content { align-self: end; position: relative; z-index: 2; padding-top: 72px; background: linear-gradient(transparent, rgb(20 18 16 / .72)); }
+  .category-cards[data-style='overlay'] .category-card__arrow { border-color: rgb(255 255 255 / .6); }
+  .category-cards[data-style='overlay'] .category-card__description { opacity: .88; }
+  @media (hover: hover) and (pointer: fine) {
+    .category-cards[data-style='overlay'] .category-card:hover .category-card__media > img { transform: scale(1.04); }
+    .category-cards[data-style='overlay'] .category-card:hover .category-card__arrow { background: #fff; color: #24211d; }
+  }
+
+  /* Minimal: no tile; the photo stands on the page and the caption sits under it on a hairline. */
+  .category-cards[data-style='minimal'] .category-card:nth-child(n) { background: transparent; color: inherit; border-color: transparent; border-radius: 0; }
+  .category-cards[data-style='minimal'] .category-card > .category-card__media { order: -1; margin: 0; border-radius: var(--cc-radius, 0px); }
+  .category-cards[data-style='minimal'][data-outline] .category-card > .category-card__media { outline: 1px solid rgba(36,33,29,.16); outline-offset: -1px; }
+  .category-cards[data-style='minimal'] .category-card > .category-card__index { padding: 14px 0 0; }
+  .category-cards[data-style='minimal'] .category-card > .category-card__content { padding: 6px 0 0; }
+  .category-cards[data-style='minimal'] .category-card__title-row { padding-bottom: 12px; border-bottom: 1px solid currentColor; }
+  .category-cards[data-style='minimal'] .category-card__arrow { width: auto; height: auto; border: 0; border-radius: 0; }
+  @media (hover: hover) and (pointer: fine) {
+    .category-cards[data-style='minimal'] .category-card:hover .category-card__media > img { transform: scale(1.03); }
+    .category-cards[data-style='minimal'] .category-card:hover .category-card__arrow { background: none; color: inherit; transform: translate(3px, -3px); }
+  }
+
+  /* Gallery frame: a white mat around the photo, a soft shadow and a centred title. */
+  .category-cards[data-style='framed'] .category-card:nth-child(n) { padding: 14px; background: #fff; color: #24211d; border-color: rgba(36,33,29,.12); box-shadow: 0 18px 40px -28px rgb(36 33 29 / .45); }
+  .category-cards[data-style='framed'][data-palette='scheme'] .category-card:nth-child(n) { background: var(--nk-color-bg); color: var(--nk-color-text); border-color: var(--nk-color-line); }
+  .category-cards[data-style='framed'] .category-card > .category-card__media { margin: 0; border-radius: max(0px, calc(var(--cc-radius, 0px) - 8px)); }
+  .category-cards[data-style='framed'] .category-card > .category-card__index { order: 2; justify-content: center; gap: 18px; padding: 16px 0 0; opacity: .7; }
+  .category-cards[data-style='framed'] .category-card > .category-card__content { order: 3; padding: 8px 8px 6px; text-align: center; }
+  .category-cards[data-style='framed'] .category-card__title-row { justify-content: center; }
+  .category-cards[data-style='framed'] .category-card__arrow { display: none; }
+  .category-cards[data-style='framed'] .category-card__description { margin-inline: auto; }
+  .category-cards[data-style='framed'] .category-card__links { justify-content: center; }
+  .category-cards[data-style='framed'] .category-card { transition: transform 500ms cubic-bezier(.22,.61,.36,1), box-shadow 500ms cubic-bezier(.22,.61,.36,1); }
+  @media (hover: hover) and (pointer: fine) {
+    .category-cards[data-style='framed'] .category-card:nth-child(n):hover { transform: translateY(-4px); box-shadow: 0 26px 50px -28px rgb(36 33 29 / .55); }
+  }
+
+  /* Color band: the photo runs edge to edge, then a solid title bar closes the card. */
+  .category-cards[data-style='band'] .category-card > .category-card__media { margin: 0; }
+  .category-cards[data-style='band'] .category-card > .category-card__index { position: absolute; inset: 0 0 auto; }
+  .category-cards[data-style='band'] .category-card > .category-card__content { margin-top: auto; padding: 18px 20px 20px; background: #24211d; color: #faf8f5; }
+  .category-cards[data-style='band'][data-palette='scheme'] .category-card > .category-card__content,
+  .category-cards[data-style='band'] .category-card[data-custom-colors] > .category-card__content { background: var(--nk-color-text); color: var(--nk-color-bg); }
+  .category-cards[data-style='band'] .category-card__arrow { border-color: currentColor; }
+  .category-cards[data-style='band'] .category-card__description { opacity: .78; }
+  @media (hover: hover) and (pointer: fine) {
+    .category-cards[data-style='band'] .category-card:hover .category-card__media > img { transform: scale(1.04); }
+    .category-cards[data-style='band'] .category-card:hover .category-card__arrow { background: #faf8f5; color: #24211d; }
+  }
+  @media (min-width: 990px) {
+    .category-cards[data-style='band'] .category-card--lead > .category-card__content { padding: 24px 32px 28px; }
+  }
+  @media (max-width: 749px) {
+    .category-cards[data-style='framed'] .category-card:nth-child(n) { padding: 8px; }
+    .category-cards[data-style='band'] .category-card > .category-card__content { padding: 12px 12px 14px; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .category-cards .category-card__media > img, .category-card__arrow { transition: none; }
+    .category-cards .category-card__media > img, .category-card__arrow, .category-cards[data-style='framed'] .category-card { transition: none; }
   }
 {% endstylesheet %}
 
@@ -204,63 +280,489 @@
 {
   "name": "Shop by category",
   "class": "category-cards-section",
-  "max_blocks": 8,
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Shop by category" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "The" },
-    { "type": "text", "id": "heading_italic", "label": "Heading (italic part)", "default": "wardrobe" },
-    { "type": "text", "id": "link_label", "label": "Link label", "default": "Shop all" },
-    { "type": "url", "id": "link", "label": "Link" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
-    { "type": "header", "content": "Layout" },
     {
-      "type": "select", "id": "layout", "label": "Desktop layout", "default": "bento",
-      "options": [
-        { "value": "bento", "label": "Bento, featured card left" },
-        { "value": "bento_right", "label": "Bento, featured card right" },
-        { "value": "banner", "label": "Wide banner, then a row" },
-        { "value": "grid", "label": "Even grid" },
-        { "value": "scroller", "label": "Horizontal scroller" }
-      ]
-    },
-    { "type": "range", "id": "columns", "label": "Columns", "min": 2, "max": 5, "step": 1, "default": 4, "info": "Used by the even grid, the banner's row and the scroller (cards visible at once)." },
-    {
-      "type": "select", "id": "mobile_layout", "label": "Phone layout", "default": "stacked",
-      "options": [
-        { "value": "stacked", "label": "Featured card full width, then two columns" },
-        { "value": "two", "label": "Two columns" },
-        { "value": "one", "label": "One column" },
-        { "value": "scroll", "label": "Swipe row" }
-      ]
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Shop by category"
     },
     {
-      "type": "select", "id": "image_ratio", "label": "Image shape", "default": "standard",
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The"
+    },
+    {
+      "type": "text",
+      "id": "heading_italic",
+      "label": "Heading (italic part)",
+      "default": "wardrobe"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "Shop all"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Desktop layout",
+      "default": "bento",
       "options": [
-        { "value": "standard", "label": "Standard (6:5)" },
-        { "value": "portrait", "label": "Portrait (4:5)" },
-        { "value": "square", "label": "Square" },
-        { "value": "wide", "label": "Wide (3:2)" }
+        {
+          "value": "bento",
+          "label": "Bento, featured card left"
+        },
+        {
+          "value": "bento_right",
+          "label": "Bento, featured card right"
+        },
+        {
+          "value": "banner",
+          "label": "Wide banner, then a row"
+        },
+        {
+          "value": "grid",
+          "label": "Even grid"
+        },
+        {
+          "value": "scroller",
+          "label": "Horizontal scroller"
+        }
       ]
     },
-    { "type": "range", "id": "gap", "label": "Card spacing", "min": 4, "max": 32, "step": 2, "unit": "px", "default": 16 }
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4,
+      "info": "Used by the even grid, the banner's row and the scroller (cards visible at once)."
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Phone layout",
+      "default": "stacked",
+      "options": [
+        {
+          "value": "stacked",
+          "label": "Featured card full width, then two columns"
+        },
+        {
+          "value": "two",
+          "label": "Two columns"
+        },
+        {
+          "value": "one",
+          "label": "One column"
+        },
+        {
+          "value": "scroll",
+          "label": "Swipe row"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "default": "standard",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard (6:5)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (3:2)"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Card spacing",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "card_palette",
+      "label": "Card colors",
+      "options": [
+        {
+          "value": "studio",
+          "label": "Original studio palette"
+        },
+        {
+          "value": "scheme",
+          "label": "Section color scheme"
+        }
+      ],
+      "default": "studio"
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Card style",
+      "options": [
+        { "value": "studio", "label": "Studio tiles: photo on a tinted tile" },
+        { "value": "overlay", "label": "Full photo: text over the image" },
+        { "value": "minimal", "label": "Minimal: photo with a caption below" },
+        { "value": "framed", "label": "Gallery frame: matted photo, centred title" },
+        { "value": "band", "label": "Color band: photo above a solid title bar" }
+      ],
+      "default": "studio",
+      "info": "Changes how each card looks. Desktop layout above sets where the cards go."
+    },
+    {
+      "type": "checkbox",
+      "id": "card_outline",
+      "label": "Card outline",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "contain",
+          "label": "Show entire image"
+        },
+        {
+          "value": "cover",
+          "label": "Fill and crop"
+        }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_index",
+      "label": "Show index",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Show count",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show description",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "menu_limit",
+      "label": "Sub-links per card",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "heading_entrance",
+      "label": "Heading animation",
+      "options": [
+        {
+          "value": "fold",
+          "label": "Fold"
+        },
+        {
+          "value": "fade",
+          "label": "Fade"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "fold"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (1200px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (1440px)"
+        },
+        {
+          "value": "full",
+          "label": "Full width with page gutters"
+        }
+      ],
+      "default": "inherit",
+      "info": "Sets the width of the image and text together. Background stays full width. All options keep the theme's responsive page gutters."
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px. Custom values are exact and are not multiplied by the global smaller-screen spacing setting."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    }
   ],
   "blocks": [
     {
       "type": "category",
       "name": "Category",
       "settings": [
-        { "type": "collection", "id": "collection", "label": "Collection" },
-        { "type": "image_picker", "id": "image", "label": "Image", "info": "Defaults to the collection image." },
-        { "type": "text", "id": "title", "label": "Title", "info": "Defaults to the collection title." },
-        { "type": "text", "id": "description", "label": "Description" },
-        { "type": "link_list", "id": "menu", "label": "Sub-links", "info": "Optional menu shown as links on the card (up to 4)." },
-        { "type": "url", "id": "link", "label": "Link (if no collection)" }
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Defaults to the collection image."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "info": "Defaults to the collection title."
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Sub-links",
+          "info": "Optional menu shown as links on the card (up to 4)."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Destination override"
+        },
+        {
+          "type": "select",
+          "id": "image_fit",
+          "label": "Image fit",
+          "options": [
+            {
+              "value": "inherit",
+              "label": "Use section choice"
+            },
+            {
+              "value": "contain",
+              "label": "Show entire image"
+            },
+            {
+              "value": "cover",
+              "label": "Fill and crop"
+            }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "checkbox",
+          "id": "custom_colors",
+          "label": "Override card color scheme",
+          "default": false
+        },
+        {
+          "type": "color_scheme",
+          "id": "color_scheme",
+          "label": "Card color scheme",
+          "default": "scheme-1"
+        }
       ]
     }
   ],
   "presets": [
-    { "name": "Shop by category", "blocks": [{ "type": "category" }, { "type": "category" }, { "type": "category" }, { "type": "category" }, { "type": "category" }] }
+    {
+      "name": "Shop by category",
+      "blocks": [
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        }
+      ]
+    },
+    {
+      "name": "Category grid",
+      "settings": {
+        "layout": "grid",
+        "card_palette": "scheme"
+      },
+      "blocks": [
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        }
+      ]
+    },
+    {
+      "name": "Category swipe row",
+      "settings": {
+        "layout": "scroller",
+        "mobile_layout": "scroll"
+      },
+      "blocks": [
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        }
+      ]
+    }
   ],
-  "disabled_on": { "groups": ["header", "footer"] }
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
 }
 {% endschema %}

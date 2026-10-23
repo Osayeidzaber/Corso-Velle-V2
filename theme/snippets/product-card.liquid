@@ -1,7 +1,7 @@
 {%- doc -%}
   Product card (master-plan/07 DC-03), shared by collection grids, featured sections, search and
   recommendations. Media and title are separate links (no interactive content nested in a link).
-  At most two images: the second only on pointer-hover devices, lazy, after the first.
+  Standard cards show video on hover when present, otherwise a distinct second photograph.
   Size summary comes from option values; available sizes can be quick-added directly to the cart,
   and unavailable values are struck through and named.
 
@@ -9,7 +9,8 @@
   @param {boolean} [eager] - Load the first image eagerly (first row only)
   @param {string} [sizes] - The image sizes attribute
   @param {string} [heading_tag] - h2/h3 (default h3)
-  @param {boolean} [actions] - Render size and quick-add controls (default true; the carousel uses its own button)
+  @param {boolean} [actions] - Render size and quick-add controls (default true; false for browse-only carousels)
+  @param {object} [card_options] - Section settings with card_appearance/ratio/fit/hover and show/hide/inherit visibility choices
 
   @example
   {% render 'product-card', product: product, eager: forloop.index <= 4 %}
@@ -18,14 +19,61 @@
   assign heading_tag = heading_tag | default: 'h3'
   assign sizes = sizes | default: '(min-width: 1200px) 33vw, (min-width: 750px) 50vw, 50vw'
   assign loading = 'lazy'
+  assign appearance = card_options.card_appearance | default: 'inherit'
+  if appearance == 'inherit'
+    assign appearance = settings.card_appearance | default: 'minimal'
+  endif
+  assign hover = card_options.card_hover | default: 'inherit'
+  if hover == 'inherit'
+    assign hover = settings.card_hover | default: 'auto'
+  endif
+  assign secondary = settings.card_show_secondary
+  if hover == 'off'
+    assign secondary = false
+  elsif card_options.card_hover != blank and card_options.card_hover != 'inherit'
+    assign secondary = true
+  endif
+  comment
+    Standard cards prefer video; without video they reveal the second photograph.
+  endcomment
+  if actions != false
+    assign secondary = true
+  endif
+  assign show_badges = settings.card_show_badges
+  assign show_sizes = settings.card_show_sizes
+  assign show_vendor = settings.card_show_vendor
+  assign show_price = true
+  if settings.card_show_price == false
+    assign show_price = false
+  endif
+  if card_options.card_badges == 'show'
+    assign show_badges = true
+  elsif card_options.card_badges == 'hide'
+    assign show_badges = false
+  endif
+  if card_options.card_sizes == 'show'
+    assign show_sizes = true
+  elsif card_options.card_sizes == 'hide'
+    assign show_sizes = false
+  endif
+  if card_options.card_vendor == 'show'
+    assign show_vendor = true
+  elsif card_options.card_vendor == 'hide'
+    assign show_vendor = false
+  endif
+  if card_options.card_price == 'show'
+    assign show_price = true
+  elsif card_options.card_price == 'hide'
+    assign show_price = false
+  endif
   if eager
     assign loading = 'eager'
   endif
   assign first_media = product.featured_media
   assign hover_video = product.media | where: 'media_type', 'video' | first
   assign second_media = nil
-  for m in product.media offset: 1
-    if m.media_type == 'image'
+  for m in product.media
+    if m.media_type == 'image' and m.id != first_media.id
       assign second_media = m
       break
     endif
@@ -35,14 +83,20 @@
     assign sold_out = true
   endunless
   assign has_video = false
-  if hover_video != blank and sold_out == false and settings.card_show_secondary
-    assign has_video = true
+  if hover_video != blank
+    if actions != false
+      assign has_video = true
+    elsif sold_out == false and secondary and hover != 'image'
+      assign has_video = true
+    endif
+  endif
+  if actions != false and has_video
+    assign secondary = false
   endif
   assign on_sale = false
   if product.compare_at_price_min > product.price_max
     assign on_sale = true
   endif
-  assign size_names = settings.card_size_option_names | downcase | split: ','
   assign color_option = nil
   for option in product.options_with_values
     assign opt_down = option.name | downcase | strip
@@ -57,11 +111,14 @@
 <article
   class="card{% if sold_out %} card--sold-out{% endif %}{% if has_video %} card--has-video{% endif %}"
   data-product-card
+  data-hover-animation="{{ card_options.card_hover_animation | default: settings.card_hover_animation | default: 'blur' }}"
+  data-appearance="{{ appearance }}"
+  style="{% render 'card-presentation', options: card_options %}"
   data-product-url="{{ product.url }}"
 >
   <div class="card__media-wrap card__figure">
     <a
-      class="card__media{% if has_video %} card__media--has-video{% endif %}{% if second_media and settings.card_show_secondary %} card__media--has-second{% endif %}"
+      class="card__media{% if has_video %} card__media--has-video{% endif %}{% if second_media and secondary %} card__media--has-second{% endif %}"
       href="{{ product.url }}"
       data-card-link
       tabindex="-1"
@@ -120,7 +177,7 @@
             }}
           {%- endif -%}
         {%- endif -%}
-        {%- if settings.card_show_secondary and second_media -%}
+        {%- if secondary and second_media -%}
           {{
             second_media
             | image_url: width: 900
@@ -130,7 +187,7 @@
       {%- else -%}
         <span class="card__placeholder spec text-muted">{{ 'product.no_image' | t }}</span>
       {%- endif -%}
-      {%- if settings.card_show_badges -%}
+      {%- if show_badges -%}
         <span class="card__badges">
           {%- if sold_out -%}
             <span class="badge badge--sold-out"><span class="badge__dot" aria-hidden="true"></span>{{ 'product.sold_out' | t }}</span>
@@ -149,15 +206,10 @@
     {%- capture card_controls -%}
     {%- comment -%} Size actions live below product information, never over photography. {%- endcomment -%}
     {%- assign rendered_tray = false -%}
-    {%- if settings.card_show_sizes and sold_out == false and product.options.size == 1 and product.requires_selling_plan == false -%}
+    {%- if show_sizes and sold_out == false and product.options.size == 1 and product.requires_selling_plan == false -%}
       {%- for option in product.options_with_values -%}
-        {%- assign option_name = option.name | downcase | strip -%}
-        {%- assign tray_size = false -%}
-        {%- for size_name in size_names -%}
-          {%- assign clean = size_name | strip -%}
-          {%- if option_name == clean -%}{%- assign tray_size = true -%}{%- endif -%}
-        {%- endfor -%}
-        {%- if tray_size -%}
+        {%- capture tray_size -%}{%- render 'size-option', name: option.name -%}{%- endcapture -%}
+        {%- if tray_size == 'true' -%}
           {%- assign rendered_tray = true -%}
           <div class="card__tray" role="group" aria-label="{{ 'product.sizes_label' | t }}">
             <span class="card__tray-label">{{ 'product.sizes_label' | t }}</span>
@@ -211,15 +263,10 @@
     {%- if sold_out == false -%}
       {%- if rendered_tray == false -%}
         <div class="card__tray">
-          {%- if settings.card_show_sizes -%}
+          {%- if show_sizes -%}
             {%- for option in product.options_with_values -%}
-              {%- assign option_name = option.name | downcase | strip -%}
-              {%- assign is_size = false -%}
-              {%- for size_name in size_names -%}
-                {%- assign clean_name = size_name | strip -%}
-                {%- if option_name == clean_name -%}{%- assign is_size = true -%}{%- endif -%}
-              {%- endfor -%}
-              {%- if is_size -%}
+              {%- capture is_size -%}{%- render 'size-option', name: option.name -%}{%- endcapture -%}
+              {%- if is_size == 'true' -%}
                 <span class="card__tray-label">{{ 'product.sizes_label' | t }}</span>
                 <div class="card__tray-values">
                   {%- for value in option.values -%}
@@ -238,12 +285,13 @@
   </div>
 
   <div class="card__meta">
+    {% if show_vendor and product.vendor != blank %}<p class="card__vendor spec text-muted">{{ product.vendor | escape }}</p>{% endif %}
     <{{ heading_tag }} class="card__heading">
       <a class="card__title" href="{{ product.url }}" data-card-link>{{ product.title | escape }}</a>
     </{{ heading_tag }}>
 
     <div class="card__price-row">
-      {% render 'price', product: product %}
+      {% if show_price %}{% render 'price', product: product %}{% endif %}
       {%- if sold_out -%}
         <span class="card__sold-out-label spec">{{ 'product.sold_out' | t }}</span>
       {%- endif -%}

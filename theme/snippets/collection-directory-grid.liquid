@@ -1,0 +1,48 @@
+  <nk-stagger>
+    <ul
+      class="collections-index__grid {{ section.settings.grid_item_width }}"
+      role="list"
+      style="--grid-gap: {{ section.settings.grid_gap }}px"
+    >
+      {%- assign index_num = paginate.current_offset | default: 0 -%}
+      {%- for collection in items -%}
+        {%- if collection.all_products_count > 0 or section.settings.show_empty or request.design_mode -%}
+          {%- assign index_num = index_num | plus: 1 -%}
+          {%- assign card_image = collection.featured_image | default: collection.products.first.featured_media.preview_image -%}
+          <li data-stagger-item>
+            <a class="collections-card" href="{{ collection.url }}" data-cursor="view">
+              <div class="collections-card__top">
+                {% if section.settings.show_index != false %}<span class="collections-card__index spec">{{ index_num | prepend: '0' | slice: -2, 2 }}</span>{% endif %}
+                {% if section.settings.show_count != false %}<span class="collections-card__count spec">
+                  {{- 'collection.product_count' | t: count: collection.all_products_count -}}
+                </span>{% endif %}
+              </div>
+
+              <div class="collections-card__media">
+                {%- if card_image != blank -%}
+                  {% render 'image',
+                    class: 'collections-card__image',
+                    image: card_image,
+                    width: 1200
+                  %}
+                {%- else -%}
+                  <span class="collections-card__placeholder spec text-muted">{{ collection.title | escape }}</span>
+                {%- endif -%}
+              </div>
+
+              <div class="collections-card__footer">
+                <div class="collections-card__meta">
+                  <h2 class="collections-card__title">{{ collection.title | escape }}</h2>
+                  {%- if collection.description != blank and section.settings.show_description != false -%}
+                    <p class="collections-card__desc text-muted">{{ collection.description | strip_html | truncatewords: 14 }}</p>
+                  {%- endif -%}
+                </div>
+                <span class="collections-card__arrow" aria-hidden="true">↗</span>
+              </div>
+            </a>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </nk-stagger>
+{% if paginate.pages > 1 %}{% render 'pagination', paginate: paginate %}{% endif %}

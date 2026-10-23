@@ -1,0 +1,32 @@
+{%- doc -%}
+  The one rule for whether a product option holds sizes, shared by product cards, the product
+  carousel and the product page so a size is recognised the same way everywhere. Prints "true"
+  or "false". An option is a size when its name contains "size", matches a name listed in
+  Theme settings > Product cards > Size option name(s), or matches `extra`.
+
+  @param {string} name - The product option name
+  @param {string} [extra] - One more exact option name to treat as a size (e.g. a block setting)
+
+  @example
+  {%- capture is_size -%}{% render 'size-option', name: option.name %}{%- endcapture -%}
+{%- enddoc -%}
+{%- liquid
+  assign option_name = name | downcase | strip
+  assign extra_name = extra | downcase | strip
+  assign result = false
+  if option_name contains 'size'
+    assign result = true
+  elsif extra_name != blank and option_name == extra_name
+    assign result = true
+  else
+    assign size_names = settings.card_size_option_names | downcase | split: ','
+    for size_name in size_names
+      assign clean = size_name | strip
+      if clean != blank and option_name == clean
+        assign result = true
+        break
+      endif
+    endfor
+  endif
+  echo result
+-%}

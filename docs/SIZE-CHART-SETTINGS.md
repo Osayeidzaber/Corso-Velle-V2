@@ -1,5 +1,9 @@
 # Size charts in Shopify
 
+Reusable product/collection metaobject charts and a global fallback are now supported. Follow
+[SIZE-CHART-ADMIN.md](SIZE-CHART-ADMIN.md) for the exact definitions, assignments and fallback order.
+The five CSV rules below remain supported for existing stores.
+
 Open Online Store → Themes → Customize → Theme settings → Size charts.
 
 Five chart rules are available. For each chart:
@@ -11,7 +15,9 @@ Five chart rules are available. For each chart:
 
 For a product with different measurements, use another rule and select that product under **Apply to specific products**. Product rules take priority over collection rules even if they appear later. Within the same scope, the first populated matching chart wins. Blank charts are ignored.
 
-Existing product metafields `custom.size_chart` and `custom.measurements` remain the highest priority. The product template's old chart field is a fallback when no rule matches. Footwear charts can be assigned explicitly using these rules.
+Existing product metafields `custom.size_chart` and `custom.measurements` remain the highest priority.
+Product CSV rules precede collection metafield charts, followed by collection CSV rules, the global
+reusable chart and template CSV/page fallback. Footwear charts can be assigned explicitly using these rules.
 
 Purchasable sizes, prices and availability are edited under **Products → the product → Variants**. The chart describes those sizes; it does not create variants, change stock or enable a sold-out size. Card size actions always use the actual variants.
 

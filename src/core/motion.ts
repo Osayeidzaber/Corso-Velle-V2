@@ -29,6 +29,39 @@ export function decorativeMotionAllowed(): boolean {
   return config().motion === 'standard' && !prefersReducedMotion() && !window.Shopify?.designMode;
 }
 
+/** Phone layout breakpoint shared with the CSS (< 750px). Viewport width, not device sniffing. */
+export const PHONE_QUERY = '(max-width: 749px)';
+
+const TEMPO = { relaxed: 1.25, balanced: 1, brisk: 0.78 } as const;
+const STAGGER = { none: 0, short: 0.045, medium: 0.075, long: 0.12 } as const;
+
+/** Multiplier for entrance durations (Theme settings → Motion → Animation tempo). */
+export function motionTempo(): number {
+  return TEMPO[config().motionOptions.tempo] ?? 1;
+}
+
+/** Seconds between staggered items (Theme settings → Motion → Stagger between items). */
+export function motionStagger(): number {
+  return STAGGER[config().motionOptions.stagger] ?? STAGGER.medium;
+}
+
+/**
+ * How much motion this viewport gets right now:
+ * - 'off'    no decorative motion (reduced motion, Motion off, editor, or phones set to Off);
+ * - 'simple' entrances only, no scrub/parallax/pin (phones on Simplified, or scroll effects off);
+ * - 'full'   everything, including scroll-linked scenes.
+ * Data Saver also downgrades to 'simple'. Components re-evaluate through gsap.matchMedia, so the
+ * mode follows rotations and resizes across the phone breakpoint.
+ */
+export function motionMode(isPhone = typeof matchMedia === 'function' && matchMedia(PHONE_QUERY).matches): 'off' | 'simple' | 'full' {
+  if (!decorativeMotionAllowed()) return 'off';
+  const { mobile, scrollEffects } = config().motionOptions;
+  if (isPhone && mobile === 'off') return 'off';
+  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+  if (!scrollEffects || saveData || (isPhone && mobile === 'simple')) return 'simple';
+  return 'full';
+}
+
 /** True when functional transitions (drawer slide) may use travel; otherwise use a short fade. */
 export function transitionsAllowed(): boolean {
   return config().motion !== 'off' && !prefersReducedMotion();
@@ -39,17 +72,20 @@ let installed = false;
 export function installMotionPolicy(): void {
   if (installed) return;
   installed = true;
-  reducedQuery?.addEventListener('change', () => {
-    document.documentElement.classList.toggle('nk-anim', decorativeMotionAllowed());
+  const update = () => {
+    document.documentElement.classList.toggle('nk-anim', motionMode() !== 'off');
     document.dispatchEvent(new CustomEvent('nk:motion:changed'));
     for (const element of document.querySelectorAll<HTMLElement>(
-      'nk-reveal, nk-text, nk-stagger, nk-parallax, nk-marquee, nk-carousel, nk-expand-media, nk-elastic-line',
+      'nk-scene, nk-reveal, nk-text, nk-stagger, nk-parallax, nk-marquee, nk-carousel, nk-expand-media, nk-elastic-line',
     )) {
       const component = element as HTMLElement & { disconnectedCallback?: () => void; connectedCallback?: () => void };
       component.disconnectedCallback?.();
       component.connectedCallback?.();
     }
-  });
+  };
+  reducedQuery?.addEventListener('change', update);
+  // Existing one-shot typography/grids must also restore visible state across phone policy changes.
+  if (typeof matchMedia === 'function') matchMedia(PHONE_QUERY).addEventListener('change', update);
 }
 
 /**

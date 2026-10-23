@@ -23,11 +23,13 @@ export class NkRecommendations extends NkElement {
   }
 
   async #load(url: string): Promise<void> {
+    const connection = this.signal;
     try {
-      const html = await fetchText(url, { signal: this.signal });
+      const html = await fetchText(url, { signal: connection });
       const fresh = parseHTML(html).querySelector('nk-recommendations');
-      if (!this.isConnected) return;
-      if (!fresh || !fresh.querySelector('[data-stagger-item]')) {
+      if (!this.connectionIsCurrent(connection)) return;
+      if (!fresh || (!fresh.querySelector('[data-stagger-item]') && !this.hasAttribute('show-empty'))) {
+        this.setAttribute('data-loaded', '');
         this.closest<HTMLElement>('.shopify-section')?.setAttribute('hidden', '');
         return;
       }
@@ -35,7 +37,7 @@ export class NkRecommendations extends NkElement {
       this.replaceChildren(...[...fresh.childNodes].map((node) => document.importNode(node, true)));
       this.dispatchEvent(new CustomEvent('nk:section:replaced', { bubbles: true, detail: { regions: ['recommendations'] } }));
     } catch (error) {
-      if ((error as Error).name !== 'AbortedError') console.error(error);
+      if (this.connectionIsCurrent(connection) && !['AbortError', 'AbortedError'].includes((error as Error).name)) console.error(error);
     }
   }
 }

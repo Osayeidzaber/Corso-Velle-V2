@@ -1,0 +1,545 @@
+{%- comment -%}
+  Numbered or icon how-it-works steps joined by a line. Adapted from daisyUI steps and HyperUI application/steps.
+  Source and license: docs/SECTION-SOURCES.md.
+{%- endcomment -%}
+<section class="process-steps kit-section full-width section-spacing section-presentation color-{{ section.settings.color_scheme }}" data-heading="{{ section.settings.heading_size }}" data-corners="{{ section.settings.corner_style }}" data-buttons="{{ section.settings.button_size }}" data-layout="{{ section.settings.layout }}" data-align="{{ section.settings.alignment }}" data-marker="{{ section.settings.marker_style }}" data-connector="{{ section.settings.connector }}" data-card="{{ section.settings.card_style }}" style="{% render 'section-presentation', presentation: section.settings %}--steps-gap:{{ section.settings.gap }}px;">
+  {%- case section.settings.entrance -%}{%- when 'fade' -%}<nk-reveal class="kit-entrance" mode="fade">{%- when 'stagger' -%}<nk-stagger class="kit-entrance">{%- endcase -%}
+  <div class="process-steps__inner">
+    {% render 'section-heading', heading: section.settings.heading, text: section.settings.text, align: section.settings.alignment %}
+    <ol class="process-steps__list">
+      {%- for block in section.blocks -%}
+        <li class="process-steps__step"{% if section.settings.entrance == 'stagger' %} data-stagger-item{% endif %} {{ block.shopify_attributes }}>
+          <span class="process-steps__count" aria-hidden="true">
+            {%- if section.settings.marker_content == 'icon' and block.settings.icon != 'none' -%}{% render 'section-icon', name: block.settings.icon %}{%- else -%}{{ forloop.index }}{%- endif -%}
+          </span>
+          <div class="process-steps__copy kit-card">
+            <h3 class="process-steps__title">{{ block.settings.title | escape }}</h3>
+            {%- if block.settings.text != blank -%}<div class="rte text-muted">{{ block.settings.text }}</div>{%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+    </ol>
+    {%- if section.settings.button_label != blank -%}<div class="kit-buttons process-steps__footer">{% render 'nk-button', label: section.settings.button_label, link: section.settings.button_link, style: section.settings.button_style %}</div>{%- endif -%}
+  </div>
+  {%- case section.settings.entrance -%}{%- when 'fade' -%}</nk-reveal>{%- when 'stagger' -%}</nk-stagger>{%- endcase -%}
+</section>
+
+{% stylesheet %}
+.process-steps__inner { width: var(--content-width); margin-inline: auto; display: grid; gap: 36px; }
+.process-steps__list { display: grid; gap: var(--steps-gap, 28px); list-style: none; margin: 0; padding: 0; }
+.process-steps__step { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; min-width: 0; overflow-wrap: anywhere; }
+.process-steps__step:not(:last-child)::after { content: ''; position: absolute; top: 48px; bottom: calc(var(--steps-gap, 28px) * -1 + 4px); inset-inline-start: 21px; width: 2px; background: var(--nk-color-line); }
+.process-steps[data-connector='false'] .process-steps__step::after { content: none; }
+.process-steps__count { position: relative; z-index: 1; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--nk-color-text); color: var(--nk-color-bg); font-family: var(--nk-font-spec); font-weight: 700; }
+.process-steps__count svg { width: 22px; height: 22px; }
+.process-steps[data-marker='outline'] .process-steps__count { background: var(--nk-color-bg); color: var(--nk-color-text); box-shadow: inset 0 0 0 2px var(--nk-color-text); }
+.process-steps[data-marker='accent'] .process-steps__count { background: var(--nk-color-accent); color: var(--nk-color-bg); }
+.process-steps[data-marker='square'] .process-steps__count { border-radius: var(--kit-radius); }
+.process-steps__copy { display: grid; gap: 6px; align-content: start; }
+.process-steps[data-card='plain'] .process-steps__copy { padding-top: 10px; }
+.process-steps__title { font-size: 1.125rem; }
+.process-steps[data-align='center'] .process-steps__footer { justify-content: center; }
+@media (min-width: 990px) {
+  .process-steps[data-layout='horizontal'] .process-steps__list { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+  .process-steps[data-layout='horizontal'] .process-steps__step { grid-template-columns: minmax(0, 1fr); align-content: start; }
+  .process-steps[data-layout='horizontal'] .process-steps__step:not(:last-child)::after { top: 21px; bottom: auto; inset-inline: 56px calc(var(--steps-gap, 28px) * -1 + 12px); width: auto; height: 2px; }
+  .process-steps[data-layout='horizontal'][data-align='center'] .process-steps__step { justify-items: center; text-align: center; }
+  .process-steps[data-layout='horizontal'][data-align='center'] .process-steps__step:not(:last-child)::after { inset-inline: calc(50% + 32px) calc(-50% - var(--steps-gap, 28px) + 32px); }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Process steps",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "How it works"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Desktop layout",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        },
+        {
+          "value": "vertical",
+          "label": "Vertical"
+        }
+      ],
+      "default": "horizontal"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between steps",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Step text style",
+      "options": [
+        {
+          "value": "plain",
+          "label": "Plain"
+        },
+        {
+          "value": "surface",
+          "label": "Surface fill"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        },
+        {
+          "value": "shadow",
+          "label": "Soft shadow"
+        }
+      ],
+      "default": "plain"
+    },
+    {
+      "type": "checkbox",
+      "id": "connector",
+      "label": "Connecting line",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Markers"
+    },
+    {
+      "type": "select",
+      "id": "marker_content",
+      "label": "Marker shows",
+      "options": [
+        {
+          "value": "number",
+          "label": "Step number"
+        },
+        {
+          "value": "icon",
+          "label": "Step icon"
+        }
+      ],
+      "default": "number"
+    },
+    {
+      "type": "select",
+      "id": "marker_style",
+      "label": "Marker style",
+      "options": [
+        {
+          "value": "filled",
+          "label": "Filled"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        },
+        {
+          "value": "accent",
+          "label": "Accent fill"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        }
+      ],
+      "default": "filled"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link",
+      "default": "/collections/all"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        },
+        {
+          "value": "pill",
+          "label": "Pill"
+        },
+        {
+          "value": "sweep",
+          "label": "Center sweep"
+        },
+        {
+          "value": "offset",
+          "label": "Offset shadow"
+        },
+        {
+          "value": "press",
+          "label": "3D press"
+        },
+        {
+          "value": "link",
+          "label": "Text link"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "xlarge",
+          "label": "Extra large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "corner_style",
+      "label": "Corners",
+      "options": [
+        {
+          "value": "theme",
+          "label": "Theme default"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "soft",
+          "label": "Soft"
+        },
+        {
+          "value": "round",
+          "label": "Round"
+        }
+      ],
+      "default": "theme",
+      "info": "Applies to images, cards and buttons in this section."
+    },
+    {
+      "type": "select",
+      "id": "button_size",
+      "label": "Button size",
+      "options": [
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "regular",
+          "label": "Theme default"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "select",
+      "id": "entrance",
+      "label": "Entrance animation",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fade",
+          "label": "Fade in section"
+        },
+        {
+          "value": "stagger",
+          "label": "Items rise one by one"
+        }
+      ],
+      "default": "none",
+      "info": "Skipped when visitors prefer reduced motion or motion is off in Theme settings."
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (1200px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (1440px)"
+        },
+        {
+          "value": "full",
+          "label": "Full width with page gutters"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Step"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Explain what happens in this step.</p>"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Delivery"
+            },
+            {
+              "value": "arrow-path",
+              "label": "Returns"
+            },
+            {
+              "value": "scissors",
+              "label": "Tailoring"
+            },
+            {
+              "value": "sparkles",
+              "label": "Quality"
+            },
+            {
+              "value": "heart",
+              "label": "Care"
+            },
+            {
+              "value": "globe-alt",
+              "label": "Worldwide"
+            },
+            {
+              "value": "lock-closed",
+              "label": "Secure"
+            },
+            {
+              "value": "shield-check",
+              "label": "Guarantee"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "bolt",
+              "label": "Fast"
+            },
+            {
+              "value": "adjustments-vertical",
+              "label": "Fit"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            }
+          ],
+          "default": "none",
+          "info": "Shown when the marker is set to Step icon."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Process steps",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "title": "Find your size",
+            "icon": "adjustments-vertical"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Try it at home",
+            "icon": "truck"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Free exchanges",
+            "icon": "arrow-path"
+          }
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
+}
+{% endschema %}

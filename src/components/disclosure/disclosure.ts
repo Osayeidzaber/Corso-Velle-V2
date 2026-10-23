@@ -18,7 +18,7 @@ export class NkDisclosure extends NkElement {
     if (!this.#details || !summary || !content) return;
 
     this.on(summary, 'click', (event) => {
-      if (!this.#details || !transitionsAllowed() || typeof content.animate !== 'function') return;
+      if (!this.#details || this.hasAttribute('no-animation') || !transitionsAllowed() || typeof content.animate !== 'function') return;
       event.preventDefault();
       this.#animating?.cancel();
 
@@ -68,10 +68,16 @@ export class NkDisclosure extends NkElement {
       }
     });
 
-    this.dispose(() => this.#animating?.cancel());
+    this.dispose(() => {
+      this.#animating?.cancel(); this.#animating = null;
+      content.style.overflow = '';
+    });
   }
 
   override onEditorSelect(): void {
+    this.#animating?.cancel(); this.#animating = null;
+    const content = this.#details?.querySelector<HTMLElement>('.disclosure__content');
+    if (content) content.style.overflow = '';
     if (this.#details && !this.#details.open) {
       this.#details.open = true;
       this.#openedByEditor = true;

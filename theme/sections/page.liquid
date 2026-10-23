@@ -5,10 +5,10 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/page
 {% endcomment %}
 
-<div class="section-spacing">
-  <div class="collection-header">
-    <h1 class="display">{{ page.title }}</h1>
-  </div>
+<div class="section-spacing utility-page color-{{ section.settings.color_scheme }}" data-width="{{ section.settings.width }}">
+  {% if section.settings.show_title != false %}<div class="collection-header">
+    <h1 class="display">{{ page.title | escape }}</h1>
+  </div>{% endif %}
 
   <div class="rte">{{ page.content }}</div>
 </div>
@@ -16,6 +16,45 @@
 {% schema %}
 {
   "name": "t:general.page",
-  "settings": []
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow reading width"
+        },
+        {
+          "value": "regular",
+          "label": "Regular reading width"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show page title",
+      "default": true
+    }
+  ],
+  "limit": 1,
+  "enabled_on": {
+    "templates": [
+      "page"
+    ]
+  }
 }
 {% endschema %}

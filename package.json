@@ -14,7 +14,8 @@
     "test": "vitest run",
     "check:theme": "shopify theme check --path theme --fail-level error",
     "check:json": "node scripts/check-json.mjs",
-    "check": "npm run typecheck && npm run test && npm run build && npm run check:json && npm run check:theme",
+    "check:contracts": "node --test scripts/theme-contracts.test.mjs && node scripts/customization-reference.mjs --check",
+    "check": "npm run typecheck && npm run test && npm run build && npm run check:json && npm run check:contracts && npm run check:theme",
     "dev": "shopify theme dev --path theme --store gbhr1g-hm.myshopify.com",
     "package": "npm run build && shopify theme package --path theme"
   },

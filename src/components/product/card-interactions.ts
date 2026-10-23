@@ -9,6 +9,9 @@ let installed = false;
 let activeVideoCard: HTMLElement | null = null;
 const videoAttempts = new WeakMap<HTMLElement, number>();
 const pauseTimers = new WeakMap<HTMLElement, number>();
+/** Quick-add buttons briefly show ✓ / ! ; keep the real label so a repeat click can't capture those. */
+const quickAddLabels = new WeakMap<HTMLButtonElement, string>();
+const quickAddTimers = new WeakMap<HTMLButtonElement, number>();
 /** Matches the video curtain's clip-path transition in card.css. */
 const CURTAIN_MS = 700;
 
@@ -16,7 +19,7 @@ const CURTAIN_MS = 700;
  * Video cards reveal one layer on hover: the video (card.css hides the second photo for them). The
  * curtain opens only once a real frame has been painted, and on leave the video keeps playing until
  * the curtain has closed, so it never slides away frozen and a quick re-entry just reverses it.
- * A video that cannot play marks the card data-video-failed, which hands hover back to the photo.
+ * A video that cannot play marks the card data-video-failed, which leaves the primary photo visible.
  */
 function stopCardVideo(card: HTMLElement, immediate = false): void {
   videoAttempts.set(card, (videoAttempts.get(card) ?? 0) + 1);
@@ -53,7 +56,7 @@ function startCardVideo(card: HTMLElement): void {
       return;
     }
     if (card.isConnected && card.hasAttribute('data-video-intent') && decorativeMotionAllowed()) {
-      card.setAttribute('data-video-playing', '');
+          card.setAttribute('data-video-playing', '');
     } else video.pause();
   };
   // Still playing from a moment ago (curtain closing): reverse the curtain straight away.
@@ -172,7 +175,19 @@ async function handleQuickAdd(button: HTMLButtonElement): Promise<void> {
   const variantId = Number(button.dataset.quickAddId || button.dataset.quickAdd);
   if (!variantId) return;
 
-  const originalText = button.textContent ?? '';
+  if (!quickAddLabels.has(button)) quickAddLabels.set(button, button.textContent ?? '');
+  const originalText = quickAddLabels.get(button)!;
+  const settle = (state: 'data-added' | 'data-error', text: string, ms: number) => {
+    button.setAttribute(state, '');
+    button.textContent = text;
+    quickAddTimers.set(button, window.setTimeout(() => {
+      button.removeAttribute(state);
+      button.textContent = originalText;
+    }, ms));
+  };
+  window.clearTimeout(quickAddTimers.get(button));
+  button.removeAttribute('data-added');
+  button.removeAttribute('data-error');
   button.setAttribute('data-busy', '');
   button.disabled = true;
   button.textContent = '···';
@@ -180,21 +195,11 @@ async function handleQuickAdd(button: HTMLButtonElement): Promise<void> {
   try {
     const quantity = Math.max(1, Number(button.dataset.quickAddQuantity) || 1);
     await cart.add([{ id: variantId, quantity }], 'quick-add');
-    button.setAttribute('data-added', '');
-    button.textContent = '✓';
-    window.setTimeout(() => {
-      button.removeAttribute('data-added');
-      button.textContent = originalText;
-    }, 900);
+    settle('data-added', '✓', 900);
   } catch (error) {
-    button.setAttribute('data-error', '');
-    button.textContent = '!';
+    settle('data-error', '!', 1400);
     const message = error instanceof CartError ? error.message : t('cart.error');
     announce.assertive(message);
-    window.setTimeout(() => {
-      button.removeAttribute('data-error');
-      button.textContent = originalText;
-    }, 1400);
   } finally {
     button.removeAttribute('data-busy');
     button.disabled = false;

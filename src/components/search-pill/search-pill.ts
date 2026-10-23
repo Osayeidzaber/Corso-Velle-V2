@@ -117,11 +117,15 @@ export class NkSearchPill extends NkElement {
       if (!input.value.trim()) this.#set(false, toggle);
     });
 
-    this.on(this, 'focusout', (event) => {
-      const next = event.relatedTarget as Node | null;
-      if (next && this.contains(next)) return;
-      this.#hideResults(input);
-      if (!input.value.trim()) this.#set(false, toggle);
+    this.on(this, 'focusout', () => {
+      // Opening hides the focused toggle before focusing the input. Check focus after that
+      // synchronous transfer, otherwise hiding the toggle immediately collapses the search again.
+      const connection = this.signal;
+      queueMicrotask(() => {
+        if (!this.connectionIsCurrent(connection) || this.contains(document.activeElement)) return;
+        this.#hideResults(input);
+        if (!input.value.trim()) this.#set(false, toggle);
+      });
     });
 
     this.dispose(() => {
@@ -135,8 +139,8 @@ export class NkSearchPill extends NkElement {
     const url = new URL(config().routes.predictiveSearch, location.origin);
     url.searchParams.set('q', query);
     url.searchParams.set('section_id', 'predictive-search');
-    url.searchParams.set('resources[type]', 'query,product,collection');
-    url.searchParams.set('resources[limit]', '4');
+    url.searchParams.set('resources[type]', this.dataset.resources || 'query,product,collection');
+    url.searchParams.set('resources[limit]', this.dataset.limit || '4');
     url.searchParams.set('resources[options][unavailable_products]', 'last');
     url.searchParams.set('resources[options][fields]', 'title,product_type,variants.title,vendor,tag');
 

@@ -40,6 +40,7 @@
     "back_to_top": "Back to top"
   },
   "blog": {
+    "comment_received": "Thank you. Your comment has been received.",
     "article_comments": "Comments",
     "article_metadata_html": "{{ date }} by {{ author }}",
     "comment_form_body": "Comment",
@@ -74,6 +75,7 @@
     "add_not_applied": "The item wasn't added. Please try again."
   },
   "collection": {
+    "showing_count": "Showing {{ shown }} of {{ total }} products",
     "product_count": {
       "one": "{{ count }} product",
       "other": "{{ count }} products"
@@ -121,6 +123,7 @@
     "updating": "Updating…",
     "units": "Units",
     "measurements_unavailable": "Measurements for this size have not been provided.",
+    "view_size_details": "View product and size details",
     "inches": "in",
     "centimetres": "cm",
     "decrease_quantity": "Decrease quantity",
@@ -129,6 +132,61 @@
     "available_to_order": "Available to order",
     "select_size_prompt": "Select a size",
     "size_selected": "Selected",
+    "size_names": {
+      "xxs": "Extra extra small",
+      "xs": "Extra small",
+      "s": "Small",
+      "m": "Medium",
+      "l": "Large",
+      "xl": "Extra large",
+      "xxl": "Extra extra large",
+      "xxxl": "Triple extra large"
+    },
+    "fit_finder": {
+      "eyebrow": "Find your perfect size",
+      "step_1_title": "Let’s find your fit",
+      "step_1_lede": "Two measurements are all it takes. Drag to adjust.",
+      "step_2_title": "Your shape",
+      "step_2_lede": "Compared with most people your height. Skip if unsure.",
+      "step_3_title": "How do you like it to fit?",
+      "step_3_lede": "We size up or down to match.",
+      "sizing": "Sizing",
+      "female": "Female",
+      "male": "Male",
+      "height": "Height",
+      "weight": "Weight",
+      "unit_cm": "cm",
+      "unit_ftin": "ft/in",
+      "unit_kg": "kg",
+      "unit_lbs": "lbs",
+      "decrease": "Decrease {{ field }}",
+      "increase": "Increase {{ field }}",
+      "chest": "Chest",
+      "stomach": "Stomach",
+      "chest_narrow": "Narrower",
+      "chest_average": "Average",
+      "chest_broad": "Broader",
+      "stomach_narrow": "Flatter",
+      "stomach_average": "Average",
+      "stomach_broad": "Rounder",
+      "fit_fitted": "Fitted",
+      "fit_fitted_note": "Close to the body",
+      "fit_regular": "Regular",
+      "fit_regular_note": "As designed",
+      "fit_relaxed": "Relaxed",
+      "fit_relaxed_note": "Room to move",
+      "your_size": "Your size",
+      "unmatched": "This piece uses its own sizing. Compare with the chart below.",
+      "select": "Select size",
+      "restart": "Start over",
+      "live_estimate": "Live estimate",
+      "refined": "Refined in the next steps",
+      "back": "Back",
+      "next": "Continue",
+      "hint": "Your size",
+      "find_size": "Find my size",
+      "privacy": "Saved privately on this device, so every piece shows your size."
+    },
     "size_table_heading": "Garment measurements",
     "measurements_in": "measurements in",
     "zoom": "Zoom image",
@@ -182,7 +240,13 @@
   },
   "media": {
     "play": "Play video",
-    "pause": "Pause video"
+    "pause": "Pause video",
+    "previous_slide": "Previous slide",
+    "next_slide": "Next slide",
+    "slides": "Slides",
+    "slide_n": "Slide {{ number }} of {{ count }}",
+    "pause_slideshow": "Pause slideshow",
+    "play_slideshow": "Play slideshow"
   },
   "cursor": {
     "view": "View"
@@ -208,5 +272,44 @@
     "next": "Next products",
     "pause": "Pause",
     "play": "Play"
+  },
+  "sections": {
+    "banner": {
+      "dismiss": "Dismiss announcement"
+    },
+    "compare": {
+      "slider": "Drag to compare {{ before }} and {{ after }}"
+    },
+    "comparison": {
+      "included": "Included",
+      "not_included": "Not included"
+    },
+    "contact": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone number",
+      "message": "Message",
+      "send": "Send",
+      "success": "Thanks for contacting us. We'll get back to you as soon as possible.",
+      "error": "Please check the form:"
+    },
+    "countdown": {
+      "days": "Days",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "seconds": "Seconds",
+      "ended": "This offer has ended.",
+      "ends_on": "Ends {{ date }}"
+    },
+    "lookbook": {
+      "hotspot": "Show {{ title }}",
+      "view": "View product"
+    },
+    "testimonials": {
+      "rating": "Rated {{ rating }} out of 5"
+    },
+    "video": {
+      "play": "Play video: {{ title }}"
+    }
   }
 }

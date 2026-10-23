@@ -1,18 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setConfigForTests } from '../../src/core/config';
 import type { NkElement } from '../../src/core/element';
+import type { FlexCarouselHooks } from '../../src/components/carousel/flex-carousel';
+import { sizeChoices, type CarouselProduct } from '../../src/components/carousel/product-data';
+import { cart, CartError, type CartResult } from '../../src/services/cart';
+
+const enhance = vi.hoisted(() => vi.fn());
+vi.mock('../../src/components/carousel/flex-carousel', () => ({ createFlexCarousel: enhance }));
 import '../../src/components/carousel/carousel';
-import { sizeChoices, type CarouselProduct } from '../../src/components/carousel/size-sheet';
-import { cart, type CartResult } from '../../src/services/cart';
-import { overlay } from '../../src/services/overlay';
 
-
+const observers: IntersectionMock[] = [];
 class IntersectionMock {
-  constructor(readonly callback: IntersectionObserverCallback) {}
-  observe(target: Element): void {
-    queueMicrotask(() => this.callback([{ isIntersecting: true, target } as IntersectionObserverEntry], this as unknown as IntersectionObserver));
-  }
-  disconnect(): void {}
+  targets = new Set<Element>();
+  constructor(readonly callback: IntersectionObserverCallback) { observers.push(this); }
+  observe(target: Element): void { this.targets.add(target); }
+  disconnect(): void { this.targets.clear(); }
 }
 
 function product(id: number, overrides: Partial<CarouselProduct> = {}): CarouselProduct {
@@ -30,107 +32,162 @@ function product(id: number, overrides: Partial<CarouselProduct> = {}): Carousel
 
 function slide(data: CarouselProduct): string {
   return `<li class="product-carousel__slide"><article class="card${data.available ? '' : ' card--sold-out'}">
-    <div class="card__meta"><a class="card__title" href="${data.url}">${data.title}</a><span class="price">$10</span></div></article>
+    <div class="card__meta"><a class="card__title" href="${data.url}">${data.title}</a></div></article>
     <script type="application/json" data-carousel-product>${JSON.stringify(data)}</script></li>`;
 }
 
-async function mount(products: CarouselProduct[], attributes = ''): Promise<NkElement> {
-  document.body.innerHTML = `<nk-carousel id="c" data-effect="liquid" data-intro="none" ${attributes}><div data-ref="viewport"><ul data-ref="track">
-    ${products.map(slide).join('')}</ul></div>
-    <button type="button" data-ref="add" data-index="0"><span data-add-label></span><span data-add-product></span></button>
-    <dialog data-ref="sheet" data-one-size-label="One size"><div data-sheet-media></div><a data-sheet-title></a><div data-sheet-price></div>
-      <p data-sheet-context hidden></p><button type="button" data-sheet-close>Close</button><span data-sheet-legend></span>
-      <div data-sheet-options></div><p data-sheet-status></p><div data-sheet-done hidden></div></dialog></nk-carousel>`;
+const engine = { dispose: vi.fn(), setHeld: vi.fn() };
+let hooks: FlexCarouselHooks;
+
+/** Mount a shop-mode carousel on a stand-in engine; `hooks.onActive` moves the highlight like autoplay or a drag. */
+async function mount(products: CarouselProduct[]): Promise<NkElement> {
+  document.body.innerHTML = `<nk-carousel id="c" data-effect="liquid" data-autoplay data-select-size-label="Select a size">
+    <div data-ref="viewport"><ul data-ref="track">${products.map(slide).join('')}</ul></div>
+    <div class="product-carousel__purchase" data-ref="purchase">
+      <button type="button" data-ref="add" aria-expanded="false" disabled><span data-add-label></span><span data-add-product></span></button>
+      <div data-ref="sizes" hidden><span data-ref="sizes-label"></span><div data-size-options></div><span data-ref="sizes-context" hidden></span></div>
+      <div data-ref="measurements" hidden></div>
+      <p data-ref="purchase-status"></p>
+    </div></nk-carousel>`;
   const root = document.querySelector<NkElement>('nk-carousel')!;
   root.disconnectedCallback(); root.connectedCallback();
-  await vi.waitFor(() => expect(root.querySelectorAll('.product-carousel__item').length).toBeGreaterThan(0));
+  for (const observer of [...observers]) {
+    if (observer.targets.has(root)) observer.callback([{ isIntersecting: true, target: root } as unknown as IntersectionObserverEntry], observer as unknown as IntersectionObserver);
+  }
+  await vi.waitFor(() => expect(engine.setHeld).toHaveBeenCalled());
+  hooks = enhance.mock.calls.at(-1)![2] as FlexCarouselHooks;
+  hooks.onActive(0);
   return root;
 }
 
-/** Steer the strip like a customer: clicking a neighbouring card centres it. */
-async function select(index: number): Promise<void> {
-  const slide = document.querySelectorAll('.product-carousel__slide')[index]!;
-  if (slide.hasAttribute('data-active')) return;
-  document.querySelector<HTMLElement>(`.product-carousel__item[data-index="${index}"]`)!.click();
-  await vi.waitFor(() => expect(slide.hasAttribute('data-active')).toBe(true), { timeout: 3000 });
-}
-
 const addButton = () => document.querySelector<HTMLButtonElement>('[data-ref="add"]')!;
-const sizes = () => [...document.querySelectorAll<HTMLButtonElement>('.carousel-sheet__size')];
+const sizeList = () => document.querySelector<HTMLElement>('[data-ref="sizes"]')!;
+const sizes = () => [...document.querySelectorAll<HTMLButtonElement>('.product-carousel__size')];
+const status = () => document.querySelector('[data-ref="purchase-status"]')!.textContent;
+const ok = { cart: { items: [], item_count: 1 }, sections: {}, reconciled: false } as unknown as CartResult;
 
 beforeEach(() => {
-  setConfigForTests(null);
+  setConfigForTests(null); observers.length = 0;
+  enhance.mockReset(); enhance.mockResolvedValue(engine);
+  engine.setHeld.mockClear(); engine.dispose.mockClear();
   vi.stubGlobal('IntersectionObserver', IntersectionMock);
   vi.stubGlobal('matchMedia', (query: string) => ({ matches: !query.includes('reduce'), media: query, addEventListener() {}, removeEventListener() {} }));
 });
-afterEach(() => { overlay.closeAll(); document.body.replaceChildren(); vi.unstubAllGlobals(); });
+afterEach(() => { vi.restoreAllMocks(); document.body.replaceChildren(); vi.unstubAllGlobals(); });
 
-describe('carousel purchase button', () => {
-  it('follows the highlighted product and disables itself for sold-out products', async () => {
+describe('carousel shop mode', () => {
+  it('names the highlighted product and is disabled for a sold-out one', async () => {
     await mount([product(1), product(2, { available: false })]);
-    await select(0);
     expect(addButton().disabled).toBe(false);
-    expect(addButton().getAttribute('aria-label')).toContain('Product 1');
-    expect(document.querySelectorAll('.product-carousel__slide')[0]!.hasAttribute('data-active')).toBe(true);
-    await select(1);
+    expect(addButton().getAttribute('aria-label')).toBe('product.add_to_cart: Product 1');
+    hooks.onActive(1);
     expect(addButton().disabled).toBe(true);
     expect(addButton().getAttribute('aria-label')).toContain('Product 2');
     expect(document.querySelector('nk-carousel')!.hasAttribute('data-active-sold-out')).toBe(true);
-    expect(document.querySelectorAll('.product-carousel__slide')[0]!.hasAttribute('data-active')).toBe(false);
   });
 
-  it('opens the size sheet instead of adding, holds autoplay, and marks unavailable sizes', async () => {
+  it('opens the size selector instead of adding and holds autoplay', async () => {
     const add = vi.spyOn(cart, 'add');
     await mount([product(1), product(2)]);
-    await select(0);
+    expect(sizeList().hasAttribute('data-open')).toBe(false);
     addButton().click();
     expect(add).not.toHaveBeenCalled();
-    expect(document.querySelector<HTMLDialogElement>('[data-ref="sheet"]')!.open).toBe(true);
-    expect(document.querySelector('nk-carousel')!.hasAttribute('data-sheet-open')).toBe(true);
+    expect(sizeList().hasAttribute('data-open')).toBe(true);
+    expect(addButton().getAttribute('aria-expanded')).toBe('true');
+    expect(engine.setHeld).toHaveBeenLastCalledWith(true);
     expect(sizes().map((button) => button.disabled)).toEqual([false, true, false]);
-    overlay.closeAll();
-    expect(document.querySelector('nk-carousel')!.hasAttribute('data-sheet-open')).toBe(false);
-  });
-
-  it('adds the variant of the product captured when the sheet opened, even if the carousel moves', async () => {
-    const add = vi.spyOn(cart, 'add').mockResolvedValue({ cart: { items: [] }, sections: {}, reconciled: false } as unknown as CartResult);
-    await mount([product(1), product(2)]);
-    await select(0);
+    expect(document.activeElement).toBe(sizes()[0]);
     addButton().click();
-    await select(1);
-    expect(addButton().getAttribute('aria-label')).toContain('Product 1');
-    sizes()[2]!.click();
-    await vi.waitFor(() => expect(add).toHaveBeenCalledOnce());
-    expect(add.mock.calls[0]![0]).toEqual([{ id: 13, quantity: 2 }]);
-    await vi.waitFor(() => expect(document.querySelector('[data-sheet-done]')!.hasAttribute('hidden')).toBe(false));
+    expect(sizeList().hasAttribute('data-open')).toBe(false);
+    // Keyboard focus on the purchase controls still holds (happy-dom treats focus as focus-visible).
+    expect(engine.setHeld).toHaveBeenLastCalledWith(true);
+    addButton().blur();
+    expect(engine.setHeld).toHaveBeenLastCalledWith(false);
   });
-});
 
-describe('carousel autoplay', () => {
-  it('glides on by itself, loops past the last product, and holds while the size sheet is open', async () => {
-    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
-    try {
-      const root = await mount([product(1), product(2), product(3)], 'data-autoplay');
-      const activeIndex = () => [...root.querySelectorAll('.product-carousel__slide')].findIndex((slide) => slide.hasAttribute('data-active'));
-      const visited = [activeIndex()];
-      for (let elapsed = 0; elapsed < 18000; elapsed += 250) {
-        await vi.advanceTimersByTimeAsync(250);
-        if (activeIndex() !== visited.at(-1)) visited.push(activeIndex());
-      }
-      // Infinite: after the last product the strip carries on to the first again.
-      expect(visited.slice(0, 4)).toEqual([0, 1, 2, 0]);
-      expect(root.hasAttribute('data-autoplaying')).toBe(true);
-      addButton().click();
-      const held = activeIndex();
-      await vi.advanceTimersByTimeAsync(12000);
-      expect(activeIndex()).toBe(held);
-      overlay.closeAll();
-      (document.activeElement as HTMLElement | null)?.blur();
-      await vi.advanceTimersByTimeAsync(9000);
-      expect(activeIndex()).not.toBe(held);
-    } finally {
-      vi.useRealTimers();
-    }
+  it('adds the chosen size of the highlighted product with its minimum quantity, once', async () => {
+    let finish!: (result: CartResult) => void;
+    const add = vi.spyOn(cart, 'add').mockImplementation(() => new Promise((resolve) => { finish = resolve; }));
+    await mount([product(1), product(2)]);
+    hooks.onActive(1);
+    addButton().click();
+    sizes()[2]!.click();
+    sizes()[2]!.click();
+    addButton().click();
+    expect(add).toHaveBeenCalledOnce();
+    expect(add.mock.calls[0]![0]).toEqual([{ id: 23, quantity: 2 }]);
+    expect(addButton().disabled).toBe(true);
+    expect(engine.setHeld).toHaveBeenLastCalledWith(true);
+    finish(ok);
+    await vi.waitFor(() => expect(status()).toBe('cart.added: Product 2 (L)'));
+    expect(sizeList().hasAttribute('data-open')).toBe(false);
+    expect(addButton().disabled).toBe(false);
+    expect(document.activeElement).toBe(addButton());
+    addButton().blur();
+    expect(engine.setHeld).toHaveBeenLastCalledWith(false);
+  });
+
+  it('keeps an in-flight add on its product when the highlight moves', async () => {
+    let finish!: (result: CartResult) => void;
+    const add = vi.spyOn(cart, 'add').mockImplementation(() => new Promise((resolve) => { finish = resolve; }));
+    await mount([product(1), product(2)]);
+    addButton().click();
+    sizes()[0]!.click();
+    hooks.onActive(1);
+    expect(addButton().getAttribute('aria-label')).toBe('product.adding: Product 1');
+    finish(ok);
+    await vi.waitFor(() => expect(status()).toBe('cart.added: Product 1 (S)'));
+    expect(add.mock.calls[0]![0]).toEqual([{ id: 11, quantity: 1 }]);
+    expect(addButton().getAttribute('aria-label')).toBe('product.add_to_cart: Product 2');
+  });
+
+  it('closes the selector when the shopper moves to another product', async () => {
+    const add = vi.spyOn(cart, 'add');
+    await mount([product(1), product(2)]);
+    addButton().click();
+    hooks.onActive(1);
+    expect(sizeList().hasAttribute('data-open')).toBe(false);
+    expect(sizes()[0]!.dataset.variantId).toBe('21');
+    sizes()[0]!.click();
+    expect(add).not.toHaveBeenCalled();
+  });
+
+  it('adds a default-variant product directly', async () => {
+    const add = vi.spyOn(cart, 'add').mockResolvedValue(ok);
+    await mount([product(4, { option: -1, values: [], options: ['Title'], preferred: 41, variants: [{ id: 41, available: true, options: ['Default Title'], min: 1 }] }), product(5)]);
+    expect(sizeList().hidden).toBe(true);
+    addButton().click();
+    expect(add.mock.calls[0]![0]).toEqual([{ id: 41, quantity: 1 }]);
+  });
+
+  it('keeps sizes open and reports a rejected add', async () => {
+    vi.spyOn(cart, 'add').mockRejectedValue(new CartError('rejected', 'Only 1 left'));
+    await mount([product(1), product(2)]);
+    addButton().click();
+    sizes()[0]!.click();
+    await vi.waitFor(() => expect(status()).toBe('Only 1 left'));
+    expect(sizeList().hasAttribute('data-open')).toBe(true);
+    expect(addButton().disabled).toBe(false);
+  });
+
+  it('sends subscription-only products to their product page', async () => {
+    const add = vi.spyOn(cart, 'add');
+    await mount([product(6, { sellingPlan: true }), product(7)]);
+    const link = document.querySelector<HTMLAnchorElement>('.card__title')!;
+    const visit = vi.fn((event: Event) => event.preventDefault());
+    link.addEventListener('click', visit);
+    expect(addButton().getAttribute('aria-label')).toContain('product.choose_options');
+    addButton().click();
+    expect(visit).toHaveBeenCalledOnce();
+    expect(add).not.toHaveBeenCalled();
+  });
+
+  it('closes on Escape and returns focus to Add to cart', async () => {
+    await mount([product(1), product(2)]);
+    addButton().click();
+    sizes()[0]!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(sizeList().hasAttribute('data-open')).toBe(false);
+    expect(document.activeElement).toBe(addButton());
   });
 });
 

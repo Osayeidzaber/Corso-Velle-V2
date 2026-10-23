@@ -59,7 +59,7 @@
         "height": "full",
         "position": "bottom-left",
         "parallax": 14,
-        "show_scroll_cue": true,
+        "show_scroll_cue": false,
         "scrim_style": "solid",
         "scrim": 35,
         "color_scheme": "scheme-2"
@@ -325,17 +325,17 @@
       }
     },
     "strip": {
-      "type": "image-strip",
+      "type": "accordion-gallery",
       "blocks": {},
       "block_order": [],
       "settings": {
-        "heading": "Worn in the wild",
+        "eyebrow": "The collection, in focus",
+        "heading": "Explore the collection",
+        "description": "Everyday pieces. A closer look at the details.",
         "collection": "timeless-basics-26",
-        "limit": 14,
-        "height": 280,
-        "gap": 16,
-        "speed": 30,
-        "reverse": false,
+        "limit": 5,
+        "height": 580,
+        "link_label": "Shop the piece",
         "color_scheme": "scheme-1"
       }
     },
