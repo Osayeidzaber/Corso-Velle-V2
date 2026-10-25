@@ -21,6 +21,7 @@ export interface CarouselProduct {
   values: string[];
   options: string[];
   preferred: number | null;
+  variantCount?: number;
   variants: CarouselVariant[];
 }
 
@@ -36,6 +37,7 @@ export function readProduct(slide: Element): CarouselProduct | null {
     const data = JSON.parse(node.textContent) as CarouselProduct;
     if (!Number.isSafeInteger(data.id) || !Array.isArray(data.variants) || !Array.isArray(data.values)) return null;
     data.variants = data.variants.filter((variant) => Number.isSafeInteger(variant.id) && Array.isArray(variant.options));
+    if (typeof data.variantCount === 'number' && data.variantCount > data.variants.length) return null;
     return data;
   } catch {
     return null;

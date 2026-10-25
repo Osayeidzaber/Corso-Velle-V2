@@ -25,6 +25,7 @@
             <a class="button" href="{{ continue_url }}">{{ 'cart.continue_shopping' | t }}</a>
           </div>
         {%- else -%}
+          {% render 'free-shipping-bar' %}
           <div class="drawer__body">
             <p class="visually-hidden">{{ 'cart.item_count' | t: count: cart.item_count }}</p>
             <ul class="cart-lines" role="list">
@@ -32,6 +33,18 @@
                 {% render 'line-item', item: item, context: 'drawer', show_image: section.settings.show_images %}
               {%- endfor -%}
             </ul>
+            {%- if section.settings.show_recommendations -%}
+              {%- liquid
+                # Shopify lists the most recently added line first.
+                assign newest = cart.items.first
+                assign recs_url = routes.product_recommendations_url | append: '?section_id=cart-recommendations&limit=6&product_id=' | append: newest.product_id
+                assign cart_products = cart.items | map: 'product_id' | uniq | join: ','
+              -%}
+              <nk-cart-recommendations class="cart-recs" url="{{ recs_url }}" intent="{{ section.settings.recommendation_intent }}" cart-products="{{ cart_products }}" data-empty>
+                <p class="cart-recs__heading spec">{{ section.settings.recommendations_heading | escape }}</p>
+                <div data-cart-recs-slot></div>
+              </nk-cart-recommendations>
+            {%- endif -%}
           </div>
           <div class="drawer__footer cart-summary">
             {%- for discount in cart.cart_level_discount_applications -%}
@@ -39,14 +52,19 @@
                 <span>{{ discount.title | escape }}</span><span>−{{ discount.total_allocated_amount | money }}</span>
               </div>
             {%- endfor -%}
+            {% render 'cart-discounts', context: 'drawer' %}
             <div class="cart-summary__row">
               <span>{{ 'cart.subtotal' | t }}</span>
               <span class="price">{{ cart.total_price | money_with_currency }}</span>
             </div>
             <p class="text-muted">
               {%- if cart.taxes_included -%}{{ 'cart.taxes_included' | t }}{%- else -%}{{ 'cart.taxes_excluded' | t }}{%- endif -%}
+              {%- if cart.discount_applications.size > 0 %} {{ 'promotions.checkout_confirms' | t }}{%- endif -%}
             </p>
             <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
+            {%- if additional_checkout_buttons and section.settings.show_accelerated -%}
+              <div class="cart-summary__accelerated">{{ content_for_additional_checkout_buttons }}</div>
+            {%- endif -%}
             <a href="{{ routes.cart_url }}" class="cart-drawer__view">{{ 'cart.view_cart' | t }}</a>
           </div>
         {%- endif -%}
@@ -110,6 +128,51 @@
         }
       ],
       "default": "regular"
+    },
+    {
+      "type": "header",
+      "content": "Complete the look"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_recommendations",
+      "label": "Show product suggestions",
+      "default": true,
+      "info": "Suggestions for the most recently added product, with one-tap size add."
+    },
+    {
+      "type": "text",
+      "id": "recommendations_heading",
+      "label": "Heading",
+      "default": "Complete the look"
+    },
+    {
+      "type": "select",
+      "id": "recommendation_intent",
+      "label": "Suggest",
+      "options": [
+        {
+          "value": "complementary",
+          "label": "Complementary products"
+        },
+        {
+          "value": "related",
+          "label": "Related products"
+        }
+      ],
+      "default": "complementary",
+      "info": "Set complementary products in the Search & Discovery app. Without them, related products are shown."
+    },
+    {
+      "type": "header",
+      "content": "Checkout"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accelerated",
+      "label": "Show express checkout buttons",
+      "default": true,
+      "info": "Shop Pay, Apple Pay and other wallets you've enabled in your payment settings."
     }
   ],
   "limit": 1

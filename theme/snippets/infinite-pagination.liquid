@@ -1,0 +1,38 @@
+{%- doc -%}
+  Collection / search pagination with "Load more" or infinite scroll (<nk-infinite-scroll>).
+  Without JavaScript the numbered pagination below is shown and works as normal links; with it,
+  the next page's products are appended to the current grid (Section Rendering, one request per
+  page) and the numbered links are hidden.
+
+  @param {object} paginate - The paginate object
+  @param {string} section_id - The section id (for Section Rendering)
+  @param {string} mode - 'numbers', 'button' or 'infinite'
+  @param {number} [auto_pages] - Infinite mode: pages loaded automatically before a button appears
+  @param {number} total - Total number of results across all pages
+
+  @example
+  {% render 'infinite-pagination', paginate: paginate, section_id: section.id, mode: section.settings.pagination_style, auto_pages: section.settings.infinite_auto_pages, total: collection.products_count %}
+{%- enddoc -%}
+{%- liquid
+  assign mode = mode | default: 'numbers'
+  assign shown = paginate.current_offset | plus: paginate.page_size
+  if shown > total
+    assign shown = total
+  endif
+-%}
+{%- if paginate.pages > 1 -%}
+  {%- if mode == 'numbers' -%}
+    <div class="main-collection__pagination">{% render 'pagination', paginate: paginate %}</div>
+  {%- else -%}
+    <nk-infinite-scroll class="infinite" data-section-id="{{ section_id }}" data-mode="{{ mode }}" data-auto-pages="{{ auto_pages | default: 3 }}">
+      <p class="infinite__count spec text-muted" data-infinite-count data-total="{{ total }}" data-template="{{ 'collection.showing_count' | t: shown: '[shown]', total: total }}">{{ 'collection.showing_count' | t: shown: shown, total: total }}</p>
+      <div class="infinite__progress" aria-hidden="true"><span style="--infinite-progress: {{ shown | times: 1.0 | divided_by: total }};"></span></div>
+      {%- if paginate.next -%}
+        <a class="button button--secondary infinite__more" href="{{ paginate.next.url }}" data-infinite-next hidden>{{ 'collection.load_more' | t }}</a>
+        <span class="infinite__loader" data-infinite-loader aria-hidden="true" hidden></span>
+      {%- endif -%}
+      <p class="visually-hidden" role="status" data-infinite-status></p>
+      <div class="main-collection__pagination" data-infinite-fallback>{% render 'pagination', paginate: paginate %}</div>
+    </nk-infinite-scroll>
+  {%- endif -%}
+{%- endif -%}

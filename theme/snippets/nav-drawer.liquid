@@ -58,7 +58,7 @@
           {%- for link in menu.links -%}
             <li>
               {%- if link.links.size > 0 -%}
-                <button type="button" class="menu-drawer__row" data-level-open="menu-{{ forloop.index }}" aria-label="{{ 'header.show_submenu' | t: title: link.title }}">
+                <button type="button" class="menu-drawer__row" data-level-open="menu-{{ forloop.index }}" aria-label="{{ 'header.show_submenu' | t: title: link.title | escape }}">
                   <span aria-hidden="true">{{ link.title | escape }}</span>
                   {% render 'icon', name: 'arrow-right', size: 18 %}
                 </button>

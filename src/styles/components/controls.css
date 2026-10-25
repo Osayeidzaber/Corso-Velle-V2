@@ -111,7 +111,33 @@
   margin-inline-start: 6px;
   color: var(--nk-color-text-muted);
   font-weight: 400;
-  text-decoration: line-through;
+  /* A thin strike drawn as a background line, so it can animate in (price-transition.ts). */
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) no-repeat 0 55% / 100% 1px;
+}
+
+/* Forced colors drop backgrounds: keep a real strikethrough there. */
+@media (forced-colors: active) {
+  .price__compare { text-decoration: line-through; }
+}
+
+/* An amount never breaks between currency and number ("Tk / 1,900.00"); separate amounts may. */
+.price__current,
+.price__compare,
+.cart-summary .price {
+  white-space: nowrap;
+}
+
+/* Cart lines are narrow on phones: the line price and its original price stack. */
+.cart-line__top .price {
+  display: grid;
+  justify-items: end;
+  align-content: start;
+  white-space: nowrap;
+}
+
+.cart-line__top .price__compare {
+  margin-inline-start: 0;
 }
 
 .badge {
@@ -128,4 +154,29 @@
 .badge--sale {
   background: var(--nk-color-accent);
   color: var(--nk-color-accent-text);
+}
+
+/* Promotion code badge (snippets/promotion): an outlined label, quieter than the solid sale badge. */
+.badge--promo {
+  background: var(--nk-color-bg);
+  color: var(--nk-color-accent);
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
+/* Low-stock dot on size buttons and card quick-add sizes (snippets/size-stock). Global because
+   product cards appear on every page. */
+.stock-dot {
+  position: relative;
+  flex-shrink: 0;
+  width: 5px;
+  height: 5px;
+  margin-inline-start: 5px;
+  border-radius: 50%;
+  background: #c2701e;
+  transform: translateY(-0.45em);
+}
+
+.option__value label,
+.card__tray-pill {
+  position: relative;
 }

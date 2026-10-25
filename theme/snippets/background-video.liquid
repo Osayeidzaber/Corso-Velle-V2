@@ -1,14 +1,35 @@
-{%- comment -%}
+{%- doc -%}
   Decorative, muted video. No native controls (they showed as a player bar until the script
-  loaded); the lazy element plays it and reveals its own play/pause button.
-{%- endcomment -%}
+  loaded); the lazy element plays it and reveals its own play/pause button. Phones are offered
+  Shopify's 720p rendition instead of the 1080p file (see snippets/video-sources).
+
+  @param {object} [video] - Shopify-hosted video
+  @param {string} [video_url] - MP4 file URL, used when no video is picked
+  @param {string} [poster_url] - Poster image URL for video_url
+  @param {boolean} [autoplay] - false keeps the video paused until the shopper presses play
+  @param {string} [toggle_id] - ID of an external play/pause button (otherwise one is rendered)
+  @param {string} [video_class] - Class for the <video> element
+
+  @example
+  {% render 'background-video', video: section.settings.video, video_url: section.settings.video_url, video_class: 'hero__video' %}
+{%- enddoc -%}
+{%- liquid
+  assign mp4_url = video_url
+  assign hls_url = blank
+  assign poster_src = poster_url
+  if video
+    assign mp4_url = video.sources | where: 'format', 'mp4' | map: 'url' | first
+    assign hls_url = video.sources | where: 'format', 'm3u8' | map: 'url' | first
+    assign poster_src = video.preview_image | image_url: width: 1600
+  endif
+-%}
 <nk-background-video {% unless autoplay == false %}autoplay{% endunless %} {% if toggle_id != blank %}toggle-id="{{ toggle_id }}"{% endif %}>
-  {% if video %}
-    {{ video | video_tag: autoplay: false, muted: true, loop: true, playsinline: true, controls: false, preload: 'metadata', image_size: '1600x', class: video_class }}
-  {% elsif video_url != blank %}
-    <video class="{{ video_class }}" muted loop playsinline preload="metadata" {% if poster_url != blank %}poster="{{ poster_url | escape }}"{% endif %}>
-      <source src="{{ video_url | escape }}" type="video/mp4">
+  {% if mp4_url != blank %}
+    <video class="{{ video_class }}" muted loop playsinline preload="metadata" {% if poster_src != blank %}poster="{{ poster_src | escape }}"{% endif %}>
+      {% render 'video-sources', url: mp4_url, hls: hls_url, rendition: 'hd', media: '(max-width: 749px)' %}
     </video>
+  {% elsif video %}
+    {{ video | video_tag: autoplay: false, muted: true, loop: true, playsinline: true, controls: false, preload: 'metadata', image_size: '1600x', class: video_class }}
   {% endif %}
   {% if toggle_id == blank %}<button type="button" class="background-video__toggle spec" data-ref="toggle" aria-label="{{ 'media.play' | t }}" data-play-label="{{ 'media.play' | t }}" data-pause-label="{{ 'media.pause' | t }}" hidden>▶</button>{% endif %}
 </nk-background-video>

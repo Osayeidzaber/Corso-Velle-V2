@@ -12,11 +12,12 @@ import type { NkVariantPicker } from './variant-picker';
 export class NkStickyBuy extends NkElement {
   protected mount(): void {
     const section = this.closest<HTMLElement>('[data-product-section]');
-    if (!section) return;
+    // Quick add renders the product section inside a dialog; a second fixed bar would be noise.
+    if (!section || this.closest('dialog')) return;
     let passedBuyArea = false;
     const reflectVisibility = (): void => {
       const keyboardOpen = window.visualViewport && window.visualViewport.height < window.innerHeight * 0.75;
-      const visible = passedBuyArea && !overlay.current && !keyboardOpen && !window.Shopify?.designMode;
+      const visible = passedBuyArea && !overlay.current && !keyboardOpen;
       this.hidden = !visible;
       this.inert = !visible;
       this.toggleAttribute('data-visible', !!visible);
@@ -46,6 +47,13 @@ export class NkStickyBuy extends NkElement {
       this.#sync(section, detail?.state);
     });
 
+    // Mirror the main form's "Adding…" state while a submission is in flight.
+    if (formEl) {
+      const pending = new MutationObserver(() => this.#sync(section, this.#state(section)));
+      pending.observe(formEl, { attributes: true, attributeFilter: ['data-pending'] });
+      this.dispose(() => pending.disconnect());
+    }
+
     const cta = this.querySelector<HTMLButtonElement>('[data-sticky-cta]');
     if (cta) {
       this.on(cta, 'click', () => {
@@ -61,8 +69,12 @@ export class NkStickyBuy extends NkElement {
       });
     }
 
+    this.#sync(section, this.#state(section));
+  }
+
+  #state(section: HTMLElement): string {
     const picker = section.querySelector<NkVariantPicker>('nk-variant-picker');
-    this.#sync(section, picker?.state ?? section.querySelector<HTMLElement>('[data-region="buy"]')?.dataset.availability ?? 'unavailable');
+    return picker?.state ?? section.querySelector<HTMLElement>('[data-region="buy"]')?.dataset.availability ?? 'unavailable';
   }
 
   #sync(section: HTMLElement, state: string): void {
@@ -83,9 +95,15 @@ export class NkStickyBuy extends NkElement {
 
     if (!cta || !labelEl) return;
 
-    if (state === 'resolving') {
+    const adding = section.querySelector('nk-product-form')?.hasAttribute('data-pending') ?? false;
+    cta.setAttribute('aria-busy', String(adding));
+    if (adding) {
+      labelEl.textContent = t('product.adding');
+      cta.disabled = false;
+    } else if (state === 'resolving') {
+      // Stays pressable: the product form queues the tap until the size resolves.
       labelEl.textContent = t('product.updating');
-      cta.disabled = true;
+      cta.disabled = false;
     } else if (state === 'incomplete') {
       const picker = section.querySelector<NkVariantPicker>('nk-variant-picker');
       const optName = picker?.firstIncomplete()?.dataset.optionName ?? 'Size';

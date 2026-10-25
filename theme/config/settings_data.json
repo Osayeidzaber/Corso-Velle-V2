@@ -58,7 +58,13 @@
           "accent_text": "#432D23"
         }
       }
-    }
+    },
+    "support_replace_policy": true,
+    "support_email": "support@corsovelle.com",
+    "support_phone": "+880 1341-630198",
+    "support_instagram": "https://www.instagram.com/corsovelle/",
+    "support_instagram_label": "@corsovelle",
+    "support_intro": "<p>Need assistance with an order, product, return or exchange? Contact us using the links below. Please include your order number for an existing order.</p>"
   },
   "presets": {
     "Riviera": {
@@ -134,9 +140,39 @@
       "card_show_sizes": false,
       "motion_level": "minimal",
       "color_schemes": {
-        "scheme-1": { "settings": { "background": "#FFFFFF", "surface": "#F4F4F4", "text": "#202020", "text_muted": "#626262", "line": "#DDDDDD", "accent": "#202020", "accent_text": "#FFFFFF" } },
-        "scheme-2": { "settings": { "background": "#202020", "surface": "#303030", "text": "#FFFFFF", "text_muted": "#CCCCCC", "line": "#555555", "accent": "#FFFFFF", "accent_text": "#202020" } },
-        "scheme-3": { "settings": { "background": "#F4F4F4", "surface": "#FFFFFF", "text": "#202020", "text_muted": "#626262", "line": "#DDDDDD", "accent": "#202020", "accent_text": "#FFFFFF" } }
+        "scheme-1": {
+          "settings": {
+            "background": "#FFFFFF",
+            "surface": "#F4F4F4",
+            "text": "#202020",
+            "text_muted": "#626262",
+            "line": "#DDDDDD",
+            "accent": "#202020",
+            "accent_text": "#FFFFFF"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "background": "#202020",
+            "surface": "#303030",
+            "text": "#FFFFFF",
+            "text_muted": "#CCCCCC",
+            "line": "#555555",
+            "accent": "#FFFFFF",
+            "accent_text": "#202020"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "background": "#F4F4F4",
+            "surface": "#FFFFFF",
+            "text": "#202020",
+            "text_muted": "#626262",
+            "line": "#DDDDDD",
+            "accent": "#202020",
+            "accent_text": "#FFFFFF"
+          }
+        }
       }
     },
     "Quiet": {

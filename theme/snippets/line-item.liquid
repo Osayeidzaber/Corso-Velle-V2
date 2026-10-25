@@ -55,12 +55,16 @@
     {%- endif -%}
 
     {%- for discount in item.line_level_discount_allocations -%}
-      <p class="spec text-muted">{{ discount.discount_application.title | escape }} (−{{ discount.amount | money }})</p>
+      <p class="cart-line__discount spec">
+        {% render 'icon', name: 'tag', size: 12 %}
+        <span>{{ discount.discount_application.title | escape }}</span>
+        <span>−{{ discount.amount | money }}</span>
+      </p>
     {%- endfor -%}
 
     <div class="cart-line__controls">
       <div class="quantity">
-        <button type="button" class="icon-button" data-qty-step="-1" data-focus-key="minus-{{ item.key }}" aria-label="{{ 'cart.decrease' | t: title: item.product.title }}">
+        <button type="button" class="icon-button" data-qty-step="-1" data-focus-key="minus-{{ item.key }}" aria-label="{{ 'cart.decrease' | t: title: item.product.title | escape }}">
           {% render 'icon', name: 'minus', size: 16 %}
         </button>
         <label class="visually-hidden" for="Qty-{{ id_prefix }}">{{ 'cart.quantity_for' | t: title: item.product.title }}</label>
@@ -77,7 +81,7 @@
           data-qty-input
           data-focus-key="qty-{{ item.key }}"
         >
-        <button type="button" class="icon-button" data-qty-step="1" data-focus-key="plus-{{ item.key }}" aria-label="{{ 'cart.increase' | t: title: item.product.title }}">
+        <button type="button" class="icon-button" data-qty-step="1" data-focus-key="plus-{{ item.key }}" aria-label="{{ 'cart.increase' | t: title: item.product.title | escape }}">
           {% render 'icon', name: 'plus', size: 16 %}
         </button>
       </div>

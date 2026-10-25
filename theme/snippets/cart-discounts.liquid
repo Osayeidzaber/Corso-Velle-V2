@@ -1,0 +1,110 @@
+{%- doc -%}
+  Cart promotions for the drawer and the cart page (docs/PROMOTIONS.md): Shopify's confirmed
+  savings, the discount codes Shopify applied, an optional code field, and the codes this cart is
+  associated with for <nk-cart-discounts> / services/discounts.ts to try automatically.
+
+  Every amount comes from Shopify's cart discount applications; nothing is estimated here.
+  Codes are only ever sent to Shopify, which decides eligibility, value and combinations.
+
+  @param {string} context - 'drawer' or 'page' (used for unique ids)
+
+  @example
+  {% render 'cart-discounts', context: 'drawer' %}
+{%- enddoc -%}
+{%- liquid
+  assign signature = ''
+  assign seen_products = ','
+  assign entries = ''
+  for item in cart.items
+    assign signature = signature | append: item.variant_id | append: ':' | append: item.quantity | append: ','
+    assign product_key = ',' | append: item.product_id | append: ','
+    if seen_products contains product_key
+      continue
+    endif
+    assign seen_products = seen_products | append: item.product_id | append: ','
+    capture entry
+      render 'promotion', product: item.product, view: 'json'
+    endcapture
+    assign entry = entry | strip
+    if entry != blank
+      assign entries = entries | append: entry | append: ','
+    endif
+  endfor
+
+  # Storewide promotions are tried for any non-empty cart, alongside product-specific codes.
+  if settings.promo_auto_apply and cart.item_count > 0
+    for i in (1..4)
+      assign prefix = 'promo_' | append: i | append: '_'
+      assign key = prefix | append: 'enabled'
+      assign scope_key = prefix | append: 'scope'
+      assign auto_key = prefix | append: 'auto'
+      assign code_key = prefix | append: 'code'
+      assign priority_key = prefix | append: 'priority'
+      assign slot_code = settings[code_key] | strip | upcase
+      if settings[key] and settings[auto_key] and settings[scope_key] == 'all' and slot_code != blank
+        assign slot_json = slot_code | json
+        assign entries = entries | append: '{"code":' | append: slot_json | append: ',"priority":' | append: settings[priority_key] | append: '},'
+      endif
+    endfor
+  endif
+  assign entries = entries | remove_last: ','
+
+  assign applied_codes = cart.discount_applications | where: 'type', 'discount_code'
+  assign listed = ','
+-%}
+<script type="application/json" data-cart-promotions>{"signature":{{ signature | json }},"codes":[{{ entries }}]}</script>
+
+{%- if cart.total_discount > 0 -%}
+  <div class="cart-summary__row cart-summary__savings" data-cart-savings>
+    <span>{{ 'promotions.savings' | t }}</span>
+    <span>−{{ cart.total_discount | money }}</span>
+  </div>
+{%- endif -%}
+
+<nk-cart-discounts class="cart-discounts" data-context="{{ context }}">
+  <ul class="cart-discounts__codes" role="list" data-discount-codes {% if applied_codes.size == 0 %}hidden{% endif %}>
+    {%- for application in applied_codes -%}
+      {%- assign code = application.title | upcase -%}
+      {%- assign code_key = ',' | append: code | append: ',' -%}
+      {%- if listed contains code_key -%}{%- continue -%}{%- endif -%}
+      {%- assign listed = listed | append: code | append: ',' -%}
+      <li class="cart-discounts__code" data-discount-code="{{ code | escape }}">
+        {% render 'icon', name: 'tag', size: 14 %}
+        <span class="cart-discounts__code-name spec">{{ code | escape }}</span>
+        {%- if application.total_allocated_amount > 0 -%}
+          <span class="cart-discounts__code-amount">−{{ application.total_allocated_amount | money }}</span>
+        {%- endif -%}
+        <button type="button" class="cart-discounts__remove" data-discount-remove="{{ code | escape }}" data-focus-key="discount-remove-{{ code | escape }}" aria-label="{{ 'promotions.remove_code' | t: code: code | escape }}">
+          {% render 'icon', name: 'close', size: 12 %}
+        </button>
+      </li>
+    {%- endfor -%}
+  </ul>
+
+  {%- if settings.promo_code_field -%}
+    {%- comment -%}
+      Hidden until <nk-cart-discounts> runs: without JavaScript, shoppers enter codes at checkout.
+      The input has no name, so submitting the cart form never sends (or clears) discount codes.
+    {%- endcomment -%}
+    <details class="cart-discounts__field" data-discount-field hidden>
+      <summary class="cart-discounts__toggle spec">{{ 'promotions.code_toggle' | t }}</summary>
+      <div class="cart-discounts__form">
+        <label class="visually-hidden" for="DiscountCode-{{ context }}">{{ 'promotions.code_label' | t }}</label>
+        <input
+          id="DiscountCode-{{ context }}"
+          type="text"
+          autocomplete="off"
+          autocapitalize="characters"
+          spellcheck="false"
+          enterkeyhint="done"
+          placeholder="{{ 'promotions.code_placeholder' | t }}"
+          data-discount-input
+          data-focus-key="discount-input"
+        >
+        <button type="button" class="button button--secondary" data-discount-apply data-focus-key="discount-apply">{{ 'promotions.apply' | t }}</button>
+      </div>
+    </details>
+  {%- endif -%}
+
+  <p class="cart-discounts__message" data-discount-message role="status" hidden></p>
+</nk-cart-discounts>

@@ -4,9 +4,8 @@ import { motionMode } from '../../core/motion';
 
 /**
  * <nk-stagger> — children marked [data-stagger-item] rise in sequence as each row scrolls into
- * view (GSAP ScrollTrigger.batch). Items already in view on load animate immediately. With motion
- * on, CSS hides items before first paint (html.nk-anim) until this sets data-ready; they are
- * visible without JS, under reduced motion, and after a 3s CSS failsafe.
+ * view (GSAP ScrollTrigger.batch). Cards stay visible before/during enhancement; a missed
+ * entrance cannot strand merchandise at zero opacity in a hidden tab or replaced grid.
  */
 export class NkStagger extends NkElement {
   #revert: (() => void) | null = null;
@@ -37,7 +36,9 @@ export class NkStagger extends NkElement {
       return;
     }
     const context = gsap.context((self) => {
-      gsap.set(items, { opacity: 0, y: 16 });
+      // Product content must never wait for a scroll trigger to become visible. Inactive tabs
+      // and replaced grids can be measured while hidden, so pre-hiding the entire list can
+      // strand cards at opacity zero after a missed one-shot entrance.
       this.setAttribute('data-ready', '');
       const finish = (elements: Element[]) => {
         gsap.killTweensOf(elements);
@@ -57,8 +58,7 @@ export class NkStagger extends NkElement {
         onEnter: (batch) => {
           self.add(() => {
             const elements = batch as HTMLElement[];
-            gsap.to(elements, {
-              opacity: 1,
+            gsap.fromTo(elements, { y: 12 }, {
               y: 0,
               duration: 0.45 * motionTempo(),
               ease: 'expo.out',

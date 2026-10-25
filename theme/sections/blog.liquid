@@ -18,7 +18,8 @@
           <article class="card">
             {% if article.image and section.settings.show_images != false %}
               <a class="card__media" href="{{ article.url }}" tabindex="-1" aria-hidden="true">
-                {{ article.image | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '400, 700, 1000', sizes: '(min-width: 750px) 33vw, 100vw', alt: article.image.alt }}
+                {%- assign article_image_alt = article.image.alt | default: article.title -%}
+                {{ article.image | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '400, 700, 1000', sizes: '(min-width: 750px) 33vw, 100vw', alt: article_image_alt }}
               </a>
             {% endif %}
             {% render 'article-meta', article: article, show_date: section.settings.show_date, show_author: section.settings.show_author %}

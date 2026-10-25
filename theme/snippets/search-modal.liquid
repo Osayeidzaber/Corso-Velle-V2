@@ -51,8 +51,18 @@
             <p class="spec text-muted">{{ 'search.popular_collections' | t }}</p>
             <ul class="collection-pills search-modal__chips" role="list">
               {%- assign chip_limit = suggestion_limit | default: 6 -%}
-              {%- for collection in chip_collections limit: chip_limit -%}
-                <li><a href="{{ collection.url }}">{{ collection.title | escape }}</a></li>
+              {%- assign chip_seen = '|' -%}
+              {%- assign chip_shown = 0 -%}
+              {%- for collection in chip_collections -%}
+                {%- capture chip_eligible -%}{%- render 'collection-navigation-eligible', candidate: collection -%}{%- endcapture -%}
+                {%- assign chip_key = collection.title | handleize | prepend: '|' | append: '|' -%}
+                {%- if chip_shown < chip_limit and chip_eligible == 'true' -%}
+                  {%- unless chip_seen contains chip_key -%}
+                    <li><a href="{{ collection.url }}">{{ collection.title | escape }}</a></li>
+                    {%- assign chip_seen = chip_seen | append: chip_key -%}
+                    {%- assign chip_shown = chip_shown | plus: 1 -%}
+                  {%- endunless -%}
+                {%- endif -%}
               {%- endfor -%}
             </ul>
           {%- endif -%}

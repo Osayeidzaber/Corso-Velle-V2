@@ -16,6 +16,7 @@ Reuse an existing definition of that type instead of creating a second one.
 | `unit` | Single line text, allowed values `cm`, `in` | Unit in which numerical values were entered |
 | `measurement_basis` | Single line text | For example, garment measured flat or body measurements |
 | `table` | JSON | Arbitrary measurement columns and size rows, as below |
+| `image` | File reference, restricted to images (optional) | Upload/select a size-chart picture; may be used alone or beside the table |
 | `notes` | Rich text (optional) | Sizing instructions, fit advice or measuring directions |
 | `fallback` | Rich text (optional) | Instructions when no numerical table is provided |
 
@@ -45,6 +46,36 @@ For trousers use keys such as `waist`, `inseam`, `rise`; the same renderer suppo
 columns. Enter decimal numbers for automatic conversion. Text such as `38–40` or `Regular` remains
 text with its original unit where relevant; the theme never invents a converted range.
 Changing a chart does not create product variants or change stock.
+
+### Pictures and assignment rules — updated 25 October 2026
+
+For the simplest picture workflow, open **Online Store → Themes → Customize → Theme settings →
+Size charts**. In any of the five existing chart rules:
+
+1. Pick **Apply to collections** and/or **Apply to specific products**, or enter **Apply to product
+   tags**, one exact tag per line. Any listed target can match; a product does not need to match
+   every field. Tag matching ignores case and surrounding spaces, never matches part of a tag,
+   and preserves commas inside tag names.
+2. Use **Size chart picture** to upload/select your image. You may leave Measurements empty.
+3. Save. The same existing Size guide opens that picture on the matching products and quick-add
+   drawers. Clicking the picture opens its larger version in a new tab. Keep image text readable
+   on phones and provide descriptive alt text in Shopify Files.
+
+For a chart edited centrally under **Content → Metaobjects**, add the optional `image` field above
+to your existing `size_chart` definition. Upload the picture and/or edit its measurement table in
+the entry. Copy the entry's handle into **Reusable chart handle** in the rule. A usable reusable
+chart takes priority over the rule's CSV; its picture takes priority over the rule's uploaded
+picture. A rule picture can supplement a reusable numerical table that has no picture.
+
+Existing product/collection metafield references remain supported. Reusing an entry means an
+Admin edit updates all products that reference it on subsequent page/section requests. No browser
+copy of the measurement dataset or new storefront API is involved. Previously open pages need a
+reload to see an Admin edit.
+
+A picture-only chart is valid. It does not produce fabricated inline measurements, numeric size
+highlighting or unit conversion. Use a structured table as well if those capabilities are wanted.
+If Size guide has been disabled in the product template, enable it under **Product information →
+Variant picker → Show size guide** to display the picture.
 
 ## 2. Define assignments
 
@@ -77,20 +108,37 @@ an editor error until that definition is installed. A nonexistent, draft or empt
 First usable source wins:
 
 1. Product `custom.size_chart`, then product `custom.measurements` JSON.
-2. An explicitly assigned **product** CSV rule in the existing five Theme Editor chart rules.
+2. An explicitly assigned **product** rule in the existing five Theme Editor chart rules.
 3. A **collection metaobject chart**, selected by explicit collection reference or priority above.
-4. A matching existing **collection** CSV rule (first populated matching rule wins).
-5. The global reusable chart handle.
-6. The existing product-template CSV, then selected fallback page.
+4. A matching **collection** rule.
+5. A matching **tag** rule.
+6. The global reusable chart handle.
+7. The existing product-template CSV, then selected fallback page.
 
 Legacy product/collection CSV assignments retain their relative behavior. Product-specific data
 always precedes collection and global data. An instructions-only assigned chart is intentional:
 it renders those instructions without mixing in measurements from a lower-priority source.
-An empty chart with neither a valid table nor instructions falls through to the next source.
+An empty chart with neither a valid table, picture nor instructions falls through to the next
+source. Within each rule scope the first usable rule (Chart 1 through Chart 5) wins. A missing,
+draft or inaccessible reusable entry uses that rule's CSV/picture if supplied, otherwise the
+resolver continues to the next rule. Product-specific data remains the strongest override.
 
 Both the full drawer and inline panel receive the same resolved chart. Selected-size highlighting
 and inch/cm switching reuse the current controllers. A missing matching size row shows the existing
 unavailable-measurements message, not guessed values. Quick-add reuses the product section and chart.
+
+Verification on 25 October: actual Liquid fixtures cover product/collection/tag precedence, exact
+case-insensitive tags, comma-containing tags, empty/missing entries, CSV fallbacks, instructions-only
+entries, image-only charts, Admin-entry value changes, and main-product wiring. These fixtures use
+synthetic data locally, not store measurements. No chart definition, image or catalog record has
+been created in Shopify by this implementation; the one-time Admin definition/entry setup above
+is required for reusable entries. Direct rule picture uploads do not require a custom definition.
+
+Validation result: Liquid fixtures, 179 Vitest tests, TypeScript, JSON/contracts and an isolated
+production build passed. Theme Check reports no chart-related offenses; the full shared working
+tree currently has two missing-image-dimension offenses in the concurrently added
+`sections/clothes-rack.liquid`, outside this chart change. No existing image or measurement data
+was replaced to demonstrate the feature.
 
 ## 4. Display settings (defaults preserve existing behavior)
 

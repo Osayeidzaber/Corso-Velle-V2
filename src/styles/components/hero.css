@@ -189,6 +189,14 @@ nk-background-video { display: block; width: 100%; height: 100%; }
   font-size: calc(var(--hero-heading-size) * var(--hero-heading-scale-now, 1));
 }
 
+/* Phones held sideways: the width-based scale (13vw ≈ 110px at 852px) filled the 393px-tall
+   screen and pushed the buttons out of view. Cap the type by the visible height instead. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .hero__heading {
+    font-size: min(calc(var(--hero-heading-size) * var(--hero-heading-scale-now, 1)), 15svh);
+  }
+}
+
 .hero__heading em {
   font-weight: var(--nk-font-heading-weight, 400);
 }

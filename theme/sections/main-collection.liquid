@@ -11,7 +11,7 @@
       <div class="collection-header collection-header--riviera">
         <span class="eyebrow">{{ 'collection.product_count' | t: count: collection.all_products_count }}</span>
         {%- assign collection_title = collection.title | escape -%}
-        {% render 'reveal-heading', text: collection_title, entrance: 'words', class: 'display', tag: 'h1', play_on_load: true %}
+        {% render 'reveal-heading', text: collection_title, entrance: section.settings.title_animation, split: section.settings.title_split, class: 'display', tag: 'h1', play_on_load: true %}
       </div>
 
       {%- if section.settings.show_description and collection.description != blank -%}
@@ -31,17 +31,23 @@
     {%- endif -%}
 
     <nk-facets data-section-id="{{ section.id }}" data-toolbar="{{ section.settings.toolbar_width }}" data-toolbar-sticky="{{ section.settings.toolbar_sticky }}" data-results-gap style="--results-gap:{{ section.settings.grid_gap | default: 8 }}px;" {% if section.settings.show_layout_switch == false %}data-layout-locked{% endif %}>
-      {% render 'facets',
-        results: collection,
-        section_id: section.id,
-        results_url: collection.url,
-        count: collection.products_count,
-        show_filters: section.settings.show_filters,
-        show_sort: section.settings.show_sort,
+      {%- comment -%}
+        An empty collection has nothing to filter, sort or re-grid. Filters that narrow a
+        non-empty collection to zero keep the toolbar so shoppers can clear them.
+      {%- endcomment -%}
+      {%- if collection.all_products_count > 0 -%}
+        {% render 'facets',
+          results: collection,
+          section_id: section.id,
+          results_url: collection.url,
+          count: collection.products_count,
+          show_filters: section.settings.show_filters,
+          show_sort: section.settings.show_sort,
           show_layout_switch: section.settings.show_layout_switch,
-        columns_mobile: section.settings.columns_mobile,
-        columns_desktop: section.settings.columns_desktop
-      %}
+          columns_mobile: section.settings.columns_mobile,
+          columns_desktop: section.settings.columns_desktop
+        %}
+      {%- endif -%}
 
       <div class="facets__results-grid" data-facets-results>
         {%- if collection.products.size > 0 -%}
@@ -54,7 +60,7 @@
               {%- for product in collection.products -%}
                 <li data-stagger-item>
                   {%- assign eager = false -%}
-                  {%- if forloop.index <= 4 and paginate.current_page == 1 -%}{%- assign eager = true -%}{%- endif -%}
+                  {%- if forloop.index <= 4 -%}{%- assign eager = true -%}{%- endif -%}
                   {% render 'product-card', product: product, eager: eager, heading_tag: 'h2', card_options: section.settings %}
                 </li>
               {%- endfor -%}
@@ -62,7 +68,7 @@
           </nk-stagger>
         {%- elsif collection.all_products_count > 0 -%}
           <div class="main-collection__empty">
-            <p class="eyebrow">0 results</p>
+            <p class="eyebrow">{{ 'facets.zero_results' | t }}</p>
             <p class="main-collection__empty-title">{{ 'facets.no_matches' | t }}</p>
             <nk-magnetic strength="0.18">
               <a class="button" href="{{ collection.url }}" data-facets-link>{{ 'facets.clear_all' | t }}</a>
@@ -78,11 +84,7 @@
           </div>
         {%- endif -%}
 
-        {%- if paginate.pages > 1 -%}
-          <div class="main-collection__pagination">
-            {% render 'pagination', paginate: paginate %}
-          </div>
-        {%- endif -%}
+        {% render 'infinite-pagination', paginate: paginate, section_id: section.id, mode: section.settings.pagination_style, auto_pages: section.settings.infinite_auto_pages, total: collection.products_count %}
       </div>
     </nk-facets>
   </div>
@@ -111,7 +113,7 @@
 
   .main-collection__empty-title {
     margin: 0 0 6px;
-    font-family: var(--nk-font-display);
+    font-family: var(--nk-font-heading);
     font-size: clamp(1.35rem, 2.5vw, 2rem);
   }
 
@@ -137,6 +139,89 @@
       "label": "Show title and description",
       "default": true,
       "info": "Turn off when a Collection banner section is above."
+    },
+    {
+      "type": "select",
+      "id": "title_animation",
+      "label": "Title animation",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "rise",
+          "label": "Rise from a mask"
+        },
+        {
+          "value": "blur",
+          "label": "Blur in"
+        },
+        {
+          "value": "fold",
+          "label": "Fold up"
+        },
+        {
+          "value": "skew",
+          "label": "Skewed rise"
+        },
+        {
+          "value": "fade",
+          "label": "Fade up"
+        }
+      ],
+      "default": "rise",
+      "info": "Plays once when the page opens. Follows Theme settings > Motion and reduced-motion preferences."
+    },
+    {
+      "type": "select",
+      "id": "title_split",
+      "label": "Animate title by",
+      "options": [
+        {
+          "value": "words",
+          "label": "Word"
+        },
+        {
+          "value": "chars",
+          "label": "Letter"
+        },
+        {
+          "value": "lines",
+          "label": "Line"
+        }
+      ],
+      "default": "words"
+    },
+    {
+      "type": "select",
+      "id": "pagination_style",
+      "label": "Pagination",
+      "options": [
+        {
+          "value": "infinite",
+          "label": "Infinite scroll"
+        },
+        {
+          "value": "button",
+          "label": "Load more button"
+        },
+        {
+          "value": "numbers",
+          "label": "Page numbers"
+        }
+      ],
+      "default": "infinite"
+    },
+    {
+      "type": "range",
+      "id": "infinite_auto_pages",
+      "label": "Infinite scroll: pages before a button",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3,
+      "info": "After this many pages load automatically, a Load more button appears so the footer stays reachable."
     },
     {
       "type": "range",

@@ -12,6 +12,10 @@
     </script>
 
     {% render 'meta-tags' %}
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 96, height: 96 }}">
+      <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {%- endif -%}
     {% render 'css-variables' %}
 
     {%- unless settings.type_body_font.system? -%}
@@ -34,7 +38,19 @@
     {% sections 'header-group' %}
 
     <main id="MainContent" tabindex="-1" data-focus-fallback>
-      {{ content_for_layout }}
+      {%- liquid
+        assign theme_support = false
+        if settings.support_replace_policy
+          if settings.support_email != blank or settings.support_phone != blank or settings.support_instagram != blank
+            assign theme_support = true
+          endif
+        endif
+      -%}
+      {%- if request.path contains '/policies/contact-information' and theme_support -%}
+        {% render 'contact-details' %}
+      {%- else -%}
+        {{ content_for_layout }}
+      {%- endif -%}
     </main>
 
     {% sections 'footer-group' %}

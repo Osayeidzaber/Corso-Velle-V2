@@ -44,6 +44,14 @@ nk-search-pill {
   font-size: 0.875rem;
 }
 
+/* Touch screens (iPad landscape shows the pill): below 16px, iOS/iPadOS Safari zooms the page
+   on focus. Mouse users keep the compact 14px type. */
+@media (pointer: coarse) {
+  .search-pill__form input[type='search'] {
+    font-size: 1rem;
+  }
+}
+
 .search-pill__form input[type='search']::placeholder {
   color: var(--nk-color-text-muted);
 }

@@ -12,7 +12,9 @@ export class NkBackgroundVideo extends NkElement {
       : this.ref<HTMLButtonElement>('toggle');
     if (!video || !toggle) return;
     let requested = this.hasAttribute('autoplay') && motionMode() !== 'off';
-    let visible = true;
+    // Wait for the first visibility observation. Assuming true briefly starts offscreen and
+    // CSS-hidden mobile/desktop alternatives, which can download and decode unused video.
+    let visible = false;
     video.controls = false;
     video.muted = true;
     toggle.hidden = false;

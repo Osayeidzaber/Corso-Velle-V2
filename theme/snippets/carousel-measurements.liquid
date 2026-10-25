@@ -27,6 +27,15 @@
   assign size_heading = ''
   if chart_rule != blank
     assign chart_prefix = 'size_chart_' | append: chart_rule
+    assign handle_key = chart_prefix | append: '_handle'
+    assign rule_handle = settings[handle_key] | strip
+    assign rule_chart = metaobjects.size_chart[rule_handle]
+    capture rule_chart_usable
+      render 'size-chart-usable', chart: rule_chart
+    endcapture
+    if rule_chart_usable == 'true'
+      assign assigned_chart = rule_chart
+    endif
     assign table_key = chart_prefix | append: '_table'
     assign unit_key = chart_prefix | append: '_unit'
     assign basis_key = chart_prefix | append: '_basis'

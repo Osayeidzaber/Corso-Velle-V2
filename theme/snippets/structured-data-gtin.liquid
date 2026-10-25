@@ -1,0 +1,34 @@
+{%- doc -%}
+  Print a GTIN only when its length, characters and GS1 modulo-10 check digit are valid.
+  Never turn a store's internal barcode into a claimed global identifier.
+
+  @param {string} barcode - Shopify variant barcode
+{%- enddoc -%}
+{%- liquid
+  assign value = barcode | strip
+  assign valid = false
+  if value.size == 8 or value.size == 12 or value.size == 13 or value.size == 14
+    assign valid = true
+    assign sum = 0
+    assign digits = value | split: '' | reverse
+    for digit in digits
+      unless '0123456789' contains digit
+        assign valid = false
+        break
+      endunless
+      assign weight = forloop.index0 | modulo: 2
+      assign number = digit | plus: 0
+      if weight == 1
+        assign number = number | times: 3
+      endif
+      assign sum = sum | plus: number
+    endfor
+    assign remainder = sum | modulo: 10
+    if remainder != 0 or sum == 0
+      assign valid = false
+    endif
+  endif
+  if valid
+    echo value
+  endif
+-%}

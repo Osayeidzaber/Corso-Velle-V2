@@ -46,6 +46,11 @@ html {
   color-scheme: light;
 }
 
+/* Lenis moves the page every frame; native smooth behaviour would animate each of those moves. */
+html.lenis {
+  scroll-behavior: auto !important;
+}
+
 html.nk-locked {
   overflow: hidden;
   scrollbar-gutter: stable;

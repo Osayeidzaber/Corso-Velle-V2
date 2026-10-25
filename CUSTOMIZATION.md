@@ -21,13 +21,12 @@ changes; product gallery, typography, content blocks and purchase flow retain th
 Common size names are editable in the language editor under `product.size_names`; numeric or
 unrecognized sizes retain their actual product-option label. Motion uses the existing policy.
 
-The featured-collection carousel now follows the latest supplied FlexCarousel reference: a liquid
-lens bends the photographic strip, with natural image proportions, coordinated entrances, inertia,
-minimal product caption/rolling counter, center emphasis and autoplay. Clicking any visible product
-opens its product page immediately; Enter opens the highlighted product. Size/measurement/cart
-controls are intentionally absent from this carousel at the user's request; product pages keep
-them. Previous chart-preview controllers/snippets remain backward compatible for older custom
-markup, but are not mounted by current featured-collection sections.
+The featured-collection carousel uses a liquid lens, natural image proportions, coordinated
+entrances, inertia, a product caption/counter, center emphasis and autoplay. Product links open
+their pages. **Shop the highlighted product** enables the shared Add to cart control and size
+selector; switching it off gives a browse-only carousel. Product pages retain full selection.
+If the variant list is incomplete, the purchase control opens the product page, where Shopify
+resolves all options. It never treats the serialized window as the entire variant catalog.
 
 Carousel speed controls movement; autoplay pace controls travel time per product. The liquid
 carousel flows continuously, with no stopped center dwell and no pause on passive mouse hover.
@@ -116,7 +115,10 @@ gift-card page intentionally uses CSS and native scrolling without the animation
 (none/short/medium/long), scroll-linked effects and phone behavior (simplified/full/off).
 Tempo affects entrances; scroll-linked scenes always follow scroll position. Shopping card
 stagger is capped at 180ms for an entire batch and typography at 350ms to keep content accessible.
-Reduced motion and the Theme Editor show static content. No scroll smoothing library is required.
+Reduced motion and the Theme Editor show static content. **Smooth wheel scrolling** optionally
+loads Lenis on desktop fine-pointer devices, synchronized with GSAP's ticker and ScrollTrigger.
+**Smooth scrolling strength** selects subtle, balanced or silky interpolation. Touch stays native;
+overlays pause interpolation. Reduced motion, Motion off and the editor bypass it.
 Phones default to quick entrances; the expanding campaign never pins on phones.
 
 ### Media with text → Section motion
@@ -793,6 +795,7 @@ Source: `theme/config/settings_schema.json`; token consumer: `theme/snippets/css
 | --- | --- | --- | --- |
 | `logo` — Logo | `image_picker` | Not specified |  |
 | `logo_inverse` — Logo over campaign images | `image_picker` | Not specified | Used when the header overlays a dark hero image. |
+| `favicon` — Favicon | `image_picker` | Not specified | Shown in browser tabs and bookmarks. Square image, at least 96 × 96px. |
 | `logo_width` — Logo width (desktop) | `range` | `140` | 60–300px, step 10 |
 | `logo_width_mobile` — Logo width (phone) | `range` | `110` | 60–200px, step 10 |
 
@@ -861,6 +864,7 @@ Color scheme fields for `color_schemes`:
 | `card_image_fit` — Image fit | `select` | `contain` | `cover`: Fill; `contain`: Fit |
 | `card_show_secondary` — Show second image on hover | `checkbox` | `true` |  |
 | `card_show_sizes` — Show available sizes | `checkbox` | `true` |  |
+| `card_show_low_stock` — Mark low-stock sizes | `checkbox` | `true` | A small dot on quick-add sizes at or below the "only a few left" threshold in Product page settings. |
 | `card_size_option_names` — Size option name(s) | `text` | `Size` | Comma-separated option names treated as sizes, e.g. Size, Waist. |
 | `card_show_badges` — Show sale and sold-out badges | `checkbox` | `true` |  |
 | `card_appearance` — Product card appearance | `select` | `minimal` | `minimal`: Minimal; `editorial`: Editorial; `bordered`: Bordered; `image-led`: Image focused |
@@ -875,7 +879,7 @@ Color scheme fields for `color_schemes`:
 | --- | --- | --- | --- |
 | `product_required_options` — Options shoppers must choose | `text` | `Size` | These options are never preselected, so shoppers can't add an unintended size. Comma-separated. |
 | `product_sold_out_values` — Sold-out option values | `select` | `strike` | `strike`: Show crossed out; `hide`: Hide |
-| `inventory_threshold` — Show "only a few left" at or below | `range` | `0` | 0–20, step 1; 0 turns the message off. Only shown when Shopify tracks inventory for the variant. |
+| `inventory_threshold` — Show "only a few left" at or below | `range` | `3` | 0–20, step 1; 0 turns low-stock messages off. Only counts variants where Shopify tracks inventory and doesn't sell when out of stock. |
 
 #### Size charts
 
@@ -884,30 +888,45 @@ Color scheme fields for `color_schemes`:
 | `size_chart_default_handle` — Default reusable chart handle | `text` | Not specified | Handle of a size_chart metaobject from Content > Metaobjects, e.g. classic-shirt. Used only when no product or collection assignment applies. Leave blank to preserve template fallbacks. |
 | `size_chart_1_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_1_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
+| `size_chart_1_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_1_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
+| `size_chart_1_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_1_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
 | `size_chart_1_unit` — Unit | `select` | `cm` | `cm`: Centimetres; `in`: Inches |
 | `size_chart_1_basis` — Measurement basis | `text` | Not specified | For example: garment measured flat, or body measurements. State the actual method. |
 | `size_chart_1_note` — Size guide note | `text` | Not specified |  |
 | `size_chart_2_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_2_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
+| `size_chart_2_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_2_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
+| `size_chart_2_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_2_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
 | `size_chart_2_unit` — Unit | `select` | `cm` | `cm`: Centimetres; `in`: Inches |
 | `size_chart_2_basis` — Measurement basis | `text` | Not specified | For example: garment measured flat, or body measurements. State the actual method. |
 | `size_chart_2_note` — Size guide note | `text` | Not specified |  |
 | `size_chart_3_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_3_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
+| `size_chart_3_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_3_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
+| `size_chart_3_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_3_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
 | `size_chart_3_unit` — Unit | `select` | `cm` | `cm`: Centimetres; `in`: Inches |
 | `size_chart_3_basis` — Measurement basis | `text` | Not specified | For example: garment measured flat, or body measurements. State the actual method. |
 | `size_chart_3_note` — Size guide note | `text` | Not specified |  |
 | `size_chart_4_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_4_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
+| `size_chart_4_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_4_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
+| `size_chart_4_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_4_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
 | `size_chart_4_unit` — Unit | `select` | `cm` | `cm`: Centimetres; `in`: Inches |
 | `size_chart_4_basis` — Measurement basis | `text` | Not specified | For example: garment measured flat, or body measurements. State the actual method. |
 | `size_chart_4_note` — Size guide note | `text` | Not specified |  |
 | `size_chart_5_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_5_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
+| `size_chart_5_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_5_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
+| `size_chart_5_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_5_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
 | `size_chart_5_unit` — Unit | `select` | `cm` | `cm`: Centimetres; `in`: Inches |
 | `size_chart_5_basis` — Measurement basis | `text` | Not specified | For example: garment measured flat, or body measurements. State the actual method. |
@@ -918,8 +937,69 @@ Color scheme fields for `color_schemes`:
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
 | `cart_after_add` — After adding to cart | `select` | `drawer` | `drawer`: Open cart drawer; `notification`: Stay on page; `page`: Go to cart page |
+| `cart_fly_animation` — Add-to-cart animation | `checkbox` | `true` | The product photo flies into the cart after it is added. Follows Theme settings > Motion and reduced-motion preferences. |
 | `cart_show_note` — Order note | `checkbox` | `false` |  |
 | `cart_empty_collection` — Empty cart: suggested collection | `collection` | Not specified |  |
+| `cart_free_shipping` — Show free shipping progress | `checkbox` | `false` | Shown in the cart drawer and on the cart page. Set up the matching free shipping rate in Settings > Shipping and delivery. |
+| `cart_free_shipping_threshold` — Free shipping minimum order | `number` | `5000` | Amount in your store's default currency, after discounts. Shoppers browsing in another currency don't see the bar. |
+
+#### Promotions
+
+| Setting ID / label | Type | Schema default | Choices / range / help |
+| --- | --- | --- | --- |
+| `promo_auto_apply` — Try promotion codes automatically in the cart | `checkbox` | `true` | When a product with a promotion code is in the cart, the code is sent to Shopify. It stays only if Shopify accepts it. |
+| `promo_conflict_rule` — When codes can't be combined | `select` | `keep` | `keep`: Keep the code already applied; `priority`: Use the higher-priority promotion; Codes a shopper enters themselves are never replaced automatically. |
+| `promo_code_field` — Show discount code field in cart | `checkbox` | `true` |  |
+| `promo_metafield_priority` — Metafield code priority | `range` | `10` | 1–10, step 1; Higher wins when a product matches more than one promotion. |
+| `promo_metafield_cards` — Show metafield codes on product cards | `checkbox` | `true` |  |
+| `promo_1_enabled` — Enable | `checkbox` | `false` |  |
+| `promo_1_code` — Shopify discount code | `text` | Not specified | Type the code exactly as it is set up in Shopify admin, for example TEE20. |
+| `promo_1_scope` — Applies to | `select` | `matched` | `matched`: Matching products; `all`: Entire store |
+| `promo_1_products` — Products | `product_list` | Not specified | Picker limit 50 |
+| `promo_1_handles` — Product handles | `textarea` | Not specified | One per line or comma-separated. Most stable way to match products by text. |
+| `promo_1_titles` — Product title phrases | `textarea` | Not specified | One per line. Matches whole words, ignoring case, for example Oversized Tee. |
+| `promo_1_tag` — Product tag or promotion key | `text` | Not specified | Matches products tagged with this value, or whose custom.promotion metafield has it, for example summer-sale. |
+| `promo_1_priority` — Priority | `range` | `5` | 1–10, step 1 |
+| `promo_1_auto` — Try this code automatically in the cart | `checkbox` | `true` |  |
+| `promo_1_cards` — Show on product cards | `checkbox` | `true` |  |
+| `promo_1_badge` — Badge text | `text` | Not specified | Leave blank for "Code [code]". |
+| `promo_1_message` — Product page message | `text` | Not specified | Leave blank for a standard message. Don't promise a saving: Shopify confirms eligibility in the cart. |
+| `promo_2_enabled` — Enable | `checkbox` | `false` |  |
+| `promo_2_code` — Shopify discount code | `text` | Not specified | Type the code exactly as it is set up in Shopify admin, for example TEE20. |
+| `promo_2_scope` — Applies to | `select` | `matched` | `matched`: Matching products; `all`: Entire store |
+| `promo_2_products` — Products | `product_list` | Not specified | Picker limit 50 |
+| `promo_2_handles` — Product handles | `textarea` | Not specified | One per line or comma-separated. Most stable way to match products by text. |
+| `promo_2_titles` — Product title phrases | `textarea` | Not specified | One per line. Matches whole words, ignoring case, for example Oversized Tee. |
+| `promo_2_tag` — Product tag or promotion key | `text` | Not specified | Matches products tagged with this value, or whose custom.promotion metafield has it, for example summer-sale. |
+| `promo_2_priority` — Priority | `range` | `5` | 1–10, step 1 |
+| `promo_2_auto` — Try this code automatically in the cart | `checkbox` | `true` |  |
+| `promo_2_cards` — Show on product cards | `checkbox` | `true` |  |
+| `promo_2_badge` — Badge text | `text` | Not specified | Leave blank for "Code [code]". |
+| `promo_2_message` — Product page message | `text` | Not specified | Leave blank for a standard message. Don't promise a saving: Shopify confirms eligibility in the cart. |
+| `promo_3_enabled` — Enable | `checkbox` | `false` |  |
+| `promo_3_code` — Shopify discount code | `text` | Not specified | Type the code exactly as it is set up in Shopify admin, for example TEE20. |
+| `promo_3_scope` — Applies to | `select` | `matched` | `matched`: Matching products; `all`: Entire store |
+| `promo_3_products` — Products | `product_list` | Not specified | Picker limit 50 |
+| `promo_3_handles` — Product handles | `textarea` | Not specified | One per line or comma-separated. Most stable way to match products by text. |
+| `promo_3_titles` — Product title phrases | `textarea` | Not specified | One per line. Matches whole words, ignoring case, for example Oversized Tee. |
+| `promo_3_tag` — Product tag or promotion key | `text` | Not specified | Matches products tagged with this value, or whose custom.promotion metafield has it, for example summer-sale. |
+| `promo_3_priority` — Priority | `range` | `5` | 1–10, step 1 |
+| `promo_3_auto` — Try this code automatically in the cart | `checkbox` | `true` |  |
+| `promo_3_cards` — Show on product cards | `checkbox` | `true` |  |
+| `promo_3_badge` — Badge text | `text` | Not specified | Leave blank for "Code [code]". |
+| `promo_3_message` — Product page message | `text` | Not specified | Leave blank for a standard message. Don't promise a saving: Shopify confirms eligibility in the cart. |
+| `promo_4_enabled` — Enable | `checkbox` | `false` |  |
+| `promo_4_code` — Shopify discount code | `text` | Not specified | Type the code exactly as it is set up in Shopify admin, for example TEE20. |
+| `promo_4_scope` — Applies to | `select` | `matched` | `matched`: Matching products; `all`: Entire store |
+| `promo_4_products` — Products | `product_list` | Not specified | Picker limit 50 |
+| `promo_4_handles` — Product handles | `textarea` | Not specified | One per line or comma-separated. Most stable way to match products by text. |
+| `promo_4_titles` — Product title phrases | `textarea` | Not specified | One per line. Matches whole words, ignoring case, for example Oversized Tee. |
+| `promo_4_tag` — Product tag or promotion key | `text` | Not specified | Matches products tagged with this value, or whose custom.promotion metafield has it, for example summer-sale. |
+| `promo_4_priority` — Priority | `range` | `5` | 1–10, step 1 |
+| `promo_4_auto` — Try this code automatically in the cart | `checkbox` | `true` |  |
+| `promo_4_cards` — Show on product cards | `checkbox` | `true` |  |
+| `promo_4_badge` — Badge text | `text` | Not specified | Leave blank for "Code [code]". |
+| `promo_4_message` — Product page message | `text` | Not specified | Leave blank for a standard message. Don't promise a saving: Shopify confirms eligibility in the cart. |
 
 #### Motion
 
@@ -930,6 +1010,8 @@ Color scheme fields for `color_schemes`:
 | `motion_stagger` — Stagger between items | `select` | `medium` | `none`: None; `short`: Short; `medium`: Medium; `long`: Long; Delay between cards, words and lines that reveal one after another. |
 | `motion_scroll_effects` — Scroll-linked effects | `checkbox` | `true` | Parallax, cinematic section scenes and pinning. Turn off for simple entrance animations only. |
 | `motion_mobile` — Phone animations | `select` | `simple` | `simple`: Simplified; `full`: Same as desktop; `off`: Off; Simplified keeps quick fades and reveals but skips pinning, parallax and scroll-linked scenes on screens under 750px. |
+| `motion_smooth_scroll` — Smooth wheel scrolling | `checkbox` | `true` | Fluid mouse-wheel and touchpad scrolling on desktop. Phones keep native scrolling. Off when the visitor's device asks for reduced motion (on Windows: Settings > Accessibility > Visual effects > Animation effects), with Motion off, and in the theme editor. |
+| `motion_smooth_strength` — Smooth scrolling strength | `select` | `balanced` | `subtle`: Subtle; `balanced`: Balanced; `silky`: Silky (longest glide) |
 
 #### Social media
 
@@ -946,6 +1028,17 @@ Color scheme fields for `color_schemes`:
 | --- | --- | --- | --- |
 | `gift_card_style` — Presentation | `select` | `classic` | `classic`: Classic; `minimal`: Minimal; `bordered`: Bordered panel |
 
+#### Customer support
+
+| Setting ID / label | Type | Schema default | Choices / range / help |
+| --- | --- | --- | --- |
+| `support_replace_policy` — Show these links instead of the contact information policy | `checkbox` | `false` | Replaces the policy text from Settings › Policies on that page. Leave off if the policy contains details you must publish, such as your business address or registration number. |
+| `support_intro` — Introduction | `richtext` | Not specified |  |
+| `support_email` — Support email | `text` | Not specified |  |
+| `support_phone` — Support phone | `text` | Not specified |  |
+| `support_instagram` — Instagram profile URL | `url` | Not specified |  |
+| `support_instagram_label` — Instagram link label | `text` | Not specified |  |
+
 ### Theme sections
 
 #### Not found (404)
@@ -959,11 +1052,17 @@ Section instance limit: 1.
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
 | `color_scheme` — Color scheme | `color_scheme` | `scheme-1` |  |
-| `width` — Content width | `select` | `inherit` | `inherit`: Theme page width; `narrow`: Narrow reading width; `regular`: Regular reading width |
-| `message` — Message override | `text` | Not specified |  |
-| `link` — Button destination override | `url` | Not specified |  |
-| `link_label` — Button label override | `text` | Not specified |  |
-| `show_search` — Show search form | `checkbox` | `false` |  |
+| `message` — Message | `text` | Not specified | Leave empty to use the default translation. |
+| `primary_label` — First button label | `text` | Not specified | Defaults to "Go home". |
+| `primary_link` — First button link | `url` | Not specified | Defaults to the homepage. |
+| `secondary_label` — Second button label | `text` | Not specified | Defaults to "Explore". |
+| `secondary_link` — Second button link | `url` | Not specified | Defaults to the collections list. |
+| `show_search` — Show search | `checkbox` | `false` |  |
+| `menu` — Popular links menu | `link_list` | Not specified |  |
+| `show_products` — Show products | `checkbox` | `false` |  |
+| `products_heading` — Products heading | `text` | `You might like` |  |
+| `collection` — Products collection | `collection` | Not specified | Defaults to all products. |
+| `products_count` — Number of products | `range` | `4` | 2–4, step 1 |
 
 No add-menu preset: rendered by an existing template/layout/group or used as a rendering endpoint.
 
@@ -1156,6 +1255,18 @@ Section instance limit: 1.
 | `density` — Cart line spacing | `select` | `regular` | `regular`: Regular; `compact`: Compact; `airy`: Airy |
 | `show_images` — Show product images | `checkbox` | `true` |  |
 | `width` — Drawer width | `select` | `regular` | `regular`: Regular (420px); `narrow`: Narrow (360px); `wide`: Wide (560px) |
+| `show_recommendations` — Show product suggestions | `checkbox` | `true` | Suggestions for the most recently added product, with one-tap size add. |
+| `recommendations_heading` — Heading | `text` | `Complete the look` |  |
+| `recommendation_intent` — Suggest | `select` | `complementary` | `complementary`: Complementary products; `related`: Related products; Set complementary products in the Search & Discovery app. Without them, related products are shown. |
+| `show_accelerated` — Show express checkout buttons | `checkbox` | `true` | Shop Pay, Apple Pay and other wallets you've enabled in your payment settings. |
+
+No add-menu preset: rendered by an existing template/layout/group or used as a rendering endpoint.
+
+#### Cart recommendations (cart-recommendations)
+
+Source: `theme/sections/cart-recommendations.liquid`. Editor: select this section in its template or section group.
+
+No local settings.
 
 No add-menu preset: rendered by an existing template/layout/group or used as a rendering endpoint.
 
@@ -1214,6 +1325,46 @@ Add-menu presets:
 - Shop by category; initial blocks `[{"type":"category"},{"type":"category"},{"type":"category"},{"type":"category"},{"type":"category"}]`.
 - Category grid — `{"layout":"grid","card_palette":"scheme"}`; initial blocks `[{"type":"category"},{"type":"category"},{"type":"category"},{"type":"category"}]`.
 - Category swipe row — `{"layout":"scroller","mobile_layout":"scroll"}`; initial blocks `[{"type":"category"},{"type":"category"},{"type":"category"},{"type":"category"}]`.
+
+#### Clothes rack (clothes-rack)
+
+Source: `theme/sections/clothes-rack.liquid`. Editor: select this section in its template or section group.
+
+Excluded contexts: `{"groups":["header","footer"]}`.
+
+| Setting ID / label | Type | Schema default | Choices / range / help |
+| --- | --- | --- | --- |
+| `heading` — Heading | `text` | Not specified | Small label above the rail. Leave empty for none. |
+| `collection` — Collection | `collection` | Not specified | Used when no "Hang a product" blocks are added. Works best with clean flat-lay photos on white. |
+| `limit` — Pieces on the rail | `range` | `8` | 3–16, step 1 |
+| `back_from_second` — Use the second photo as the back view | `checkbox` | `true` | Turn off if your second photo is a lifestyle shot. Blocks can set a back photo per piece. |
+| `knock_out_white` — Blend white photo backgrounds into the section | `checkbox` | `true` | Makes white studio backgrounds disappear on light color schemes. |
+| `garment_size` — Garment size | `range` | `16` | 8–24rem, step 1 |
+| `spacing` — Hanging spacing | `range` | `30` | 14–50%, step 2; How much of each garment shows while it hangs edge-on. |
+| `collar_overlap` — Lift photo to the hanger | `range` | `22` | 0–40%, step 1; Pulls the photo up so the collar meets the hanger when photos have space above the garment. |
+| `cta_label` — Button label | `text` | `See availability` |  |
+| `front_label` — Front label | `text` | `Front` |  |
+| `back_label` — Back label | `text` | `Back` |  |
+| `close_label` — Close label | `text` | `Back to rack` |  |
+| `color_scheme` — Color scheme | `color_scheme` | `scheme-1` |  |
+| `content_width` — Content width | `select` | `inherit` | `inherit`: Theme default; `narrow`: Narrow; `wide`: Wide; `full`: Full width |
+| `spacing_mode` — Section spacing | `select` | `inherit` | `inherit`: Theme default; `custom`: Custom |
+| `padding_top` — Top padding | `range` | `72` | 0–200px, step 4; Shown when `{{ section.settings.spacing_mode == 'custom' }}` |
+| `padding_bottom` — Bottom padding | `range` | `72` | 0–200px, step 4; Shown when `{{ section.settings.spacing_mode == 'custom' }}` |
+| `padding_top_small` — Top padding on phones | `range` | `48` | 0–200px, step 4; Shown when `{{ section.settings.spacing_mode == 'custom' }}` |
+| `padding_bottom_small` — Bottom padding on phones | `range` | `48` | 0–200px, step 4; Shown when `{{ section.settings.spacing_mode == 'custom' }}` |
+
+Supported block: **Hang a product** (`piece`); type limit 16.
+
+| Setting ID / label | Type | Schema default | Choices / range / help |
+| --- | --- | --- | --- |
+| `product` — Product | `product` | Not specified |  |
+| `front_image` — Front photo | `image_picker` | Not specified | Optional. Defaults to the product's first photo. Cut-outs on white look best. |
+| `back_image` — Back photo | `image_picker` | Not specified | Optional. Defaults to the product's second photo when that option is on. |
+
+Add-menu presets:
+
+- Clothes rack.
 
 #### Collage (collage)
 
@@ -1284,6 +1435,8 @@ Available contexts: `{"templates":["collection"]}`.
 | `color_scheme` — Color scheme | `color_scheme` | `scheme-1` |  |
 | `image` — Banner image override | `image_picker` | Not specified |  |
 | `heading` — Heading override | `text` | Not specified |  |
+| `title_animation` — Title animation | `select` | `rise` | `none`: None; `rise`: Rise from a mask; `blur`: Blur in; `fold`: Fold up; `skew`: Skewed rise; `fade`: Fade up; Plays once when the page opens. Follows Theme settings > Motion and reduced-motion preferences. |
+| `title_split` — Animate title by | `select` | `words` | `words`: Word; `chars`: Letter; `lines`: Line |
 | `layout` — Banner layout | `select` | `auto` | `auto`: Image when available; `text`: Text only; `minimal`: Minimal title |
 | `height` — Image banner height | `select` | `regular` | `regular`: Regular; `compact`: Compact; `full`: Tall |
 | `height_mobile` — Image height on phones | `select` | `inherit` | `inherit`: Use desktop choice; `compact`: Compact; `full`: Tall |
@@ -1293,7 +1446,6 @@ Available contexts: `{"templates":["collection"]}`.
 | `show_breadcrumbs` — Show breadcrumbs | `checkbox` | `true` |  |
 | `show_count` — Show count | `checkbox` | `true` |  |
 | `navigation` — Collection navigation | `select` | `auto` | `auto`: Menu or store collections; `menu`: Selected menu only; `none`: Hidden |
-| `navigation_limit` — Automatic collection links | `range` | `8` | 2–20, step 1 |
 
 Add-menu presets:
 
@@ -1940,6 +2092,8 @@ Section instance limit: 1.
 | `nav_trigger` — Desktop submenu opening | `select` | `hover` | `hover`: Hover or click; `click`: Click only |
 | `dropdown_layout` — Dropdown links | `select` | `auto` | `auto`: Automatic grouping; `list`: Stacked groups |
 | `logo_treatment` — Logo image colors | `select` | `ink` | `ink`: Original theme ink treatment; `original`: Preserve uploaded colors |
+| `logo_animation` — Logo animation on load | `select` | `ink` | `none`: None; `ink`: Ink reveal (written left to right); `rise`: Soft rise; Follows Theme settings > Motion; never plays with reduced motion or in the theme editor. |
+| `logo_animation_frequency` — Play logo animation | `select` | `session` | `session`: Once per visit; `every`: On every page |
 | `height` — Minimum desktop header height | `range` | `76` | 60–120px, step 4 |
 | `height_mobile` — Minimum phone header height | `range` | `64` | 56–88px, step 4 |
 | `show_account` — Show customer account | `checkbox` | `true` |  |
@@ -2504,6 +2658,10 @@ Section instance limit: 1.
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
 | `show_header` — Show title and description | `checkbox` | `true` | Turn off when a Collection banner section is above. |
+| `title_animation` — Title animation | `select` | `rise` | `none`: None; `rise`: Rise from a mask; `blur`: Blur in; `fold`: Fold up; `skew`: Skewed rise; `fade`: Fade up; Plays once when the page opens. Follows Theme settings > Motion and reduced-motion preferences. |
+| `title_split` — Animate title by | `select` | `words` | `words`: Word; `chars`: Letter; `lines`: Line |
+| `pagination_style` — Pagination | `select` | `infinite` | `infinite`: Infinite scroll; `button`: Load more button; `numbers`: Page numbers |
+| `infinite_auto_pages` — Infinite scroll: pages before a button | `range` | `3` | 1–10, step 1; After this many pages load automatically, a Load more button appears so the footer stays reachable. |
 | `products_per_page` — Products per page | `range` | `24` | 8–48, step 4 |
 | `columns_mobile` — Columns on phones | `select` | `1` | `1`: 1; `2`: 2 |
 | `columns_desktop` — Columns on desktop | `range` | `3` | 2–5, step 1 |
@@ -2537,7 +2695,7 @@ Section instance limit: 1.
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
 | `show_breadcrumb` — Show breadcrumbs | `checkbox` | `false` |  |
-| `gallery_layout` — Desktop gallery | `select` | `slider` | `slider`: Single image slider; `stack`: Stacked images; `grid`: Editorial grid |
+| `gallery_layout` — Desktop gallery | `select` | `slider` | `collage`: Editorial collage; `slider`: Single image slider; `stack`: Stacked images; `grid`: Two-column grid; Single image slider: one large photo with a thumbnail rail, subtle arrows and click-to-enlarge. Editorial collage: all photos in a magazine-style rhythm beside sticky product details. |
 | `gallery_ratio` — Media shape | `select` | `square` | `square`: Square; `portrait`: Portrait; `landscape`: Landscape |
 | `gallery_fit` — Media fit | `select` | `contain` | `contain`: Entire media; `cover`: Fill and crop |
 | `gallery_background` — Media background | `select` | `white` | `white`: White studio; `scheme`: Scheme surface |
@@ -2545,8 +2703,10 @@ Section instance limit: 1.
 | `media_right` — Gallery on the right (desktop) | `checkbox` | `false` |  |
 | `text_first_mobile` — Information first on smaller screens | `checkbox` | `false` |  |
 | `sticky_info` — Sticky product information | `checkbox` | `true` |  |
+| `sticky_buy` — Sticky Add to cart bar | `select` | `off` | `off`: Off; `mobile`: Phones and tablets; `always`: All screen sizes; Appears after the main Add to cart button scrolls out of view. |
 | `show_thumbnails` — Show media thumbnails | `checkbox` | `true` |  |
 | `show_gallery_controls` — Show media arrows and counter | `checkbox` | `true` |  |
+| `show_media_progress` — Show media progress bar | `checkbox` | `true` | A thin bar that follows your position through the product photos: under the slider, or beside stacked photos on desktop. |
 | `enable_zoom` — Enable image zoom | `checkbox` | `true` |  |
 | `color_scheme` — Color scheme | `color_scheme` | `scheme-1` |  |
 | `spacing_mode` — Padding | `select` | `inherit` | `inherit`: Use theme section spacing; `custom`: Custom |
@@ -2576,6 +2736,7 @@ Supported block: **Price** (`price`); type limit 1.
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
 | `show_sku` — Show SKU when available | `checkbox` | `true` |  |
+| `show_promotion` — Show promotion code | `checkbox` | `true` | Shows the discount code connected to this product in Theme settings > Promotions. |
 
 Supported block: **Variant picker** (`variant_picker`); type limit 1.
 
@@ -2596,7 +2757,19 @@ Supported block: **Variant picker** (`variant_picker`); type limit 1.
 
 Supported block: **Inventory status** (`inventory`); type limit 1.
 
-No local settings.
+| Setting ID / label | Type | Schema default | Choices / range / help |
+| --- | --- | --- | --- |
+| `show_on_sizes` — Mark low-stock sizes on size buttons | `checkbox` | `true` | Uses Theme settings > Product page > "Show only a few left" threshold. |
+
+Supported block: **Model info** (`model_info`); type limit 1.
+
+| Setting ID / label | Type | Schema default | Choices / range / help |
+| --- | --- | --- | --- |
+| `show` — Show model info | `checkbox` | `true` |  |
+| `use_metafields` — Use product metafields | `checkbox` | `true` |  |
+| `sentence` — Sentence | `text` | `Model is [height] and wears size [size]` | Used with the height and size metafields. [height] and [size] are replaced. |
+| `fallback` — Fallback text | `text` | Not specified | Shown on products without model metafields. Leave blank to show nothing. |
+| `show_icon` — Show icon | `checkbox` | `true` |  |
 
 Supported block: **Buy buttons** (`buy_buttons`); type limit 1.
 
@@ -2625,6 +2798,7 @@ Supported block: **Collapsible row** (`accordion`).
 
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
+| `policy_source` — Content source | `select` | `custom` | `custom`: Custom content or page; `shipping_exchange`: Shopify shipping and refund policies; Policies stay synchronized with Settings > Policies in Shopify Admin. |
 | `heading` — Heading | `text` | `Fabric & care` |  |
 | `open` — Open by default | `checkbox` | `false` |  |
 | `content` — Content | `richtext` | Not specified |  |
@@ -3214,7 +3388,11 @@ Section instance limit: 1.
 
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
+| `pagination_style` — Pagination | `select` | `infinite` | `infinite`: Infinite scroll; `button`: Load more button; `numbers`: Page numbers |
+| `infinite_auto_pages` — Infinite scroll: pages before a button | `range` | `3` | 1–10, step 1; After this many pages load automatically, a Load more button appears so the footer stays reachable. |
 | `per_page` — Results per page | `range` | `24` | 8–48, step 4 |
+| `title_animation` — Title animation | `select` | `rise` | `none`: None; `rise`: Rise from a mask; `blur`: Blur in; `fold`: Fold up; `skew`: Skewed rise; `fade`: Fade up; Plays once when the page opens. Follows Theme settings > Motion and reduced-motion preferences. |
+| `title_split` — Animate title by | `select` | `words` | `words`: Word; `chars`: Letter; `lines`: Line |
 | `columns_mobile` — Columns on phones | `select` | `1` | `1`: 1; `2`: 2 |
 | `columns_desktop` — Columns on desktop | `range` | `4` | 3–5, step 1 |
 | `show_filters` — Show filters | `checkbox` | `true` | Filters apply to product results. |

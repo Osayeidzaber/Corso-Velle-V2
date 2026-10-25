@@ -11,7 +11,7 @@ beforeEach(() => {
   });
 });
 afterEach(() => { document.body.innerHTML = ''; vi.unstubAllGlobals(); });
-function mount(autoplay = true) {
+function mount(autoplay = true, visible = true) {
   const root = document.createElement('nk-background-video');
   if (autoplay) root.setAttribute('autoplay', '');
   root.innerHTML = '<video controls></video><button data-ref="toggle" data-play-label="Play" data-pause-label="Pause" hidden></button>';
@@ -19,6 +19,7 @@ function mount(autoplay = true) {
   const play = vi.spyOn(video, 'play').mockResolvedValue();
   const pause = vi.spyOn(video, 'pause').mockImplementation(() => {});
   document.body.append(root);
+  state.observers.at(-1)!([{ isIntersecting: visible } as IntersectionObserverEntry], {} as IntersectionObserver);
   return { root, video, play, pause, button: root.querySelector('button')! };
 }
 it('requires explicit playback under reduced motion and preserves independent user intent', () => {
@@ -31,6 +32,12 @@ it('requires explicit playback under reduced motion and preserves independent us
   first.root.remove();
   expect(first.video.controls).toBe(true);
   expect(first.button.hidden).toBe(true);
+});
+it('does not start offscreen autoplay before the first visible observation', () => {
+  const instance = mount(true, false);
+  expect(instance.play).not.toHaveBeenCalled();
+  state.observers.at(-1)!([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
+  expect(instance.play).toHaveBeenCalledTimes(1);
 });
 it('pauses offscreen, resumes authored autoplay and stops after motion is disabled', () => {
   const instance = mount();
@@ -60,7 +67,9 @@ it('binds an external control only inside the owning campaign', () => {
   root.innerHTML = '<video controls></video>';
   const video = root.querySelector('video')!;
   const play = vi.spyOn(video, 'play').mockResolvedValue(); vi.spyOn(video, 'pause').mockImplementation(() => {});
-  owner.append(root); owner.querySelector('button')!.click();
+  owner.append(root);
+  state.observers.at(-1)!([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
+  owner.querySelector('button')!.click();
   expect(play).toHaveBeenCalledTimes(1);
   root.remove(); owner.querySelector('button')!.click();
   expect(play).toHaveBeenCalledTimes(1);

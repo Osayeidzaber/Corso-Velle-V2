@@ -15,10 +15,15 @@ import type { NkVariantPicker } from './variant-picker';
  */
 export class NkProductForm extends NkElement {
   #submitting = false;
+  /** Add to cart pressed while the picker was still resolving a just-chosen option. */
+  #queued: { form: HTMLFormElement; submitter: HTMLButtonElement | null } | null = null;
 
   protected mount(): void {
     const form = this.querySelector<HTMLFormElement>('form');
     if (!form) return;
+    this.on(window, 'pageshow', (event) => {
+      if ((event as PageTransitionEvent).persisted) this.#setPending(false, form.querySelector('button[type="submit"]'));
+    });
     this.on(form, 'submit', (event) => {
       event.preventDefault();
       void this.#submit(form, event.submitter as HTMLButtonElement | null);
@@ -30,7 +35,13 @@ export class NkProductForm extends NkElement {
     const section = this.closest('[data-product-section]');
     if (section) {
       this.on(section, 'nk:variant:changed', (event) => {
-        this.#reflectState((event as CustomEvent<{ state: string }>).detail.state);
+        const { state } = (event as CustomEvent<{ state: string }>).detail;
+        this.#reflectState(state);
+        // A tap during resolving is completed once the choice settles, never silently dropped.
+        const queued = this.#queued;
+        if (!queued || state === 'resolving') return;
+        this.#queued = null;
+        if (state === 'available') void this.#submit(queued.form, queued.submitter);
       });
       const picker = this.#picker();
       if (picker) this.#reflectState(picker.state);
@@ -57,15 +68,17 @@ export class NkProductForm extends NkElement {
     const button = this.querySelector<HTMLButtonElement>('[data-region="buy"] button[type="submit"]');
     const label = button?.querySelector<HTMLElement>('[data-button-label]');
     if (!button || !label) return;
-    button.disabled = state !== 'available' && state !== 'incomplete';
+    // Resolving stays pressable: the tap is queued and adds the resolved variant (see #queued).
+    // Until a size is chosen the button is inactive and names what's missing.
+    button.disabled = state !== 'available' && state !== 'resolving';
     const checkout = this.querySelector<HTMLElement>('.shopify-payment-button');
     if (checkout) checkout.hidden = state !== 'available';
     label.classList.toggle('nk-text-wave', state === 'resolving');
     if (state === 'resolving') {
       label.textContent = t('product.updating');
     } else if (state === 'incomplete') {
-      label.textContent = t('product.add_to_cart');
-      button.disabled = false; // clicking explains what is missing
+      const name = this.#picker()?.firstIncomplete()?.dataset.optionName;
+      label.textContent = name ? t('product.choose_named_option', { option: name }) : t('product.select_size_prompt');
     } else if (state === 'unavailable') {
       label.textContent = t('product.unavailable');
       button.disabled = true;
@@ -96,8 +109,17 @@ export class NkProductForm extends NkElement {
         this.#showError(t('product.choose_named_option', { option: name }));
         return;
       }
-      if (picker.state !== 'available') return; // resolving, sold out, unavailable, failed
+      if (picker.state === 'resolving') {
+        this.#queued = { form, submitter };
+        return;
+      }
+      if (picker.state !== 'available') return; // sold out, unavailable, failed
     }
+
+    // Shopify/app blocks may add required customization fields to this same form.
+    // The Liquid form uses novalidate so the picker can focus missing options first;
+    // once it has settled, validate every field before sending an AJAX order line.
+    if (!form.reportValidity()) return;
 
     const data = new FormData(form);
     const id = Number(data.get('id'));
@@ -107,6 +129,16 @@ export class NkProductForm extends NkElement {
     if (quantityInput && !quantityInput.reportValidity()) return;
     const quantity = Number(data.get('quantity') ?? 1);
     if (!Number.isInteger(quantity) || quantity < 1) return;
+    const hasUpload = [...data.entries()].some(([key, value]) =>
+      /^properties\[(.+)\]$/.test(key) && value instanceof File && value.name !== '',
+    );
+    if (hasUpload) {
+      // JSON cannot carry a File. Use Shopify's native form rather than omit customization data.
+      this.#setPending(true, submitter);
+      form.enctype = 'multipart/form-data';
+      HTMLFormElement.prototype.submit.call(form);
+      return;
+    }
     const properties: Record<string, string> = {};
     for (const [key, value] of data.entries()) {
       const match = /^properties\[(.+)\]$/.exec(key);

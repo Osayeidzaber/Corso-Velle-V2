@@ -19,6 +19,13 @@ export interface CartLine {
   quantity: number;
   properties: Record<string, string> | null;
   selling_plan_allocation?: { selling_plan: { id: number } } | null;
+  line_level_discount_allocations?: Array<{ amount: number; discount_application: { type: string; title: string } }>;
+}
+
+/** A code on the cart as Shopify reports it; `applicable` is Shopify's verdict for this cart. */
+export interface CartDiscountCode {
+  code: string;
+  applicable: boolean;
 }
 
 export interface Cart {
@@ -27,6 +34,9 @@ export interface Cart {
   items: CartLine[];
   total_price: number;
   note: string | null;
+  total_discount?: number;
+  discount_codes?: CartDiscountCode[];
+  cart_level_discount_applications?: Array<{ type: string; title: string; total_allocated_amount: number }>;
 }
 
 export interface AddItem {
@@ -57,12 +67,12 @@ export interface CartResult {
   reconciled: boolean;
 }
 
-type OpKind = 'add' | 'change' | 'note' | 'refresh';
+type OpKind = 'add' | 'change' | 'note' | 'discount' | 'refresh';
 
 interface Op {
   kind: OpKind;
   sourceId: string;
-  payload: { items?: AddItem[]; key?: string; quantity?: number; note?: string };
+  payload: { items?: AddItem[]; key?: string; quantity?: number; note?: string; codes?: string[] };
   waiters: Array<{ resolve: (r: CartResult) => void; reject: (e: unknown) => void }>;
   sent: boolean;
 }
@@ -141,6 +151,24 @@ export class CartService {
     return this.#enqueue({ kind: 'note', sourceId, payload: { note } });
   }
 
+  /**
+   * Replace the cart's discount codes with exactly `codes` (Shopify's /cart/update.js `discount`
+   * parameter replaces, never appends; [] removes all). Shopify validates each code and reports
+   * `applicable` per code in the returned cart. Never coalesced: each list is a deliberate attempt.
+   */
+  discounts(codes: string[], sourceId: string): Promise<CartResult> {
+    const list = [...new Set(codes.map((code) => code.trim()).filter(Boolean))];
+    if (list.some((code) => code.includes(','))) return Promise.reject(new CartError('rejected', 'Invalid discount code'));
+    return this.#enqueue({ kind: 'discount', sourceId, payload: { codes: list } });
+  }
+
+  /** Read the cart without rendering sections (safe GET; updates lastKnown). */
+  async read(): Promise<Cart> {
+    const state = await this.#getCart();
+    if (!this.pending) this.#last = state;
+    return state;
+  }
+
   /** Re-read cart + sections (for app integrations via nk:cart:refresh, bfcache restore, etc). */
   refresh(sourceId = 'refresh'): Promise<CartResult> {
     return this.#enqueue({ kind: 'refresh', sourceId, payload: {} });
@@ -191,6 +219,8 @@ export class CartService {
         return this.#change(op.payload.key!, op.payload.quantity!, sections);
       case 'note':
         return this.#post(routes().cartUpdate, { note: op.payload.note ?? '' }, sections);
+      case 'discount':
+        return this.#discount(op.payload.codes ?? [], sections);
     }
   }
 
@@ -238,6 +268,23 @@ export class CartService {
       const line = after.items.find((item) => item.key === key);
       const applied = quantity === 0 ? !line : line?.quantity === quantity;
       if (!applied) throw new CartError('not-applied', 'The cart was not updated', error);
+      return { cart: after, sections: await this.#renderCartSections(sections), reconciled: true };
+    }
+  }
+
+  async #discount(codes: string[], sections: string[]): Promise<CartResult> {
+    try {
+      return await this.#post(routes().cartUpdate, { discount: codes.join(',') }, sections);
+    } catch (error) {
+      if (!isAmbiguous(error)) throw error;
+      // Replacing the code list is idempotent, but it is still never re-sent: report what the
+      // cart actually holds so callers judge Shopify's real state.
+      const after = await this.#getCart().catch(() => null);
+      if (!after) throw new CartError('unknown', 'Could not confirm the discount update', error);
+      const held = new Set((after.discount_codes ?? []).map((entry) => entry.code.toUpperCase()));
+      if (codes.length !== held.size || codes.some((code) => !held.has(code.toUpperCase()))) {
+        throw new CartError('not-applied', 'The discount codes were not updated', error);
+      }
       return { cart: after, sections: await this.#renderCartSections(sections), reconciled: true };
     }
   }

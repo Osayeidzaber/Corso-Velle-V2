@@ -47,6 +47,40 @@ export class NkHeader extends NkElement {
       this.#updateCartCount(count);
     });
     this.#enhanceDisclosureNav();
+    this.#watchNavFit();
+  }
+
+  /**
+   * The menu is merchant-controlled, so between the 990px breakpoint and wide screens its links can
+   * outgrow their column and wrap onto a second row. When they would, the header keeps the phone
+   * menu button instead (data-nav-compact). The stacked "two-row" layout wraps by design.
+   */
+  #watchNavFit(): void {
+    const header = this.querySelector<HTMLElement>('.header');
+    const list = this.querySelector<HTMLElement>('.header__nav .nav');
+    if (!header || !list || header.classList.contains('header--two-row')) return;
+    const desktop = matchMedia('(min-width: 990px)');
+    let width = 0;
+    const fit = (force = false): void => {
+      const next = header.clientWidth;
+      if (!force && next === width) return;
+      width = next;
+      if (!desktop.matches) {
+        delete this.dataset.navCompact;
+        return;
+      }
+      delete this.dataset.navCompact;
+      const items = list.children;
+      const first = items[0] as HTMLElement | undefined;
+      const last = items[items.length - 1] as HTMLElement | undefined;
+      const wraps = !!first && !!last && last.offsetTop > first.offsetTop + 4;
+      if (wraps) this.dataset.navCompact = '';
+    };
+    this.observeResize(header, () => fit());
+    this.on(desktop, 'change', () => fit(true));
+    void document.fonts?.ready.then(() => {
+      if (this.isConnected) fit(true);
+    });
   }
 
   /** Floating panels are centred under their item; shift them back inside the page gutters. */

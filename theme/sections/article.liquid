@@ -15,7 +15,8 @@
 
   {% if article.image and section.settings.show_image != false %}
     <div style="margin-bottom: 32px;">
-      {{ article.image | image_url: width: 1400 | image_tag: widths: '600, 1000, 1400', sizes: '(min-width: 750px) 72ch, 100vw', alt: article.image.alt }}
+      {%- assign article_image_alt = article.image.alt | default: article.title -%}
+      {{ article.image | image_url: width: 1400 | image_tag: widths: '600, 1000, 1400', sizes: '(min-width: 750px) 72ch, 100vw', alt: article_image_alt }}
     </div>
   {% endif %}
 

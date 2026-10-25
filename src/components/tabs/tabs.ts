@@ -81,35 +81,18 @@ export class NkTabs extends NkElement {
       this.#panels[i]!.hidden = !active;
     });
     this.#moveIndicator(animated);
+    // Direct selection takes precedence over any pending entrance of the first product panel.
+    this.#panels[index]!.querySelectorAll('nk-stagger').forEach(stagger => {
+      stagger.dispatchEvent(new Event('nk:stagger:finish'));
+    });
     if (animated && previous !== index && !this.hasAttribute('no-transition')) {
       const panel = this.#panels[index]!;
       animate(
         panel,
-        [{ opacity: 0 }, { opacity: 1 }],
+        [{ opacity: 0.85 }, { opacity: 1 }],
         { duration: 280, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
         { decorative: true },
       );
-      panel.querySelectorAll<HTMLElement>('[data-stagger-item], [data-tab-item]').forEach((item, i) => {
-        if (i > 11) return;
-        animate(
-          item,
-          [
-            { opacity: 0, transform: 'translateY(22px)' },
-            { opacity: 1, transform: 'none' },
-          ],
-          { duration: 580, delay: 40 + i * 45, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'backwards' },
-          { decorative: true },
-        );
-        const img = item.querySelector<HTMLElement>('.card__media > img:first-child');
-        if (img) {
-          animate(
-            img,
-            [{ transform: 'scale(1.045)' }, { transform: 'scale(1)' }],
-            { duration: 780, delay: 40 + i * 45, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'backwards' },
-            { decorative: true },
-          );
-        }
-      });
     }
     this.emit('nk:tabs:change', { index });
   }

@@ -55,8 +55,7 @@ const easeInOut = (value: number) => {
   const t = clamp01(value);
   return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 };
-const smooth = (value: number) => { const t = clamp01(value); return t * t * (3 - 2 * t); };
-const sourceOf = (image: HTMLImageElement | null | undefined) => image?.currentSrc || image?.src || '';
+const smooth = (value: number) => { const t = clamp01(value); return t * t * (3 - 2 * t); };const sourceOf = (image: HTMLImageElement | null | undefined) => image?.currentSrc || image?.src || '';
 
 /**
  * The user's FlexCarousel (React/ogl) ported to the theme's custom element. Kept: progressive
@@ -163,6 +162,7 @@ export function createFlexCarousel(root: HTMLElement, parentSignal: AbortSignal,
   const uniforms = cardProgram.uniforms as Record<string, { value: unknown }>;
 
   let slots: Slot[] = [];
+  let loadingTimer = 0;
   let width = 1; let height = 1;
   let pos = 0; let vel = 0; let goal = 0; let mode = 'spring'; let wheelAt = 0;
   let raf = 0; let last = performance.now(); let visible = false; let alive = true; let dirty = true;
@@ -232,8 +232,10 @@ export function createFlexCarousel(root: HTMLElement, parentSignal: AbortSignal,
         }
       } catch { slot.color = [.5, .5, .5]; }
       slot.loaded = true; dirty = true; start();
+      if (index === initialIndex) window.clearTimeout(loadingTimer);
     };
-    image.onerror = () => { if (!alive) return; slot.failed = true; dirty = true; start(); };
+    // A CORS/texture failure must restore the real image rail, not leave an empty GPU card.
+    image.onerror = () => { if (alive) fail(); };
     image.src = sourceOf(primary);
     // Optional second photograph for the product card's hover curtain.
     const secondSrc = sourceOf(slide.querySelector<HTMLImageElement>('.card__secondary'));
@@ -592,13 +594,17 @@ export function createFlexCarousel(root: HTMLElement, parentSignal: AbortSignal,
       if (hover) stage.setAttribute('data-hover', hover); else stage.removeAttribute('data-hover');
     }
 
-    if (visible && !document.hidden && (animating || waiting || dirty || pointer.down)) raf = requestAnimationFrame(frame);
+    if (visible && !document.hidden && (animating || waiting || dirty || pointer.down)) raf = requestAnimationFrame(safeFrame);
   };
+
+  function safeFrame(now: number): void {
+    try { frame(now); } catch { fail(); }
+  }
 
   function start(): void {
     if (raf || !visible || !alive || document.hidden) return;
     last = performance.now();
-    raf = requestAnimationFrame(frame);
+    raf = requestAnimationFrame(safeFrame);
   }
 
   const localPoint = (event: PointerEvent) => { const rect = stage.getBoundingClientRect(); return [event.clientX - rect.left, event.clientY - rect.top] as const; };
@@ -732,7 +738,7 @@ export function createFlexCarousel(root: HTMLElement, parentSignal: AbortSignal,
     const next = event.relatedTarget as Element | null;
     hasFocus = Boolean(next && root.contains(next) && next.matches(':focus-visible')); start();
   }, { signal });
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) start(); }, { signal });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { dirty = true; start(); } }, { signal });
   canvas.addEventListener('webglcontextlost', (event) => { event.preventDefault(); fail(); }, { signal });
 
   const resizeObserver = new ResizeObserver(resize);
@@ -742,7 +748,8 @@ export function createFlexCarousel(root: HTMLElement, parentSignal: AbortSignal,
   captionObserver.observe(caption);
   const intersection = new IntersectionObserver(([entry]) => {
     visible = entry?.isIntersecting ?? false;
-    if (visible) start(); else { cancelAnimationFrame(raf); raf = 0; }
+    // Offscreen WebGL drawing buffers may be discarded: repaint even when paused/held.
+    if (visible) { dirty = true; start(); } else { cancelAnimationFrame(raf); raf = 0; }
   });
   intersection.observe(stage);
 
@@ -751,6 +758,7 @@ export function createFlexCarousel(root: HTMLElement, parentSignal: AbortSignal,
     if (disposed) return;
     disposed = true; alive = false; visible = false;
     cancelAnimationFrame(raf);
+    window.clearTimeout(loadingTimer);
     resizeObserver.disconnect(); captionObserver.disconnect(); intersection.disconnect();
     parentSignal.removeEventListener('abort', dispose);
     slots.forEach((slot) => slot.dispose()); slots = [];
@@ -765,6 +773,8 @@ export function createFlexCarousel(root: HTMLElement, parentSignal: AbortSignal,
   function fail(): void { if (!disposed) { dispose(); hooks.onFailure(); } }
 
   slots = slides.map(loadSlot);
+  // A stalled texture request should not leave the shopping surface on placeholders forever.
+  loadingTimer = window.setTimeout(() => { if (alive && !slots[initialIndex]?.loaded) fail(); }, 8000);
   root.setAttribute('data-effect-ready', ''); root.setAttribute('data-ready', '');
   root.querySelectorAll<HTMLButtonElement>('[data-carousel-step]').forEach((button) => button.disabled = false);
   setActive(initialIndex);

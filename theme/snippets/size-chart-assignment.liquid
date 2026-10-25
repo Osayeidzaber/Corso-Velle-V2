@@ -1,6 +1,6 @@
 {%- comment -%}
   Shared assignment identity only; callers resolve the selected Shopify object without JSON copies.
-  Product data > product CSV rule > collection reference/priority > collection CSV rule > default.
+  Product data > product rule > collection reference/priority > collection rule > tag rule > default.
   Collection priorities default to 1000; equal priorities sort by handle. Only valid charts qualify.
 {%- endcomment -%}
 {%- liquid
@@ -8,10 +8,11 @@
   assign product_chart = product.metafields.custom.size_chart.value
   assign chart_fallback = product_chart.fallback.value | default: ''
   assign chart_notes = product_chart.notes.value | default: ''
+  assign chart_image = product_chart.image.value | default: ''
   assign measurements = product.metafields.custom.measurements.value
   if product_chart.table.value.rows.size > 0 and product_chart.table.value.columns.size > 0
     assign selected = 'product'
-  elsif chart_fallback != blank or chart_notes != blank
+  elsif chart_fallback != blank or chart_notes != blank or chart_image != blank
     assign selected = 'product'
   elsif measurements.rows.size > 0 and measurements.columns.size > 0
     assign selected = 'json'
@@ -35,10 +36,11 @@
       assign candidate = membership.metafields.custom.size_chart.value
       assign chart_fallback = candidate.fallback.value | default: ''
       assign chart_notes = candidate.notes.value | default: ''
+      assign chart_image = candidate.image.value | default: ''
       assign usable = false
       if candidate.table.value.rows.size > 0 and candidate.table.value.columns.size > 0
         assign usable = true
-      elsif chart_fallback != blank or chart_notes != blank
+      elsif chart_fallback != blank or chart_notes != blank or chart_image != blank
         assign usable = true
       endif
       if usable
@@ -65,14 +67,25 @@
     endif
   endif
 
+  if selected == ''
+    capture tag_rule
+      render 'measurement-chart-rule', product: product, rule_scope: 'tags'
+    endcapture
+    assign tag_rule = tag_rule | strip
+    if tag_rule != ''
+      assign selected = 'rule:' | append: tag_rule
+    endif
+  endif
+
   if selected == '' and settings.size_chart_default_handle != blank
     assign default_handle = settings.size_chart_default_handle | strip
     assign default_chart = metaobjects.size_chart[default_handle]
     assign chart_fallback = default_chart.fallback.value | default: ''
     assign chart_notes = default_chart.notes.value | default: ''
+    assign chart_image = default_chart.image.value | default: ''
     if default_chart.table.value.rows.size > 0 and default_chart.table.value.columns.size > 0
       assign selected = 'default'
-    elsif chart_fallback != blank or chart_notes != blank
+    elsif chart_fallback != blank or chart_notes != blank or chart_image != blank
       assign selected = 'default'
     endif
   endif

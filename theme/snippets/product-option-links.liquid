@@ -6,7 +6,7 @@
                     {%- for option in product.options_with_values -%}
                       <details class="disclosure">
                         <summary>{{ option.name | escape }}: {{ option.selected_value | escape }}</summary>
-                        <ul role="list">
+                        <ul class="option-links" role="list">
                           {%- for value in option.values -%}
                             {%- capture option_url -%}{{ value.product_url | default: product.url }}?option_values={{ value.id }}{%- endcapture -%}
                             {%- if value.product_url == blank -%}

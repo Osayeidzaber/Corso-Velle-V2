@@ -1,0 +1,19 @@
+{%- doc -%}
+  Low-stock marker for one option value (size pill on the product page or a product card).
+  Renders a small dot plus a screen-reader count when the value's variant is tracked, can't
+  oversell, and is at or below Theme settings > Product page > "Show only a few left" (0 = off).
+
+  @param {object} value - The product option value
+  @param {boolean} [enabled] - false renders nothing (block / card setting)
+
+  @example
+  {% render 'size-stock', value: value, enabled: show_low_stock %}
+{%- enddoc -%}
+{%- liquid
+  assign threshold = settings.inventory_threshold | default: 0
+  assign stock_variant = value.variant
+-%}
+{%- if enabled != false and threshold > 0 and stock_variant.available and stock_variant.inventory_management == 'shopify' and stock_variant.inventory_policy == 'deny' and stock_variant.inventory_quantity > 0 and stock_variant.inventory_quantity <= threshold -%}
+  <span class="stock-dot" aria-hidden="true" title="{{ 'product.low_stock' | t: count: stock_variant.inventory_quantity }}"></span>
+  <span class="visually-hidden">{{ 'product.low_stock' | t: count: stock_variant.inventory_quantity }}</span>
+{%- endif -%}

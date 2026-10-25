@@ -26,6 +26,7 @@
   assign chart = chart | default: product.metafields.custom.size_chart.value
   assign chart_fallback = chart.fallback.value | default: ''
   assign chart_notes = chart.notes.value | default: ''
+  assign chart_image = chart.image.value | default: ''
   assign custom_json = product.metafields.custom.measurements.value
   assign base_unit = unit | default: 'in' | downcase
   assign basis_label = heading
@@ -43,7 +44,7 @@
     endif
     assign has_valid_data = true
     assign use_metaobject = true
-  elsif chart_fallback != blank or chart_notes != blank
+  elsif chart_fallback != blank or chart_notes != blank or chart_image != blank
     comment
       An assigned instructions-only chart must not mix in measurements from a lower priority source.
     endcomment
