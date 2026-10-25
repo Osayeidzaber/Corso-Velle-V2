@@ -1,0 +1,38 @@
+{%- doc -%}
+  Model info line on the product page ("Model is 183 cm and wears size M"), from the Model info
+  block. Per-product text comes from metafields; the block supplies the sentence and a fallback.
+
+  Order of preference:
+  1. custom.model_info (single line text): a full sentence for this product
+  2. custom.model_height + custom.model_size: filled into the block's sentence ([height], [size])
+  3. The block's fallback text (blank = show nothing for products without metafields)
+
+  @param {object} product - The product
+  @param {object} settings - The block settings (show, use_metafields, sentence, fallback, show_icon)
+
+  @example
+  {% render 'model-info', product: product, settings: block.settings %}
+{%- enddoc -%}
+{%- liquid
+  assign line = blank
+  if settings.use_metafields != false
+    assign full = product.metafields.custom.model_info.value | strip
+    assign height = product.metafields.custom.model_height.value | strip
+    assign size = product.metafields.custom.model_size.value | strip
+    if full != blank
+      assign line = full
+    elsif height != blank and size != blank
+      assign sentence = settings.sentence | default: 'Model is [height] and wears size [size]'
+      assign line = sentence | replace: '[height]', height | replace: '[size]', size
+    endif
+  endif
+  if line == blank
+    assign line = settings.fallback | strip
+  endif
+-%}
+{%- if settings.show != false and line != blank -%}
+  <p class="product__model-info">
+    {%- if settings.show_icon != false -%}{% render 'icon', name: 'account', size: 16 %}{%- endif -%}
+    <span>{{ line | escape }}</span>
+  </p>
+{%- endif -%}

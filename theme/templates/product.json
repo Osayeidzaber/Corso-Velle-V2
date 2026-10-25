@@ -57,8 +57,13 @@
           "type": "accordion",
           "settings": {
             "heading": "Shipping + exchange",
-            "content": "<p>Delivery times and exchange terms are confirmed at checkout. Contact us with your order number for any size exchange.</p>"
+            "content": "",
+            "policy_source": "shipping_exchange"
           }
+        },
+        "model_info": {
+          "type": "model_info",
+          "settings": {}
         }
       },
       "block_order": [
@@ -66,12 +71,15 @@
         "title",
         "price",
         "picker",
+        "model_info",
         "inventory",
         "buy",
         "description",
         "delivery"
       ],
-      "settings": {}
+      "settings": {
+        "sticky_buy": "mobile"
+      }
     },
     "recommendations": {
       "type": "product-recommendations",

@@ -16,7 +16,7 @@ export class NkParallax extends NkElement {
   #revert: (() => void) | null = null;
 
   protected mount(): void {
-    if (motionMode() === 'off') return;
+    if (motionMode() !== 'full') return;
     void this.#start().catch(console.error);
   }
 

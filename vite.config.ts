@@ -23,7 +23,8 @@ export default defineConfig({
     emptyOutDir: true,
     manifest: true,
     target: 'es2022',
-    // Readable output (Shopify compresses on the CDN); keeps a future Theme Store path open.
+    // Minified output. The Shopify Theme Store rejects minified .css (ES modules and third-party
+    // libraries are exempt); a Theme Store build would set cssMinify: false (see PRODUCTION_READINESS.md).
     minify: true,
     cssCodeSplit: true,
     modulePreload: false,

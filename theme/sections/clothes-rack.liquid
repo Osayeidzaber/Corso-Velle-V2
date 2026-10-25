@@ -1,0 +1,379 @@
+{%- comment -%}
+  Clothes rack — products hang edge-on from a rail; hovering one turns it to face the visitor
+  and names it underneath, clicking opens a focused view with a Front/Back spin, prev/next and
+  colourway tags (custom.color_siblings). See src/components/clothes-rack.
+  Pieces come from "Hang" blocks first, otherwise from the collection. Each piece uses its
+  first photo as the front and, by default, its second as the back; blocks can override both.
+  Without JS the rail is a plain row of product links.
+{%- endcomment -%}
+{%- liquid
+  assign rack_products = section.settings.collection.products
+  assign picked = section.blocks | where: 'type', 'piece'
+  assign limit = section.settings.limit
+  if picked.size > 0
+    assign limit = picked.size
+  endif
+  assign cta_label = section.settings.cta_label | default: 'See availability'
+-%}
+<nk-clothes-rack
+  class="clothes-rack section-spacing section-presentation color-{{ section.settings.color_scheme }} full-width"
+  style="{% render 'section-presentation', presentation: section.settings %}--rack-garment: {{ section.settings.garment_size }}rem; --rack-slot: {{ section.settings.spacing }}; --rack-collar: {{ section.settings.collar_overlap }}%;"
+  {% if section.settings.knock_out_white %}data-knockout{% endif %}
+>
+  {%- if section.settings.heading != blank -%}
+    <h2 class="clothes-rack__heading spec">{{ section.settings.heading | escape }}</h2>
+  {%- endif -%}
+
+  <div class="clothes-rack__stage" data-ref="stage">
+    <div class="clothes-rack__rail" aria-hidden="true"></div>
+
+    <ul class="clothes-rack__items" data-ref="list" role="list">
+      {%- for i in (1..limit) -%}
+        {%- liquid
+          assign index0 = forloop.index0
+          assign block = blank
+          if picked.size > 0
+            assign block = picked[index0]
+            assign piece = block.settings.product
+          else
+            assign piece = rack_products[index0]
+          endif
+          if piece == blank and request.design_mode == false
+            continue
+          endif
+
+          assign front = block.settings.front_image | default: piece.featured_media.preview_image
+          assign back = block.settings.back_image
+          if back == blank and section.settings.back_from_second
+            for media in piece.media offset: 1 limit: 1
+              assign back = media.preview_image
+            endfor
+          endif
+          assign title = piece.title | default: 'Product title'
+          assign color_name = piece.metafields.custom.color_name.value
+          assign siblings = piece.metafields.custom.color_siblings.value
+
+          comment
+            Size stock for the availability button: "S~1|M~0|L~1" (1 = some variant in that size can be bought).
+          endcomment
+          assign sizes = ''
+          for option in piece.options_with_values
+            assign option_name = option.name | downcase
+            unless option_name contains 'size'
+              continue
+            endunless
+            assign position = option.position | minus: 1
+            for value in option.values
+              assign in_stock = '0'
+              for variant in piece.variants
+                if variant.options[position] == value and variant.available
+                  assign in_stock = '1'
+                  break
+                endif
+              endfor
+              assign entry = value | replace: '~', '-' | replace: '|', '/' | append: '~' | append: in_stock
+              if sizes == blank
+                assign sizes = entry
+              else
+                assign sizes = sizes | append: '|' | append: entry
+              endif
+            endfor
+            break
+          endfor
+        -%}
+        <li class="clothes-rack__item" data-ref="item" style="--i: {{ index0 }};" {{ block.shopify_attributes }}>
+          <a
+            class="clothes-rack__garment"
+            href="{{ piece.url | default: '#' }}"
+            data-ref="garment"
+            data-title="{{ title | escape }}"
+            data-color="{{ color_name | escape }}"
+            data-price="{{ piece.price | money | strip_html | escape }}"
+            data-available="{% if piece.available or piece == blank %}1{% else %}0{% endif %}"
+            data-sizes="{{ sizes | escape }}"
+            {% if back %}data-back="{{ back | image_url: width: 1100 }}"{% endif %}
+            data-front="{{ front | image_url: width: 1100 }}"
+          >
+            <span class="clothes-rack__turn">
+              <span class="clothes-rack__hanger" aria-hidden="true">
+                <svg viewBox="0 0 64 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M32 12V8.5a3.5 3.5 0 1 0-3.5-3.5"/><path d="M32 12 4 27h56L32 12Z"/></svg>
+              </span>
+              {%- if front -%}
+                {{ front | image_url: width: 900 | image_tag: loading: 'lazy', widths: '360, 540, 720, 900', sizes: '(min-width: 750px) 22rem, 60vw', alt: '', class: 'clothes-rack__img' }}
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag: 'clothes-rack__img clothes-rack__img--placeholder' }}
+              {%- endif -%}
+            </span>
+            <span class="clothes-rack__label">
+              <span class="clothes-rack__title">{{ title | escape }}</span>
+              {%- if color_name != blank %} <span class="clothes-rack__color">— {{ color_name | escape }}</span>{% endif -%}
+            </span>
+          </a>
+          {%- if siblings != blank -%}
+            <template data-ref="siblings">
+              {%- for sibling in siblings -%}
+                <a class="clothes-rack__tag{% if sibling.id == piece.id %} is-active{% endif %}" href="{{ sibling.url }}" aria-label="{{ sibling.title | escape }}"{% if sibling.id == piece.id %} aria-current="true"{% endif %}>
+                  <span class="clothes-rack__tag-string" aria-hidden="true"></span>
+                  {%- if sibling.featured_media -%}
+                    {{ sibling.featured_media | image_url: width: 160 | image_tag: loading: 'lazy', width: 48, height: 60, alt: '' }}
+                  {%- endif -%}
+                </a>
+              {%- endfor -%}
+            </template>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    <div class="clothes-rack__focus" data-ref="focus" role="dialog" aria-modal="false" aria-label="{{ section.settings.heading | default: 'Clothes rack' | escape }}" hidden>
+      <button type="button" class="clothes-rack__close spec" data-ref="close">{{ section.settings.close_label | default: 'Back to rack' | escape }}</button>
+      <button type="button" class="clothes-rack__arrow clothes-rack__arrow--prev" data-ref="prev" aria-label="{{ 'carousel.previous' | t }}">{% render 'icon', name: 'arrow-left' %}</button>
+      <div class="clothes-rack__hero" data-ref="hero">
+        <div class="clothes-rack__spin" data-ref="spin">
+          <span class="clothes-rack__hanger" aria-hidden="true">
+            <svg viewBox="0 0 64 30" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M32 12V8.5a3.5 3.5 0 1 0-3.5-3.5"/><path d="M32 12 4 27h56L32 12Z"/></svg>
+          </span>
+          <img class="clothes-rack__face" data-ref="face" alt="" width="1100" height="1100" decoding="async">
+        </div>
+        <div class="clothes-rack__tags" data-ref="tags"></div>
+      </div>
+      <button type="button" class="clothes-rack__arrow clothes-rack__arrow--next" data-ref="next" aria-label="{{ 'carousel.next' | t }}">{% render 'icon', name: 'arrow-right' %}</button>
+      <div class="clothes-rack__meta">
+        <h3 class="clothes-rack__name" data-ref="name" aria-live="polite"></h3>
+        <p class="clothes-rack__price" data-ref="price"></p>
+        <div class="clothes-rack__sides" role="group" data-ref="sides">
+          <button type="button" data-side="front" aria-pressed="true">{{ section.settings.front_label | default: 'Front' | escape }}</button>
+          <button type="button" data-side="back" aria-pressed="false">{{ section.settings.back_label | default: 'Back' | escape }}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="clothes-rack__cta">
+      <a class="clothes-rack__availability" data-ref="cta" data-state="idle" href="{{ section.settings.collection.url | default: routes.all_products_collection_url }}">
+        <span class="clothes-rack__cta-dot" aria-hidden="true"></span>
+        <span class="clothes-rack__cta-label" data-text="{{ cta_label | escape }}"><span>{{ cta_label | escape }}</span></span>
+        <span class="clothes-rack__cta-sizes" aria-hidden="true"><span data-ref="sizes"></span></span>
+        <span class="clothes-rack__cta-arrow" aria-hidden="true">{% render 'icon', name: 'arrow-right' %}</span>
+        <span class="visually-hidden" data-ref="cta-context"></span>
+      </a>
+    </div>
+  </div>
+</nk-clothes-rack>
+
+{% schema %}
+{
+  "name": "Clothes rack",
+  "class": "clothes-rack-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Small label above the rail. Leave empty for none."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Used when no \"Hang a product\" blocks are added. Works best with clean flat-lay photos on white."
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Pieces on the rail",
+      "min": 3,
+      "max": 16,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "back_from_second",
+      "label": "Use the second photo as the back view",
+      "default": true,
+      "info": "Turn off if your second photo is a lifestyle shot. Blocks can set a back photo per piece."
+    },
+    {
+      "type": "checkbox",
+      "id": "knock_out_white",
+      "label": "Blend white photo backgrounds into the section",
+      "default": true,
+      "info": "Makes white studio backgrounds disappear on light color schemes."
+    },
+    {
+      "type": "header",
+      "content": "Rail"
+    },
+    {
+      "type": "range",
+      "id": "garment_size",
+      "label": "Garment size",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "rem",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "spacing",
+      "label": "Hanging spacing",
+      "min": 14,
+      "max": 50,
+      "step": 2,
+      "unit": "%",
+      "default": 30,
+      "info": "How much of each garment shows while it hangs edge-on."
+    },
+    {
+      "type": "range",
+      "id": "collar_overlap",
+      "label": "Lift photo to the hanger",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "default": 22,
+      "info": "Pulls the photo up so the collar meets the hanger when photos have space above the garment."
+    },
+    {
+      "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button label",
+      "default": "See availability"
+    },
+    {
+      "type": "text",
+      "id": "front_label",
+      "label": "Front label",
+      "default": "Front"
+    },
+    {
+      "type": "text",
+      "id": "back_label",
+      "label": "Back label",
+      "default": "Back"
+    },
+    {
+      "type": "text",
+      "id": "close_label",
+      "label": "Close label",
+      "default": "Back to rack"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        { "value": "inherit", "label": "Theme default" },
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "full", "label": "Full width" }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Section spacing",
+      "options": [
+        { "value": "inherit", "label": "Theme default" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Top padding on phones",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Bottom padding on phones",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "piece",
+      "name": "Hang a product",
+      "limit": 16,
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "image_picker",
+          "id": "front_image",
+          "label": "Front photo",
+          "info": "Optional. Defaults to the product's first photo. Cut-outs on white look best."
+        },
+        {
+          "type": "image_picker",
+          "id": "back_image",
+          "label": "Back photo",
+          "info": "Optional. Defaults to the product's second photo when that option is on."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Clothes rack"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

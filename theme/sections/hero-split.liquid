@@ -2,6 +2,14 @@
   Split hero: image on one half, copy and buttons on the other. Adapted from HyperUI CTA #1.
   Source and license: docs/SECTION-SOURCES.md.
 {%- endcomment -%}
+{%- liquid
+  assign image_loading = 'lazy'
+  assign image_priority = 'auto'
+  if section.index == 1
+    assign image_loading = 'eager'
+    assign image_priority = 'high'
+  endif
+-%}
 <section class="hero-split kit-section full-width section-spacing section-presentation color-{{ section.settings.color_scheme }}" data-heading="{{ section.settings.heading_size }}" data-corners="{{ section.settings.corner_style }}" data-buttons="{{ section.settings.button_size }}" data-image="{{ section.settings.image_position }}" data-split="{{ section.settings.split }}" data-height="{{ section.settings.height }}" data-align="{{ section.settings.alignment }}" data-valign="{{ section.settings.vertical_alignment }}" data-panel="{{ section.settings.panel }}" data-fit="{{ section.settings.image_fit }}" data-mobile="{{ section.settings.mobile_order }}" style="{% render 'section-presentation', presentation: section.settings %}--hero-split-mobile-height:{{ section.settings.mobile_image_height }}vw;">
   {%- case section.settings.entrance -%}{%- when 'fade' -%}<nk-reveal class="kit-entrance" mode="fade">{%- when 'stagger' -%}<nk-stagger class="kit-entrance">{%- endcase -%}
   <div class="hero-split__inner">
@@ -9,7 +17,7 @@
       {%- if section.settings.image != blank -%}
         <picture>
           {%- if section.settings.image_mobile != blank -%}<source media="(max-width: 749px)" srcset="{{ section.settings.image_mobile | image_url: width: 900 }}">{%- endif -%}
-          {{ section.settings.image | image_url: width: 1800 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 750px) 50vw, 100vw', class: 'hero-split__image' }}
+          {{ section.settings.image | image_url: width: 1800 | image_tag: loading: image_loading, fetchpriority: image_priority, widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 750px) 50vw, 100vw', class: 'hero-split__image' }}
         </picture>
       {%- else -%}
         {{ 'lifestyle-1' | placeholder_svg_tag: 'hero-split__image kit-placeholder' }}

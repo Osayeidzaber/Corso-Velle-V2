@@ -1,12 +1,16 @@
 {
   "404": {
     "title": "404",
-    "not_found": "Page not found.",
-    "back_to_shopping": "Back to shopping"
+    "home": "Go home",
+    "title_accessible": "Page not found",
+    "not_found_line_1": "The page you're looking for might have been",
+    "not_found_line_2": "moved or doesn't exist.",
+    "explore": "Explore"
   },
   "accessibility": {
     "skip_to_content": "Skip to content",
-    "announcements": "Announcements"
+    "announcements": "Announcements",
+    "open_in_new_tab": "Opens in a new tab"
   },
   "general": {
     "close": "Close",
@@ -16,7 +20,9 @@
     "previous_page": "Previous page",
     "next_page": "Next page",
     "page_n": "Page {{ number }}",
-    "scroll": "Scroll"
+    "scroll": "Scroll",
+    "home": "Home",
+    "tagged": "tagged \"{{ tags }}\""
   },
   "header": {
     "menu": "Menu",
@@ -72,7 +78,12 @@
     "removed": "Item removed from cart",
     "error": "Something went wrong. Please review your cart and try again.",
     "add_unconfirmed": "We couldn't confirm whether the item was added. Please check your cart before trying again.",
-    "add_not_applied": "The item wasn't added. Please try again."
+    "add_not_applied": "The item wasn't added. Please try again.",
+    "free_shipping_remaining_html": "You're {{ amount }} away from free shipping",
+    "free_shipping_unlocked": "You've unlocked free shipping",
+    "recommendations_add": "Add {{ title }}, size {{ size }}",
+    "recommendations_add_one": "Add {{ title }}",
+    "add": "Add"
   },
   "collection": {
     "showing_count": "Showing {{ shown }} of {{ total }} products",
@@ -85,7 +96,13 @@
     "shop_all": "Shop all products",
     "view_all": "View all",
     "placeholder_product": "Product name",
-    "choose_collection": "Choose a collection for this tab."
+    "choose_collection": "Choose a collection for this tab.",
+    "previous_categories": "Previous categories",
+    "next_categories": "Next categories",
+    "load_more": "Load more",
+    "loading_more": "Loading more products…",
+    "loaded_more": "[count] more products loaded",
+    "load_failed": "Couldn't load more products. Try again."
   },
   "collections": {
     "title": "Collections"
@@ -143,9 +160,9 @@
       "xxxl": "Triple extra large"
     },
     "fit_finder": {
-      "eyebrow": "Find your perfect size",
+      "eyebrow": "Find a starting size",
       "step_1_title": "Let’s find your fit",
-      "step_1_lede": "Two measurements are all it takes. Drag to adjust.",
+      "step_1_lede": "A general clothing-size estimate. Always compare with the garment chart.",
       "step_2_title": "Your shape",
       "step_2_lede": "Compared with most people your height. Skip if unsure.",
       "step_3_title": "How do you like it to fit?",
@@ -175,7 +192,7 @@
       "fit_regular_note": "As designed",
       "fit_relaxed": "Relaxed",
       "fit_relaxed_note": "Room to move",
-      "your_size": "Your size",
+      "your_size": "Estimated size",
       "unmatched": "This piece uses its own sizing. Compare with the chart below.",
       "select": "Select size",
       "restart": "Start over",
@@ -183,14 +200,18 @@
       "refined": "Refined in the next steps",
       "back": "Back",
       "next": "Continue",
-      "hint": "Your size",
+      "hint": "Estimated size",
       "find_size": "Find my size",
-      "privacy": "Saved privately on this device, so every piece shows your size."
+      "privacy": "Select a size to save your preferences privately on this device."
     },
     "size_table_heading": "Garment measurements",
     "measurements_in": "measurements in",
     "zoom": "Zoom image",
-    "quick_add": "Quick add"
+    "quick_add": "Quick add",
+    "badge_new": "New",
+    "badge_bestseller": "Bestseller",
+    "badge_limited": "Limited",
+    "low_stock_sizes": "Only a few left in {{ sizes }}"
   },
   "customers": {
     "login": {
@@ -263,7 +284,8 @@
     "active": "Active filters",
     "no_matches": "No products match these filters.",
     "update_failed": "The results couldn't be updated.",
-    "reload": "Load the page with these filters"
+    "reload": "Load the page with these filters",
+    "zero_results": "0 results"
   },
   "carousel": {
     "canvas_label": "Product images. Drag, swipe, or use the left and right arrow keys to browse. Press Enter to view the highlighted product.",
@@ -311,5 +333,31 @@
     "video": {
       "play": "Play video: {{ title }}"
     }
+  },
+  "support": {
+    "title": "Contact information",
+    "email": "Email",
+    "phone": "Phone"
+  },
+  "promotions": {
+    "badge": "Code {{ code }}",
+    "product_note_auto": "Added to your cart automatically when your order qualifies. Shopify confirms the discount in the cart.",
+    "product_note_manual": "Enter this code in your cart or at checkout. Shopify confirms whether your order qualifies.",
+    "savings": "You save",
+    "checkout_confirms": "Discounts are confirmed at checkout.",
+    "code_toggle": "Discount code",
+    "code_label": "Discount code",
+    "code_placeholder": "Enter code",
+    "apply": "Apply",
+    "remove_code": "Remove discount code {{ code }}",
+    "applying": "Checking code…",
+    "applied": "Code [code] applied.",
+    "applied_at_checkout": "Code [code] is on your order. Its saving, such as free shipping, is shown at checkout.",
+    "already_applied": "Code [code] is already on your order.",
+    "replaced_automatic": "Code [code] applied. It replaced an automatic promotion that can't be combined with it.",
+    "not_applicable": "Code [code] can't be used with this cart. It may be invalid or expired, not available for these items or your account, need a higher order total, or not combine with a discount already applied.",
+    "removed": "Code [code] removed.",
+    "empty": "Enter a discount code.",
+    "error": "We couldn't update discount codes. Please try again."
   }
 }

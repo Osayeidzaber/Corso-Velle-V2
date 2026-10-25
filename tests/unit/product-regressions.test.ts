@@ -34,11 +34,47 @@ function choose(value: string) {
 const response = (html: string) => new Response(html, { headers: { 'Content-Type': 'text/html' } });
 beforeEach(() => {
   sessionStorage.clear();
-  setConfigForTests({ ...config(), motion: 'off', strings: { 'product.add_to_cart': 'Add to cart', 'product.sold_out': 'Sold out', 'product.selection_failed': 'Selection failed', 'product.unavailable': 'Unavailable' } });
+  setConfigForTests({ ...config(), motion: 'off', strings: { 'product.add_to_cart': 'Add to cart', 'product.sold_out': 'Sold out', 'product.selection_failed': 'Selection failed', 'product.unavailable': 'Unavailable', 'product.choose_named_option': 'Choose a [option]' } });
 });
 afterEach(() => { document.body.replaceChildren(); vi.restoreAllMocks(); vi.unstubAllGlobals(); setConfigForTests(null); });
 
 describe('product purchase regressions', () => {
+  it('preserves uploaded properties through the native multipart product form', async () => {
+    mount(sectionMarkup());
+    const NativeFormData = FormData;
+    vi.stubGlobal('FormData', class extends NativeFormData {
+      constructor(form?: HTMLFormElement) {
+        super(form);
+        this.append('properties[Artwork]', new File(['artwork'], 'artwork.txt'));
+      }
+    });
+    const nativeSubmit = vi.spyOn(HTMLFormElement.prototype, 'submit').mockImplementation(() => {});
+    const add = vi.spyOn(cart, 'add').mockResolvedValue({} as CartResult);
+    document.querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
+    await Promise.resolve();
+    expect(nativeSubmit).toHaveBeenCalledOnce();
+    expect(document.querySelector('form')!.enctype).toBe('multipart/form-data');
+    expect(add).not.toHaveBeenCalled();
+    const restored = new Event('pageshow');
+    Object.defineProperty(restored, 'persisted', { value: true });
+    window.dispatchEvent(restored);
+    expect(document.querySelector('nk-product-form')!.hasAttribute('data-pending')).toBe(false);
+    document.querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
+    expect(nativeSubmit).toHaveBeenCalledTimes(2);
+  });
+  it('validates required customization fields before adding and preserves their values', async () => {
+    mount(sectionMarkup().replace('</form>', '<input name="properties[Monogram]" required></form>'));
+    const add = vi.spyOn(cart, 'add').mockResolvedValue({} as CartResult);
+    const button = document.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    button.click();
+    await Promise.resolve();
+    expect(add).not.toHaveBeenCalled();
+    document.querySelector<HTMLInputElement>('[name="properties[Monogram]"]')!.value = 'AB';
+    button.click();
+    await vi.waitFor(() => expect(add).toHaveBeenCalledExactlyOnceWith(
+      [{ id: 101, quantity: 2, properties: { Monogram: 'AB' } }], expect.any(String),
+    ));
+  });
   it('uses the full display name while matching measurements by the unchanged actual size', () => {
     mount(sectionMarkup('M').replace('</fieldset>', `<div data-measurement-panel data-base-unit="cm" hidden>
       <template data-measurement-size-label="M">Medium (M)</template><span data-measurement-active-size></span>
@@ -142,7 +178,8 @@ describe('product purchase regressions', () => {
     const picker = document.querySelector<NkVariantPicker>('nk-variant-picker')!;
     expect(picker.state).toBe('incomplete');
     expect(document.querySelector('input:checked')).toBeNull();
-    expect(document.querySelector('[data-button-label]')!.textContent).toBe('Add to cart');
+    expect(document.querySelector('[data-button-label]')!.textContent).toBe('Choose a Size');
+    expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
     for (const size of ['M', 'L']) {
       document.querySelector(`[data-size-pill="${size}"]`)!.dispatchEvent(new Event('pointerover', { bubbles: true }));
       expect(document.querySelector('[data-measurement-active-size]')!.textContent).toBe(size);
@@ -212,11 +249,37 @@ describe('product purchase regressions', () => {
     expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
     expect(document.querySelector<HTMLElement>('.shopify-payment-button')!.hidden).toBe(true);
   });
-  it('disables both checkout paths during resolution and after a network failure', async () => {
+  it('queues an add made during resolution and sends only the resolved variant', async () => {
+    mount(sectionMarkup());
+    let finish!: (response: Response) => void;
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>(resolve => { finish = resolve; })));
+    const add = vi.spyOn(cart, 'add').mockResolvedValue({} as CartResult);
+    choose('M');
+    const button = document.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    expect(button.disabled).toBe(false);
+    expect(document.querySelector<HTMLElement>('.shopify-payment-button')!.hidden).toBe(true);
+    button.click(); button.click();
+    expect(add).not.toHaveBeenCalled();
+    finish(response(sectionMarkup('M', 'available', '102')));
+    await vi.waitFor(() => expect(add).toHaveBeenCalledExactlyOnceWith([{ id: 102, quantity: 2 }], expect.any(String)));
+  });
+  it('drops a queued add when the resolved variant is sold out', async () => {
+    mount(sectionMarkup());
+    let finish!: (response: Response) => void;
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>(resolve => { finish = resolve; })));
+    const add = vi.spyOn(cart, 'add').mockResolvedValue({} as CartResult);
+    choose('M');
+    document.querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
+    finish(response(sectionMarkup('M', 'sold-out', '102')));
+    await vi.waitFor(() => expect(document.querySelector<NkVariantPicker>('nk-variant-picker')!.state).toBe('sold-out'));
+    await new Promise(resolve => setTimeout(resolve, 10));
+    expect(add).not.toHaveBeenCalled();
+  });
+  it('disables both checkout paths after a network failure', async () => {
     mount(sectionMarkup());
     vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('offline'); }));
     choose('M');
-    expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
+    expect(document.querySelector<HTMLElement>('.shopify-payment-button')!.hidden).toBe(true);
     await vi.waitFor(() => expect(document.querySelector<NkVariantPicker>('nk-variant-picker')!.state).toBe('failed'));
     expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
     expect(document.querySelector<HTMLElement>('.shopify-payment-button')!.hidden).toBe(true);

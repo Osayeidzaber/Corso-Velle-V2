@@ -1,5 +1,6 @@
 @import './tailwind.css';
 @import './base.css';
+@import './components/rte.css';
 @import './components/feature-card.css';
 @import './components/controls.css';
 @import './components/dialog.css';
@@ -17,6 +18,7 @@
 @import '../components/marquee/marquee.css';
 @import '../components/tabs/tabs.css';
 @import '../components/expand-media/expand-media.css';
+@import '../components/clothes-rack/clothes-rack.css';
 @import '../components/reveal/reveal.css';
 @import '../components/text/text.css';
 @import '../components/motion/cursor.css';

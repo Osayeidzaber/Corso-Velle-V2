@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+const drawing = vi.hoisted(() => ({ count: 0 }));
 
 // Exercise the real controller/frame loop without requiring a GPU or loading catalog images.
 vi.mock('ogl', () => ({
   Renderer: class {
     dpr = 1; isWebgl2 = true;
     gl = { canvas: document.createElement('canvas'), clearColor() {}, getExtension() {},
-      getProgramParameter: () => true, deleteTexture() {}, deleteFramebuffer() {}, generateMipmap() {}, viewport() {}, clear() {} };
+      getProgramParameter: () => true, deleteTexture() {}, deleteFramebuffer() {}, generateMipmap() {}, viewport() {}, clear() { drawing.count++; } };
     getExtension() {} setSize() {} bindFramebuffer() {} render() {}
   },
   Texture: class { texture = {}; bind() {} },
@@ -27,6 +28,7 @@ let now = 0;
 let frameId = 0;
 const frames = new Map<number, FrameRequestCallback>();
 const resizeObservers: { callback: () => void; target?: Element }[] = [];
+const intersections: { callback: IntersectionObserverCallback; target: Element; observer: IntersectionObserver }[] = [];
 let aborter: AbortController;
 function advance(ms: number): void {
   const end = now + ms;
@@ -50,13 +52,16 @@ function mount(speed = 35, browseOnly = false, soldOut = false) {
   return { root, onActive, engine: engine!, next: () => root.querySelector<HTMLButtonElement>('button')!.click() };
 }
 beforeEach(() => {
-  now = 0; frameId = 0; frames.clear(); resizeObservers.length = 0;
+  now = 0; frameId = 0; frames.clear(); resizeObservers.length = 0; intersections.length = 0; drawing.count = 0;
   vi.spyOn(performance, 'now').mockImplementation(() => now);
   vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => { frames.set(++frameId, callback); return frameId; });
   vi.stubGlobal('cancelAnimationFrame', (id: number) => frames.delete(id));
   vi.stubGlobal('IntersectionObserver', class {
     constructor(readonly callback: IntersectionObserverCallback) {}
-    observe(target: Element) { this.callback([{ target, isIntersecting: true } as IntersectionObserverEntry], this as unknown as IntersectionObserver); }
+    observe(target: Element) {
+      intersections.push({ callback: this.callback, target, observer: this as unknown as IntersectionObserver });
+      this.callback([{ target, isIntersecting: true } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
+    }
     disconnect() {}
   });
   vi.stubGlobal('ResizeObserver', class {
@@ -81,6 +86,24 @@ beforeEach(() => {
 afterEach(() => { aborter?.abort(); document.body.replaceChildren(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe('editorial carousel responsiveness', () => {
+  it('repaints a settled paused scene after leaving and returning to the viewport', () => {
+    const { root } = mount(); advance(2400);
+    const watch = intersections.find(entry => entry.target.classList.contains('product-carousel__stage'))!;
+    const emit = (visible: boolean) => watch.callback([{ target: watch.target, isIntersecting: visible } as IntersectionObserverEntry], watch.observer);
+    emit(false); const before = drawing.count;
+    emit(true); advance(20);
+    expect(drawing.count).toBeGreaterThan(before);
+    expect(root.hasAttribute('data-effect-ready')).toBe(true);
+  });
+  it('restores native merchandise when a GPU texture fails', () => {
+    const images: any[] = [];
+    vi.stubGlobal('Image', class { onerror: (() => void) | null = null; onload = null; src = ''; constructor() { images.push(this); } });
+    const { root } = mount();
+    images[0].onerror();
+    expect(root.hasAttribute('data-effect-ready')).toBe(false);
+    expect(root.querySelector('.product-carousel__stage')).toBeNull();
+    expect(root.querySelectorAll('[data-ref="track"] > li')).toHaveLength(4);
+  });
   it('announces sold-out availability and clears it when the next product is available', () => {
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
     const { root } = mount(35, true, true);

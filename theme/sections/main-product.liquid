@@ -35,6 +35,13 @@
     assign availability = 'sold-out'
   endif
 
+  # Low-stock dots on size buttons follow the Inventory status block's setting (no block = off).
+  assign low_on_sizes = false
+  assign inventory_block = section.blocks | where: 'type', 'inventory' | first
+  if inventory_block and inventory_block.settings.show_on_sizes != false
+    assign low_on_sizes = true
+  endif
+
   assign eligible_collections = product.collections | reject: 'handle', 'all' | reject: 'handle', 'frontpage'
   assign primary_collection = collection | default: eligible_collections.first
 -%}
@@ -45,15 +52,23 @@
 
     <div class="product__info">
       {%- unless section.settings.show_breadcrumb == false -%}
+      {%- capture breadcrumb_handle -%}{% render 'breadcrumb-collection', product: product %}{%- endcapture -%}
+      {%- liquid
+        assign breadcrumb_collection = blank
+        if breadcrumb_handle != blank
+          assign breadcrumb_collection = collections[breadcrumb_handle]
+        endif
+      -%}
       <nav class="product__breadcrumb spec" aria-label="Breadcrumb">
-        <a href="{{ routes.all_products_collection_url }}">{{ 'collections.title' | t }}</a>
-        {%- if primary_collection != blank -%}
+        <a href="{{ routes.collections_url }}">{{ 'collections.title' | t }}</a>
+        {%- if breadcrumb_handle != blank -%}
           <span aria-hidden="true">/</span>
-          <a href="{{ primary_collection.url }}">{{ primary_collection.title | escape }}</a>
+          <a href="{{ breadcrumb_collection.url }}">{{ breadcrumb_collection.title | escape }}</a>
         {%- endif -%}
         <span aria-hidden="true">/</span>
         <span aria-current="page">{{ product.title | truncate: 36 | escape }}</span>
       </nav>
+      {% render 'breadcrumb-schema', collection: breadcrumb_collection, product: product %}
       {%- endunless -%}
 
       {%- for block in section.blocks -%}
@@ -87,13 +102,13 @@
                 {%- for tag in product.tags -%}
                   {%- assign tag_down = tag | downcase | strip -%}
                   {%- if tag_down == 'new' or tag_down == 'new arrival' -%}
-                    <span class="badge">New</span>
+                    <span class="badge">{{ 'product.badge_new' | t }}</span>
                     {%- break -%}
                   {%- elsif tag_down == 'bestseller' or tag_down == 'best seller' -%}
-                    <span class="badge">Bestseller</span>
+                    <span class="badge">{{ 'product.badge_bestseller' | t }}</span>
                     {%- break -%}
                   {%- elsif tag_down == 'limited' or tag_down == 'limited edition' -%}
-                    <span class="badge">Limited</span>
+                    <span class="badge">{{ 'product.badge_limited' | t }}</span>
                     {%- break -%}
                   {%- endif -%}
                 {%- endfor -%}
@@ -117,7 +132,11 @@
               {%- if variant.sku != blank and block.settings.show_sku != false -%}
                 <span class="product__sku spec text-muted" data-product-sku>Ref. {{ variant.sku | escape }}</span>
               {%- endif -%}
+              {% render 'promotion', product: product, view: 'product', enabled: block.settings.show_promotion %}
             </div>
+
+          {%- when 'model_info' -%}
+            <div {{ block.shopify_attributes }}>{% render 'model-info', product: product, settings: block.settings %}</div>
 
           {%- when 'text' -%}
             {%- if block.settings.text != blank -%}
@@ -145,22 +164,34 @@
                   assign chart_rule = assignment_parts.last
               endcase
               assign size_table = block.settings.size_table
+              assign size_image = nil
               assign size_unit = block.settings.size_unit
               assign size_heading = block.settings.size_heading
               assign size_note = block.settings.size_note
               if chart_rule != blank
                 assign chart_prefix = 'size_chart_' | append: chart_rule
+                assign handle_key = chart_prefix | append: '_handle'
+                assign rule_handle = settings[handle_key] | strip
+                assign rule_chart = metaobjects.size_chart[rule_handle]
+                capture rule_chart_usable
+                  render 'size-chart-usable', chart: rule_chart
+                endcapture
+                if rule_chart_usable == 'true'
+                  assign assigned_chart = rule_chart
+                endif
                 assign table_key = chart_prefix | append: '_table'
+                assign image_key = chart_prefix | append: '_image'
                 assign unit_key = chart_prefix | append: '_unit'
                 assign basis_key = chart_prefix | append: '_basis'
                 assign note_key = chart_prefix | append: '_note'
                 assign size_table = settings[table_key]
+                assign size_image = settings[image_key]
                 assign size_unit = settings[unit_key]
                 assign size_heading = settings[basis_key]
                 assign size_note = settings[note_key]
               endif
               capture size_chart_html
-                render 'size-chart', product: product, chart: assigned_chart, page: block.settings.size_guide_page, table_csv: size_table, unit: size_unit, note: size_note, heading: size_heading, option: block.settings.size_guide_option, verified_chart: chart_rule, show_units: block.settings.show_unit_switch, highlight: block.settings.highlight_selected
+                render 'size-chart', product: product, chart: assigned_chart, image: size_image, page: block.settings.size_guide_page, table_csv: size_table, unit: size_unit, note: size_note, heading: size_heading, option: block.settings.size_guide_option, verified_chart: chart_rule, show_units: block.settings.show_unit_switch, highlight: block.settings.highlight_selected
               endcapture
               assign size_chart_html = size_chart_html | strip
               assign fit_option = nil
@@ -169,7 +200,10 @@
                   capture fit_is_size
                     render 'size-option', name: fit_candidate.name, extra: block.settings.size_guide_option
                   endcapture
-                  if fit_is_size == 'true'
+                  capture fit_supported
+                    render 'fit-option-supported', option: fit_candidate
+                  endcapture
+                  if fit_is_size == 'true' and fit_supported == 'true'
                     assign fit_option = fit_candidate
                     break
                   endif
@@ -200,11 +234,11 @@
                   {%- liquid
                     assign option_index = forloop.index
                     assign option_name = option.name | downcase | strip
-                    capture is_size_option
+                    capture size_option_result
                       render 'size-option', name: option.name, extra: block.settings.size_guide_option
                     endcapture
                     assign is_size_option = false
-                    if is_size_option == 'true'
+                    if size_option_result == 'true'
                       assign is_size_option = true
                     endif
                     assign is_color_option = false
@@ -214,12 +248,13 @@
                   -%}
                   <fieldset
                     class="option{% if is_size_option %} option--size{% endif %}{% if is_color_option %} option--color{% endif %}"
+                    aria-labelledby="OptionLabel-{{ section.id }}-{{ option_index }}"
                     data-option-position="{{ option_index }}"
                     data-option-name="{{ option.name | escape }}"
                     {% if is_size_option %}data-size-fieldset{% endif %}
                   >
                     <div class="option__header">
-                      <legend class="option__legend">
+                      <span class="option__legend" id="OptionLabel-{{ section.id }}-{{ option_index }}">
                         <span class="spec">
                           {{- option.name | escape }}:
                           <span class="option__selected-label" data-selected-value>
@@ -230,7 +265,7 @@
                             {%- endif -%}
                           </span>
                         </span>
-                      </legend>
+                      </span>
                       {%- if is_size_option and size_modal_id != blank -%}
                         <button type="button" class="size-guide-link spec" data-nk-open="{{ size_modal_id }}" aria-haspopup="dialog">
                           {{- 'product.size_guide' | t -}}
@@ -277,6 +312,7 @@
                               <span class="option__swatch" style="--swatch: {{ swatch_bg }}" aria-hidden="true"></span>
                             {%- endif -%}
                             <span class="option__label-text" data-text="{{ value | escape }}">{{- value | escape -}}</span>
+                            {%- render 'size-stock', value: value, enabled: low_on_sizes -%}
                             {%- if state == 'sold-out' -%}
                               <span class="visually-hidden">{{ 'product.value_sold_out' | t }}</span>
                             {%- elsif state == 'missing' -%}
@@ -345,23 +381,7 @@
 
           {%- when 'inventory' -%}
             <div class="inventory-note" data-region="inventory" {{ block.shopify_attributes }}>
-              {%- liquid
-                assign threshold = settings.inventory_threshold
-              -%}
-              {%- if variant and variant.available -%}
-                {%- if variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny' and variant.inventory_quantity > 0 and variant.inventory_quantity <= threshold -%}
-                  <span class="inventory-status inventory-status--low spec">
-                    <span class="inventory-status__dot" aria-hidden="true"></span>
-                    {{ 'product.low_stock' | t: count: variant.inventory_quantity }}
-                  </span>
-                {%- endif -%}
-              {%- elsif availability == 'sold-out' -%}
-                <span class="inventory-status inventory-status--sold-out spec">
-                  <span class="inventory-status__dot" aria-hidden="true"></span>
-                  {{ 'product.sold_out' | t }}
-
-                </span>
-              {%- endif -%}
+              {% render 'inventory-status', product: product, variant: variant, availability: availability, needs_choice: needs_choice %}
             </div>
 
           {%- when 'buy_buttons' -%}
@@ -408,13 +428,16 @@
                     case availability
                       when 'available'
                         assign label = 'product.add_to_cart' | t
+                        if needs_choice
+                          assign label = 'product.select_size_prompt' | t
+                        endif
                       when 'sold-out'
                         assign label = 'product.sold_out' | t
                       else
                         assign label = 'product.unavailable' | t
                     endcase
                   -%}
-                  <button type="submit" name="add" class="button button--full buy__submit" {% if availability != 'available' %}disabled{% endif %}>
+                  <button type="submit" name="add" class="button button--full buy__submit" {% if availability != 'available' or needs_choice %}disabled{% endif %}>
                     <span data-button-label>{{ label }}</span>
                     {%- if availability == 'available' -%}
                       <span class="buy__submit-sep" aria-hidden="true">·</span>
@@ -445,6 +468,11 @@
               if block.settings.page != blank
                 assign accordion_content = block.settings.page.content
               endif
+              if block.settings.policy_source == 'shipping_exchange'
+                capture accordion_content
+                  render 'shipping-exchange'
+                endcapture
+              endif
             -%}
             {%- if accordion_content != blank -%}
               <nk-disclosure {{ block.shopify_attributes }}>
@@ -462,6 +490,12 @@
     </div>
   </div>
 
+  {%- comment -%}
+    Opt-in sticky purchase bar (src/components/product/sticky-buy.ts): appears once the main
+    Add to cart button has scrolled above the viewport and mirrors its size, price and state.
+  {%- endcomment -%}
+  {%- assign buy_block = section.blocks | where: 'type', 'buy_buttons' | first -%}
+  {% render 'sticky-buy', product: product, variant: variant, needs_choice: needs_choice, scope: section.settings.sticky_buy, buy_block: buy_block %}
 </div>
 
 {% schema %}
@@ -481,6 +515,10 @@
       "label": "Desktop gallery",
       "options": [
         {
+          "value": "collage",
+          "label": "Editorial collage"
+        },
+        {
           "value": "slider",
           "label": "Single image slider"
         },
@@ -490,10 +528,11 @@
         },
         {
           "value": "grid",
-          "label": "Editorial grid"
+          "label": "Two-column grid"
         }
       ],
-      "default": "slider"
+      "default": "slider",
+      "info": "Single image slider: one large photo with a thumbnail rail, subtle arrows and click-to-enlarge. Editorial collage: all photos in a magazine-style rhythm beside sticky product details."
     },
     {
       "type": "select",
@@ -586,6 +625,27 @@
       "default": true
     },
     {
+      "type": "select",
+      "id": "sticky_buy",
+      "label": "Sticky Add to cart bar",
+      "options": [
+        {
+          "value": "off",
+          "label": "Off"
+        },
+        {
+          "value": "mobile",
+          "label": "Phones and tablets"
+        },
+        {
+          "value": "always",
+          "label": "All screen sizes"
+        }
+      ],
+      "default": "off",
+      "info": "Appears after the main Add to cart button scrolls out of view."
+    },
+    {
       "type": "checkbox",
       "id": "show_thumbnails",
       "label": "Show media thumbnails",
@@ -596,6 +656,13 @@
       "id": "show_gallery_controls",
       "label": "Show media arrows and counter",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_media_progress",
+      "label": "Show media progress bar",
+      "default": true,
+      "info": "A thin bar that follows your position through the product photos: under the slider, or beside stacked photos on desktop."
     },
     {
       "type": "checkbox",
@@ -732,6 +799,13 @@
           "id": "show_sku",
           "label": "Show SKU when available",
           "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_promotion",
+          "label": "Show promotion code",
+          "default": true,
+          "info": "Shows the discount code connected to this product in Theme settings > Promotions."
         }
       ]
     },
@@ -827,7 +901,58 @@
     {
       "type": "inventory",
       "name": "Inventory status",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_on_sizes",
+          "label": "Mark low-stock sizes on size buttons",
+          "default": true,
+          "info": "Uses Theme settings > Product page > \"Show only a few left\" threshold."
+        }
+      ]
+    },
+    {
+      "type": "model_info",
+      "name": "Model info",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Shows a line like \"Model is 183 cm and wears size M\". Set it per product with the metafields custom.model_info, or custom.model_height and custom.model_size (see docs/MODEL-INFO.md)."
+        },
+        {
+          "type": "checkbox",
+          "id": "show",
+          "label": "Show model info",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "use_metafields",
+          "label": "Use product metafields",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "sentence",
+          "label": "Sentence",
+          "default": "Model is [height] and wears size [size]",
+          "info": "Used with the height and size metafields. [height] and [size] are replaced."
+        },
+        {
+          "type": "text",
+          "id": "fallback",
+          "label": "Fallback text",
+          "info": "Shown on products without model metafields. Leave blank to show nothing."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_icon",
+          "label": "Show icon",
+          "default": true
+        }
+      ]
     },
     {
       "type": "buy_buttons",
@@ -919,6 +1044,17 @@
       "type": "accordion",
       "name": "Collapsible row",
       "settings": [
+        {
+          "type": "select",
+          "id": "policy_source",
+          "label": "Content source",
+          "options": [
+            { "value": "custom", "label": "Custom content or page" },
+            { "value": "shipping_exchange", "label": "Shopify shipping and refund policies" }
+          ],
+          "default": "custom",
+          "info": "Policies stay synchronized with Settings > Policies in Shopify Admin."
+        },
         {
           "type": "text",
           "id": "heading",

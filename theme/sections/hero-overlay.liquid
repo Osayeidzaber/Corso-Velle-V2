@@ -2,6 +2,14 @@
   Image banner with text over the image. Adapted from Shopify Dawn sections/image-banner.liquid.
   Source and license: docs/SECTION-SOURCES.md.
 {%- endcomment -%}
+{%- liquid
+  assign image_loading = 'lazy'
+  assign image_priority = 'auto'
+  if section.index == 1
+    assign image_loading = 'eager'
+    assign image_priority = 'high'
+  endif
+-%}
 <section class="hero-overlay kit-section full-width section-spacing section-presentation color-{{ section.settings.color_scheme }}" data-heading="{{ section.settings.heading_size }}" data-corners="{{ section.settings.corner_style }}" data-buttons="{{ section.settings.button_size }}" data-height="{{ section.settings.height }}" data-mobile-height="{{ section.settings.mobile_height }}" data-position="{{ section.settings.content_position }}" data-mobile-position="{{ section.settings.mobile_position }}" data-align="{{ section.settings.alignment }}" data-tone="{{ section.settings.text_tone }}" data-overlay="{{ section.settings.overlay_style }}" data-box="{{ section.settings.content_box }}" style="{% render 'section-presentation', presentation: section.settings %}--hero-overlay-opacity:{{ section.settings.overlay_opacity | divided_by: 100.0 }};--hero-overlay-width:{{ section.settings.content_max_width }}px;">
   {%- case section.settings.entrance -%}{%- when 'fade' -%}<nk-reveal class="kit-entrance" mode="fade">{%- when 'stagger' -%}<nk-stagger class="kit-entrance">{%- endcase -%}
   <div class="hero-overlay__inner">
@@ -9,7 +17,7 @@
       {%- if section.settings.image != blank -%}
         <picture>
           {%- if section.settings.image_mobile != blank -%}<source media="(max-width: 749px)" srcset="{{ section.settings.image_mobile | image_url: width: 900 }}">{%- endif -%}
-          {{ section.settings.image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750, 1100, 1500, 1800, 2400', sizes: '100vw', class: 'hero-overlay__image' }}
+          {{ section.settings.image | image_url: width: 2400 | image_tag: loading: image_loading, fetchpriority: image_priority, widths: '750, 1100, 1500, 1800, 2400', sizes: '100vw', class: 'hero-overlay__image' }}
         </picture>
       {%- else -%}
         {{ 'hero-apparel-1' | placeholder_svg_tag: 'hero-overlay__image kit-placeholder' }}

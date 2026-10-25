@@ -17,6 +17,7 @@
   @param {boolean} [show_units] - Allow unit switching (default true)
   @param {boolean} [highlight] - Mark the selected size (default true)
   @param {object} [page] - Fallback page
+  @param {image} [image] - Optional rule chart picture; reusable chart image takes priority
   @param {string} [table_csv] - Inline table, e.g. "Size,Chest\nS,40"
   @param {string} [unit] - Unit the inline table is written in: in or cm
   @param {string} [note] - Line shown under the inline table
@@ -31,6 +32,8 @@
   assign chart = chart | default: product.metafields.custom.size_chart.value
   assign chart_fallback = chart.fallback.value | default: ''
   assign chart_notes = chart.notes.value | default: ''
+  assign metaobject_image = chart.image.value | default: ''
+  assign chart_image = metaobject_image | default: image | default: ''
   assign custom_json = product.metafields.custom.measurements.value
   assign option_name = option | default: 'Size'
   assign source = ''
@@ -40,7 +43,7 @@
   if chart.table.value.rows.size > 0 and chart.table.value.columns.size > 0
     assign source = 'metaobject'
     assign table = chart.table.value
-  elsif chart_fallback != blank or chart_notes != blank
+  elsif chart_fallback != blank or chart_notes != blank or metaobject_image != blank
     assign source = 'metaobject'
   endif
 
@@ -105,6 +108,9 @@
     endif
   endif
 
+  if source == '' and chart_image != blank
+    assign source = 'image'
+  endif
   if source == '' and page != blank
     assign source = 'page'
   endif
@@ -121,13 +127,23 @@
       <p class="size-chart__basis">
         {%- if basis != blank -%}{{ basis | escape }}{%- else -%}{{ 'product.size_table_heading' | t }}{%- endif -%}
       </p>
-      {%- unless show_units == false -%}
+      {%- if show_units != false and source != 'image' -%}
+      {%- if source == 'csv' or table.rows.size > 0 -%}
       <div class="size-guide__units" role="group" aria-label="{{ 'product.units' | t }}">
         <button type="button" class="size-guide__unit" data-ref="unit" value="in" aria-pressed="{% if base_unit == 'in' %}true{% else %}false{% endif %}" hidden>{{ 'product.inches' | t }}</button>
         <button type="button" class="size-guide__unit" data-ref="unit" value="cm" aria-pressed="{% if base_unit == 'cm' %}true{% else %}false{% endif %}" hidden>{{ 'product.centimetres' | t }}</button>
       </div>
-      {%- endunless -%}
+      {%- endif -%}
+      {%- endif -%}
     </div>
+
+    {%- if chart_image != blank -%}
+      {%- assign image_alt = chart_image.alt | default: chart.title.value | default: product.title -%}
+      <a class="size-chart__image" href="{{ chart_image | image_url: width: 3000 }}" target="_blank" rel="noopener">
+        {{ chart_image | image_url: width: 1600 | image_tag: loading: 'lazy', widths: '360, 540, 720, 1080, 1600', sizes: '(min-width: 750px) 560px, 100vw', alt: image_alt, style: 'width:100%;height:auto;display:block;' }}
+        <span class="visually-hidden">{{ 'accessibility.open_in_new_tab' | t }}</span>
+      </a>
+    {%- endif -%}
 
     {%- if source == 'csv' or table.rows.size > 0 -%}
       <div class="size-table-wrap" tabindex="0" role="region" aria-label="{{ 'product.size_table' | t }}">
@@ -197,7 +213,7 @@
 
     {%- if source == 'metaobject' and chart_notes != blank -%}
       <div class="size-chart__notes rte">{{ chart.notes | metafield_tag }}</div>
-    {%- elsif source == 'csv' and note != blank -%}
+    {%- elsif note != blank -%}
       <p class="size-chart__notes">{{ note | escape }}</p>
     {%- endif -%}
   </nk-size-guide>

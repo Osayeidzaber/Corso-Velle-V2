@@ -1,9 +1,23 @@
 import { afterEach, expect, it } from 'vitest';
-import { FIT_STORAGE_KEY, matchProductSize, recommendSize } from '../../src/components/fit-finder/fit-finder';
+import { FIT_STORAGE_KEY, loadProfile, matchProductSize, recommendSize } from '../../src/components/fit-finder/fit-finder';
 
 afterEach(() => {
   document.body.innerHTML = '';
   localStorage.clear();
+});
+
+it.each([
+  { sex: 'unknown' }, { chest: 'old-value' }, { stomach: 'old-value' },
+  { fit: 'old-value' }, { heightUnit: 'inches' }, { weightUnit: 'stone' },
+  { height: 0 }, { weight: -1 },
+])('ignores invalid persisted fit profiles: %j', (invalid) => {
+  localStorage.setItem(FIT_STORAGE_KEY, JSON.stringify({ height: 180, weight: 80, ...invalid }));
+  expect(loadProfile()).toBeNull();
+});
+
+it('retains valid saved measurements and fills omitted preferences', () => {
+  localStorage.setItem(FIT_STORAGE_KEY, JSON.stringify({ height: 170, weight: 65 }));
+  expect(loadProfile()).toMatchObject({ height: 170, weight: 65, sex: 'male', fit: 'regular' });
 });
 
 it('estimates sensible letter sizes and shifts them with shape and fit', () => {
@@ -55,9 +69,8 @@ it('walks the steps, saves the profile and selects the recommended size', () => 
   weight.value = '89';
   weight.dispatchEvent(new Event('input'));
   expect(finder.querySelector('[data-ref="estimate"]')!.textContent).toBe('L');
-  expect(JSON.parse(localStorage.getItem(FIT_STORAGE_KEY)!).weight).toBe(89);
-  expect(document.querySelector('[data-size-pill="L"]')!.hasAttribute('data-recommended')).toBe(true);
-  expect(document.querySelector('[data-fit-hint] [data-part="size"]')!.textContent).toBe('L');
+  expect(localStorage.getItem(FIT_STORAGE_KEY)).toBeNull();
+  expect(document.querySelector('[data-fit-hint]')!.hasAttribute('hidden')).toBe(true);
 
   const next = finder.querySelector<HTMLButtonElement>('[data-ref="next"]')!;
   next.click();
@@ -65,5 +78,32 @@ it('walks the steps, saves the profile and selects the recommended size', () => 
   expect(finder.querySelector<HTMLElement>('[data-step="3"]')!.hidden).toBe(false);
   expect(next.hidden).toBe(true);
   finder.querySelector<HTMLButtonElement>('[data-ref="apply"]')!.click();
+  expect(JSON.parse(localStorage.getItem(FIT_STORAGE_KEY)!).weight).toBe(89);
+  expect(document.querySelector('[data-fit-hint] [data-part="size"]')!.textContent).toBe('L');
   expect(document.querySelector<HTMLInputElement>('input[value="L"]')!.checked).toBe(true);
+});
+
+it('never recommends from placeholder answers when the shopper picks a size', () => {
+  // Mobile QA: choosing M showed "Estimated size L" from the untouched 180cm/80kg defaults.
+  const markup = `
+    <div data-product-section>
+      <nk-variant-picker><fieldset data-size-fieldset>
+        <div data-size-pill="M"><input type="radio" value="M"></div>
+        <div data-size-pill="L"><input type="radio" value="L"></div>
+      </fieldset></nk-variant-picker>
+      <button><span data-fit-hint hidden><span data-part="size"></span></span></button>
+      <nk-fit-finder sizes="M,L" hidden><p data-ref="estimate"></p></nk-fit-finder>
+    </div>`;
+  document.body.innerHTML = markup;
+  document.dispatchEvent(new CustomEvent('nk:variant:changed', { detail: { state: 'available' } }));
+  expect(document.querySelector('[data-fit-hint]')!.hasAttribute('hidden')).toBe(true);
+  expect(document.querySelector('[data-recommended]')).toBeNull();
+
+  // A saved profile (the shopper answered and applied before) still marks every product page.
+  document.body.innerHTML = '';
+  localStorage.setItem(FIT_STORAGE_KEY, JSON.stringify({ sex: 'male', height: 175, weight: 70 }));
+  document.body.innerHTML = markup;
+  document.dispatchEvent(new CustomEvent('nk:variant:changed', { detail: { state: 'available' } }));
+  expect(document.querySelector('[data-fit-hint]')!.hasAttribute('hidden')).toBe(false);
+  expect(document.querySelector('[data-recommended]')?.getAttribute('data-size-pill')).toBe('M');
 });

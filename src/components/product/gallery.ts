@@ -2,6 +2,7 @@ import { t } from '../../core/config';
 import { NkElement } from '../../core/element';
 import { animate, transitionsAllowed } from '../../core/motion';
 import { overlay } from '../../services/overlay';
+import { ZoomPan } from './zoom-pan';
 
 /**
  * <nk-gallery> (master-plan/08 PR-01).
@@ -11,14 +12,17 @@ import { overlay } from '../../services/overlay';
  * - Interactive thumbnail navigation strip ([data-gallery-thumb])
  * - Keyboard ArrowLeft / ArrowRight navigation
  * - Automatic scroll/highlight when a variant with featured media is selected
- * - High-resolution lightbox zoom modal (<dialog closedby="any">) with 2x pan zoom & light-dismiss
+ * - High-resolution lightbox (<dialog closedby="any">) with pinch / wheel / double-tap zoom and
+ *   inertial drag panning (zoom-pan.ts), swipe between images, light-dismiss
+ * - Media progress bar ([data-ref="progress"]): follows the slider's scroll, or the page scroll
+ *   through stacked photos on desktop (sticky beside them)
  */
 export class NkGallery extends NkElement {
   #track!: HTMLElement;
   #slides: HTMLElement[] = [];
   #thumbs: HTMLButtonElement[] = [];
   #index = 0;
-  #zoomed = false;
+  #zoom: ZoomPan | null = null;
   #animation: Animation | null = null;
 
   protected mount(): void {
@@ -77,6 +81,7 @@ export class NkGallery extends NkElement {
     });
 
     this.#setupLightbox();
+    this.#setupProgress();
     this.observeIntersection(this, (entry) => {
       if (!entry.isIntersecting) this.querySelectorAll('video').forEach((video) => video.pause());
     });
@@ -143,7 +148,7 @@ export class NkGallery extends NkElement {
     overlay.open(dialog, {
       trigger: this.#slides[index]?.querySelector<HTMLElement>('[data-gallery-zoom]') ?? document.activeElement as HTMLElement,
       onClose: () => {
-        this.#setZoom(false);
+        this.#zoom?.reset();
         if (this.isConnected) this.go(this.#index);
       },
     });
@@ -152,66 +157,89 @@ export class NkGallery extends NkElement {
   closeLightbox(): void {
     const dialog = this.ref<HTMLDialogElement>('lightbox');
     if (!dialog) return;
-    this.#setZoom(false);
+    this.#zoom?.reset();
     overlay.close(dialog);
   }
 
   #setupLightbox(): void {
     const dialog = this.ref<HTMLDialogElement>('lightbox');
-    if (!dialog) return;
+    const stage = this.ref<HTMLElement>('lightbox-stage');
+    if (!dialog || !stage) return;
+
+    const step = (direction: number) => {
+      if (this.#slides.length < 2) return;
+      const nextIdx = this.#nextImage(direction);
+      this.#setCurrent(nextIdx);
+      this.#renderLightboxSlide(nextIdx);
+    };
+    const zoom = new ZoomPan(stage, { onSwipe: step, motion: transitionsAllowed });
+    this.#zoom = zoom;
+    this.dispose(() => {
+      zoom.destroy();
+      this.#zoom = null;
+    });
+
+    // Pointer capture retargets the click after a pan/pinch to the stage; only a press that
+    // started on the backdrop itself may light-dismiss.
+    let pressedBackdrop = false;
+    this.on(dialog, 'pointerdown', (event) => {
+      pressedBackdrop = event.target === dialog || event.target === stage;
+    });
 
     this.on(dialog, 'click', (event) => {
       const target = event.target as Element;
-      // Light-dismiss when clicking backdrop (dialog itself) or stage background
-      if (target === dialog || target === this.ref('lightbox-stage') || target.hasAttribute('data-lightbox-close') || target.closest('[data-lightbox-close]')) {
+      if (target.closest('[data-lightbox-close]') || ((target === dialog || target === stage) && pressedBackdrop && !zoom.zoomed)) {
         event.preventDefault();
         this.closeLightbox();
         return;
       }
 
-      const step = target.closest<HTMLButtonElement>('[data-lightbox-step]');
-      if (step) {
+      const stepButton = target.closest<HTMLButtonElement>('[data-lightbox-step]');
+      if (stepButton) {
         event.preventDefault();
-        const nextIdx = this.#nextImage(Number(step.dataset.lightboxStep));
-        this.#setCurrent(nextIdx);
-        this.#renderLightboxSlide(nextIdx);
-        return;
-      }
-
-      const img = target.closest<HTMLElement>('[data-ref="lightbox-img"]');
-      if (img) {
-        this.#setZoom(!this.#zoomed, event as MouseEvent);
+        step(Number(stepButton.dataset.lightboxStep));
       }
     });
-
-    const stage = this.ref<HTMLElement>('lightbox-stage');
-    if (stage) {
-      this.on(stage, 'pointermove', (event) => {
-        if (!this.#zoomed) return;
-        const e = event as PointerEvent;
-        const rect = stage.getBoundingClientRect();
-        if (!rect.width || !rect.height) return;
-        const xPct = ((e.clientX - rect.left) / rect.width - 0.5) * -80;
-        const yPct = ((e.clientY - rect.top) / rect.height - 0.5) * -80;
-        stage.style.setProperty('--zoom-x', `${xPct.toFixed(1)}%`);
-        stage.style.setProperty('--zoom-y', `${yPct.toFixed(1)}%`);
-      });
-    }
 
     this.on(dialog, 'keydown', (event) => {
       const key = (event as KeyboardEvent).key;
-      if (key === 'ArrowLeft' && this.#slides.length > 1) {
+      if (zoom.key(key)) {
         event.preventDefault();
-        const nextIdx = this.#nextImage(-1);
-        this.#setCurrent(nextIdx);
-        this.#renderLightboxSlide(nextIdx);
-      } else if (key === 'ArrowRight' && this.#slides.length > 1) {
+      } else if (key === 'ArrowLeft' || key === 'ArrowRight') {
         event.preventDefault();
-        const nextIdx = this.#nextImage(1);
-        this.#setCurrent(nextIdx);
-        this.#renderLightboxSlide(nextIdx);
+        step(key === 'ArrowRight' ? 1 : -1);
       }
     });
+  }
+
+  #setupProgress(): void {
+    const progress = this.ref('progress');
+    if (!progress) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const track = this.#track;
+      const horizontal = track.scrollWidth > track.clientWidth + 4;
+      let value: number;
+      if (horizontal) {
+        value = Math.abs(track.scrollLeft) / Math.max(1, track.scrollWidth - track.clientWidth);
+      } else {
+        // Stacked photos: how far the page has scrolled through the photo column.
+        const rect = track.getBoundingClientRect();
+        const span = rect.height - window.innerHeight;
+        value = span > 0 ? -rect.top / span : rect.top < 0 ? 1 : 0;
+      }
+      progress.dataset.axis = horizontal ? 'x' : 'y';
+      progress.style.setProperty('--progress', Math.min(1, Math.max(0, value)).toFixed(4));
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    this.on(this.#track, 'scroll', schedule, { passive: true });
+    this.on(window, 'scroll', schedule, { passive: true });
+    this.on(window, 'resize', schedule);
+    this.dispose(() => cancelAnimationFrame(frame));
+    update();
   }
 
   #nextImage(step: number): number {
@@ -221,25 +249,6 @@ export class NkGallery extends NkElement {
       if (this.#slides[index]?.dataset.zoomSrc) return index;
     }
     return this.#index;
-  }
-
-  #setZoom(zoomed: boolean, event?: MouseEvent): void {
-    this.#zoomed = zoomed;
-    const stage = this.ref<HTMLElement>('lightbox-stage');
-    if (!stage) return;
-    stage.toggleAttribute('data-zoomed', zoomed);
-    if (!zoomed) {
-      stage.style.setProperty('--zoom-x', '0%');
-      stage.style.setProperty('--zoom-y', '0%');
-    } else if (event) {
-      const rect = stage.getBoundingClientRect();
-      if (rect.width && rect.height) {
-        const xPct = ((event.clientX - rect.left) / rect.width - 0.5) * -80;
-        const yPct = ((event.clientY - rect.top) / rect.height - 0.5) * -80;
-        stage.style.setProperty('--zoom-x', `${xPct.toFixed(1)}%`);
-        stage.style.setProperty('--zoom-y', `${yPct.toFixed(1)}%`);
-      }
-    }
   }
 
   #renderLightboxSlide(index: number): void {
@@ -256,11 +265,13 @@ export class NkGallery extends NkElement {
     }
 
     const counter = this.ref<HTMLElement>('lightbox-counter');
-    this.#setZoom(false);
     const zoomSrc = slide.dataset.zoomSrc || slide.querySelector('img')?.src || '';
     const zoomAlt = slide.dataset.zoomAlt || slide.querySelector('img')?.alt || '';
     img.src = zoomSrc;
     img.alt = zoomAlt;
+    // Re-measure for the new image (its displayed size may differ) and start at 1×.
+    this.#zoom?.attach(img);
+    img.addEventListener('load', () => this.#zoom?.reset(), { once: true });
     if (counter) {
       counter.textContent = t('product.media_position', { index: index + 1, count: this.#slides.length });
     }
@@ -270,6 +281,24 @@ export class NkGallery extends NkElement {
     if (nextSlide?.dataset.zoomSrc) {
       const preload = new Image();
       preload.src = nextSlide.dataset.zoomSrc;
+    }
+  }
+
+  /** Keep the active thumbnail visible inside its (vertical or horizontal) rail, never the page. */
+  #revealThumb(thumb: HTMLElement | undefined): void {
+    const rail = thumb?.parentElement;
+    if (!thumb || !rail) return;
+    const behavior: ScrollBehavior = transitionsAllowed() ? 'smooth' : 'instant';
+    if (rail.scrollHeight > rail.clientHeight + 2) {
+      const top = thumb.offsetTop - rail.offsetTop;
+      if (top < rail.scrollTop || top + thumb.offsetHeight > rail.scrollTop + rail.clientHeight) {
+        rail.scrollTo({ top: top - (rail.clientHeight - thumb.offsetHeight) / 2, behavior });
+      }
+    } else if (rail.scrollWidth > rail.clientWidth + 2) {
+      const left = thumb.offsetLeft - rail.offsetLeft;
+      if (left < rail.scrollLeft || left + thumb.offsetWidth > rail.scrollLeft + rail.clientWidth) {
+        rail.scrollTo({ left: left - (rail.clientWidth - thumb.offsetWidth) / 2, behavior });
+      }
     }
   }
 
@@ -285,6 +314,9 @@ export class NkGallery extends NkElement {
       thumb.classList.toggle('is-active', active);
       thumb.setAttribute('aria-current', String(active));
     });
+    this.#revealThumb(this.#thumbs[index]);
+    const progressIndex = this.ref('progress-index');
+    if (progressIndex) progressIndex.textContent = String(index + 1).padStart(2, '0');
     const counter = this.ref('counter');
     if (counter) counter.textContent = t('product.media_position', { index: index + 1, count: this.#slides.length });
     const prev = this.querySelector<HTMLButtonElement>('[data-gallery-step="-1"]');

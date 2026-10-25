@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setConfigForTests } from '../../src/core/config';
 import type { NkElement } from '../../src/core/element';
 import type { FlexCarouselHooks } from '../../src/components/carousel/flex-carousel';
-import { sizeChoices, type CarouselProduct } from '../../src/components/carousel/product-data';
+import { readProduct, sizeChoices, type CarouselProduct } from '../../src/components/carousel/product-data';
 import { cart, CartError, type CartResult } from '../../src/services/cart';
 
 const enhance = vi.hoisted(() => vi.fn());
@@ -76,6 +76,11 @@ beforeEach(() => {
 afterEach(() => { vi.restoreAllMocks(); document.body.replaceChildren(); vi.unstubAllGlobals(); });
 
 describe('carousel shop mode', () => {
+  it('uses product-page selection when the serialized variant window is incomplete', () => {
+    const element = document.createElement('li');
+    element.innerHTML = slide({ ...product(1), variantCount: 100 } as CarouselProduct);
+    expect(readProduct(element)).toBeNull();
+  });
   it('names the highlighted product and is disabled for a sold-out one', async () => {
     await mount([product(1), product(2, { available: false })]);
     expect(addButton().disabled).toBe(false);

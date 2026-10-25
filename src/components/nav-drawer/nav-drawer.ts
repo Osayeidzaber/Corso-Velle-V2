@@ -29,7 +29,8 @@ export class NkNavDrawer extends NkModal {
     });
     const desktop = matchMedia('(min-width: 990px)');
     this.on(desktop, 'change', () => {
-      if (desktop.matches && this.isOpen) this.close();
+      // A compact desktop header (menu too long to fit) still uses this drawer.
+      if (desktop.matches && this.isOpen && !document.querySelector('nk-header[data-nav-compact]')) this.close();
     });
   }
 

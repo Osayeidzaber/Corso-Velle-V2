@@ -18,7 +18,8 @@ const DAMPING = 22;
  *   A CSS failsafe shows it after 3s if scripts fail.
  * - Splitting wraps each word in an overflow-hidden clip mask (.nk-w-clip) and a no-wrap
  *   inline-block (.nk-w) so words rise smoothly from a clean baseline without breaking mid-word.
- * - Screen readers get one visually hidden copy of the text; the pieces are aria-hidden.
+ * - Screen readers get the text from an aria-label on the heading; the pieces are aria-hidden.
+ *   The DOM text stays a single copy, so rendered-page crawlers read the heading once.
  */
 export class NkText extends NkElement {
   #revert: (() => void) | null = null;
@@ -71,15 +72,14 @@ export class NkText extends NkElement {
     const from = (this.getAttribute('stagger-from') ?? 'start') as 'start' | 'center' | 'end';
 
     const originalHTML = target.innerHTML;
+    const originalLabel = target.getAttribute('aria-label');
     const label = target.textContent?.replace(/\s+/g, ' ').trim() ?? '';
     const masked = effect === 'cut' || effect === 'rise';
     const { words, chars } = splitText(target, by === 'chars', masked);
-    if (label) {
-      // Pieces are aria-hidden; one plain copy keeps the text whole for screen readers.
-      const spoken = document.createElement('span');
-      spoken.className = 'visually-hidden';
-      spoken.textContent = label;
-      target.prepend(spoken);
+    if (label && originalLabel === null) {
+      // Pieces are aria-hidden; the label keeps the text whole for screen readers. A hidden text
+      // copy would also do that, but would double the heading's text for search engines.
+      target.setAttribute('aria-label', label);
     }
 
     const em = Number.parseFloat(getComputedStyle(target).fontSize) || 16;
@@ -122,7 +122,11 @@ export class NkText extends NkElement {
         });
       }
     }, this);
-    this.#revert = () => { context.revert(); target.innerHTML = originalHTML; };
+    this.#revert = () => {
+      context.revert();
+      target.innerHTML = originalHTML;
+      if (originalLabel === null) target.removeAttribute('aria-label');
+    };
   }
 
   /** Subtle pointer hover response when explicitly enabled. */

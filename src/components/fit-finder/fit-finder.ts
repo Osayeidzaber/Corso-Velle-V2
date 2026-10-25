@@ -92,7 +92,18 @@ export function loadProfile(): FitProfile | null {
     const raw = localStorage.getItem(FIT_STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<FitProfile>;
-    if (!Number.isFinite(parsed.height) || !Number.isFinite(parsed.weight)) return null;
+    if (!Number.isFinite(parsed.height) || !Number.isFinite(parsed.weight)
+      || parsed.height! <= 0 || parsed.weight! <= 0) return null;
+    // Storage outlives theme upgrades and can contain stale/invalid enum values.
+    // In particular, an unknown sex would make BOUNDS[sex] undefined and break mounting.
+    const choices = {
+      sex: ['female', 'male'], chest: ['narrow', 'average', 'broad'],
+      stomach: ['narrow', 'average', 'broad'], fit: ['fitted', 'regular', 'relaxed'],
+      heightUnit: ['cm', 'ftin'], weightUnit: ['kg', 'lbs'],
+    };
+    for (const key of Object.keys(choices) as Array<keyof typeof choices>) {
+      if (parsed[key] !== undefined && !choices[key].includes(parsed[key]!)) return null;
+    }
     return { ...DEFAULTS, ...parsed };
   } catch {
     return null;
@@ -160,7 +171,12 @@ export class NkFitFinder extends NkElement {
     const apply = this.ref<HTMLButtonElement>('apply');
     if (apply) this.on(apply, 'click', () => this.#applySize());
 
-    this.on(document, 'nk:variant:changed', () => this.#markPicker());
+    // Only answers the shopper saved may mark a size; the in-memory profile may still be the
+    // untouched defaults, which would show "Estimated size L" beside the size they just chose.
+    this.on(document, 'nk:variant:changed', () => {
+      const saved = loadProfile();
+      this.#markPicker(saved ? matchProductSize(recommendSize(saved), this.#sizes) : null);
+    });
     this.#render(false);
     this.#go(1, false);
   }
@@ -190,7 +206,7 @@ export class NkFitFinder extends NkElement {
     if (this.#step === STEPS) this.#render();
   }
 
-  #render(persist = true): void {
+  #render(persist = false): void {
     const p = this.#profile;
     this.dataset.sex = p.sex;
 
@@ -233,8 +249,9 @@ export class NkFitFinder extends NkElement {
     if (persist) {
       saveProfile(p);
       this.#markPicker(match);
-    } else if (loadProfile()) {
-      this.#markPicker(match);
+    } else {
+      const saved = loadProfile();
+      if (saved) this.#markPicker(matchProductSize(recommendSize(saved), this.#sizes));
     }
   }
 
@@ -278,6 +295,8 @@ export class NkFitFinder extends NkElement {
   #applySize(): void {
     const input = this.#sizeInput(matchProductSize(recommendSize(this.#profile), this.#sizes));
     if (!input || input.disabled) return;
+    saveProfile(this.#profile);
+    this.#markPicker();
     if (!input.checked) input.click();
     (this.closest('nk-modal') as (HTMLElement & { close?: () => void }) | null)?.close?.();
   }

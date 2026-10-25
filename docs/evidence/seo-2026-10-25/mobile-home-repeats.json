@@ -1,0 +1,710 @@
+[
+  {
+    "lcp": 2192,
+    "playAt": 2718.60000000149,
+    "videos": [
+      {
+        "ready": 4,
+        "paused": false,
+        "currentSrc": "https://corsovelle.com/cdn/shop/videos/c/vp/a2036364d55d46f887841a201374b3f2/a2036364d55d46f887841a201374b3f2.HD-1080p-7.2Mbps-91045694.mp4",
+        "poster": "https://corsovelle.com/cdn/shop/files/preview_images/a2036364d55d46f887841a201374b3f2.thumbnail.0000000000_2000x.jpg"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/289892e0ad764884a6d3ac261231d61e/289892e0ad764884a6d3ac261231d61e.HD-1080p-7.2Mbps-92811464.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/289892e0ad764884a6d3ac261231d61e.thumbnail.0000000000.jpg?v=1787859631&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/4621912aecfe4284876baa2d1945dc64/4621912aecfe4284876baa2d1945dc64.HD-1080p-7.2Mbps-92812188.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/4621912aecfe4284876baa2d1945dc64.thumbnail.0000000000.jpg?v=1787860184&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/213df6d2570c4e8ba68522f2bdf69b1e/213df6d2570c4e8ba68522f2bdf69b1e.HD-1080p-7.2Mbps-93108947.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/213df6d2570c4e8ba68522f2bdf69b1e.thumbnail.0000000000.jpg?v=1788206442&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/bbcdd06058204962b812f05201a58d3a/bbcdd06058204962b812f05201a58d3a.HD-1080p-7.2Mbps-93110879.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/bbcdd06058204962b812f05201a58d3a.thumbnail.0000000000.jpg?v=1788208403&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/30f35b87f4a94f7dbb2eb7c8e76c5a78/30f35b87f4a94f7dbb2eb7c8e76c5a78.HD-1080p-7.2Mbps-92812565.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/30f35b87f4a94f7dbb2eb7c8e76c5a78.thumbnail.0000000000.jpg?v=1787860427&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/d1bca2789f0d4f63a60dfc3abf71b162/d1bca2789f0d4f63a60dfc3abf71b162.HD-1080p-7.2Mbps-93093184.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/d1bca2789f0d4f63a60dfc3abf71b162.thumbnail.0000000000.jpg?v=1788193333&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/249a97a949b54fd08d1ae9afb6416781/249a97a949b54fd08d1ae9afb6416781.HD-1080p-7.2Mbps-92812189.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/249a97a949b54fd08d1ae9afb6416781.thumbnail.0000000000.jpg?v=1787860181&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/3feb47ae5c0d44398e6f0a1e67e75145/3feb47ae5c0d44398e6f0a1e67e75145.HD-1080p-7.2Mbps-92812187.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/3feb47ae5c0d44398e6f0a1e67e75145.thumbnail.0000000000.jpg?v=1787860165&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/0b2ea0b4d88e456ea35038cb0c010a6a/0b2ea0b4d88e456ea35038cb0c010a6a.HD-1080p-7.2Mbps-93112206.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/0b2ea0b4d88e456ea35038cb0c010a6a.thumbnail.0000000000.jpg?v=1788209414&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/bbcdd06058204962b812f05201a58d3a/bbcdd06058204962b812f05201a58d3a.HD-1080p-7.2Mbps-93110879.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/bbcdd06058204962b812f05201a58d3a.thumbnail.0000000000.jpg?v=1788208403&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/213df6d2570c4e8ba68522f2bdf69b1e/213df6d2570c4e8ba68522f2bdf69b1e.HD-1080p-7.2Mbps-93108947.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/213df6d2570c4e8ba68522f2bdf69b1e.thumbnail.0000000000.jpg?v=1788206442&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/4621912aecfe4284876baa2d1945dc64/4621912aecfe4284876baa2d1945dc64.HD-1080p-7.2Mbps-92812188.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/4621912aecfe4284876baa2d1945dc64.thumbnail.0000000000.jpg?v=1787860184&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/289892e0ad764884a6d3ac261231d61e/289892e0ad764884a6d3ac261231d61e.HD-1080p-7.2Mbps-92811464.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/289892e0ad764884a6d3ac261231d61e.thumbnail.0000000000.jpg?v=1787859631&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/30f35b87f4a94f7dbb2eb7c8e76c5a78/30f35b87f4a94f7dbb2eb7c8e76c5a78.HD-1080p-7.2Mbps-92812565.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/30f35b87f4a94f7dbb2eb7c8e76c5a78.thumbnail.0000000000.jpg?v=1787860427&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/d1bca2789f0d4f63a60dfc3abf71b162/d1bca2789f0d4f63a60dfc3abf71b162.HD-1080p-7.2Mbps-93093184.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/d1bca2789f0d4f63a60dfc3abf71b162.thumbnail.0000000000.jpg?v=1788193333&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/30f35b87f4a94f7dbb2eb7c8e76c5a78/30f35b87f4a94f7dbb2eb7c8e76c5a78.HD-1080p-7.2Mbps-92812565.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/30f35b87f4a94f7dbb2eb7c8e76c5a78.thumbnail.0000000000.jpg?v=1787860427&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/d1bca2789f0d4f63a60dfc3abf71b162/d1bca2789f0d4f63a60dfc3abf71b162.HD-1080p-7.2Mbps-93093184.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/d1bca2789f0d4f63a60dfc3abf71b162.thumbnail.0000000000.jpg?v=1788193333&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/213df6d2570c4e8ba68522f2bdf69b1e/213df6d2570c4e8ba68522f2bdf69b1e.HD-1080p-7.2Mbps-93108947.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/213df6d2570c4e8ba68522f2bdf69b1e.thumbnail.0000000000.jpg?v=1788206442&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/289892e0ad764884a6d3ac261231d61e/289892e0ad764884a6d3ac261231d61e.HD-1080p-7.2Mbps-92811464.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/289892e0ad764884a6d3ac261231d61e.thumbnail.0000000000.jpg?v=1787859631&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/bbcdd06058204962b812f05201a58d3a/bbcdd06058204962b812f05201a58d3a.HD-1080p-7.2Mbps-93110879.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/bbcdd06058204962b812f05201a58d3a.thumbnail.0000000000.jpg?v=1788208403&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/249a97a949b54fd08d1ae9afb6416781/249a97a949b54fd08d1ae9afb6416781.HD-1080p-7.2Mbps-92812189.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/249a97a949b54fd08d1ae9afb6416781.thumbnail.0000000000.jpg?v=1787860181&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/3feb47ae5c0d44398e6f0a1e67e75145/3feb47ae5c0d44398e6f0a1e67e75145.HD-1080p-7.2Mbps-92812187.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/3feb47ae5c0d44398e6f0a1e67e75145.thumbnail.0000000000.jpg?v=1787860165&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/0b2ea0b4d88e456ea35038cb0c010a6a/0b2ea0b4d88e456ea35038cb0c010a6a.HD-1080p-7.2Mbps-93112206.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/0b2ea0b4d88e456ea35038cb0c010a6a.thumbnail.0000000000.jpg?v=1788209414&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "https://corsovelle.com/cdn/shop/videos/c/vp/0c1da513350e4a3aa09f622ea39e8713/0c1da513350e4a3aa09f622ea39e8713.HD-1080p-7.2Mbps-91045694.mp4",
+        "poster": "https://corsovelle.com/cdn/shop/files/preview_images/0c1da513350e4a3aa09f622ea39e8713.thumbnail.0000000000_2000x.jpg"
+      }
+    ],
+    "media": [
+      {
+        "name": "https://corsovelle.com/cdn/shop/files/preview_images/a2036364d55d46f887841a201374b3f2.thumbnail.0000000000_2000x.jpg",
+        "startTime": 1123,
+        "duration": 91.60000000149012,
+        "transferSize": 125226
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/289892e0ad764884a6d3ac261231d61e.thumbnail.0000000000.jpg?v=1787859631&width=720",
+        "startTime": 1123.1000000014901,
+        "duration": 153.79999999701977,
+        "transferSize": 44850
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/4621912aecfe4284876baa2d1945dc64.thumbnail.0000000000.jpg?v=1787860184&width=720",
+        "startTime": 1123.199999999255,
+        "duration": 197.60000000149012,
+        "transferSize": 197934
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/213df6d2570c4e8ba68522f2bdf69b1e.thumbnail.0000000000.jpg?v=1788206442&width=720",
+        "startTime": 1123.300000000745,
+        "duration": 264.30000000074506,
+        "transferSize": 168794
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/bbcdd06058204962b812f05201a58d3a.thumbnail.0000000000.jpg?v=1788208403&width=720",
+        "startTime": 1123.3999999985099,
+        "duration": 296.6000000014901,
+        "transferSize": 49190
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/30f35b87f4a94f7dbb2eb7c8e76c5a78.thumbnail.0000000000.jpg?v=1787860427&width=720",
+        "startTime": 1123.6000000014901,
+        "duration": 329.8999999985099,
+        "transferSize": 71078
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/d1bca2789f0d4f63a60dfc3abf71b162.thumbnail.0000000000.jpg?v=1788193333&width=720",
+        "startTime": 1123.6000000014901,
+        "duration": 388.19999999925494,
+        "transferSize": 207298
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/249a97a949b54fd08d1ae9afb6416781.thumbnail.0000000000.jpg?v=1787860181&width=720",
+        "startTime": 1123.699999999255,
+        "duration": 374,
+        "transferSize": 62652
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/3feb47ae5c0d44398e6f0a1e67e75145.thumbnail.0000000000.jpg?v=1787860165&width=720",
+        "startTime": 1123.800000000745,
+        "duration": 384.5999999977648,
+        "transferSize": 47414
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/0b2ea0b4d88e456ea35038cb0c010a6a.thumbnail.0000000000.jpg?v=1788209414&width=720",
+        "startTime": 1123.8999999985099,
+        "duration": 378,
+        "transferSize": 82090
+      },
+      {
+        "name": "https://corsovelle.com/cdn/shop/files/preview_images/0c1da513350e4a3aa09f622ea39e8713.thumbnail.0000000000_2000x.jpg",
+        "startTime": 1124.300000000745,
+        "duration": 178.19999999925494,
+        "transferSize": 175696
+      },
+      {
+        "name": "https://corsovelle.com/cdn/shop/videos/c/vp/a2036364d55d46f887841a201374b3f2/a2036364d55d46f887841a201374b3f2.HD-1080p-7.2Mbps-91045694.mp4",
+        "startTime": 1633.3999999985099,
+        "duration": 879.9000000022352,
+        "transferSize": 300
+      },
+      {
+        "name": "https://corsovelle.com/cdn/shop/videos/c/vp/0c1da513350e4a3aa09f622ea39e8713/0c1da513350e4a3aa09f622ea39e8713.HD-1080p-7.2Mbps-91045694.mp4",
+        "startTime": 2161.5,
+        "duration": 20.5,
+        "transferSize": 0
+      }
+    ]
+  },
+  {
+    "lcp": 2172,
+    "playAt": 3316.900000002235,
+    "videos": [
+      {
+        "ready": 4,
+        "paused": false,
+        "currentSrc": "https://corsovelle.com/cdn/shop/videos/c/vp/a2036364d55d46f887841a201374b3f2/a2036364d55d46f887841a201374b3f2.HD-1080p-7.2Mbps-91045694.mp4",
+        "poster": "https://corsovelle.com/cdn/shop/files/preview_images/a2036364d55d46f887841a201374b3f2.thumbnail.0000000000_2000x.jpg"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/289892e0ad764884a6d3ac261231d61e/289892e0ad764884a6d3ac261231d61e.HD-1080p-7.2Mbps-92811464.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/289892e0ad764884a6d3ac261231d61e.thumbnail.0000000000.jpg?v=1787859631&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/4621912aecfe4284876baa2d1945dc64/4621912aecfe4284876baa2d1945dc64.HD-1080p-7.2Mbps-92812188.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/4621912aecfe4284876baa2d1945dc64.thumbnail.0000000000.jpg?v=1787860184&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/213df6d2570c4e8ba68522f2bdf69b1e/213df6d2570c4e8ba68522f2bdf69b1e.HD-1080p-7.2Mbps-93108947.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/213df6d2570c4e8ba68522f2bdf69b1e.thumbnail.0000000000.jpg?v=1788206442&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/bbcdd06058204962b812f05201a58d3a/bbcdd06058204962b812f05201a58d3a.HD-1080p-7.2Mbps-93110879.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/bbcdd06058204962b812f05201a58d3a.thumbnail.0000000000.jpg?v=1788208403&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/30f35b87f4a94f7dbb2eb7c8e76c5a78/30f35b87f4a94f7dbb2eb7c8e76c5a78.HD-1080p-7.2Mbps-92812565.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/30f35b87f4a94f7dbb2eb7c8e76c5a78.thumbnail.0000000000.jpg?v=1787860427&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/d1bca2789f0d4f63a60dfc3abf71b162/d1bca2789f0d4f63a60dfc3abf71b162.HD-1080p-7.2Mbps-93093184.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/d1bca2789f0d4f63a60dfc3abf71b162.thumbnail.0000000000.jpg?v=1788193333&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/249a97a949b54fd08d1ae9afb6416781/249a97a949b54fd08d1ae9afb6416781.HD-1080p-7.2Mbps-92812189.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/249a97a949b54fd08d1ae9afb6416781.thumbnail.0000000000.jpg?v=1787860181&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/3feb47ae5c0d44398e6f0a1e67e75145/3feb47ae5c0d44398e6f0a1e67e75145.HD-1080p-7.2Mbps-92812187.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/3feb47ae5c0d44398e6f0a1e67e75145.thumbnail.0000000000.jpg?v=1787860165&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/0b2ea0b4d88e456ea35038cb0c010a6a/0b2ea0b4d88e456ea35038cb0c010a6a.HD-1080p-7.2Mbps-93112206.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/0b2ea0b4d88e456ea35038cb0c010a6a.thumbnail.0000000000.jpg?v=1788209414&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/bbcdd06058204962b812f05201a58d3a/bbcdd06058204962b812f05201a58d3a.HD-1080p-7.2Mbps-93110879.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/bbcdd06058204962b812f05201a58d3a.thumbnail.0000000000.jpg?v=1788208403&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/213df6d2570c4e8ba68522f2bdf69b1e/213df6d2570c4e8ba68522f2bdf69b1e.HD-1080p-7.2Mbps-93108947.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/213df6d2570c4e8ba68522f2bdf69b1e.thumbnail.0000000000.jpg?v=1788206442&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/4621912aecfe4284876baa2d1945dc64/4621912aecfe4284876baa2d1945dc64.HD-1080p-7.2Mbps-92812188.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/4621912aecfe4284876baa2d1945dc64.thumbnail.0000000000.jpg?v=1787860184&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/289892e0ad764884a6d3ac261231d61e/289892e0ad764884a6d3ac261231d61e.HD-1080p-7.2Mbps-92811464.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/289892e0ad764884a6d3ac261231d61e.thumbnail.0000000000.jpg?v=1787859631&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/30f35b87f4a94f7dbb2eb7c8e76c5a78/30f35b87f4a94f7dbb2eb7c8e76c5a78.HD-1080p-7.2Mbps-92812565.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/30f35b87f4a94f7dbb2eb7c8e76c5a78.thumbnail.0000000000.jpg?v=1787860427&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/d1bca2789f0d4f63a60dfc3abf71b162/d1bca2789f0d4f63a60dfc3abf71b162.HD-1080p-7.2Mbps-93093184.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/d1bca2789f0d4f63a60dfc3abf71b162.thumbnail.0000000000.jpg?v=1788193333&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/30f35b87f4a94f7dbb2eb7c8e76c5a78/30f35b87f4a94f7dbb2eb7c8e76c5a78.HD-1080p-7.2Mbps-92812565.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/30f35b87f4a94f7dbb2eb7c8e76c5a78.thumbnail.0000000000.jpg?v=1787860427&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/d1bca2789f0d4f63a60dfc3abf71b162/d1bca2789f0d4f63a60dfc3abf71b162.HD-1080p-7.2Mbps-93093184.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/d1bca2789f0d4f63a60dfc3abf71b162.thumbnail.0000000000.jpg?v=1788193333&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/213df6d2570c4e8ba68522f2bdf69b1e/213df6d2570c4e8ba68522f2bdf69b1e.HD-1080p-7.2Mbps-93108947.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/213df6d2570c4e8ba68522f2bdf69b1e.thumbnail.0000000000.jpg?v=1788206442&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/289892e0ad764884a6d3ac261231d61e/289892e0ad764884a6d3ac261231d61e.HD-1080p-7.2Mbps-92811464.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/289892e0ad764884a6d3ac261231d61e.thumbnail.0000000000.jpg?v=1787859631&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/bbcdd06058204962b812f05201a58d3a/bbcdd06058204962b812f05201a58d3a.HD-1080p-7.2Mbps-93110879.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/bbcdd06058204962b812f05201a58d3a.thumbnail.0000000000.jpg?v=1788208403&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/249a97a949b54fd08d1ae9afb6416781/249a97a949b54fd08d1ae9afb6416781.HD-1080p-7.2Mbps-92812189.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/249a97a949b54fd08d1ae9afb6416781.thumbnail.0000000000.jpg?v=1787860181&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/3feb47ae5c0d44398e6f0a1e67e75145/3feb47ae5c0d44398e6f0a1e67e75145.HD-1080p-7.2Mbps-92812187.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/3feb47ae5c0d44398e6f0a1e67e75145.thumbnail.0000000000.jpg?v=1787860165&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/0b2ea0b4d88e456ea35038cb0c010a6a/0b2ea0b4d88e456ea35038cb0c010a6a.HD-1080p-7.2Mbps-93112206.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/0b2ea0b4d88e456ea35038cb0c010a6a.thumbnail.0000000000.jpg?v=1788209414&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "https://corsovelle.com/cdn/shop/videos/c/vp/0c1da513350e4a3aa09f622ea39e8713/0c1da513350e4a3aa09f622ea39e8713.HD-1080p-7.2Mbps-91045694.mp4",
+        "poster": "https://corsovelle.com/cdn/shop/files/preview_images/0c1da513350e4a3aa09f622ea39e8713.thumbnail.0000000000_2000x.jpg"
+      }
+    ],
+    "media": [
+      {
+        "name": "https://corsovelle.com/cdn/shop/files/preview_images/a2036364d55d46f887841a201374b3f2.thumbnail.0000000000_2000x.jpg",
+        "startTime": 1477.4000000022352,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/289892e0ad764884a6d3ac261231d61e.thumbnail.0000000000.jpg?v=1787859631&width=720",
+        "startTime": 1477.5,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/4621912aecfe4284876baa2d1945dc64.thumbnail.0000000000.jpg?v=1787860184&width=720",
+        "startTime": 1477.5,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/213df6d2570c4e8ba68522f2bdf69b1e.thumbnail.0000000000.jpg?v=1788206442&width=720",
+        "startTime": 1477.699999999255,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/bbcdd06058204962b812f05201a58d3a.thumbnail.0000000000.jpg?v=1788208403&width=720",
+        "startTime": 1477.699999999255,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/30f35b87f4a94f7dbb2eb7c8e76c5a78.thumbnail.0000000000.jpg?v=1787860427&width=720",
+        "startTime": 1477.800000000745,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/d1bca2789f0d4f63a60dfc3abf71b162.thumbnail.0000000000.jpg?v=1788193333&width=720",
+        "startTime": 1477.9000000022352,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/249a97a949b54fd08d1ae9afb6416781.thumbnail.0000000000.jpg?v=1787860181&width=720",
+        "startTime": 1477.9000000022352,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/3feb47ae5c0d44398e6f0a1e67e75145.thumbnail.0000000000.jpg?v=1787860165&width=720",
+        "startTime": 1478,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/0b2ea0b4d88e456ea35038cb0c010a6a.thumbnail.0000000000.jpg?v=1788209414&width=720",
+        "startTime": 1478.1000000014901,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "name": "https://corsovelle.com/cdn/shop/files/preview_images/0c1da513350e4a3aa09f622ea39e8713.thumbnail.0000000000_2000x.jpg",
+        "startTime": 1478.4000000022352,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "name": "https://corsovelle.com/cdn/shop/videos/c/vp/a2036364d55d46f887841a201374b3f2/a2036364d55d46f887841a201374b3f2.HD-1080p-7.2Mbps-91045694.mp4",
+        "startTime": 2082.60000000149,
+        "duration": 181.30000000074506,
+        "transferSize": 0
+      },
+      {
+        "name": "https://corsovelle.com/cdn/shop/videos/c/vp/0c1da513350e4a3aa09f622ea39e8713/0c1da513350e4a3aa09f622ea39e8713.HD-1080p-7.2Mbps-91045694.mp4",
+        "startTime": 2852.60000000149,
+        "duration": 21.300000000745058,
+        "transferSize": 0
+      }
+    ]
+  },
+  {
+    "lcp": 2508,
+    "playAt": 3528.7000000029802,
+    "videos": [
+      {
+        "ready": 4,
+        "paused": false,
+        "currentSrc": "https://corsovelle.com/cdn/shop/videos/c/vp/a2036364d55d46f887841a201374b3f2/a2036364d55d46f887841a201374b3f2.HD-1080p-7.2Mbps-91045694.mp4",
+        "poster": "https://corsovelle.com/cdn/shop/files/preview_images/a2036364d55d46f887841a201374b3f2.thumbnail.0000000000_2000x.jpg"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/289892e0ad764884a6d3ac261231d61e/289892e0ad764884a6d3ac261231d61e.HD-1080p-7.2Mbps-92811464.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/289892e0ad764884a6d3ac261231d61e.thumbnail.0000000000.jpg?v=1787859631&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/4621912aecfe4284876baa2d1945dc64/4621912aecfe4284876baa2d1945dc64.HD-1080p-7.2Mbps-92812188.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/4621912aecfe4284876baa2d1945dc64.thumbnail.0000000000.jpg?v=1787860184&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/213df6d2570c4e8ba68522f2bdf69b1e/213df6d2570c4e8ba68522f2bdf69b1e.HD-1080p-7.2Mbps-93108947.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/213df6d2570c4e8ba68522f2bdf69b1e.thumbnail.0000000000.jpg?v=1788206442&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/bbcdd06058204962b812f05201a58d3a/bbcdd06058204962b812f05201a58d3a.HD-1080p-7.2Mbps-93110879.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/bbcdd06058204962b812f05201a58d3a.thumbnail.0000000000.jpg?v=1788208403&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/30f35b87f4a94f7dbb2eb7c8e76c5a78/30f35b87f4a94f7dbb2eb7c8e76c5a78.HD-1080p-7.2Mbps-92812565.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/30f35b87f4a94f7dbb2eb7c8e76c5a78.thumbnail.0000000000.jpg?v=1787860427&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/d1bca2789f0d4f63a60dfc3abf71b162/d1bca2789f0d4f63a60dfc3abf71b162.HD-1080p-7.2Mbps-93093184.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/d1bca2789f0d4f63a60dfc3abf71b162.thumbnail.0000000000.jpg?v=1788193333&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/249a97a949b54fd08d1ae9afb6416781/249a97a949b54fd08d1ae9afb6416781.HD-1080p-7.2Mbps-92812189.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/249a97a949b54fd08d1ae9afb6416781.thumbnail.0000000000.jpg?v=1787860181&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/3feb47ae5c0d44398e6f0a1e67e75145/3feb47ae5c0d44398e6f0a1e67e75145.HD-1080p-7.2Mbps-92812187.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/3feb47ae5c0d44398e6f0a1e67e75145.thumbnail.0000000000.jpg?v=1787860165&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/0b2ea0b4d88e456ea35038cb0c010a6a/0b2ea0b4d88e456ea35038cb0c010a6a.HD-1080p-7.2Mbps-93112206.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/0b2ea0b4d88e456ea35038cb0c010a6a.thumbnail.0000000000.jpg?v=1788209414&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/bbcdd06058204962b812f05201a58d3a/bbcdd06058204962b812f05201a58d3a.HD-1080p-7.2Mbps-93110879.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/bbcdd06058204962b812f05201a58d3a.thumbnail.0000000000.jpg?v=1788208403&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/213df6d2570c4e8ba68522f2bdf69b1e/213df6d2570c4e8ba68522f2bdf69b1e.HD-1080p-7.2Mbps-93108947.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/213df6d2570c4e8ba68522f2bdf69b1e.thumbnail.0000000000.jpg?v=1788206442&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/4621912aecfe4284876baa2d1945dc64/4621912aecfe4284876baa2d1945dc64.HD-1080p-7.2Mbps-92812188.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/4621912aecfe4284876baa2d1945dc64.thumbnail.0000000000.jpg?v=1787860184&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/289892e0ad764884a6d3ac261231d61e/289892e0ad764884a6d3ac261231d61e.HD-1080p-7.2Mbps-92811464.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/289892e0ad764884a6d3ac261231d61e.thumbnail.0000000000.jpg?v=1787859631&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/30f35b87f4a94f7dbb2eb7c8e76c5a78/30f35b87f4a94f7dbb2eb7c8e76c5a78.HD-1080p-7.2Mbps-92812565.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/30f35b87f4a94f7dbb2eb7c8e76c5a78.thumbnail.0000000000.jpg?v=1787860427&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/d1bca2789f0d4f63a60dfc3abf71b162/d1bca2789f0d4f63a60dfc3abf71b162.HD-1080p-7.2Mbps-93093184.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/d1bca2789f0d4f63a60dfc3abf71b162.thumbnail.0000000000.jpg?v=1788193333&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/30f35b87f4a94f7dbb2eb7c8e76c5a78/30f35b87f4a94f7dbb2eb7c8e76c5a78.HD-1080p-7.2Mbps-92812565.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/30f35b87f4a94f7dbb2eb7c8e76c5a78.thumbnail.0000000000.jpg?v=1787860427&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/d1bca2789f0d4f63a60dfc3abf71b162/d1bca2789f0d4f63a60dfc3abf71b162.HD-1080p-7.2Mbps-93093184.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/d1bca2789f0d4f63a60dfc3abf71b162.thumbnail.0000000000.jpg?v=1788193333&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/213df6d2570c4e8ba68522f2bdf69b1e/213df6d2570c4e8ba68522f2bdf69b1e.HD-1080p-7.2Mbps-93108947.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/213df6d2570c4e8ba68522f2bdf69b1e.thumbnail.0000000000.jpg?v=1788206442&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/289892e0ad764884a6d3ac261231d61e/289892e0ad764884a6d3ac261231d61e.HD-1080p-7.2Mbps-92811464.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/289892e0ad764884a6d3ac261231d61e.thumbnail.0000000000.jpg?v=1787859631&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/bbcdd06058204962b812f05201a58d3a/bbcdd06058204962b812f05201a58d3a.HD-1080p-7.2Mbps-93110879.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/bbcdd06058204962b812f05201a58d3a.thumbnail.0000000000.jpg?v=1788208403&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/249a97a949b54fd08d1ae9afb6416781/249a97a949b54fd08d1ae9afb6416781.HD-1080p-7.2Mbps-92812189.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/249a97a949b54fd08d1ae9afb6416781.thumbnail.0000000000.jpg?v=1787860181&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/3feb47ae5c0d44398e6f0a1e67e75145/3feb47ae5c0d44398e6f0a1e67e75145.HD-1080p-7.2Mbps-92812187.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/3feb47ae5c0d44398e6f0a1e67e75145.thumbnail.0000000000.jpg?v=1787860165&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "http://127.0.0.1:9292/cdn/shop/videos/c/vp/0b2ea0b4d88e456ea35038cb0c010a6a/0b2ea0b4d88e456ea35038cb0c010a6a.HD-1080p-7.2Mbps-93112206.mp4?v=0",
+        "poster": "http://127.0.0.1:9292/cdn/shop/files/preview_images/0b2ea0b4d88e456ea35038cb0c010a6a.thumbnail.0000000000.jpg?v=1788209414&width=720"
+      },
+      {
+        "ready": 0,
+        "paused": true,
+        "currentSrc": "https://corsovelle.com/cdn/shop/videos/c/vp/0c1da513350e4a3aa09f622ea39e8713/0c1da513350e4a3aa09f622ea39e8713.HD-1080p-7.2Mbps-91045694.mp4",
+        "poster": "https://corsovelle.com/cdn/shop/files/preview_images/0c1da513350e4a3aa09f622ea39e8713.thumbnail.0000000000_2000x.jpg"
+      }
+    ],
+    "media": [
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/289892e0ad764884a6d3ac261231d61e.thumbnail.0000000000.jpg?v=1787859631&width=720",
+        "startTime": 1164.1000000014901,
+        "duration": 141.19999999925494,
+        "transferSize": 44850
+      },
+      {
+        "name": "https://corsovelle.com/cdn/shop/files/preview_images/a2036364d55d46f887841a201374b3f2.thumbnail.0000000000_2000x.jpg",
+        "startTime": 1164.1000000014901,
+        "duration": 180.69999999925494,
+        "transferSize": 125226
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/4621912aecfe4284876baa2d1945dc64.thumbnail.0000000000.jpg?v=1787860184&width=720",
+        "startTime": 1164.1000000014901,
+        "duration": 358.30000000074506,
+        "transferSize": 197934
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/213df6d2570c4e8ba68522f2bdf69b1e.thumbnail.0000000000.jpg?v=1788206442&width=720",
+        "startTime": 1164.2000000029802,
+        "duration": 172.19999999925494,
+        "transferSize": 168794
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/bbcdd06058204962b812f05201a58d3a.thumbnail.0000000000.jpg?v=1788208403&width=720",
+        "startTime": 1164.2000000029802,
+        "duration": 383.69999999925494,
+        "transferSize": 49190
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/30f35b87f4a94f7dbb2eb7c8e76c5a78.thumbnail.0000000000.jpg?v=1787860427&width=720",
+        "startTime": 1164.300000000745,
+        "duration": 570.1999999992549,
+        "transferSize": 71078
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/d1bca2789f0d4f63a60dfc3abf71b162.thumbnail.0000000000.jpg?v=1788193333&width=720",
+        "startTime": 1164.4000000022352,
+        "duration": 571.3999999985099,
+        "transferSize": 207298
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/3feb47ae5c0d44398e6f0a1e67e75145.thumbnail.0000000000.jpg?v=1787860165&width=720",
+        "startTime": 1164.4000000022352,
+        "duration": 656.3000000007451,
+        "transferSize": 47414
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/249a97a949b54fd08d1ae9afb6416781.thumbnail.0000000000.jpg?v=1787860181&width=720",
+        "startTime": 1164.4000000022352,
+        "duration": 667.3000000007451,
+        "transferSize": 62652
+      },
+      {
+        "name": "http://127.0.0.1:9292/cdn/shop/files/preview_images/0b2ea0b4d88e456ea35038cb0c010a6a.thumbnail.0000000000.jpg?v=1788209414&width=720",
+        "startTime": 1164.5,
+        "duration": 649.4000000022352,
+        "transferSize": 82090
+      },
+      {
+        "name": "https://corsovelle.com/cdn/shop/files/preview_images/0c1da513350e4a3aa09f622ea39e8713.thumbnail.0000000000_2000x.jpg",
+        "startTime": 1164.7000000029802,
+        "duration": 198.19999999925494,
+        "transferSize": 175696
+      },
+      {
+        "name": "https://corsovelle.com/cdn/shop/videos/c/vp/a2036364d55d46f887841a201374b3f2/a2036364d55d46f887841a201374b3f2.HD-1080p-7.2Mbps-91045694.mp4",
+        "startTime": 1269.4000000022352,
+        "duration": 1752.3999999985099,
+        "transferSize": 300
+      },
+      {
+        "name": "https://corsovelle.com/cdn/shop/videos/c/vp/0c1da513350e4a3aa09f622ea39e8713/0c1da513350e4a3aa09f622ea39e8713.HD-1080p-7.2Mbps-91045694.mp4",
+        "startTime": 2147.10000000149,
+        "duration": 45,
+        "transferSize": 0
+      }
+    ]
+  }
+]

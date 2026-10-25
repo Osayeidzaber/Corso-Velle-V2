@@ -1,0 +1,25 @@
+import { afterEach, expect, it, vi } from 'vitest';
+import '../../src/components/category-rail/category-rail';
+afterEach(() => { document.body.replaceChildren(); vi.unstubAllGlobals(); });
+it('keeps all links native and updates controls at the scroll boundaries and on resize', () => {
+  let resize = () => {};
+  vi.stubGlobal('ResizeObserver', class { constructor(callback: (entries: unknown[]) => void) { resize = () => callback([{}]); } observe() {} disconnect() {} });
+  const rail = document.createElement('nk-category-rail');
+  rail.innerHTML = '<nav><button data-category-step="-1" hidden>Previous</button><ul><li><a href="/collections/shirts">Shirts</a></li></ul><button data-category-step="1" hidden>Next</button></nav>';
+  const list = rail.querySelector('ul')!;
+  let width = 200;
+  Object.defineProperty(list, 'clientWidth', { get: () => width });
+  Object.defineProperty(list, 'scrollWidth', { get: () => 800 });
+  const scroll = vi.fn(); list.scrollBy = scroll;
+  document.body.append(rail);
+  const previous = rail.querySelector<HTMLButtonElement>('[data-category-step="-1"]')!;
+  const next = rail.querySelector<HTMLButtonElement>('[data-category-step="1"]')!;
+  expect(previous.disabled).toBe(true); expect(next.disabled).toBe(false);
+  expect(next.hidden).toBe(false);
+  next.click(); expect(scroll).toHaveBeenCalledWith(expect.objectContaining({ left: 150 }));
+  list.scrollLeft = 600; list.dispatchEvent(new Event('scroll'));
+  expect(next.disabled).toBe(true); expect(previous.disabled).toBe(false);
+  width = 800; resize();
+  expect(next.hidden).toBe(true); expect(previous.hidden).toBe(true);
+  expect(rail.querySelector('a')?.getAttribute('href')).toBe('/collections/shirts');
+});

@@ -9,6 +9,15 @@
  */
 {
   "sections": {
+    "rack": {
+      "type": "clothes-rack",
+      "settings": {
+        "heading": "On the rail",
+        "collection": "t-shirts",
+        "limit": 7,
+        "color_scheme": "scheme-1"
+      }
+    },
     "hero": {
       "type": "hero",
       "blocks": {
@@ -300,7 +309,7 @@
         "button"
       ],
       "settings": {
-        "video_url": "https://corsovelle.com/cdn/shop/videos/c/vp/0c1da513350e4a3aa09f622ea39e8713/0c1da513350e4a3aa09f622ea39e8713.HD-1080p-7.2Mbps-91045694.mp4",
+        "video_url": "https://corsovelle.com/cdn/shop/videos/c/vp/0c1da513350e4a3aa09f622ea39e8713/0c1da513350e4a3aa09f622ea39e8713.HD-1080p-7.2Mbps-91036918.mp4",
         "poster_url": "https://corsovelle.com/cdn/shop/files/preview_images/0c1da513350e4a3aa09f622ea39e8713.thumbnail.0000000000_2000x.jpg",
         "collection": "shirts",
         "title": "Riviera nights",
@@ -361,6 +370,7 @@
   "order": [
     "hero",
     "band",
+    "rack",
     "arrivals",
     "tabs",
     "categories",

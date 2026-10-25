@@ -28,3 +28,12 @@ it('reveals editor-selected blocks and restores stacked content during disconnec
   expect(root.querySelectorAll('[role="tab"]')).toHaveLength(2);
   expect(root.querySelectorAll('[aria-selected="true"]')).toHaveLength(1);
 });
+it('finishes a pending product reveal when returning to the first tab', () => {
+  const root = mount('products');
+  const stagger = document.createElement('nk-stagger');
+  const finish = vi.fn(); stagger.addEventListener('nk:stagger:finish', finish);
+  root.querySelector('#products-pa')!.append(stagger);
+  root.select(1, false); root.select(0, true);
+  expect(finish).toHaveBeenCalledTimes(1);
+  expect(root.querySelector<HTMLElement>('#products-pa')!.hidden).toBe(false);
+});

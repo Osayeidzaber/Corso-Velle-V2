@@ -1,0 +1,31 @@
+main thread (5688, 3300) long tasks 24 total 3054 ms; blocking (>50ms part) 1854 ms
+  @1150ms 66ms :: UpdateLayoutTree 0ms | Layout 0ms | event pagehide 0ms | event visibilitychange 0ms | event webkitvisibilitychange 0ms
+  @1227ms 89ms :: ParseHTML 86ms | EvaluateScript (none) 57ms | v8.compile (none) 13ms | ParseAuthorStyleSheet 12ms | v8.compileModule (none) 1ms
+  @1347ms 88ms :: Layout 50ms | Paint 28ms | UpdateLayoutTree 19ms | PrePaint 1ms | Layerize 0ms | Commit 0ms
+  @1518ms 199ms :: Layout 141ms | UpdateLayoutTree 58ms
+  @1750ms 95ms :: EvaluateScript trekkie.storefront.6efba1340ec6769622eb0d10b5cb070d43fb8d55.min.js 94ms | v8.compile trekkie.storefront.6efba1340ec6769622eb0d10b5cb070d43fb8d55.min.js 0ms | event load 0ms
+  @1868ms 77ms :: Layout 63ms | UpdateLayoutTree 7ms | Paint 3ms | Layerize 1ms | PrePaint 1ms | Commit 0ms
+  @2158ms 411ms :: v8.evaluateModule (none) 328ms | Layout 217ms | UpdateLayoutTree 75ms | ParseHTML 57ms | RunMicrotasks 27ms | event readystatechange 0ms
+  @2574ms 183ms :: UpdateLayoutTree 100ms | JS nk-chunk-sections-DY7RJLXP.js:anon 97ms | PrePaint 25ms | Layout 22ms | Paint 12ms | Commit 7ms
+  @2823ms 176ms :: EvaluateScript shopify-perf-kit-3.11.0.min.js 175ms | RunMicrotasks 13ms | UpdateLayoutTree 0ms | v8.compile shopify-perf-kit-3.11.0.min.js 0ms | event load 0ms
+  @3188ms 72ms :: FireAnimationFrame 56ms | JS nk-chunk-footer-yAv9U1Dd.js:r 47ms | UpdateLayoutTree 28ms | Layout 11ms | JS account.js:anon 9ms | Layerize 6ms
+  @3434ms 90ms :: RunMicrotasks 74ms | JS chunk.register_BK1wmFlx.esm.js:f.connectedCallback 59ms | v8.evaluateModule (none) 16ms | JS load_feature-ed94c51f.js:anon 5ms | JS chunk.register_BK1wmFlx.esm.js:f 1ms | JS (none):anon 1ms
+  @3682ms 141ms :: v8.evaluateModule (none) 102ms | RunMicrotasks 38ms | JS load_feature-ed94c51f.js:anon 5ms | Layout 4ms | UpdateLayoutTree 3ms | JS (none):anon 0ms
+  @4100ms 385ms :: EvaluateScript bfcc46ef0w9d3a45bbp8938e2eamdcca70d4m.js 281ms | event load 103ms | RunMicrotasks 67ms | JS (none):U 36ms | JS load_feature-ed94c51f.js:anon 9ms | JS (none):anon 2ms
+  @4884ms 57ms :: FireIdleCallback 57ms | JS bfcc46ef0w9d3a45bbp8938e2eamdcca70d4m.js:anon 57ms
+  @4974ms 59ms :: Layout 29ms | UpdateLayoutTree 19ms
+  @5259ms 84ms :: Layout 44ms | Paint 20ms | UpdateLayoutTree 7ms | Layerize 7ms | PrePaint 6ms | Commit 2ms
+  @5666ms 66ms :: timer 66ms | RunMicrotasks 66ms | UpdateLayoutTree 9ms | JS chunk.debounce_C-IIq26m.esm.js:anon 0ms | ParseHTML 0ms | event beforeunload 0ms
+  @5751ms 83ms :: timer 82ms | RunMicrotasks 51ms | JS chunk.register_BK1wmFlx.esm.js:q 31ms | UpdateLayoutTree 18ms | Layout 14ms | ParseHTML 0ms
+  @11054ms 178ms :: RunMicrotasks 172ms | Layout 17ms | UpdateLayoutTree 17ms | JS load_feature-ed94c51f.js:anon 3ms | v8.evaluateModule (none) 2ms | JS bfcc46ef0w9d3a45bbp8938e2eamdcca70d4m.js:anon 1ms
+  @12176ms 140ms :: FireAnimationFrame 123ms | JS nk-chunk-flex-carousel-D2is3Y8y.js:Ue 123ms | Decode Image 62ms | Paint 7ms | Layerize 6ms | Commit 2ms
+  @12795ms 142ms :: FireAnimationFrame 128ms | JS nk-chunk-flex-carousel-D2is3Y8y.js:Ue 127ms | Decode Image 65ms | Commit 6ms | Layerize 5ms | UpdateLayoutTree 1ms
+  @13460ms 53ms :: FireAnimationFrame 38ms | JS nk-chunk-flex-carousel-D2is3Y8y.js:Ue 38ms | Decode Image 15ms | Layerize 7ms | Commit 4ms | IntersectionObserverController::computeIntersections 3ms
+  @13859ms 55ms :: FireAnimationFrame 15ms | Layerize 13ms | JS nk-chunk-flex-carousel-D2is3Y8y.js:Ue 11ms | Commit 6ms | Paint 5ms | IntersectionObserverController::computeIntersections 3ms
+  @16460ms 64ms :: FireAnimationFrame 41ms | JS nk-chunk-flex-carousel-D2is3Y8y.js:Ue 38ms | Decode Image 21ms | event scroll 7ms | Commit 6ms | Layerize 5ms
+JS FunctionCall time by script: nk-chunk-flex-carousel-D2is3Y8y.js 1114ms, nk-chunk-gsap-RYcVJlLG.js 947ms, bfcc46ef0w9d3a45bbp8938e2eamdcca70d4m.js 269ms, nk-global-buZOYG5n.js 235ms, preloads.js 221ms, shopify-perf-kit-3.11.0.min.js 177ms, nk-chunk-footer-yAv9U1Dd.js 168ms, nk-chunk-sections-DY7RJLXP.js 108ms, chunk.register_BK1wmFlx.esm.js 106ms, (none) 74ms
+Layout 1005 ms
+UpdateLayoutTree 1182 ms
+Paint 517 ms
+IntersectionObserverController::computeIntersections 1091 ms
+FireAnimationFrame 2101 ms

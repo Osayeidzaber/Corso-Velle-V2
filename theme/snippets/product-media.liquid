@@ -1,7 +1,8 @@
 {%- doc -%}
-  Product gallery (master-plan/08 PR-01): native scroll-snap track on phones, editorial grid on
+  Product gallery (master-plan/08 PR-01): native scroll-snap single-photo slider, optional editorial layouts on
   desktop, interactive thumbnail navigation, and high-resolution lightbox zoom dialog.
-  First media is eager with high fetch priority (LCP); the rest are lazy with no redundant fetchpriority.
+  The initial photo has high fetch priority (including variant deep links). The first frame stays
+  eager for no-JS visitors; other offscreen media is lazy.
   Video plays only on request (controls, muted, playsinline) and pauses when its slide stops being current.
 
   @param {object} product - The product
@@ -14,13 +15,22 @@
 {%- liquid
   assign media_count = product.media.size
   assign initial_media_id = selected_variant.featured_media.id
+  assign layout = options.gallery_layout | default: 'slider'
+  assign priority_media_id = product.media.first.id
+  if layout == 'slider' and selected_variant.featured_media.media_type == 'image'
+    assign priority_media_id = initial_media_id
+  endif
+  assign image_sizes = '(min-width: 990px) 58vw, 100vw'
+  if layout == 'collage'
+    assign image_sizes = '(min-width: 990px) 58vw, 88vw'
+  endif
 -%}
 <nk-gallery
   class="product__media{% if media_count <= 1 %} product__media--single{% endif %}"
   aria-label="{{ 'product.gallery' | t }}"
   role="region"
   data-media-count="{{ media_count }}"
-  data-layout="{{ options.gallery_layout | default: 'slider' }}"
+  data-layout="{{ layout }}"
   data-ratio="{{ options.gallery_ratio | default: 'square' }}"
   data-fit="{{ options.gallery_fit | default: 'contain' }}"
   data-backdrop="{{ options.gallery_background | default: 'white' }}"
@@ -61,36 +71,38 @@
             class="gallery__slide"
             data-ref="slide"
             data-media-id="{{ media.id }}"
+            data-media-type="{{ media.media_type }}"
             data-slide-index="{{ forloop.index0 }}"
             {% if media.media_type == 'image' and options.enable_zoom != false %}
               data-zoom-src="{{ media | image_url: width: 2200 }}"
               data-zoom-alt="{{ alt | escape }}"
             {% endif %}
           >
+            {%- if layout == 'collage' and media_count > 1 -%}
+              <span class="gallery__index spec" aria-hidden="true">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            {%- endif -%}
             {%- case media.media_type -%}
               {%- when 'image' -%}
-                {%- if forloop.first -%}
-                  {{
-                    media
-                    | image_url: width: 1800
-                    | image_tag:
-                      loading: 'eager',
-                      fetchpriority: 'high',
-                      alt: alt,
-                      widths: '360, 540, 720, 900, 1080, 1440, 1800',
-                      sizes: '(min-width: 990px) 58vw, 100vw'
-                  }}
-                {%- else -%}
-                  {{
-                    media
-                    | image_url: width: 1800
-                    | image_tag:
-                      loading: 'lazy',
-                      alt: alt,
-                      widths: '360, 540, 720, 900, 1080, 1440, 1800',
-                      sizes: '(min-width: 990px) 58vw, 100vw'
-                  }}
-                {%- endif -%}
+                {%- liquid
+                  assign image_loading = 'lazy'
+                  assign image_priority = 'auto'
+                  if forloop.first or media.id == priority_media_id
+                    assign image_loading = 'eager'
+                  endif
+                  if media.id == priority_media_id
+                    assign image_priority = 'high'
+                  endif
+                -%}
+                {{
+                  media
+                  | image_url: width: 1800
+                  | image_tag:
+                    loading: image_loading,
+                    fetchpriority: image_priority,
+                    alt: alt,
+                    widths: '360, 540, 720, 900, 1080, 1440, 1800',
+                    sizes: image_sizes
+                }}
                 {% if options.enable_zoom != false %}<button
                   type="button"
                   class="gallery__zoom-trigger icon-button"
@@ -115,6 +127,15 @@
           </li>
         {%- endfor -%}
       </ul>
+
+      {%- if media_count > 1 and options.show_media_progress != false -%}
+        <div class="gallery__progress" data-ref="progress" aria-hidden="true">
+          <div class="gallery__progress-rail">
+            <span class="gallery__progress-fill"></span>
+            <span class="gallery__progress-count spec"><span data-ref="progress-index">01</span> / {{ media_count | prepend: '0' | slice: -2, 2 }}</span>
+          </div>
+        </div>
+      {%- endif -%}
 
       {%- if media_count > 1 and options.show_gallery_controls != false -%}
         <div class="gallery__controls">

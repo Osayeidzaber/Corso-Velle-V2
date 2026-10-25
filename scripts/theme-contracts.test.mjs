@@ -23,3 +23,15 @@ test('template ordering catches missing and duplicated IDs', () => {
 test('current deployable theme satisfies source contracts', () => {
   assert.deepEqual(checkTheme(resolve(import.meta.dirname, '../theme')), []);
 });
+test('decorative videos offer a lighter rendition and always fall back to the original file', async () => {
+  const { readFileSync } = await import('node:fs');
+  const read = (file) => readFileSync(resolve(import.meta.dirname, '../theme/snippets', file), 'utf8');
+  const sources = read('video-sources.liquid');
+  // The original URL is the last, unconditional <source>: a missing rendition can never leave a video empty.
+  assert.match(sources.trimEnd(), /<source src="\{\{ url \| escape \}\}" type="video\/mp4">$/);
+  for (const file of ['background-video.liquid', 'product-card.liquid']) {
+    const snippet = read(file);
+    assert.match(snippet, /render 'video-sources'/, `${file} renders video-sources`);
+    assert.doesNotMatch(snippet, /<source src="\{\{ (hover_source|video_url)/, `${file} has no raw single-rendition <source>`);
+  }
+});

@@ -43,6 +43,7 @@
     ],
     "options": {{ product.options | json }},
     "preferred": {{ preferred.id | json }},
+    "variantCount": {{ product.variants_count | json }},
     "variants": [
       {%- for variant in product.variants -%}
         {"id": {{ variant.id | json }}, "available": {{ variant.available | json }}, "options": {{ variant.options | json }}, "min": {{ variant.quantity_rule.min | default: 1 | json }}}

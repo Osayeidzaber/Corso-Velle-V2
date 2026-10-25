@@ -1,5 +1,43 @@
 # NK Theme — Comprehensive Updates & Redesign Report
 
+## Mobile-first evaluation — 25 October 2026
+
+See [MOBILE_TESTING_REPORT.md](MOBILE_TESTING_REPORT.md). Tested by emulation (Chrome, touch, 320–1440 px,
+portrait and landscape, 4×/6× CPU), not on physical devices. Fixed: the fit finder showed "Estimated
+size L" from untouched default answers whenever a shopper picked a size; the sticky filter toolbar
+never stuck (its parent was only as tall as the toolbar) and now sits flush under the showing or
+hidden header; the landscape-phone hero headline is capped by screen height; empty collections no
+longer show filter/sort controls; announcement, breadcrumb and no-JavaScript size links have
+finger-sized hit areas; the header search pill no longer triggers iPadOS zoom; empty cart/search
+messages align with their headings. The existing sticky Add to cart bar is now on for phones and
+tablets in the product template. Phones keep native scrolling (no Lenis on touch). Reusable
+harness in `scripts/mobile/`. 228 unit tests, Theme Check clean.
+
+## Final production-readiness evaluation — 25 October 2026
+
+See [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md) for verdicts, evidence and launch gates.
+Decorative and hover videos now offer Shopify's lower MP4 rendition first (`snippets/video-sources`)
+and fall back to the original file: card hovers stream 480p instead of 1080p (~2.9 MB vs ~13 MB)
+and phones get the 720p hero (14.7 MB vs 23.3 MB). Fixed the homepage "Riviera nights" video URL,
+which returned 404. Replacing the contact-information policy with theme support links is now an
+explicit setting (Customer support › "Show these links instead of the contact information
+policy"), on for Corsovelle and off by default for other stores. Added a contract test for the
+video fallback. Final gates: 227 unit tests, 6 contract tests, Theme Check with no offenses
+(152 files), and the shopify-liquid validator on every theme file.
+
+## Advanced SEO follow-up — 25 October 2026
+
+See [the full SEO audit](docs/SEO-ADVANCED-AUDIT-2026-10-25.md) for evidence and limitations.
+Added native-content metadata fallbacks, shared rich-text normalization, large-image preview
+permission, checksum-validated GTINs, exact variant URLs and outside-window selected-variant
+coverage. Corrected responsive card source sizes, pagination/gallery image priority, repeated
+hero priority, editorial alt fallbacks and offscreen video startup. Design, animation timings,
+scrolling settings and merchant copy remain unchanged. Includes reusable audit/browser scripts,
+19 Liquid SEO fixtures, a final shared-workspace check of 227 passing unit tests, and
+development-store regression evidence. Hidden hover-video posters no longer generate redundant
+initial requests; native checkout handoff was verified without submitting an order.
+No production theme publication or account approval is implied.
+
 > Full report also available at [`UPDATES.md`](../UPDATES.md).
 
 This document summarizes all audits, bug fixes, visual/interactive overhauls, motion upgrades, product system integrations, and architectural collection redesigns completed for the **NK Shopify Liquid Theme** (`nk-theme/`).
@@ -126,3 +164,13 @@ Ran complete automated verification suite (`npm run check`):
 - Registered both components lazily through the global entrypoint. Added `tests/unit/carousel-footer.test.ts` covering wrapping, accessible duplicate controls, pause/cleanup, editor fallback, click forwarding, and responsive footer menus.
 - Verification: TypeScript, production build/owned-asset sync, strict JSON and Theme Check pass. Real Shopify preview browser checks at 320, 390, 768 and 1440px verified autoplay, pause, navigation, native menus and zero page overflow/console errors; reduced motion produced a static rail. Newsletter backend submission was intentionally not performed (no test subscriber created). Screenshots are in `docs/evidence/infinite-carousel-desktop.png` and `docs/evidence/footer-390.png` / `footer-1440.png`.
 - The carousel/footer preview was initially isolated to avoid changing product validation assets. The source is integrated into the main theme and final assets are synced. Nothing was published to the live production theme.
+
+
+## 9. Search, structured data and AI discoverability — 25 October 2026
+
+- Rewrote `snippets/meta-tags.liquid`: Shopify SEO fields stay the source of truth; no duplicated store description on pages without one; `noindex, follow` on search, cart, gift card and customer pages (Shopify's robots.txt no longer blocks `/search` and `/cart`); HTTPS 1200px Open Graph image with alt; numeric product price; translatable title suffixes.
+- Added `snippets/structured-data.liquid` and `structured-data-offer.liquid`: ProductGroup/Product with per-variant size, colour, material, pattern, SKU, valid GTIN, Shopify price, availability and genuine compare-at strikethrough price (never discount codes), replacing Shopify's `structured_data` output; OnlineStore + WebSite on the home page; Shopify's article schema. Schema URLs use the primary domain.
+- Added `snippets/breadcrumb-schema.liquid` and `breadcrumb-collection.liquid`: BreadcrumbList only beside a visible breadcrumb; product trail uses the most specific collection and links "Collections" to `/collections`.
+- Crawl-safe motion without visual change: `<nk-text>` names split headings with `aria-label` instead of a hidden duplicate, and letter-swap draws both rolling copies with CSS, so headings and nav link text read once in the rendered DOM. New `tests/unit/seo-text.test.ts`.
+- Product-card images use media alt text (fallback: title); article image alt falls back to the title.
+- Verification and the catalog/admin findings (no image alt text, no SKUs, duplicate products and collections, refund policy markup) are in [docs/SEO.md](docs/SEO.md). Nothing was published.

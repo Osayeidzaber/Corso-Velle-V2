@@ -22,6 +22,12 @@
         "info": "Used when the header overlays a dark hero image."
       },
       {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "Shown in browser tabs and bookmarks. Square image, at least 96 × 96px."
+      },
+      {
         "type": "range",
         "id": "logo_width",
         "label": "Logo width (desktop)",
@@ -517,6 +523,13 @@
         "default": true
       },
       {
+        "type": "checkbox",
+        "id": "card_show_low_stock",
+        "label": "Mark low-stock sizes",
+        "default": true,
+        "info": "A small dot on quick-add sizes at or below the \"only a few left\" threshold in Product page settings."
+      },
+      {
         "type": "text",
         "id": "card_size_option_names",
         "label": "Size option name(s)",
@@ -649,8 +662,8 @@
         "min": 0,
         "max": 20,
         "step": 1,
-        "default": 0,
-        "info": "0 turns the message off. Only shown when Shopify tracks inventory for the variant."
+        "default": 3,
+        "info": "0 turns low-stock messages off. Only counts variants where Shopify tracks inventory and doesn't sell when out of stock."
       }
     ]
   },
@@ -665,7 +678,7 @@
       },
       {
         "type": "paragraph",
-        "content": "Assign verified measurements to collections or specific products. Product metafields override these rules. Product assignments override collection assignments; the first matching chart wins. Purchasable sizes and stock still come from Shopify product variants."
+        "content": "Edit reusable measurements in Admin > Content > Metaobjects. Assign a chart below by product, collection or exact product tag. Priority: product data, product rules, collection charts/rules, tag rules, default. Within a scope, the first usable rule wins."
       },
       {
         "type": "header",
@@ -683,6 +696,24 @@
         "label": "Apply to specific products",
         "limit": 50,
         "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_1_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_1_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_1_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
       },
       {
         "type": "textarea",
@@ -736,6 +767,24 @@
       },
       {
         "type": "textarea",
+        "id": "size_chart_2_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_2_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_2_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
         "id": "size_chart_2_table",
         "label": "Measurements",
         "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
@@ -783,6 +832,24 @@
         "label": "Apply to specific products",
         "limit": 50,
         "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_3_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_3_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_3_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
       },
       {
         "type": "textarea",
@@ -836,6 +903,24 @@
       },
       {
         "type": "textarea",
+        "id": "size_chart_4_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_4_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_4_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
         "id": "size_chart_4_table",
         "label": "Measurements",
         "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
@@ -883,6 +968,24 @@
         "label": "Apply to specific products",
         "limit": 50,
         "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_5_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_5_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_5_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
       },
       {
         "type": "textarea",
@@ -944,6 +1047,13 @@
       },
       {
         "type": "checkbox",
+        "id": "cart_fly_animation",
+        "label": "Add-to-cart animation",
+        "default": true,
+        "info": "The product photo flies into the cart after it is added. Follows Theme settings > Motion and reduced-motion preferences."
+      },
+      {
+        "type": "checkbox",
         "id": "cart_show_note",
         "label": "Order note",
         "default": false
@@ -952,6 +1062,443 @@
         "type": "collection",
         "id": "cart_empty_collection",
         "label": "Empty cart: suggested collection"
+      },
+      {
+        "type": "header",
+        "content": "Free shipping progress"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_free_shipping",
+        "label": "Show free shipping progress",
+        "default": false,
+        "info": "Shown in the cart drawer and on the cart page. Set up the matching free shipping rate in Settings > Shipping and delivery."
+      },
+      {
+        "type": "number",
+        "id": "cart_free_shipping_threshold",
+        "label": "Free shipping minimum order",
+        "default": 5000,
+        "info": "Amount in your store's default currency, after discounts. Shoppers browsing in another currency don't see the bar."
+      }
+    ]
+  },
+  {
+    "name": "Promotions",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Create and manage discount codes in Shopify admin > Discounts. Here you only connect an existing code to products so the store can show it and try it in the cart. Shopify always decides whether a code applies and how much it saves."
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_auto_apply",
+        "label": "Try promotion codes automatically in the cart",
+        "default": true,
+        "info": "When a product with a promotion code is in the cart, the code is sent to Shopify. It stays only if Shopify accepts it."
+      },
+      {
+        "type": "select",
+        "id": "promo_conflict_rule",
+        "label": "When codes can't be combined",
+        "options": [
+          {
+            "value": "keep",
+            "label": "Keep the code already applied"
+          },
+          {
+            "value": "priority",
+            "label": "Use the higher-priority promotion"
+          }
+        ],
+        "default": "keep",
+        "info": "Codes a shopper enters themselves are never replaced automatically."
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_code_field",
+        "label": "Show discount code field in cart",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Product metafield codes"
+      },
+      {
+        "type": "paragraph",
+        "content": "Products with a code in the custom.discount_code metafield use it directly. See docs/PROMOTIONS.md to create the metafield definitions."
+      },
+      {
+        "type": "range",
+        "id": "promo_metafield_priority",
+        "label": "Metafield code priority",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 10,
+        "info": "Higher wins when a product matches more than one promotion."
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_metafield_cards",
+        "label": "Show metafield codes on product cards",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Promotion 1"
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_1_enabled",
+        "label": "Enable",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "promo_1_code",
+        "label": "Shopify discount code",
+        "info": "Type the code exactly as it is set up in Shopify admin, for example TEE20."
+      },
+      {
+        "type": "select",
+        "id": "promo_1_scope",
+        "label": "Applies to",
+        "options": [
+          {
+            "value": "matched",
+            "label": "Matching products"
+          },
+          {
+            "value": "all",
+            "label": "Entire store"
+          }
+        ],
+        "default": "matched"
+      },
+      {
+        "type": "product_list",
+        "id": "promo_1_products",
+        "label": "Products",
+        "limit": 50
+      },
+      {
+        "type": "textarea",
+        "id": "promo_1_handles",
+        "label": "Product handles",
+        "info": "One per line or comma-separated. Most stable way to match products by text."
+      },
+      {
+        "type": "textarea",
+        "id": "promo_1_titles",
+        "label": "Product title phrases",
+        "info": "One per line. Matches whole words, ignoring case, for example Oversized Tee."
+      },
+      {
+        "type": "text",
+        "id": "promo_1_tag",
+        "label": "Product tag or promotion key",
+        "info": "Matches products tagged with this value, or whose custom.promotion metafield has it, for example summer-sale."
+      },
+      {
+        "type": "range",
+        "id": "promo_1_priority",
+        "label": "Priority",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_1_auto",
+        "label": "Try this code automatically in the cart",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_1_cards",
+        "label": "Show on product cards",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "promo_1_badge",
+        "label": "Badge text",
+        "info": "Leave blank for \"Code [code]\"."
+      },
+      {
+        "type": "text",
+        "id": "promo_1_message",
+        "label": "Product page message",
+        "info": "Leave blank for a standard message. Don't promise a saving: Shopify confirms eligibility in the cart."
+      },
+      {
+        "type": "header",
+        "content": "Promotion 2"
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_2_enabled",
+        "label": "Enable",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "promo_2_code",
+        "label": "Shopify discount code",
+        "info": "Type the code exactly as it is set up in Shopify admin, for example TEE20."
+      },
+      {
+        "type": "select",
+        "id": "promo_2_scope",
+        "label": "Applies to",
+        "options": [
+          {
+            "value": "matched",
+            "label": "Matching products"
+          },
+          {
+            "value": "all",
+            "label": "Entire store"
+          }
+        ],
+        "default": "matched"
+      },
+      {
+        "type": "product_list",
+        "id": "promo_2_products",
+        "label": "Products",
+        "limit": 50
+      },
+      {
+        "type": "textarea",
+        "id": "promo_2_handles",
+        "label": "Product handles",
+        "info": "One per line or comma-separated. Most stable way to match products by text."
+      },
+      {
+        "type": "textarea",
+        "id": "promo_2_titles",
+        "label": "Product title phrases",
+        "info": "One per line. Matches whole words, ignoring case, for example Oversized Tee."
+      },
+      {
+        "type": "text",
+        "id": "promo_2_tag",
+        "label": "Product tag or promotion key",
+        "info": "Matches products tagged with this value, or whose custom.promotion metafield has it, for example summer-sale."
+      },
+      {
+        "type": "range",
+        "id": "promo_2_priority",
+        "label": "Priority",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_2_auto",
+        "label": "Try this code automatically in the cart",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_2_cards",
+        "label": "Show on product cards",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "promo_2_badge",
+        "label": "Badge text",
+        "info": "Leave blank for \"Code [code]\"."
+      },
+      {
+        "type": "text",
+        "id": "promo_2_message",
+        "label": "Product page message",
+        "info": "Leave blank for a standard message. Don't promise a saving: Shopify confirms eligibility in the cart."
+      },
+      {
+        "type": "header",
+        "content": "Promotion 3"
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_3_enabled",
+        "label": "Enable",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "promo_3_code",
+        "label": "Shopify discount code",
+        "info": "Type the code exactly as it is set up in Shopify admin, for example TEE20."
+      },
+      {
+        "type": "select",
+        "id": "promo_3_scope",
+        "label": "Applies to",
+        "options": [
+          {
+            "value": "matched",
+            "label": "Matching products"
+          },
+          {
+            "value": "all",
+            "label": "Entire store"
+          }
+        ],
+        "default": "matched"
+      },
+      {
+        "type": "product_list",
+        "id": "promo_3_products",
+        "label": "Products",
+        "limit": 50
+      },
+      {
+        "type": "textarea",
+        "id": "promo_3_handles",
+        "label": "Product handles",
+        "info": "One per line or comma-separated. Most stable way to match products by text."
+      },
+      {
+        "type": "textarea",
+        "id": "promo_3_titles",
+        "label": "Product title phrases",
+        "info": "One per line. Matches whole words, ignoring case, for example Oversized Tee."
+      },
+      {
+        "type": "text",
+        "id": "promo_3_tag",
+        "label": "Product tag or promotion key",
+        "info": "Matches products tagged with this value, or whose custom.promotion metafield has it, for example summer-sale."
+      },
+      {
+        "type": "range",
+        "id": "promo_3_priority",
+        "label": "Priority",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_3_auto",
+        "label": "Try this code automatically in the cart",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_3_cards",
+        "label": "Show on product cards",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "promo_3_badge",
+        "label": "Badge text",
+        "info": "Leave blank for \"Code [code]\"."
+      },
+      {
+        "type": "text",
+        "id": "promo_3_message",
+        "label": "Product page message",
+        "info": "Leave blank for a standard message. Don't promise a saving: Shopify confirms eligibility in the cart."
+      },
+      {
+        "type": "header",
+        "content": "Promotion 4"
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_4_enabled",
+        "label": "Enable",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "promo_4_code",
+        "label": "Shopify discount code",
+        "info": "Type the code exactly as it is set up in Shopify admin, for example TEE20."
+      },
+      {
+        "type": "select",
+        "id": "promo_4_scope",
+        "label": "Applies to",
+        "options": [
+          {
+            "value": "matched",
+            "label": "Matching products"
+          },
+          {
+            "value": "all",
+            "label": "Entire store"
+          }
+        ],
+        "default": "matched"
+      },
+      {
+        "type": "product_list",
+        "id": "promo_4_products",
+        "label": "Products",
+        "limit": 50
+      },
+      {
+        "type": "textarea",
+        "id": "promo_4_handles",
+        "label": "Product handles",
+        "info": "One per line or comma-separated. Most stable way to match products by text."
+      },
+      {
+        "type": "textarea",
+        "id": "promo_4_titles",
+        "label": "Product title phrases",
+        "info": "One per line. Matches whole words, ignoring case, for example Oversized Tee."
+      },
+      {
+        "type": "text",
+        "id": "promo_4_tag",
+        "label": "Product tag or promotion key",
+        "info": "Matches products tagged with this value, or whose custom.promotion metafield has it, for example summer-sale."
+      },
+      {
+        "type": "range",
+        "id": "promo_4_priority",
+        "label": "Priority",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_4_auto",
+        "label": "Try this code automatically in the cart",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_4_cards",
+        "label": "Show on product cards",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "promo_4_badge",
+        "label": "Badge text",
+        "info": "Leave blank for \"Code [code]\"."
+      },
+      {
+        "type": "text",
+        "id": "promo_4_message",
+        "label": "Product page message",
+        "info": "Leave blank for a standard message. Don't promise a saving: Shopify confirms eligibility in the cart."
       }
     ]
   },
@@ -1052,6 +1599,33 @@
         ],
         "default": "simple",
         "info": "Simplified keeps quick fades and reveals but skips pinning, parallax and scroll-linked scenes on screens under 750px."
+      },
+      {
+        "type": "checkbox",
+        "id": "motion_smooth_scroll",
+        "label": "Smooth wheel scrolling",
+        "default": true,
+        "info": "Fluid mouse-wheel and touchpad scrolling on desktop. Phones keep native scrolling. Off when the visitor's device asks for reduced motion (on Windows: Settings > Accessibility > Visual effects > Animation effects), with Motion off, and in the theme editor."
+      },
+      {
+        "type": "select",
+        "id": "motion_smooth_strength",
+        "label": "Smooth scrolling strength",
+        "options": [
+          {
+            "value": "subtle",
+            "label": "Subtle"
+          },
+          {
+            "value": "balanced",
+            "label": "Balanced"
+          },
+          {
+            "value": "silky",
+            "label": "Silky (longest glide)"
+          }
+        ],
+        "default": "balanced"
       }
     ]
   },
@@ -1102,6 +1676,47 @@
           }
         ],
         "default": "classic"
+      }
+    ]
+  },
+  {
+    "name": "Customer support",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Contact information page links. These settings belong to this theme; they do not change the published store policies."
+      },
+      {
+        "type": "checkbox",
+        "id": "support_replace_policy",
+        "label": "Show these links instead of the contact information policy",
+        "info": "Replaces the policy text from Settings › Policies on that page. Leave off if the policy contains details you must publish, such as your business address or registration number.",
+        "default": false
+      },
+      {
+        "type": "richtext",
+        "id": "support_intro",
+        "label": "Introduction"
+      },
+      {
+        "type": "text",
+        "id": "support_email",
+        "label": "Support email"
+      },
+      {
+        "type": "text",
+        "id": "support_phone",
+        "label": "Support phone"
+      },
+      {
+        "type": "url",
+        "id": "support_instagram",
+        "label": "Instagram profile URL"
+      },
+      {
+        "type": "text",
+        "id": "support_instagram_label",
+        "label": "Instagram link label"
       }
     ]
   }

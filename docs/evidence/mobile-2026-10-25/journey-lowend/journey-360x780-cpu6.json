@@ -1,0 +1,492 @@
+{
+  "viewport": "360x780",
+  "cpuThrottle": 6,
+  "steps": [
+    {
+      "step": "home-load",
+      "lcp": 2388,
+      "lcpEl": "VIDEO.hero__video",
+      "cls": 0.0001,
+      "shifts": [
+        {
+          "t": 3576,
+          "v": 0.0001,
+          "src": "SHOPIFY-ACCOUNT."
+        }
+      ],
+      "longTasks": [
+        [
+          1183,
+          151
+        ],
+        [
+          1584,
+          127
+        ],
+        [
+          1768,
+          51
+        ],
+        [
+          2590,
+          639
+        ],
+        [
+          3385,
+          72
+        ],
+        [
+          3485,
+          101
+        ],
+        [
+          3661,
+          856
+        ],
+        [
+          4524,
+          287
+        ],
+        [
+          4830,
+          249
+        ],
+        [
+          5125,
+          49
+        ],
+        [
+          5350,
+          78
+        ],
+        [
+          5595,
+          124
+        ],
+        [
+          5820,
+          63
+        ],
+        [
+          5968,
+          82
+        ],
+        [
+          6050,
+          58
+        ],
+        [
+          6184,
+          202
+        ],
+        [
+          6664,
+          52
+        ],
+        [
+          8267,
+          141
+        ],
+        [
+          8855,
+          108
+        ],
+        [
+          9011,
+          97
+        ]
+      ],
+      "tbt": 2588,
+      "lenisOnTouch": false,
+      "nkAnim": true,
+      "cursorOnTouch": false,
+      "heroSrc": "a2036364d55d46f887841a201374b3f2.HD-720p-4.5Mbps-91045694.mp4",
+      "jsHeapMB": 9
+    },
+    {
+      "step": "home-scroll",
+      "startY": 0,
+      "y": 4530,
+      "max": 350,
+      "pinSpacers": 0,
+      "stuckHidden": 0,
+      "frames": 447,
+      "p50": 33.3,
+      "p95": 50.1,
+      "over50ms": 31,
+      "over34ms": 55,
+      "longTasksDuring": [
+        [
+          11404,
+          58
+        ],
+        [
+          12916,
+          253
+        ],
+        [
+          13217,
+          59
+        ],
+        [
+          13452,
+          58
+        ],
+        [
+          13603,
+          64
+        ],
+        [
+          13677,
+          55
+        ],
+        [
+          13795,
+          54
+        ],
+        [
+          13955,
+          53
+        ],
+        [
+          14892,
+          256
+        ],
+        [
+          15151,
+          57
+        ],
+        [
+          15684,
+          293
+        ],
+        [
+          16073,
+          54
+        ],
+        [
+          16434,
+          66
+        ],
+        [
+          16635,
+          82
+        ],
+        [
+          18887,
+          64
+        ],
+        [
+          19132,
+          68
+        ],
+        [
+          20070,
+          62
+        ],
+        [
+          24053,
+          80
+        ],
+        [
+          25536,
+          58
+        ]
+      ]
+    },
+    {
+      "step": "home-scroll-up",
+      "y": 2406,
+      "frames": 155,
+      "p50": 16.7,
+      "p95": 33.4,
+      "max": 33.5,
+      "over50ms": 0,
+      "over34ms": 0,
+      "longTasksDuring": []
+    },
+    {
+      "step": "rotate",
+      "landscape": {
+        "overflowX": 0,
+        "y": 5285,
+        "docH": 10000
+      },
+      "portraitAgain": {
+        "overflowX": 0,
+        "y": 5285,
+        "docH": 13283
+      },
+      "scrollAfterRotate": {
+        "frames": 70,
+        "p50": 16.7,
+        "p95": 33.4,
+        "max": 50,
+        "over50ms": 0,
+        "over34ms": 1,
+        "longTasksDuring": []
+      }
+    },
+    {
+      "step": "nav-drawer",
+      "openMs": 1010,
+      "box": {
+        "top": 0,
+        "bottom": 780,
+        "left": 0,
+        "right": 360,
+        "vw": 360,
+        "vh": 780,
+        "fits": true,
+        "scrollable": false
+      },
+      "lockOpen": {
+        "locked": true,
+        "overlay": true,
+        "openDialogs": [
+          "drawer.menu-drawer--editorial"
+        ],
+        "scrollY": 78,
+        "bodyOverflow": "hidden"
+      },
+      "afterSwipeBehind": {
+        "locked": true,
+        "overlay": true,
+        "openDialogs": [
+          "drawer.menu-drawer--editorial"
+        ],
+        "scrollY": 78,
+        "bodyOverflow": "hidden"
+      },
+      "nestedPanelsVisible": 0,
+      "afterClose": {
+        "locked": false,
+        "overlay": false,
+        "openDialogs": [],
+        "scrollY": 95,
+        "bodyOverflow": "visible"
+      }
+    },
+    {
+      "step": "search",
+      "inputFontPx": 18,
+      "results": 2,
+      "focused": "INPUT.",
+      "box": {
+        "top": 0,
+        "bottom": 780,
+        "left": 0,
+        "right": 360,
+        "vw": 360,
+        "vh": 780,
+        "fits": true,
+        "scrollable": false
+      },
+      "afterClose": {
+        "locked": true,
+        "overlay": true,
+        "openDialogs": [
+          "search-modal"
+        ],
+        "scrollY": 0,
+        "bodyOverflow": "hidden"
+      }
+    },
+    {
+      "step": "collection-filters",
+      "grid": {
+        "cards": 24,
+        "columns": 1,
+        "cardW": 328,
+        "titleFont": 17,
+        "priceFont": 13,
+        "trayVisible": true,
+        "trayOpacity": "1"
+      },
+      "filters": {
+        "box": {
+          "top": 0,
+          "bottom": 780,
+          "left": 0,
+          "right": 360,
+          "vw": 360,
+          "vh": 780,
+          "fits": true,
+          "scrollable": false
+        },
+        "lock": {
+          "locked": true,
+          "overlay": true,
+          "openDialogs": [
+            "drawer.drawer--right"
+          ],
+          "scrollY": 0,
+          "bodyOverflow": "hidden"
+        },
+        "afterClose": {
+          "locked": false,
+          "overlay": false,
+          "openDialogs": [],
+          "scrollY": 0,
+          "bodyOverflow": "visible"
+        }
+      }
+    },
+    {
+      "step": "gallery",
+      "start": {
+        "y": 0,
+        "sl": 0,
+        "current": "0"
+      },
+      "afterHorizontalSwipe": {
+        "y": 0,
+        "sl": 0,
+        "current": "0"
+      },
+      "afterVerticalSwipeOnGallery": {
+        "y": 235,
+        "sl": 0,
+        "current": "0"
+      },
+      "horizontalFrames": {
+        "frames": 208,
+        "p50": 16.7,
+        "p95": 33.3,
+        "max": 50,
+        "over50ms": 0,
+        "over34ms": 2,
+        "longTasksDuring": []
+      }
+    },
+    {
+      "step": "size-select",
+      "resolveMs": 899,
+      "state": "available",
+      "selectedText": "M",
+      "buyLabel": "Add to cart· Tk 1,900.00",
+      "panelOpen": false
+    },
+    {
+      "step": "size-guide",
+      "box": {
+        "top": 94,
+        "bottom": 780,
+        "left": 0,
+        "right": 360,
+        "vw": 360,
+        "vh": 780,
+        "fits": true,
+        "scrollable": true
+      },
+      "tableOverflow": null,
+      "afterClose": {
+        "locked": false,
+        "overlay": false,
+        "openDialogs": [],
+        "scrollY": 507,
+        "bodyOverflow": "visible"
+      },
+      "selectionKept": "M"
+    },
+    {
+      "step": "cart-drawer",
+      "addMs": 2261,
+      "drawer": {
+        "top": 0,
+        "bottom": 780,
+        "left": 0,
+        "right": 360,
+        "vw": 360,
+        "vh": 780,
+        "fits": true,
+        "scrollable": false
+      },
+      "checkoutVisible": true,
+      "checkoutH": 54,
+      "qty": [
+        "Decrease quantity  44x44",
+        "Increase quantity  44x44"
+      ],
+      "discountInputFont": 16,
+      "qtyMs": 649,
+      "lock": {
+        "locked": true,
+        "overlay": true,
+        "openDialogs": [
+          "drawer.drawer--right"
+        ],
+        "scrollY": 507,
+        "bodyOverflow": "hidden"
+      }
+    },
+    {
+      "step": "cart-close",
+      "locked": false,
+      "overlay": false,
+      "openDialogs": [],
+      "scrollY": 507,
+      "bodyOverflow": "visible"
+    },
+    {
+      "step": "interactions",
+      "slowest": [
+        [
+          "pointerdown",
+          216,
+          13,
+          "[object SVGAnimatedString]"
+        ],
+        [
+          "pointerup",
+          216,
+          16,
+          "[object SVGAnimatedString]"
+        ],
+        [
+          "click",
+          216,
+          42,
+          "[object SVGAnimatedString]"
+        ],
+        [
+          "pointerdown",
+          208,
+          25,
+          "[object SVGAnimatedString]"
+        ],
+        [
+          "pointerup",
+          208,
+          27,
+          "[object SVGAnimatedString]"
+        ],
+        [
+          "click",
+          208,
+          56,
+          "[object SVGAnimatedString]"
+        ],
+        [
+          "pointerdown",
+          200,
+          8,
+          "size-guide-link spec"
+        ],
+        [
+          "pointerup",
+          200,
+          12,
+          "size-guide-link spec"
+        ]
+      ]
+    },
+    {
+      "step": "cleanup",
+      "items": 0
+    }
+  ],
+  "errors": [
+    "Access to script at 'http://cdn.shopify.com/shopifycloud/storefront/assets/storefront/origin_trials-318ab40a.js' from origin 'http://127.0.0.1:9393' has been blocked by CORS policy: No 'Access-Control"
+  ]
+}

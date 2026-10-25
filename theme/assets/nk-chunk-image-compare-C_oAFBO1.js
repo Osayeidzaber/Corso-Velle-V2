@@ -1,1 +1,0 @@
-import{O as e,h as t}from"./nk-chunk-sections-DnHlLMMj.js";var n=class extends t{mount(){let e=this.ref(`range`);if(!e)return;e.hidden=!1;let t=()=>this.style.setProperty(`--position`,`${e.value}%`);t(),this.on(e,`input`,t),this.dispose(()=>{e.hidden=!0})}};e(`nk-image-compare`,n);export{n as NkImageCompare};

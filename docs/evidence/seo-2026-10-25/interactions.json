@@ -1,0 +1,43 @@
+[
+  {
+    "width": 390,
+    "passed": [
+      "gallery thumbnails",
+      "image lightbox",
+      "Escape dismiss",
+      "variant M selection",
+      "exact variant add",
+      "quantity update",
+      "native checkout form enabled",
+      "remove and empty cart",
+      "sort AJAX and canonical",
+      "mobile menu open/close"
+    ],
+    "checkout": {
+      "disabled": false,
+      "action": "/cart",
+      "method": "post"
+    },
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "passed": [
+      "gallery thumbnails",
+      "image lightbox",
+      "Escape dismiss",
+      "variant M selection",
+      "exact variant add",
+      "quantity update",
+      "native checkout form enabled",
+      "remove and empty cart",
+      "sort AJAX and canonical"
+    ],
+    "checkout": {
+      "disabled": false,
+      "action": "/cart",
+      "method": "post"
+    },
+    "errors": []
+  }
+]

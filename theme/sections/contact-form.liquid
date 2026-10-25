@@ -17,10 +17,10 @@
         <div class="contact-form__status" role="alert" tabindex="-1">{{ 'sections.contact.error' | t }} {{ form.errors | default_errors }}</div>
       {%- endif -%}
       <div class="contact-form__fields">
-        <label class="contact-form__field"><span>{{ 'sections.contact.name' | t }}</span><input type="text" name="contact[{{ 'sections.contact.name' | t }}]" autocomplete="name" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"></label>
-        <label class="contact-form__field"><span>{{ 'sections.contact.email' | t }} <span aria-hidden="true">*</span></span><input type="email" name="contact[email]" autocomplete="email" spellcheck="false" autocapitalize="off" required value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" {% if form.errors contains 'email' %}aria-invalid="true"{% endif %}></label>
+        <label class="contact-form__field"><span>{{ 'sections.contact.name' | t }}</span><input type="text" name="contact[{{ 'sections.contact.name' | t | escape }}]" autocomplete="name" value="{% if form.name %}{{ form.name | escape }}{% elsif customer %}{{ customer.name | escape }}{% endif %}"></label>
+        <label class="contact-form__field"><span>{{ 'sections.contact.email' | t }} <span aria-hidden="true">*</span></span><input type="email" name="contact[email]" autocomplete="email" spellcheck="false" autocapitalize="off" required value="{% if form.email %}{{ form.email | escape }}{% elsif customer %}{{ customer.email | escape }}{% endif %}" {% if form.errors contains 'email' %}aria-invalid="true"{% endif %}></label>
         {%- if section.settings.show_phone -%}
-          <label class="contact-form__field contact-form__field--full"><span>{{ 'sections.contact.phone' | t }}</span><input type="tel" name="contact[{{ 'sections.contact.phone' | t }}]" autocomplete="tel" pattern="[0-9\-\+\s\(\)]*" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"></label>
+          <label class="contact-form__field contact-form__field--full"><span>{{ 'sections.contact.phone' | t }}</span><input type="tel" name="contact[{{ 'sections.contact.phone' | t | escape }}]" autocomplete="tel" pattern="[0-9\-\+\s\(\)]*" value="{% if form.phone %}{{ form.phone | escape }}{% elsif customer %}{{ customer.phone | escape }}{% endif %}"></label>
         {%- endif -%}
         {%- for block in section.blocks -%}
           {%- assign field_name = block.settings.label | escape -%}
@@ -40,7 +40,7 @@
             {%- endcase -%}
           </label>
         {%- endfor -%}
-        <label class="contact-form__field contact-form__field--full"><span>{{ 'sections.contact.message' | t }}</span><textarea rows="{{ section.settings.message_rows }}" name="contact[body]">{{ form.body }}</textarea></label>
+        <label class="contact-form__field contact-form__field--full"><span>{{ 'sections.contact.message' | t }}</span><textarea rows="{{ section.settings.message_rows }}" name="contact[body]">{{ form.body | escape }}</textarea></label>
       </div>
       {%- if section.settings.consent != blank -%}<div class="rte text-muted contact-form__consent">{{ section.settings.consent }}</div>{%- endif -%}
       <div class="contact-form__submit"><button type="submit" class="nk-btn nk-btn--{{ section.settings.button_style }}"><span class="nk-btn__label">{%- if section.settings.button_label != blank -%}{{ section.settings.button_label | escape }}{%- else -%}{{ 'sections.contact.send' | t }}{%- endif -%}</span></button></div>

@@ -1,0 +1,69 @@
+/*
+ * Merchant rich text: pages, articles, product descriptions, collapsible rows and Shopify's policy
+ * pages (which wrap their body in .rte). The base reset zeroes every margin, so flow spacing is
+ * restored here. :where() keeps specificity at zero, so section styles still win.
+ */
+:where(.rte) > :where(* + *) {
+  margin-top: 1em;
+}
+
+:where(.rte) :where(h1, h2, h3, h4, h5, h6) {
+  line-height: 1.15;
+}
+
+:where(.rte) > :where(* + h1, * + h2, * + h3, * + h4, * + h5, * + h6) {
+  margin-top: 1.8em;
+}
+
+:where(.rte) > :where(h1, h2, h3, h4, h5, h6) + :where(*) {
+  margin-top: 0.6em;
+}
+
+:where(.rte) :where(h1) { font-size: clamp(1.75rem, 4vw, 2.25rem); }
+:where(.rte) :where(h2) { font-size: clamp(1.4rem, 3vw, 1.75rem); }
+:where(.rte) :where(h3) { font-size: 1.25rem; }
+:where(.rte) :where(h4, h5, h6) { font-size: 1.05rem; }
+
+:where(.rte) :where(ul, ol) {
+  padding-left: 1.25em;
+}
+
+:where(.rte) :where(li + li) {
+  margin-top: 0.25em;
+}
+
+:where(.rte) :where(a) {
+  text-decoration: underline;
+}
+
+:where(.rte) :where(img) {
+  height: auto;
+}
+
+:where(.rte) :where(blockquote) {
+  padding-left: 1em;
+  border-left: 2px solid var(--nk-color-line);
+  font-style: italic;
+}
+
+:where(.rte) :where(table) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+:where(.rte) :where(th, td) {
+  padding: 8px 12px;
+  border: 1px solid var(--nk-color-line);
+  text-align: start;
+}
+
+/* Shopify's policy pages: room below the header and around the title. */
+.shopify-policy__container {
+  padding-block: clamp(32px, 6vw, 80px);
+}
+
+.shopify-policy__title {
+  margin-bottom: clamp(20px, 3vw, 32px);
+}

@@ -4,7 +4,21 @@ nk-facets {
 }
 
 nk-facets[data-toolbar='contained'] .facets__toolbar-wrap { margin-inline: 0; padding-inline: 16px; }
-nk-facets[data-toolbar-sticky='false'] .facets__toolbar-wrap { position: static; }
+
+/* Sticky toolbar. The toolbar's own parent is the facets form, which is exactly as tall as the
+   toolbar, so position: sticky on the toolbar could never engage (it scrolled away on every
+   screen). The form sticks instead, inside the full-height <nk-facets>. It sits under a visible
+   sticky header and moves to the top when a "reveal" header hides or the header doesn't stick. */
+nk-facets > .facets {
+  position: sticky;
+  top: var(--nk-header-h, 0px);
+  z-index: 20;
+  transition: top var(--nk-dur-small, 200ms) var(--nk-ease-out, ease-out);
+}
+:root:has(nk-header[data-hidden]) nk-facets > .facets,
+:root:has(nk-header:not([data-sticky='always'], [data-sticky='reveal'])) nk-facets > .facets { top: 0; }
+nk-facets > .facets > .facets__toolbar-wrap { position: relative; top: auto; }
+nk-facets[data-toolbar-sticky='false'] > .facets { position: static; }
 nk-facets[data-results-gap] .product-grid { column-gap: var(--results-gap, 8px); }
 
 nk-facets[aria-busy='true'] .facets__results-grid {
@@ -423,3 +437,72 @@ nk-facets[data-enhanced] .facets__sort-select-wrap, nk-facets[data-enhanced] .fa
 .facets__sort-check { visibility: hidden; }
 .facets__sort-options button[aria-pressed='true'] .facets__sort-check { visibility: visible; }
 @media (max-width: 599px) { .facets__sort-menu > summary { min-height: 48px; padding-inline: 0; } .facets__sort-options { width: 100%; max-width: 100%; } }
+
+/* Load more / infinite scroll (snippets/infinite-pagination, nk-infinite-scroll). */
+.infinite {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  margin-top: clamp(40px, 6vw, 72px);
+  padding-top: 24px;
+  border-top: 1px solid var(--nk-color-line);
+  text-align: center;
+}
+
+.infinite__count {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+}
+
+.infinite__progress {
+  width: min(240px, 60%);
+  height: 2px;
+  background: var(--nk-color-line);
+  overflow: hidden;
+}
+
+.infinite__progress > span {
+  display: block;
+  height: 100%;
+  background: var(--nk-color-accent);
+  transform: scaleX(var(--infinite-progress, 0));
+  transform-origin: left center;
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.infinite[data-auto] .infinite__more {
+  visibility: hidden;
+  height: 1px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+}
+
+.infinite__loader {
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--nk-color-line);
+  border-top-color: var(--nk-color-accent);
+  border-radius: 50%;
+  animation: nk-spin 0.8s linear infinite;
+}
+
+.infinite__loader[hidden],
+.infinite [data-infinite-fallback][hidden] {
+  display: none;
+}
+
+.infinite [data-infinite-fallback] {
+  margin-top: 0;
+  border-top: 0;
+}
+
+@keyframes nk-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .infinite__loader { animation-duration: 2.4s; }
+  .infinite__progress > span { transition: none; }
+}

@@ -9,6 +9,7 @@ import { announce } from '../../services/announce';
 import { Sequencer } from '../../services/request';
 import { MissingFragmentError, replaceRegions, renderSection } from '../../services/sections';
 import { namespaceProductHTML } from './product-dom';
+import { playPriceTransition, snapshotPrice } from './price-transition';
 
 /** Grace period before an unselected preview panel collapses, so sweeping across pills never flickers. */
 const PANEL_HIDE_DELAY = 220;
@@ -209,6 +210,7 @@ export class NkVariantPicker extends NkElement {
       }
       const html = this.dataset.idPrefix ? namespaceProductHTML(outcome.value, this.dataset.idPrefix) : outcome.value;
       const incomingPicker = this.#incomingPicker(html);
+      const pricedBefore = snapshotPrice(section);
       if (this.#canPatch(incomingPicker)) {
         replaceRegions(section, html, OTHER_REGIONS);
         this.#patch(incomingPicker);
@@ -219,6 +221,7 @@ export class NkVariantPicker extends NkElement {
         this.#applyExplicitChoice();
         this.#restoreFocus(focusValueId);
       }
+      playPriceTransition(section, pricedBefore);
     } catch (error) {
       if (error instanceof MissingFragmentError) console.warn(error);
       this.#setState('failed', target.toString());

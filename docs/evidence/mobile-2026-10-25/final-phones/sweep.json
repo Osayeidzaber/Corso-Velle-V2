@@ -1,0 +1,768 @@
+[
+  {
+    "viewport": "android-small-320",
+    "path": "/",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 320,
+      "vw": 320,
+      "height": 12799
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "arrivals a.card__title 288x20 \"The Portofino Shirt\"",
+      "tabs a.card__title 288x22 \"Andre | Linen Shirt\"",
+      "tabs a.card__title 288x22 \"Puro | Linen Trouser\"",
+      "tabs a.card__title 288x22 \"Evyan | Embroidered Shir\"",
+      "tabs a.card__title 288x22 \"The Portofino Shirt\"",
+      "tabs a.card__title 288x22 \"The Velle Signature Shir\"",
+      "tabs a.card__title 288x22 \"Azure | Embroidered Shir\"",
+      "tabs a.card__title 288x22 \"The Checkered Shirt\"",
+      "tabs a.card__title 288x22 \"Siena | Embroidered Shir\"",
+      "categories a 65x20 \"Shackets\"",
+      "categories a 34x20 \"Polo\"",
+      "categories a 40x20 \"Jeans\"",
+      "categories a 71x20 \"Footwear\"",
+      "story a.spec.link-underline 200x21 \"Discover the collection\"",
+      "featured a.card__title 288x22 \"Amaya | Embroidered Shac\"",
+      "featured a.card__title 288x22 \"Meisen | Embroidered Sha\"",
+      "featured a.card__title 288x22 \"Ornate | Shacket\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 19,
+    "tinyText": [
+      "tabs span.tabs__count 10px \"(8)\"",
+      "tabs span.tabs__count 10px \"(3)\"",
+      "tabs span.tabs__count 10px \"(2)\"",
+      "tabs span.tabs__count 10px \"(6)\"",
+      "tabs span.card__tray-label 9px \"Sizes\"",
+      "categories span 9px \"01 /\"",
+      "categories span 9px \"9 products\"",
+      "categories span 9px \"02 /\"",
+      "categories span 9px \"3 products\"",
+      "categories span 9px \"03 /\"",
+      "categories span 9px \"2 products\"",
+      "categories span 9px \"04 /\"",
+      "categories span 9px \"05 /\"",
+      "categories span 9px \"6 products\"",
+      "featured span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [
+      "arrivals article.card.card--sold-out op=0.00",
+      "arrivals h3.card__heading op=0.00",
+      "arrivals button.button.product-carousel__add op=0.00"
+    ],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [
+      "Access to script at 'http://cdn.shopify.com/shopifycloud/storefront/assets/storefront/origin_trials-318ab40a.js' from origin 'http://127.0.0.1:9393' has been bl"
+    ],
+    "screenshot": "android-small-320_.png"
+  },
+  {
+    "viewport": "android-small-320",
+    "path": "/collections/all",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 320,
+      "vw": 320,
+      "height": 16708
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "main a.card__title 288x22 \"Amaya | Embroidered Shac\"",
+      "main a.card__title 288x22 \"Andre | Linen Shirt\"",
+      "main a.card__title 288x22 \"Astorio Chestnut Mule\"",
+      "main a.card__title 288x22 \"Azure | Embroidered Shir\"",
+      "main a.card__title 288x22 \"Bellagio | Knit Polo\"",
+      "main a.card__title 288x22 \"Classic White Rib Tank\"",
+      "main a.card__title 288x22 \"Evyan | Embroidered Shir\"",
+      "main a.card__title 288x22 \"Firenze | Gurkha Flared \"",
+      "main a.card__title 288x22 \"Heritage Suede Penny Loa\"",
+      "main a.card__title 288x22 \"Kumo | Baggy Jeans\"",
+      "main a.card__title 288x22 \"Libre | Embroidered Shir\"",
+      "main a.card__title 288x22 \"Meisen | Embroidered Sha\"",
+      "main a.card__title 288x22 \"Milano Noir Mule\"",
+      "main a.card__title 288x22 \"Ornate | Shacket\"",
+      "main a.card__title 288x22 \"Puro | Linen Shorts\"",
+      "main a.card__title 288x22 \"Puro | Linen Trouser\"",
+      "main a.card__title 288x22 \"Shiroi | Baggy Jeans\"",
+      "main a.card__title 288x22 \"Siena | Embroidered Shir\"",
+      "main a.card__title 288x22 \"The Cavallo Boot\"",
+      "main a.card__title 288x22 \"The Checkered Shirt\"",
+      "main a.card__title 288x22 \"The Portofino Shirt\"",
+      "main a.card__title 288x22 \"The Velle Signature Shir\"",
+      "main a.card__title 288x22 \"Varenzo Leather Boots\"",
+      "main a.card__title 288x22 \"Velle Basic Tee\"",
+      "main a.card__title 288x22 \"Velle Crane Tee\"",
+      "main a.card__title 288x22 \"Velle Luck of the Draw T\"",
+      "main a.card__title 288x22 \"Velle Members Club Tee\"",
+      "main a.card__title 288x22 \"Velle Riviera Club Tee\"",
+      "main a.card__title 288x22 \"Velle Rodeo Estate Tee\"",
+      "main a.card__title 288x22 \"Velle Timeless Basics Te\"",
+      "main a.card__title 288x22 \"Verona Brown Loafer\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 36,
+    "tinyText": [
+      "banner a 10px \"Home\"",
+      "banner a 10px \"Collections\"",
+      "banner span 10px \"Products\"",
+      "banner span.collection-banner__count.spec 10px \"34 products\"",
+      "banner span.collection-banner__pill-count 10px \"(34)\"",
+      "banner span.collection-banner__pill-count 10px \"(6)\"",
+      "banner span.collection-banner__pill-count 10px \"(1)\"",
+      "banner span.collection-banner__pill-count 10px \"(3)\"",
+      "banner span.collection-banner__pill-count 10px \"(5)\"",
+      "banner span.collection-banner__pill-count 10px \"(2)\"",
+      "banner span.collection-banner__pill-count 10px \"(4)\"",
+      "banner span.collection-banner__pill-count 10px \"(9)\"",
+      "banner span.collection-banner__pill-count 10px \"(7)\"",
+      "banner span.collection-banner__pill-count 10px \"(20)\"",
+      "main span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "android-small-320_collections_all.png"
+  },
+  {
+    "viewport": "android-small-320",
+    "path": "/collections/leather-goods",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 320,
+      "vw": 320,
+      "height": 1411
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 2,
+    "tinyText": [
+      "banner a 10px \"Home\"",
+      "banner a 10px \"Collections\"",
+      "banner span 10px \"Leather Goods\"",
+      "banner span.collection-banner__count.spec 10px \"0 products\"",
+      "banner span.collection-banner__pill-count 10px \"(34)\"",
+      "banner span.collection-banner__pill-count 10px \"(6)\"",
+      "banner span.collection-banner__pill-count 10px \"(1)\"",
+      "banner span.collection-banner__pill-count 10px \"(3)\"",
+      "banner span.collection-banner__pill-count 10px \"(5)\"",
+      "banner span.collection-banner__pill-count 10px \"(2)\"",
+      "banner span.collection-banner__pill-count 10px \"(4)\"",
+      "banner span.collection-banner__pill-count 10px \"(9)\"",
+      "banner span.collection-banner__pill-count 10px \"(7)\"",
+      "banner span.collection-banner__pill-count 10px \"(20)\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "android-small-320_collections_leather-goods.png"
+  },
+  {
+    "viewport": "android-small-320",
+    "path": "/products/amaya-embroidered-shacket",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 320,
+      "vw": 320,
+      "height": 4210
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "recommendations a.card__title 288x22 \"Heritage Suede Penny Loa\"",
+      "recommendations a.card__title 288x22 \"Meisen | Embroidered Sha\"",
+      "recommendations a.card__title 288x22 \"Evyan | Embroidered Shir\"",
+      "recommendations a.card__title 288x22 \"Ornate | Shacket\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 6,
+    "tinyText": [
+      "recommendations span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "android-small-320_products_amaya-embroidered-shacket.png"
+  },
+  {
+    "viewport": "android-small-320",
+    "path": "/products/firenze-gurkha-flared-trouser",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 320,
+      "vw": 320,
+      "height": 4232
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "recommendations a.card__title 288x22 \"Heritage Suede Penny Loa\"",
+      "recommendations a.card__title 288x22 \"Firenze | Gurkha Flared \"",
+      "recommendations a.card__title 288x22 \"Amaya | Embroidered Shac\"",
+      "recommendations a.card__title 288x22 \"Puro | Linen Trouser\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 6,
+    "tinyText": [
+      "recommendations span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "android-small-320_products_firenze-gurkha-flared-trouser.png"
+  },
+  {
+    "viewport": "android-small-320",
+    "path": "/products/the-portofino-shirt",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 320,
+      "vw": 320,
+      "height": 4121
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "recommendations a.card__title 288x22 \"Firenze | Gurkha Flared \"",
+      "recommendations a.card__title 288x22 \"The Velle Signature Shir\"",
+      "recommendations a.card__title 288x22 \"Azure | Embroidered Shir\"",
+      "recommendations a.card__title 288x22 \"Libre | Embroidered Shir\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 6,
+    "tinyText": [
+      "main span.badge.badge--sold-out 10px \"Sold out\"",
+      "recommendations span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "android-small-320_products_the-portofino-shirt.png"
+  },
+  {
+    "viewport": "android-small-320",
+    "path": "/products/varenzo-leather-boots",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 320,
+      "vw": 320,
+      "height": 4203
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "recommendations a.card__title 288x22 \"The Cavallo Boot\"",
+      "recommendations a.card__title 288x22 \"Milano Noir Mule\"",
+      "recommendations a.card__title 288x22 \"Verona Brown Loafer\"",
+      "recommendations a.card__title 288x22 \"Astorio Chestnut Mule\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 6,
+    "tinyText": [
+      "recommendations span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "android-small-320_products_varenzo-leather-boots.png"
+  },
+  {
+    "viewport": "android-small-320",
+    "path": "/search?q=shirt",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 320,
+      "vw": 320,
+      "height": 10786
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "main label.visually-hidden 1x1 \"Search products\"",
+      "main a.card__title 288x22 \"Libre | Embroidered Shir\"",
+      "main a.card__title 288x22 \"Azure | Embroidered Shir\"",
+      "main a.card__title 288x22 \"Evyan | Embroidered Shir\"",
+      "main a.card__title 288x22 \"Velle Crane Tee\"",
+      "main a.card__title 288x22 \"Andre | Linen Shirt\"",
+      "main a.card__title 288x22 \"The Checkered Shirt\"",
+      "main a.card__title 288x22 \"Velle Rodeo Estate Tee\"",
+      "main a.card__title 288x22 \"Velle Riviera Club Tee\"",
+      "main a.card__title 288x22 \"Siena | Embroidered Shir\"",
+      "main a.card__title 288x22 \"Velle Basic Tee\"",
+      "main a.card__title 288x22 \"The Velle Signature Shir\"",
+      "main a.card__title 288x22 \"Velle Timeless Basics Te\"",
+      "main a.card__title 288x22 \"Velle Luck of the Draw T\"",
+      "main a.card__title 288x22 \"Classic White Rib Tank\"",
+      "main a.card__title 288x22 \"Velle Members Club Tee\"",
+      "main a.card__title 288x22 \"Bellagio | Knit Polo\"",
+      "main a.card__title 288x22 \"Meisen | Embroidered Sha\"",
+      "main a.card__title 288x22 \"Shiroi | Baggy Jeans\"",
+      "main a.card__title 288x22 \"The Portofino Shirt\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 24,
+    "tinyText": [
+      "main span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "android-small-320_search_q_shirt.png"
+  },
+  {
+    "viewport": "android-small-320",
+    "path": "/cart",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 320,
+      "vw": 320,
+      "height": 1225
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 2,
+    "tinyText": [],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "android-small-320_cart.png"
+  },
+  {
+    "viewport": "android-small-320",
+    "path": "/pages/contact",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 320,
+      "vw": 320,
+      "height": 1890
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 2,
+    "tinyText": [],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "android-small-320_pages_contact.png"
+  },
+  {
+    "viewport": "iphone-15-393",
+    "path": "/",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 393,
+      "vw": 393,
+      "height": 13996
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "arrivals a.card__title 361x20 \"The Portofino Shirt\"",
+      "tabs a.card__title 361x22 \"Andre | Linen Shirt\"",
+      "tabs a.card__title 361x22 \"Puro | Linen Trouser\"",
+      "tabs a.card__title 361x22 \"Evyan | Embroidered Shir\"",
+      "tabs a.card__title 361x22 \"The Portofino Shirt\"",
+      "tabs a.card__title 361x22 \"The Velle Signature Shir\"",
+      "tabs a.card__title 361x22 \"Azure | Embroidered Shir\"",
+      "tabs a.card__title 361x22 \"The Checkered Shirt\"",
+      "tabs a.card__title 361x22 \"Siena | Embroidered Shir\"",
+      "categories a 77x23 \"Shackets\"",
+      "categories a 40x23 \"Polo\"",
+      "categories a 48x23 \"Jeans\"",
+      "categories a 84x23 \"Footwear\"",
+      "story a.spec.link-underline 200x21 \"Discover the collection\"",
+      "featured a.card__title 361x22 \"Amaya | Embroidered Shac\"",
+      "featured a.card__title 361x22 \"Meisen | Embroidered Sha\"",
+      "featured a.card__title 361x22 \"Ornate | Shacket\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 19,
+    "tinyText": [
+      "tabs span.tabs__count 10px \"(8)\"",
+      "tabs span.tabs__count 10px \"(3)\"",
+      "tabs span.tabs__count 10px \"(2)\"",
+      "tabs span.tabs__count 10px \"(6)\"",
+      "tabs span.card__tray-label 9px \"Sizes\"",
+      "categories span 9px \"01 /\"",
+      "categories span 9px \"9 products\"",
+      "categories span 9px \"02 /\"",
+      "categories span 9px \"3 products\"",
+      "categories span 9px \"03 /\"",
+      "categories span 9px \"2 products\"",
+      "categories span 9px \"04 /\"",
+      "categories span 9px \"05 /\"",
+      "categories span 9px \"6 products\"",
+      "featured span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [
+      "arrivals article.card.card--sold-out op=0.00",
+      "arrivals h3.card__heading op=0.00",
+      "arrivals button.button.product-carousel__add op=0.00"
+    ],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [
+      "Access to script at 'http://cdn.shopify.com/shopifycloud/storefront/assets/storefront/origin_trials-318ab40a.js' from origin 'http://127.0.0.1:9393' has been bl"
+    ],
+    "screenshot": "iphone-15-393_.png"
+  },
+  {
+    "viewport": "iphone-15-393",
+    "path": "/collections/all",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 393,
+      "vw": 393,
+      "height": 13923
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "main a.card__title 361x22 \"Amaya | Embroidered Shac\"",
+      "main a.card__title 361x22 \"Andre | Linen Shirt\"",
+      "main a.card__title 361x22 \"Astorio Chestnut Mule\"",
+      "main a.card__title 361x22 \"Azure | Embroidered Shir\"",
+      "main a.card__title 361x22 \"Bellagio | Knit Polo\"",
+      "main a.card__title 361x22 \"Classic White Rib Tank\"",
+      "main a.card__title 361x22 \"Evyan | Embroidered Shir\"",
+      "main a.card__title 361x22 \"Firenze | Gurkha Flared \"",
+      "main a.card__title 361x22 \"Heritage Suede Penny Loa\"",
+      "main a.card__title 361x22 \"Kumo | Baggy Jeans\"",
+      "main a.card__title 361x22 \"Libre | Embroidered Shir\"",
+      "main a.card__title 361x22 \"Meisen | Embroidered Sha\"",
+      "main a.card__title 361x22 \"Milano Noir Mule\"",
+      "main a.card__title 361x22 \"Ornate | Shacket\"",
+      "main a.card__title 361x22 \"Puro | Linen Shorts\"",
+      "main a.card__title 361x22 \"Puro | Linen Trouser\"",
+      "main a.card__title 361x22 \"Shiroi | Baggy Jeans\"",
+      "main a.card__title 361x22 \"Siena | Embroidered Shir\"",
+      "main a.card__title 361x22 \"The Cavallo Boot\"",
+      "main a.card__title 361x22 \"The Checkered Shirt\"",
+      "main a.card__title 361x22 \"The Portofino Shirt\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 26,
+    "tinyText": [
+      "banner a 10px \"Home\"",
+      "banner a 10px \"Collections\"",
+      "banner span 10px \"Products\"",
+      "banner span.collection-banner__count.spec 10px \"34 products\"",
+      "banner span.collection-banner__pill-count 10px \"(34)\"",
+      "banner span.collection-banner__pill-count 10px \"(6)\"",
+      "banner span.collection-banner__pill-count 10px \"(1)\"",
+      "banner span.collection-banner__pill-count 10px \"(3)\"",
+      "banner span.collection-banner__pill-count 10px \"(5)\"",
+      "banner span.collection-banner__pill-count 10px \"(2)\"",
+      "banner span.collection-banner__pill-count 10px \"(4)\"",
+      "banner span.collection-banner__pill-count 10px \"(9)\"",
+      "banner span.collection-banner__pill-count 10px \"(7)\"",
+      "banner span.collection-banner__pill-count 10px \"(20)\"",
+      "main span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "iphone-15-393_collections_all.png"
+  },
+  {
+    "viewport": "iphone-15-393",
+    "path": "/collections/leather-goods",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 393,
+      "vw": 393,
+      "height": 1352
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 2,
+    "tinyText": [
+      "banner a 10px \"Home\"",
+      "banner a 10px \"Collections\"",
+      "banner span 10px \"Leather Goods\"",
+      "banner span.collection-banner__count.spec 10px \"0 products\"",
+      "banner span.collection-banner__pill-count 10px \"(34)\"",
+      "banner span.collection-banner__pill-count 10px \"(6)\"",
+      "banner span.collection-banner__pill-count 10px \"(1)\"",
+      "banner span.collection-banner__pill-count 10px \"(3)\"",
+      "banner span.collection-banner__pill-count 10px \"(5)\"",
+      "banner span.collection-banner__pill-count 10px \"(2)\"",
+      "banner span.collection-banner__pill-count 10px \"(4)\"",
+      "banner span.collection-banner__pill-count 10px \"(9)\"",
+      "banner span.collection-banner__pill-count 10px \"(7)\"",
+      "banner span.collection-banner__pill-count 10px \"(20)\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "iphone-15-393_collections_leather-goods.png"
+  },
+  {
+    "viewport": "iphone-15-393",
+    "path": "/products/amaya-embroidered-shacket",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 393,
+      "vw": 393,
+      "height": 4546
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "recommendations a.card__title 361x22 \"Heritage Suede Penny Loa\"",
+      "recommendations a.card__title 361x22 \"Meisen | Embroidered Sha\"",
+      "recommendations a.card__title 361x22 \"Evyan | Embroidered Shir\"",
+      "recommendations a.card__title 361x22 \"Ornate | Shacket\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 6,
+    "tinyText": [
+      "recommendations span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "iphone-15-393_products_amaya-embroidered-shacket.png"
+  },
+  {
+    "viewport": "iphone-15-393",
+    "path": "/products/firenze-gurkha-flared-trouser",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 393,
+      "vw": 393,
+      "height": 4546
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "recommendations a.card__title 361x22 \"Heritage Suede Penny Loa\"",
+      "recommendations a.card__title 361x22 \"Firenze | Gurkha Flared \"",
+      "recommendations a.card__title 361x22 \"Amaya | Embroidered Shac\"",
+      "recommendations a.card__title 361x22 \"Puro | Linen Trouser\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 6,
+    "tinyText": [
+      "recommendations span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "iphone-15-393_products_firenze-gurkha-flared-trouser.png"
+  },
+  {
+    "viewport": "iphone-15-393",
+    "path": "/products/the-portofino-shirt",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 393,
+      "vw": 393,
+      "height": 4457
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "recommendations a.card__title 361x22 \"Firenze | Gurkha Flared \"",
+      "recommendations a.card__title 361x22 \"The Velle Signature Shir\"",
+      "recommendations a.card__title 361x22 \"Azure | Embroidered Shir\"",
+      "recommendations a.card__title 361x22 \"Libre | Embroidered Shir\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 6,
+    "tinyText": [
+      "main span.badge.badge--sold-out 10px \"Sold out\"",
+      "recommendations span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "iphone-15-393_products_the-portofino-shirt.png"
+  },
+  {
+    "viewport": "iphone-15-393",
+    "path": "/products/varenzo-leather-boots",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 393,
+      "vw": 393,
+      "height": 4540
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "recommendations a.card__title 361x22 \"The Cavallo Boot\"",
+      "recommendations a.card__title 361x22 \"Milano Noir Mule\"",
+      "recommendations a.card__title 361x22 \"Verona Brown Loafer\"",
+      "recommendations a.card__title 361x22 \"Astorio Chestnut Mule\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 6,
+    "tinyText": [
+      "recommendations span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "iphone-15-393_products_varenzo-leather-boots.png"
+  },
+  {
+    "viewport": "iphone-15-393",
+    "path": "/search?q=shirt",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 393,
+      "vw": 393,
+      "height": 12327
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "main label.visually-hidden 1x1 \"Search products\"",
+      "main a.card__title 361x22 \"Libre | Embroidered Shir\"",
+      "main a.card__title 361x22 \"Azure | Embroidered Shir\"",
+      "main a.card__title 361x22 \"Evyan | Embroidered Shir\"",
+      "main a.card__title 361x22 \"Velle Crane Tee\"",
+      "main a.card__title 361x22 \"Andre | Linen Shirt\"",
+      "main a.card__title 361x22 \"The Checkered Shirt\"",
+      "main a.card__title 361x22 \"Velle Rodeo Estate Tee\"",
+      "main a.card__title 361x22 \"Velle Riviera Club Tee\"",
+      "main a.card__title 361x22 \"Siena | Embroidered Shir\"",
+      "main a.card__title 361x22 \"Velle Basic Tee\"",
+      "main a.card__title 361x22 \"The Velle Signature Shir\"",
+      "main a.card__title 361x22 \"Velle Timeless Basics Te\"",
+      "main a.card__title 361x22 \"Velle Luck of the Draw T\"",
+      "main a.card__title 361x22 \"Classic White Rib Tank\"",
+      "main a.card__title 361x22 \"Velle Members Club Tee\"",
+      "main a.card__title 361x22 \"Bellagio | Knit Polo\"",
+      "main a.card__title 361x22 \"Meisen | Embroidered Sha\"",
+      "main a.card__title 361x22 \"Shiroi | Baggy Jeans\"",
+      "main a.card__title 361x22 \"The Portofino Shirt\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 24,
+    "tinyText": [
+      "main span.card__tray-label 9px \"Sizes\""
+    ],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "iphone-15-393_search_q_shirt.png"
+  },
+  {
+    "viewport": "iphone-15-393",
+    "path": "/cart",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 393,
+      "vw": 393,
+      "height": 1233
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 2,
+    "tinyText": [],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "iphone-15-393_cart.png"
+  },
+  {
+    "viewport": "iphone-15-393",
+    "path": "/pages/contact",
+    "status": 200,
+    "overflowX": false,
+    "doc": {
+      "scrollWidth": 393,
+      "vw": 393,
+      "height": 1876
+    },
+    "offscreen": [],
+    "offscreenCount": 0,
+    "small": [
+      " a.skip-link.visually-hidden 1x1 \"Skip to content\"",
+      "footer label.visually-hidden 1x1 \"Your email address\""
+    ],
+    "smallCount": 2,
+    "tinyText": [],
+    "hidden": [],
+    "brokenImgs": [],
+    "h1": 1,
+    "errors": [],
+    "screenshot": "iphone-15-393_pages_contact.png"
+  }
+]

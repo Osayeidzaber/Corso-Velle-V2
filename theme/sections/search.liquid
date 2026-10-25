@@ -9,7 +9,8 @@
 {%- paginate search.results by section.settings.per_page -%}
   <div class="section-spacing search-page">
     <div class="collection-header">
-      <h1 class="display">{{ 'search.title' | t }}</h1>
+      {%- assign search_title = 'search.title' | t -%}
+      {% render 'reveal-heading', text: search_title, entrance: section.settings.title_animation, split: section.settings.title_split, class: 'display', tag: 'h1', play_on_load: true %}
     </div>
 
     <form class="search-page__form" action="{{ routes.search_url }}" method="get" role="search">
@@ -43,8 +44,8 @@
 
         <div class="facets__results-grid" data-facets-results>
           {%- if search.results_count == 0 -%}
-            <div class="cart-empty">
-              <p class="cart-empty__title">{{ 'search.no_results' | t: terms: terms }}</p>
+            <div class="cart-empty cart-empty--page">
+              <p class="cart-empty__title">{{ 'search.no_results' | t: terms: terms | escape }}</p>
               <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'collection.shop_all' | t }}</a>
             </div>
           {%- else -%}
@@ -86,9 +87,7 @@
             </nk-stagger>
           {%- endif -%}
 
-          {%- if paginate.pages > 1 -%}
-            {% render 'pagination', paginate: paginate %}
-          {%- endif -%}
+          {% render 'infinite-pagination', paginate: paginate, section_id: section.id, mode: section.settings.pagination_style, auto_pages: section.settings.infinite_auto_pages, total: search.results_count %}
         </div>
       </nk-facets>
     {%- endif -%}
@@ -100,6 +99,36 @@
   "name": "t:general.search",
   "settings": [
     {
+      "type": "select",
+      "id": "pagination_style",
+      "label": "Pagination",
+      "options": [
+        {
+          "value": "infinite",
+          "label": "Infinite scroll"
+        },
+        {
+          "value": "button",
+          "label": "Load more button"
+        },
+        {
+          "value": "numbers",
+          "label": "Page numbers"
+        }
+      ],
+      "default": "infinite"
+    },
+    {
+      "type": "range",
+      "id": "infinite_auto_pages",
+      "label": "Infinite scroll: pages before a button",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3,
+      "info": "After this many pages load automatically, a Load more button appears so the footer stays reachable."
+    },
+    {
       "type": "range",
       "id": "per_page",
       "label": "Results per page",
@@ -107,6 +136,59 @@
       "max": 48,
       "step": 4,
       "default": 24
+    },
+    {
+      "type": "select",
+      "id": "title_animation",
+      "label": "Title animation",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "rise",
+          "label": "Rise from a mask"
+        },
+        {
+          "value": "blur",
+          "label": "Blur in"
+        },
+        {
+          "value": "fold",
+          "label": "Fold up"
+        },
+        {
+          "value": "skew",
+          "label": "Skewed rise"
+        },
+        {
+          "value": "fade",
+          "label": "Fade up"
+        }
+      ],
+      "default": "rise",
+      "info": "Plays once when the page opens. Follows Theme settings > Motion and reduced-motion preferences."
+    },
+    {
+      "type": "select",
+      "id": "title_split",
+      "label": "Animate title by",
+      "options": [
+        {
+          "value": "words",
+          "label": "Word"
+        },
+        {
+          "value": "chars",
+          "label": "Letter"
+        },
+        {
+          "value": "lines",
+          "label": "Line"
+        }
+      ],
+      "default": "words"
     },
     {
       "type": "select",

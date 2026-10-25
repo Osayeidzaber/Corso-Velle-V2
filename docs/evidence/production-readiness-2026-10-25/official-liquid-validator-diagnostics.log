@@ -1,0 +1,22 @@
+(node:27244) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/zaber/.codex/tmp/shopify-official-skills-20261025/shopify-liquid/scripts/validate.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\Users\zaber\.codex\tmp\shopify-official-skills-20261025\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Loaded resource from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\manifest_theme.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\translations.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\theme_settings.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\theme_block.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\section.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\default_setting_values.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\settings.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\theme_block_entry.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\app_block_entry.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\targetted_block_entry.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\preset_blocks.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\preset.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\setting.json
+Loaded schema from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\local_block_entry.json
+Loaded resource from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\tags.json
+Loaded resource from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\filters.json
+Loaded resource from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\objects.json
+Loaded resource from C:\Users\zaber\AppData\Local\theme-liquid-docs-nodejs\Cache\shopify_system_translations.json

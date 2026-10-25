@@ -1,0 +1,20 @@
+{%- comment -%}Automatic suggestions: one nonempty collection per normalized title, preferring
+the largest assortment. Explicit merchant menus/collection selections keep their own ordering.{%- endcomment -%}
+{%- liquid
+  assign eligible = true
+  if candidate.all_products_count == 0 or candidate.handle == 'frontpage' or candidate.handle == 'all'
+    assign eligible = false
+  endif
+  assign title_key = candidate.title | handleize
+  for other in collections
+    assign other_key = other.title | handleize
+    if other_key == title_key and other.handle != candidate.handle
+      if other.all_products_count > candidate.all_products_count
+        assign eligible = false
+      elsif other.all_products_count == candidate.all_products_count and other.handle < candidate.handle
+        assign eligible = false
+      endif
+    endif
+  endfor
+  echo eligible
+-%}

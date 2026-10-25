@@ -17,7 +17,21 @@
 {%- enddoc -%}
 {%- liquid
   assign heading_tag = heading_tag | default: 'h3'
-  assign sizes = sizes | default: '(min-width: 1200px) 33vw, (min-width: 750px) 50vw, 50vw'
+  # Explicit rail/editorial sizes win. Otherwise match the configured grid instead of assuming
+  # two mobile columns: a one-column card needs a full-width source to stay sharp.
+  if sizes == blank
+    assign desktop_columns = card_options.columns_desktop | default: 3 | at_least: 1
+    assign mobile_columns = card_options.columns_mobile | default: 1 | at_least: 1
+    assign desktop_width = 100.0 | divided_by: desktop_columns
+    assign mobile_width = 100.0 | divided_by: mobile_columns
+    capture sizes
+      echo '(min-width: 750px) '
+      echo desktop_width
+      echo 'vw, '
+      echo mobile_width
+      echo 'vw'
+    endcapture
+  endif
   assign loading = 'lazy'
   assign appearance = card_options.card_appearance | default: 'inherit'
   if appearance == 'inherit'
@@ -31,12 +45,6 @@
   if hover == 'off'
     assign secondary = false
   elsif card_options.card_hover != blank and card_options.card_hover != 'inherit'
-    assign secondary = true
-  endif
-  comment
-    Standard cards prefer video; without video they reveal the second photograph.
-  endcomment
-  if actions != false
     assign secondary = true
   endif
   assign show_badges = settings.card_show_badges
@@ -70,6 +78,9 @@
     assign loading = 'eager'
   endif
   assign first_media = product.featured_media
+  # The image link is aria-hidden (the title link is the accessible one), so this alt is read by
+  # search engines and image search, not screen readers.
+  assign card_image_alt = first_media.alt | default: product.title
   assign hover_video = product.media | where: 'media_type', 'video' | first
   assign second_media = nil
   for m in product.media
@@ -83,14 +94,10 @@
     assign sold_out = true
   endunless
   assign has_video = false
-  if hover_video != blank
-    if actions != false
-      assign has_video = true
-    elsif sold_out == false and secondary and hover != 'image'
-      assign has_video = true
-    endif
+  if hover_video != blank and sold_out == false and secondary and hover == 'auto'
+    assign has_video = true
   endif
-  if actions != false and has_video
+  if has_video
     assign secondary = false
   endif
   assign on_sale = false
@@ -133,24 +140,21 @@
             loading: loading,
             widths: '180, 270, 360, 450, 540, 720, 900',
             sizes: sizes,
-            alt: '',
+            alt: card_image_alt,
             data-card-primary-img: ''
         }}
         {%- if has_video -%}
           {%- liquid
-            # video_tag serves the largest rendition (1080p, ~7 Mbps), far too heavy for a card
-            # hover: the photo sat there while it buffered and the video arrived late. Use the
-            # smallest MP4 that is at least 480px tall (or the largest smaller one).
-            assign hover_source = blank
-            assign hover_mp4s = hover_video.sources | where: 'format', 'mp4' | sort: 'height'
-            for source in hover_mp4s
-              assign hover_source = source
-              if source.height >= 480
-                break
-              endif
-            endfor
+            # video_tag and video.sources offer only the largest MP4 (1080p, ~7 Mbps), far too
+            # heavy for a card hover: the photo sat there while it buffered. video-sources offers
+            # Shopify's 480p rendition first and falls back to this file.
+            assign hover_source = hover_video.sources | where: 'format', 'mp4' | first
           -%}
           {%- if hover_source != blank -%}
+            {%- comment -%}
+              The primary photo stays visible until card-interactions receives a real video frame.
+              A hidden video poster would download immediately, even on phones with no hover.
+            {%- endcomment -%}
             <video
               class="card__video"
               data-card-video              muted
@@ -158,9 +162,8 @@
               playsinline
               disablepictureinpicture
               preload="none"
-              poster="{{ hover_video.preview_image | image_url: width: 720 }}"
             >
-              <source src="{{ hover_source.url }}" type="{{ hover_source.mime_type }}">
+              {% render 'video-sources', url: hover_source.url, rendition: 'sd' %}
             </video>
           {%- else -%}
             {{
@@ -191,8 +194,11 @@
         <span class="card__badges">
           {%- if sold_out -%}
             <span class="badge badge--sold-out"><span class="badge__dot" aria-hidden="true"></span>{{ 'product.sold_out' | t }}</span>
-          {%- elsif on_sale -%}
-            <span class="badge badge--sale">{{ 'product.sale' | t }}</span>
+          {%- else -%}
+            {%- if on_sale -%}
+              <span class="badge badge--sale">{{ 'product.sale' | t }}</span>
+            {%- endif -%}
+            {% render 'promotion', product: product, view: 'card' %}
           {%- endif -%}
         </span>
       {%- endif -%}
@@ -234,6 +240,7 @@
                     aria-label="{{ 'product.add_to_cart' | t }}: {{ product.title | escape }} ({{ value | escape }})"
                   >
                     {{- value | escape -}}
+                    {%- render 'size-stock', value: value, enabled: settings.card_show_low_stock -%}
                   </button>
                 {%- else -%}
                   <span class="card__tray-pill{% unless is_avail %} is-out{% endunless %}">{{ value | escape }}</span>

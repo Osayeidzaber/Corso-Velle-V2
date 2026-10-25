@@ -1,0 +1,32 @@
+{%- doc -%}
+  BreadcrumbList JSON-LD for a visible breadcrumb trail: Home > Collections > collection
+  [> product]. Render it beside the visible breadcrumb so the markup exists only while shoppers
+  can see the trail. URLs use the primary domain, matching canonical URLs.
+
+  @param {object} [collection] - The collection in the trail
+  @param {object} [product] - The product (last item)
+
+  @example
+  {% render 'breadcrumb-schema', collection: breadcrumb_collection, product: product %}
+{%- enddoc -%}
+{%- liquid
+  assign origin = shop.url
+  assign position = 3
+-%}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": {{ 'general.home' | t | json }}, "item": {{ origin | append: routes.root_url | json }} },
+      { "@type": "ListItem", "position": 2, "name": {{ 'collections.title' | t | json }}, "item": {{ origin | append: routes.collections_url | json }} }
+      {%- if collection != blank -%},
+      { "@type": "ListItem", "position": {{ position }}, "name": {{ collection.title | json }}, "item": {{ origin | append: collection.url | json }} }
+        {%- assign position = position | plus: 1 -%}
+      {%- endif -%}
+      {%- if product != blank -%},
+      { "@type": "ListItem", "position": {{ position }}, "name": {{ product.title | json }}, "item": {{ origin | append: product.url | json }} }
+      {%- endif %}
+    ]
+  }
+</script>

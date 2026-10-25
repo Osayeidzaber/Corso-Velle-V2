@@ -19,7 +19,7 @@ Built directly on Liquid, with vanilla TypeScript enhancing the interface. Shopi
 | :--- | :--- | :--- |
 | Uncropped photography, considered typography, and a continuous collection rail. | Liquid sections, Shopify product data, native filters, and the AJAX cart. | Typed modules, scoped GSAP motion, responsive controls, and lifecycle cleanup. |
 
-> **Project status:** implemented storefront foundation with automated checks and recorded development-preview testing. Full release acceptance is still open; device, catalog, app, and checkout verification boundaries are documented in the audit reports below.
+> **Project status:** release acceptance remains open. See [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md) for the final evaluation, verified repairs, launch gates and separate private-distribution / Theme Store verdicts. Earlier audits record historical checkpoints.
 
 ## The experience
 
@@ -66,7 +66,7 @@ Collection pages use Shopify's native filtering and Section Rendering APIs, with
 
 ### Prerequisites
 
-- **Node.js 22 or newer** and npm. Use npm 11 if an older npm installation fails on this dependency tree.
+- **Node.js 22.12+ (22.x), 24.x, or 26+** and npm, matching the installed toolchain's supported ranges. Node 24 LTS was used for this evaluation.
 - Access to a Shopify store with permission to develop themes. Shopify CLI is included in the project dependencies.
 
 ### Install and build
@@ -110,11 +110,22 @@ Vite builds the assets; **Shopify CLI serves the Liquid storefront**. Keep both 
 | `npm run typecheck` | Check TypeScript without emitting files. |
 | `npm test` | Run Vitest component and service regressions with happy-dom. |
 | `npm run check:json` | Validate theme JSON. |
+| `npm run check:contracts` | Validate schema/composition contracts and customization-reference freshness. |
 | `npm run check:theme` | Run Shopify Theme Check with errors as the failure threshold. |
-| `npm run check` | Run types, tests, production build, JSON validation, and Theme Check. |
-| `npm run package` | Build and create a Shopify theme package. |
+| `npm run check` | Run types, tests, production build, JSON, schema contracts, customization freshness, and Theme Check. |
+| `npm run package` | Run all checks and create a Shopify theme package. |
 
 **Preview not updating?** Confirm the watcher is running and the initial build succeeded. **CLI cannot access the store?** Check the store domain and account permissions. A theme package is a build artifact; creating it does not publish the production storefront.
+
+**Windows Nodist launcher error?** This machine's default Node/npm shims require a working
+`NODIST_PREFIX`. Use a correctly installed supported Node/npm pair or invoke the relevant CLI
+entrypoints with that Node executable. Do not treat a failed launcher as a passing project check.
+
+For another merchant, start from the [distribution and installation guide](docs/DISTRIBUTION.md).
+The current saved homepage/settings contain Corsovelle content and must not be sold as generic
+defaults. Native support-policy content is retained when theme support links are unconfigured.
+Product forms with uploaded line properties use Shopify's native multipart submission; ordinary
+adds retain the AJAX drawer experience.
 
 ## Inside the project
 
@@ -161,9 +172,14 @@ See the [product data contract](docs/PRODUCT-SYSTEM-AUDIT.md#data-contract) befo
 
 | Read this | For |
 | :--- | :--- |
+| [Production readiness](PRODUCTION_READINESS.md) | Final verdicts for Corsovelle launch, private distribution and the Theme Store; launch gates and limitations. |
+| [Mobile testing](MOBILE_TESTING_REPORT.md) | Phone/tablet emulation results, fixed mobile defects, performance on throttled phones, open decisions and mobile ideas. |
 | [Updates](UPDATES.md) | Recent implementation changes and verification notes. |
 | [Storefront architecture](docs/STOREFRONT-ARCHITECTURE.md) | Module inventory, shared services, lifecycle decisions, and audit evidence. |
 | [Product system audit](docs/PRODUCT-SYSTEM-AUDIT.md) | Product behavior, data contracts, browser checks, and remaining verification. |
+| [Search and structured data](docs/SEO.md) | Meta tags, JSON-LD, crawl-safe motion, catalog findings, and Search Console / Merchant Center setup. |
+| [Advanced SEO audit](docs/SEO-ADVANCED-AUDIT-2026-10-25.md) | Current implementation, 73-URL crawls, browser evidence, Bangladesh Shopping eligibility, remaining catalog work and monitoring runbook. |
+| [25 October release audit](docs/AUDIT-2026-10-25.md) | Current findings, essential repairs, reference comparison, checkout evidence and ranked proposals. |
 | [Master plan](infomation/master-plan/README.md) | Original scope, specifications, and architectural decisions. |
 
 TypeScript, unit tests, production compilation, JSON validation, and Theme Check have passing recorded runs. Browser evidence covers selected real Shopify products and collection/search flows, plus carousel and footer checks at multiple viewport sizes. These checks do not establish complete physical-device, screen-reader, Theme Editor, app-integration, international-currency, or checkout coverage. See the audit reports for the exact limits; no production publication is implied.

@@ -88,7 +88,7 @@ describe('image compare', () => {
 
 describe('video', () => {
   it('loads the player only after the poster is activated', () => {
-    render('<nk-video><a data-ref="play" href="https://example.com/watch">Play</a><template data-ref="media"><iframe title="Film"></iframe></template></nk-video>');
+    render('<nk-video><a data-ref="play" href="https://example.com/watch">Play</a><template data-ref="media"><iframe title="Film" srcdoc=""></iframe></template></nk-video>');
     expect(document.querySelector('nk-video iframe')).toBeNull();
     document.querySelector<HTMLAnchorElement>('[data-ref="play"]')!.click();
     expect(document.querySelector('nk-video > iframe')).not.toBeNull();

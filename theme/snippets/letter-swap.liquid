@@ -3,6 +3,9 @@
   the enclosing link/button, each letter slides up and an identical copy follows from below,
   one after another. Pure CSS (effects.css); screen readers read the plain text.
 
+  Both visible copies of each letter are drawn by CSS from data-c, so the label exists once in
+  the HTML and link text reads "Shop", not "ShopSShhoopp", to search engines.
+
   @param {string} text - Label text (plain, unescaped)
   @param {string} [from] - Stagger origin: start (default) or center
 
@@ -21,8 +24,6 @@
         assign i = forloop.index0 | minus: mid | abs
       endif
     -%}
-    <span class="ls__c" style="--i: {{ i }}">
-      {%- if letter == ' ' -%}<span>&nbsp;</span><span>&nbsp;</span>{%- else -%}<span>{{ letter | escape }}</span><span>{{ letter | escape }}</span>{%- endif -%}
-    </span>
+    <span class="ls__c" style="--i: {{ i }}" data-c="{% if letter == ' ' %}&nbsp;{% else %}{{ letter | escape }}{% endif %}"></span>
   {%- endfor -%}
 </span></span>

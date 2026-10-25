@@ -1,0 +1,5 @@
+{"path":"/","trigger":"[data-nk-open=\"MenuDrawer\"]","tapped":true,"opened":1,"before":440,"during":440,"duringSwipe":440,"after":440,"restored":true,"scrollsAfterClose":true,"locked":false}
+{"path":"/","trigger":"[data-nk-open=\"SearchModal\"]","tapped":true,"opened":1,"before":440,"during":440,"duringSwipe":440,"after":440,"restored":true,"scrollsAfterClose":true,"locked":false}
+{"path":"/collections/all","trigger":".facets [data-nk-open]","tapped":false,"opened":0,"before":440,"during":440,"duringSwipe":725,"after":725,"restored":false,"scrollsAfterClose":true,"locked":false}
+{"path":"/collections/all","trigger":"[data-nk-open=\"CartDrawer\"]","tapped":true,"opened":1,"before":558,"during":558,"duringSwipe":558,"after":558,"restored":true,"scrollsAfterClose":true,"locked":false}
+{"path":"/products/amaya-embroidered-shacket","trigger":".size-guide-link","tapped":true,"opened":1,"before":440,"during":440,"duringSwipe":440,"after":440,"restored":true,"scrollsAfterClose":true,"locked":false}

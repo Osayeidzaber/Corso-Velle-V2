@@ -1,0 +1,11 @@
+{%- comment -%}Read current Shopify Admin policies directly; never duplicate business terms.{%- endcomment -%}
+{%- if shop.shipping_policy.body != blank -%}
+  <h3>{{ shop.shipping_policy.title | escape }}</h3>
+  {{ shop.shipping_policy.body | replace: '<h1', '<h4' | replace: '</h1>', '</h4>' | replace: '<h2', '<h4' | replace: '</h2>', '</h4>' | replace: '<h3', '<h4' | replace: '</h3>', '</h4>' }}
+  <p><a href="{{ shop.shipping_policy.url }}">{{ shop.shipping_policy.title | escape }}</a></p>
+{%- endif -%}
+{%- if shop.refund_policy.body != blank -%}
+  <h3>{{ shop.refund_policy.title | escape }}</h3>
+  {{ shop.refund_policy.body | replace: '<h1', '<h4' | replace: '</h1>', '</h4>' | replace: '<h2', '<h4' | replace: '</h2>', '</h4>' | replace: '<h3', '<h4' | replace: '</h3>', '</h4>' }}
+  <p><a href="{{ shop.refund_policy.url }}">{{ shop.refund_policy.title | escape }}</a></p>
+{%- endif -%}

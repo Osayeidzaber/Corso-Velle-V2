@@ -1,0 +1,316 @@
+{
+  "kind": "Local production asset byte sizes and gzip estimates; not browser transfers or Core Web Vitals",
+  "entries": {
+    "src/entries/global.ts": {
+      "file": "nk-global-buZOYG5n.js",
+      "name": "global",
+      "src": "src/entries/global.ts",
+      "isEntry": true,
+      "imports": [
+        "_nk-chunk-sections-DY7RJLXP.js"
+      ],
+      "dynamicImports": [
+        "node_modules/lenis/dist/lenis.mjs",
+        "src/motion/gsap.ts",
+        "src/components/product/quick-add.ts",
+        "src/components/reveal/reveal.ts",
+        "src/components/text/text.ts",
+        "src/components/marquee/marquee.ts",
+        "src/components/carousel/carousel.ts",
+        "src/components/accordion-gallery/accordion-gallery.ts",
+        "src/components/footer/footer.ts",
+        "src/components/tabs/tabs.ts",
+        "src/components/expand-media/expand-media.ts",
+        "src/components/elastic-line/elastic-line.ts",
+        "src/components/search-pill/search-pill.ts",
+        "src/components/predictive-search/predictive-search.ts",
+        "src/components/facets/facets.ts",
+        "src/components/facets/infinite-scroll.ts",
+        "src/components/motion/parallax.ts",
+        "src/components/media/background-video.ts",
+        "src/components/media/hero-slides.ts",
+        "src/components/motion/scene.ts",
+        "src/components/motion/stagger.ts",
+        "src/components/category-rail/category-rail.ts",
+        "src/components/size-guide/size-guide.ts",
+        "src/components/fit-finder/fit-finder.ts",
+        "src/components/recommendations/recommendations.ts",
+        "src/components/cart/cart-recommendations.ts",
+        "src/components/countdown/countdown.ts",
+        "src/components/dismissible/dismissible.ts",
+        "src/components/count-up/count-up.ts",
+        "src/components/video/video.ts",
+        "src/components/image-compare/image-compare.ts",
+        "src/components/clothes-rack/clothes-rack.ts",
+        "src/entries/product.ts",
+        "src/components/motion/cursor.ts"
+      ],
+      "css": [
+        "nk-global.css"
+      ]
+    },
+    "src/entries/product.ts": {
+      "file": "nk-product-BiSEH9o3.js",
+      "name": "product",
+      "src": "src/entries/product.ts",
+      "isEntry": true,
+      "imports": [
+        "_nk-chunk-sections-DY7RJLXP.js",
+        "_nk-chunk-measure-units-COCO7M0l.js",
+        "_nk-chunk-product-dom-CNAfK2vC.js"
+      ],
+      "css": [
+        "nk-product.css"
+      ]
+    }
+  },
+  "ownedAssets": 49,
+  "missing": [],
+  "assets": [
+    {
+      "file": "nk-accordion-gallery-D_K5mulL.css",
+      "bytes": 7822,
+      "gzipBytes": 1812
+    },
+    {
+      "file": "nk-chunk-accordion-gallery-DLn7wpsz.js",
+      "bytes": 2561,
+      "gzipBytes": 1124
+    },
+    {
+      "file": "nk-chunk-background-video-CqT7ROF8.js",
+      "bytes": 1137,
+      "gzipBytes": 627
+    },
+    {
+      "file": "nk-chunk-carousel-BdKSq2n9.js",
+      "bytes": 15817,
+      "gzipBytes": 5233
+    },
+    {
+      "file": "nk-chunk-cart-recommendations-DzRRTX-w.js",
+      "bytes": 1425,
+      "gzipBytes": 732
+    },
+    {
+      "file": "nk-chunk-category-rail-Qj-bpzAe.js",
+      "bytes": 823,
+      "gzipBytes": 493
+    },
+    {
+      "file": "nk-chunk-clothes-rack-D3iX6mn6.js",
+      "bytes": 8014,
+      "gzipBytes": 3071
+    },
+    {
+      "file": "nk-chunk-count-up-CXOnXxHL.js",
+      "bytes": 1035,
+      "gzipBytes": 631
+    },
+    {
+      "file": "nk-chunk-countdown-CeRtMxCL.js",
+      "bytes": 1328,
+      "gzipBytes": 735
+    },
+    {
+      "file": "nk-chunk-cursor-BQ5_6JkU.js",
+      "bytes": 2104,
+      "gzipBytes": 1095
+    },
+    {
+      "file": "nk-chunk-dismissible-C5hlmqSp.js",
+      "bytes": 641,
+      "gzipBytes": 423
+    },
+    {
+      "file": "nk-chunk-elastic-line-DAhGZS5k.js",
+      "bytes": 1270,
+      "gzipBytes": 655
+    },
+    {
+      "file": "nk-chunk-expand-media-DB6aWkIY.js",
+      "bytes": 1505,
+      "gzipBytes": 790
+    },
+    {
+      "file": "nk-chunk-facets-CWIRdl0V.js",
+      "bytes": 5160,
+      "gzipBytes": 2122
+    },
+    {
+      "file": "nk-chunk-fit-finder-C1ML6kSE.js",
+      "bytes": 5782,
+      "gzipBytes": 2381
+    },
+    {
+      "file": "nk-chunk-flex-carousel-D2is3Y8y.js",
+      "bytes": 81773,
+      "gzipBytes": 25261
+    },
+    {
+      "file": "nk-chunk-footer-yAv9U1Dd.js",
+      "bytes": 4707,
+      "gzipBytes": 1894
+    },
+    {
+      "file": "nk-chunk-gsap-RYcVJlLG.js",
+      "bytes": 121168,
+      "gzipBytes": 47034
+    },
+    {
+      "file": "nk-chunk-hero-slides-DMIXZ4SF.js",
+      "bytes": 3066,
+      "gzipBytes": 1278
+    },
+    {
+      "file": "nk-chunk-image-compare-DBXdUz9p.js",
+      "bytes": 310,
+      "gzipBytes": 251
+    },
+    {
+      "file": "nk-chunk-infinite-scroll-CkpWpIgZ.js",
+      "bytes": 4626,
+      "gzipBytes": 1952
+    },
+    {
+      "file": "nk-chunk-lenis-D8KRuS-9.js",
+      "bytes": 18643,
+      "gzipBytes": 5352
+    },
+    {
+      "file": "nk-chunk-marquee-DTvmjF--.js",
+      "bytes": 4691,
+      "gzipBytes": 1863
+    },
+    {
+      "file": "nk-chunk-measure-units-COCO7M0l.js",
+      "bytes": 1729,
+      "gzipBytes": 725
+    },
+    {
+      "file": "nk-chunk-parallax-BPHr5F3b.js",
+      "bytes": 878,
+      "gzipBytes": 552
+    },
+    {
+      "file": "nk-chunk-predictive-search-CHK4UU0T.js",
+      "bytes": 3558,
+      "gzipBytes": 1498
+    },
+    {
+      "file": "nk-chunk-product-dom-CNAfK2vC.js",
+      "bytes": 568,
+      "gzipBytes": 361
+    },
+    {
+      "file": "nk-chunk-quick-add-Baiq1GRb.js",
+      "bytes": 2752,
+      "gzipBytes": 1269
+    },
+    {
+      "file": "nk-chunk-recommendations-K1VCy9ZS.js",
+      "bytes": 1005,
+      "gzipBytes": 570
+    },
+    {
+      "file": "nk-chunk-results-Dn2Rly57.js",
+      "bytes": 713,
+      "gzipBytes": 387
+    },
+    {
+      "file": "nk-chunk-reveal-CIK7pbHT.js",
+      "bytes": 2461,
+      "gzipBytes": 1148
+    },
+    {
+      "file": "nk-chunk-scene-B78y5qmW.js",
+      "bytes": 2762,
+      "gzipBytes": 1288
+    },
+    {
+      "file": "nk-chunk-search-pill-LLe9kR7w.js",
+      "bytes": 4141,
+      "gzipBytes": 1631
+    },
+    {
+      "file": "nk-chunk-sections-DY7RJLXP.js",
+      "bytes": 15003,
+      "gzipBytes": 5597
+    },
+    {
+      "file": "nk-chunk-size-guide-D3zx9fLS.js",
+      "bytes": 1965,
+      "gzipBytes": 892
+    },
+    {
+      "file": "nk-chunk-stagger-BuMAy6q5.js",
+      "bytes": 1344,
+      "gzipBytes": 720
+    },
+    {
+      "file": "nk-chunk-tabs-Cb5CxwzV.js",
+      "bytes": 2356,
+      "gzipBytes": 1104
+    },
+    {
+      "file": "nk-chunk-text-Ce4oNfiR.js",
+      "bytes": 5450,
+      "gzipBytes": 2404
+    },
+    {
+      "file": "nk-chunk-video-Bje1ebzN.js",
+      "bytes": 424,
+      "gzipBytes": 320
+    },
+    {
+      "file": "nk-count-up-BfKO2Cdq.css",
+      "bytes": 47,
+      "gzipBytes": 62
+    },
+    {
+      "file": "nk-countdown-CJS1DdXc.css",
+      "bytes": 1933,
+      "gzipBytes": 742
+    },
+    {
+      "file": "nk-dismissible-Djg1BU87.css",
+      "bytes": 29,
+      "gzipBytes": 47
+    },
+    {
+      "file": "nk-fit-finder-lBisY6dk.css",
+      "bytes": 8651,
+      "gzipBytes": 2141
+    },
+    {
+      "file": "nk-global-buZOYG5n.js",
+      "bytes": 39411,
+      "gzipBytes": 12748
+    },
+    {
+      "file": "nk-global.css",
+      "bytes": 174547,
+      "gzipBytes": 31416
+    },
+    {
+      "file": "nk-image-compare-DmpQbVzB.css",
+      "bytes": 485,
+      "gzipBytes": 257
+    },
+    {
+      "file": "nk-product-BiSEH9o3.js",
+      "bytes": 31168,
+      "gzipBytes": 9781
+    },
+    {
+      "file": "nk-product.css",
+      "bytes": 29950,
+      "gzipBytes": 6184
+    },
+    {
+      "file": "nk-video-DRb0CbnT.css",
+      "bytes": 285,
+      "gzipBytes": 155
+    }
+  ]
+}

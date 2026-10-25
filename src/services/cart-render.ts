@@ -31,7 +31,10 @@ function apply(sections: Record<string, string | null> | null | undefined, expec
       : null;
     const activeLine = document.activeElement?.closest('[data-line-key]');
     const lineIndex = activeLine ? [...target.querySelectorAll('[data-line-key]')].indexOf(activeLine) : -1;
+    // The free shipping bar grows from where it was rather than from zero (snippets/free-shipping-bar).
+    const shippingFrom = target.querySelector<HTMLElement>('.shipping-bar')?.style.getPropertyValue('--shipping-progress');
     target.replaceChildren(...[...next.childNodes].map((node) => document.importNode(node, true)));
+    if (shippingFrom) target.querySelector<HTMLElement>('.shipping-bar')?.style.setProperty('--shipping-from', shippingFrom);
     if (note) {
       const field = target.querySelector<HTMLTextAreaElement>('[data-cart-note]');
       if (field) { field.value = note.value; field.setSelectionRange(note.start, note.end); }

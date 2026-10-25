@@ -1,0 +1,23 @@
+{%- doc -%}
+  Theme-configured support links. The layout shows them in place of the native contact information
+  policy only when Theme settings › Customer support › "Show these links instead…" is on and at
+  least one link is set; otherwise Shopify's policy content renders as usual.
+{%- enddoc -%}
+<div class="shopify-policy__container support-contact">
+  <div class="shopify-policy__title"><h1>{{ 'support.title' | t }}</h1></div>
+  <div class="shopify-policy__body rte">
+    {{ settings.support_intro }}
+    <dl>
+      {%- if settings.support_email != blank -%}
+        <dt>{{ 'support.email' | t }}</dt><dd><a href="mailto:{{ settings.support_email | strip | escape }}">{{ settings.support_email | escape }}</a></dd>
+      {%- endif -%}
+      {%- if settings.support_phone != blank -%}
+        {%- assign dial = settings.support_phone | remove: ' ' | remove: '-' | remove: '(' | remove: ')' -%}
+        <dt>{{ 'support.phone' | t }}</dt><dd><a href="tel:{{ dial | escape }}">{{ settings.support_phone | escape }}</a></dd>
+      {%- endif -%}
+      {%- if settings.support_instagram != blank -%}
+        <dt>Instagram</dt><dd><a href="{{ settings.support_instagram | escape }}">{{ settings.support_instagram_label | default: 'Instagram' | escape }}</a></dd>
+      {%- endif -%}
+    </dl>
+  </div>
+</div>

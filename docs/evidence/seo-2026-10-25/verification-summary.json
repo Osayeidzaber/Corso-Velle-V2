@@ -1,0 +1,56 @@
+{
+  "scope": "Development theme only; not published. Current shared workspace includes concurrent work.",
+  "checks": {
+    "typescript": "passed",
+    "vitest": {
+      "files": 44,
+      "tests": 227,
+      "status": "passed"
+    },
+    "liquidSeoFixtures": {
+      "tests": 19,
+      "status": "passed"
+    },
+    "build": "passed",
+    "themeJson": "passed",
+    "contracts": {
+      "tests": 5,
+      "status": "passed"
+    },
+    "customizationReference": "current",
+    "themeCheck": {
+      "files": 152,
+      "offenses": 0
+    }
+  },
+  "crawl": {
+    "developmentBaseline": 73,
+    "published": 73,
+    "developmentAfter": 73,
+    "liquidErrors": 0,
+    "jsonLdParseErrors": 0,
+    "missingDescriptionsBefore": 24,
+    "missingDescriptionsAfter": 5,
+    "nativeRobotsUnchanged": true
+  },
+  "performance": {
+    "removedPosterRequestsPerMobileHomeRun": 9,
+    "observedColdPosterBytesAvoided": 931300,
+    "beforePosterRemovalLcpMs": [
+      2192,
+      2172,
+      2508
+    ],
+    "afterPosterRemovalLcpMs": [
+      2344,
+      1720,
+      1856
+    ],
+    "limitations": "Three unthrottled lab runs each; not a controlled field CWV claim. Broad after-run included a 5360ms mobile-home outlier; not omitted."
+  },
+  "externalValidators": {
+    "googleRichResults": "Requested sign-in; not completed",
+    "schemaOrg": "Automated UI did not produce a completed result"
+  },
+  "accountReports": "Search Console, Merchant Center and Bing account reports not accessible; setup documented."
+}

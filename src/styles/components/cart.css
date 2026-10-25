@@ -92,6 +92,11 @@
   font-size: 1.375rem;
 }
 
+/* Cart and search pages: align with the page heading (the drawer keeps its inner padding). */
+.cart-empty--page {
+  padding-inline: 0;
+}
+
 .cart-summary {
   display: grid;
   gap: 10px;
@@ -179,3 +184,328 @@ nk-cart-drawer[data-pending] [name='checkout'] {
 .cart-notification[hidden] { display: none; }
 nk-cart-items[data-pending] [name='checkout'],
 [data-cart-stale] [name='checkout'] { opacity: 0.6; }
+
+/* Free shipping progress (snippets/free-shipping-bar.liquid). */
+.shipping-bar {
+  display: grid;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--nk-color-line);
+}
+
+.cart-page .shipping-bar,
+.cart-page-shell .shipping-bar {
+  padding-inline: 0;
+}
+
+.shipping-bar__text {
+  margin: 0;
+}
+
+.shipping-bar__track {
+  display: block;
+  height: 3px;
+  overflow: hidden;
+  background: var(--nk-color-line);
+}
+
+.shipping-bar__fill {
+  display: block;
+  height: 100%;
+  background: currentColor;
+  transform-origin: left center;
+  transform: scaleX(var(--shipping-progress, 0));
+  transition: transform 600ms var(--nk-ease-out);
+}
+
+@starting-style {
+  .shipping-bar__fill {
+    transform: scaleX(var(--shipping-from, var(--shipping-progress, 0)));
+  }
+}
+
+[dir='rtl'] .shipping-bar__fill {
+  transform-origin: right center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shipping-bar__fill {
+    transition: none;
+  }
+}
+
+/* Cart drawer "Complete the look" (sections/cart-recommendations.liquid). */
+.cart-recs {
+  display: block;
+  padding: 16px;
+}
+
+.cart-recs[data-empty] {
+  padding: 0;
+}
+
+.cart-recs[data-empty] > * {
+  display: none;
+}
+
+.cart-recs__heading {
+  margin: 0 0 12px;
+}
+
+.cart-recs__list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cart-rec {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.cart-rec__media {
+  display: block;
+  aspect-ratio: 4 / 5;
+  background: var(--nk-color-surface);
+}
+
+.cart-rec__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cart-rec__info {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.cart-rec__title {
+  overflow: hidden;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-decoration: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cart-rec__price {
+  font-size: 0.8125rem;
+}
+
+.cart-rec__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.cart-rec__add {
+  min-width: 40px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--nk-color-line);
+  background: transparent;
+  color: inherit;
+  font-family: var(--nk-font-spec);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color var(--nk-dur-instant), background-color var(--nk-dur-instant), color var(--nk-dur-instant);
+}
+
+@media (hover: hover) {
+  .cart-rec__add:hover {
+    border-color: var(--nk-color-text);
+  }
+}
+
+.cart-rec__add[data-added] {
+  border-color: var(--nk-color-text);
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+}
+
+.cart-rec__add:disabled {
+  cursor: progress;
+}
+
+.cart-rec__choose {
+  justify-self: start;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cart-drawer .cart-summary__accelerated {
+  margin-top: 4px;
+}
+
+/* Discounts (snippets/cart-discounts, line-item). Amounts are Shopify's allocations only. */
+.cart-line__discount {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--nk-color-accent);
+}
+
+.cart-summary__savings {
+  color: var(--nk-color-accent);
+}
+
+.cart-discounts {
+  display: grid;
+  gap: 8px;
+}
+
+.cart-discounts[aria-busy] {
+  opacity: 0.7;
+}
+
+.cart-discounts__codes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cart-discounts__codes[hidden] {
+  display: none;
+}
+
+.cart-discounts__code {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding-inline: 10px 2px;
+  background: var(--nk-color-surface);
+  color: var(--nk-color-text);
+  font-size: 0.8125rem;
+}
+
+.cart-discounts__code > svg {
+  color: var(--nk-color-accent);
+}
+
+.cart-discounts__code--inactive {
+  color: var(--nk-color-text-muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.cart-discounts__code-amount {
+  font-variant-numeric: tabular-nums;
+}
+
+.cart-discounts__remove {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.cart-discounts__field[hidden] {
+  display: none;
+}
+
+.cart-discounts__toggle {
+  cursor: pointer;
+  list-style: none;
+  color: var(--nk-color-text-muted);
+}
+
+.cart-discounts__toggle::-webkit-details-marker {
+  display: none;
+}
+
+.cart-discounts__toggle::after {
+  content: '+';
+  margin-inline-start: 6px;
+}
+
+.cart-discounts__field[open] .cart-discounts__toggle::after {
+  content: '−';
+}
+
+.cart-discounts__form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.cart-discounts__form input {
+  min-width: 0;
+  min-height: 44px;
+  padding-inline: 12px;
+  border: 1px solid var(--nk-color-line);
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cart-discounts__form input::placeholder {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.cart-discounts__message {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--nk-color-text-muted);
+}
+
+.cart-discounts__message[data-tone='error'] {
+  color: var(--nk-color-error, var(--nk-color-text));
+}
+
+.cart-discounts__message[data-tone='success'] {
+  color: var(--nk-color-accent);
+}
+
+.cart-discounts__message[hidden] {
+  display: none;
+}
+
+/* Add-to-cart flyer (services/fly-to-cart.ts). A manual popover, so it sits in the top layer. */
+.cart-flyer {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.cart-flyer__lift {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 2px;
+  box-shadow: 0 18px 40px -18px rgba(40, 25, 15, 0.55);
+  will-change: transform;
+}
+
+.cart-flyer__lift img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

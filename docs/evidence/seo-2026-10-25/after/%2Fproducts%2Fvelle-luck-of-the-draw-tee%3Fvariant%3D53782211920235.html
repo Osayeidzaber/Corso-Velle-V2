@@ -1,0 +1,1834 @@
+<!doctype html>
+<html lang="en" class="no-js" data-button-motion="expressive">
+  <head><script data-source-attribution="shopify.exit_interstitial">(()=>{var s=Function.prototype.bind.bind(Function.prototype.call),yt=(l,r)=>{for(let f=l;f;f=Object.getPrototypeOf(f)){let y=Object.getOwnPropertyDescriptor(f,r);if(y)return y}throw new TypeError(`${r} is not defined`)},u=(l,r)=>s(yt(l,r).get),B=(l,r)=>s(yt(l,r).set);var Se=s(String.prototype.endsWith),k=s(RegExp.prototype.exec),Re=/^_(self|top|parent)$/i,xe=/(^|\s)noreferrer(\s|$)/i,ht=/^(no-referrer(-when-downgrade)?|same-origin|(strict-)?origin(-when-cross-origin)?|unsafe-url)$/i,Pe=/^(never|default|always|origin-when-crossorigin)$/i,Et=/^(no-referrer|same-origin|never)$/i,mt=l=>{let r=`.${l}`;return f=>f===l||Se(f,r)},wt=(l,r,f)=>l!==void 0&&(l.protocol==="https:"||l.protocol==="http:")&&l.origin!==r&&!f(l.hostname),bt=(l,r,f)=>l!==null&&k(xe,l)!==null?!0:r!==null&&k(ht,r)!==null?k(Et,r)!==null:f,_t=(l,r)=>k(ht,l)!==null||k(Pe,l)!==null?k(Et,l)!==null:r,A=(l,{metaKey:r,ctrlKey:f,shiftKey:y,button:S})=>l&&k(Re,l)===null?l:r||f||y||S===1?"_blank":"";var Le="http://www.w3.org/2000/svg",Oe="http://www.w3.org/1999/xlink",G=["rel","referrerpolicy","download","ping","hreflang","type"];function kt(l){let r=window;if(r.top!==r)return;let f=document,y=r.navigation,S=location.origin,v=URL,q=u(v.prototype,"href"),vt=u(v.prototype,"origin"),Nt=u(v.prototype,"protocol"),St=u(v.prototype,"hostname"),Y=s(Event.prototype.preventDefault),Rt=s(Event.prototype.stopPropagation),j=s(Event.prototype.stopImmediatePropagation),V=s(Event.prototype.composedPath),xt=u(Event.prototype,"type"),Pt=u(Event.prototype,"cancelable"),X=u(Event.prototype,"defaultPrevented"),Lt=u(Event.prototype,"bubbles"),Ot=u(Event.prototype,"currentTarget"),At=u(Event.prototype,"eventPhase"),{CAPTURING_PHASE:It}=Event,z=u(Event.prototype,"cancelBubble"),Tt=B(Event.prototype,"cancelBubble"),Wt=u(MouseEvent.prototype,"button"),Mt=u(MouseEvent.prototype,"metaKey"),Ct=u(MouseEvent.prototype,"ctrlKey"),Dt=u(MouseEvent.prototype,"shiftKey"),Ft=y&&u(NavigateEvent.prototype,"destination"),Ht=y&&u(NavigationDestination.prototype,"url"),J=y&&u(NavigateEvent.prototype,"navigationType"),$t=y&&u(NavigateEvent.prototype,"formData"),Q=y&&"sourceElement"in NavigateEvent.prototype?u(NavigateEvent.prototype,"sourceElement"):void 0,m=s(Element.prototype.getAttribute),Kt=s(Element.prototype.getAttributeNS),I=s(Element.prototype.setAttribute),Ut=u(Element.prototype,"localName"),Bt=u(Element.prototype,"namespaceURI"),Gt=s(Document.prototype.querySelector),qt=s(Document.prototype.querySelectorAll),Yt=u(NodeList.prototype,"length"),jt=s(NodeList.prototype.item),T=u(Node.prototype,"baseURI"),Vt=s(Document.prototype.createElement),Xt=s(HTMLElement.prototype.click),zt=s(r.open),Jt=s(location.assign),Qt=s(location.replace),Zt=encodeURIComponent,te=s(String.prototype.startsWith),Z=s(r.setTimeout),ee=s(r.addEventListener),ne=s(r.removeEventListener),tt=s(EventTarget.prototype.addEventListener),et=s(EventTarget.prototype.removeEventListener),nt=Object.defineProperties,ot=t=>{let e=[],n=[HTMLElement.prototype,SVGElement.prototype,Document.prototype,r];for(let o=0;o<n.length;o+=1)try{e[e.length]={get:u(n[o],t),set:B(n[o],t)}}catch{}return e},oe={click:ot("onclick"),auxclick:ot("onauxclick")},rt=WeakMap,re=WeakSet,st=s(WeakMap.prototype.get),se=s(WeakMap.prototype.set),ce=s(WeakMap.prototype.delete),ie=s(WeakSet.prototype.add),ae=s(WeakSet.prototype.has),le=mt(l.site),ct=q(new v(l.exitPath,S)),ue=`${ct}?`,P=(t,e)=>{try{let n=new v(t,e);return{href:q(n),origin:vt(n),protocol:Nt(n),hostname:St(n)}}catch{return}},pe=(t,e,n)=>{let o=n?"&noreferrer=1":"";return`${ct}?q=${Zt(t.href)}&trigger=${e}${o}`},it=()=>{let t=qt(f,'meta[name="referrer" i][content]'),e=!1;for(let n=0;n<Yt(t);n+=1)e=_t(m(jt(t,n),"content"),e);return e},at=(t,e,{target:n,noReferrer:o,replaces:i})=>{let d=pe(t,e,o);if(n){zt(r,d,n,"noopener");return}(i?Qt:Jt)(location,d)},W=t=>wt(t,S,le),L=0,M,C=!1,fe=t=>{if(L>0){M=t;return}t()},de=t=>{if(L-=1,t&&(C=!0),L>0)return;let e=C?void 0:M;M=void 0,C=!1,e&&e()},ge=t=>t!==void 0&&te(t.href,ue),lt=t=>{try{return Ut(t)}catch{return}},ut=t=>bt(m(t,"rel"),m(t,"referrerpolicy"),it()),ye=t=>{let e=Q?Q(t):null,n=e===null?void 0:lt(e);return n==="a"||n==="area"?ut(e):it()},he=t=>{let e=P(Ht(Ft(t)));if(ge(e)){j(t);return}if(!Pt(t)||J(t)==="traverse"||!W(e)||$t(t)!==null)return;Y(t);let n={target:"",noReferrer:ye(t),replaces:J(t)==="replace"};fe(()=>at(e,"navigate",n))},R=t=>{let e=m(t,"href");return e===null&&Bt(t)===Le?Kt(t,Oe,"href"):e},Ee=t=>{let e=V(t);for(let n=0;n<e.length;n+=1){let o=e[n],i=lt(o);if(i==="a"||i==="area"){let d=R(o);if(d!==null)return{node:o,href:d}}}},D=t=>{let e=m(t,"target");if(e!==null)return e;let n=Gt(f,"base[target]");return n?m(n,"target"):""},me=t=>{try{return{metaKey:Mt(t),ctrlKey:Ct(t),shiftKey:Dt(t),button:Wt(t)}}catch{return}},pt=new re,we=t=>{let e=!1,n=()=>{e=!0},o=()=>e||ae(pt,t);return nt(t,{__proto__:null,preventDefault:{__proto__:null,configurable:!0,value:n},defaultPrevented:{__proto__:null,configurable:!0,get:o},returnValue:{__proto__:null,configurable:!0,get:()=>!o(),set:i=>{i||n()}}}),o},be={click:new rt,auxclick:new rt},_e=(t,e)=>{let n=oe[t],o=be[t],i=[],d=p=>{for(let a=0;a<i.length;a+=1)if(i[a]===p)return!0;return!1},w=(p,a,E)=>{let g=s(E);function O(_){let x=g(this,_);return x===!1&&typeof _=="object"&&_!==null&&ie(pt,_),x}return{target:p,accessor:a,handler:E,wrapper:O,inFlight:0}},b=()=>{for(let p=0;p<e.length;p+=1)for(let a=0;a<n.length;a+=1){let E;try{E=n[a].get(e[p])}catch{continue}if(typeof E=="function"){let g=st(o,e[p]);(!g||g.wrapper!==E)&&(g=w(e[p],n[a],E),n[a].set(e[p],g.wrapper),se(o,e[p],g)),d(g)||(g.inFlight+=1,i[i.length]=g)}break}};return b(),{wrap:b,unwrap:()=>{for(let p=0;p<i.length;p+=1){let a=i[p];a.inFlight-=1,!(a.inFlight>0)&&(st(o,a.target)===a&&ce(o,a.target),a.accessor.get(a.target)===a.wrapper&&a.accessor.set(a.target,a.handler))}}}},ft=(t,e,n)=>{let o=R(t),i=o===null?void 0:P(o,T(f));if(!W(i))return;let d={target:A(D(t),n),noReferrer:ut(t),replaces:!1};return{inWindow:d.target==="",go:()=>at(i,e,d)}},dt=t=>{let e=R(t);if(e===null||m(t,"download")===null)return!1;let n=P(e,T(f));return n!==void 0&&(n.origin===S||n.protocol==="blob:"||n.protocol==="data:")},ke=(t,e)=>R(t)!==null&&!dt(t)&&A(D(t),e)==="",ve=(t,e)=>{let n=R(t);if(n===null)return!1;let o=Vt(f,"a"),i=A(D(t),e);I(o,"href",n),I(o,"target",i||"_self");for(let d=0;d<G.length;d+=1){let w=m(t,G[d]);w!==null&&I(o,G[d],w)}return Xt(o),i===""&&!dt(t)},Ne=(t,e,n,o)=>{L+=1;let i=V(t),d=i.length-1,w=0,b=!1,F=!1,p=c=>{F||(F=!0,de(c))},a=c=>{if(b)return;b=!0;let N=X(t),h=N?void 0:ft(n,e,o),U;!N&&(h||c)&&(Y(t),U=we(t)),Z(r,()=>{if(!U){p(!X(t)&&ke(n,o));return}if(U()){p(!1);return}if(c&&(h=ft(n,e,o),!h)){p(ve(n,o));return}h.go(),p(h.inWindow)},0)},E=(c,N)=>{for(let h=0;h<i.length;h+=1)if(i[h]===c)return N===It?d-h:i.length+h;return-1},g=()=>{E(Ot(t),At(t))<=w&&a(!0)},O=c=>{c===t&&a(!1)},_=_e(e,i),x=c=>N=>{if(N===t){if(w=c,z(t)){a(!1);return}_.wrap()}},H=[],$=[],K=Lt(t);if(K){for(let c=0;c<d;c+=1)H[c]=x(d-c),$[c]=x(i.length+c),tt(i[c],e,H[c],!0),tt(i[c],e,$[c],!1);ee(r,e,O,!1)}if(Z(r,()=>{if(b||p(!1),b=!0,_.unwrap(),!!K){for(let c=0;c<d;c+=1)et(i[c],e,H[c],!0),et(i[c],e,$[c],!1);ne(r,e,O,!1)}},0),!K){a(!0);return}nt(t,{__proto__:null,stopPropagation:{__proto__:null,configurable:!0,value:()=>{g(),Rt(t)}},stopImmediatePropagation:{__proto__:null,configurable:!0,value:()=>{a(!0),j(t)}},cancelBubble:{__proto__:null,configurable:!0,get:()=>z(t),set:c=>{c&&g(),Tt(t,c)}}})},gt=t=>{let e=xt(t),n=me(t);if(!n||e==="auxclick"&&n.button!==1)return;let o=Ee(t);!o||!W(P(o.href,T(f)))||Ne(t,e,o.node,n)};y?.addEventListener("navigate",he,!0),r.addEventListener("click",gt,!0),r.addEventListener("auxclick",gt,!0)}kt({"site":"gbhr1g-hm.myshopify.com","exitPath":"\/url"});})();
+//# sourceURL=exit-interstitial.js
+</script>
+<script>
+      document.documentElement.classList.replace('no-js', 'js');
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('nk-anim');
+    </script>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="max-image-preview:large">
+
+<meta property="og:site_name" content="Corso Velle">
+<meta property="og:url" content="https://corsovelle.com/products/velle-luck-of-the-draw-tee">
+<meta property="og:title" content="Velle Luck of the Draw Tee">
+<meta property="og:type" content="product">
+<meta property="og:description" content="- Unisex- Printed Graphics on the front and back- Cropped, Boxy fit- 95% Cotton, 5% Spandex, 220 GSM- Ultra-fine Cotton blend"><meta property="og:image" content="/cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&width=1200">
+  <meta property="og:image:secure_url" content="/cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&width=1200">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="1200">
+
+
+  <meta property="og:price:amount" content="1200.0">
+  <meta property="og:price:currency" content="BDT">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Velle Luck of the Draw Tee">
+<meta name="twitter:description" content="- Unisex- Printed Graphics on the front and back- Cropped, Boxy fit- 95% Cotton, 5% Spandex, 220 GSM- Ultra-fine Cotton blend">
+
+<title>
+  Velle Luck of the Draw Tee
+ &ndash; Corso Velle</title>
+
+<link rel="canonical" href="https://corsovelle.com/products/velle-luck-of-the-draw-tee">
+  <meta name="description" content="- Unisex- Printed Graphics on the front and back- Cropped, Boxy fit- 95% Cotton, 5% Spandex, 220 GSM- Ultra-fine Cotton blend">
+
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProductGroup",
+      "@id": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee#product",
+      "name": "Velle Luck of the Draw Tee",
+      "url": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee",
+      "description": "- Unisex - Printed Graphics on the front and back - Cropped, Boxy fit - 95% Cotton, 5% Spandex, 220 GSM - Ultra-fine Cotton blend",
+
+      "image": ["https:\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648\u0026width=1920","https:\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648\u0026width=1920"],
+
+      "brand": { "@type": "Brand", "name": "Corso Velle" },
+
+      "category": "T-Shirts",
+
+      "material": "Cotton, Lycra",
+
+
+
+      "productGroupID": "15224593580395",
+      "variesBy": ["https:\/\/schema.org\/size"],
+      "hasVariant": [{
+  "@type": "Product",
+  "@id": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee?variant=53782211920235#variant",
+  "url": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee?variant=53782211920235",
+  "name": "Velle Luck of the Draw Tee - S",
+  "size": "S",
+"image": "https:\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648\u0026width=1920",
+"offers": {
+  "@type": "Offer",
+  "url": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee?variant=53782211920235",
+  "price": 1200.0,
+  "priceCurrency": "BDT",
+  "availability": "https:\/\/schema.org\/OutOfStock"
+}
+
+}
+,
+{
+  "@type": "Product",
+  "@id": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee?variant=53782211953003#variant",
+  "url": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee?variant=53782211953003",
+  "name": "Velle Luck of the Draw Tee - M",
+  "size": "M",
+"image": "https:\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648\u0026width=1920",
+"offers": {
+  "@type": "Offer",
+  "url": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee?variant=53782211953003",
+  "price": 1200.0,
+  "priceCurrency": "BDT",
+  "availability": "https:\/\/schema.org\/InStock"
+}
+
+}
+,
+{
+  "@type": "Product",
+  "@id": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee?variant=53782211985771#variant",
+  "url": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee?variant=53782211985771",
+  "name": "Velle Luck of the Draw Tee - L",
+  "size": "L",
+"image": "https:\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648\u0026width=1920",
+"offers": {
+  "@type": "Offer",
+  "url": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee?variant=53782211985771",
+  "price": 1200.0,
+  "priceCurrency": "BDT",
+  "availability": "https:\/\/schema.org\/InStock"
+}
+
+}
+,
+{
+  "@type": "Product",
+  "@id": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee?variant=53782212018539#variant",
+  "url": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee?variant=53782212018539",
+  "name": "Velle Luck of the Draw Tee - XL",
+  "size": "XL",
+"image": "https:\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648\u0026width=1920",
+"offers": {
+  "@type": "Offer",
+  "url": "https:\/\/corsovelle.com\/products\/velle-luck-of-the-draw-tee?variant=53782212018539",
+  "price": 1200.0,
+  "priceCurrency": "BDT",
+  "availability": "https:\/\/schema.org\/InStock"
+}
+
+}
+
+]
+    }
+  </script>
+
+<style data-shopify>
+  @font-face {
+  font-family: Inter;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("/cdn/fonts/inter/inter_n4.b2a3f24c19b4de56e8871f609e73ca7f6d2e2bb9.woff2") format("woff2"),
+       url("/cdn/fonts/inter/inter_n4.af8052d517e0c9ffac7b814872cecc27ae1fa132.woff") format("woff");
+}
+
+  @font-face {
+  font-family: Inter;
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/cdn/fonts/inter/inter_n7.02711e6b374660cfc7915d1afc1c204e633421e4.woff2") format("woff2"),
+       url("/cdn/fonts/inter/inter_n7.6dab87426f6b8813070abd79972ceaf2f8d3b012.woff") format("woff");
+}
+
+  @font-face {
+  font-family: Newsreader;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("/cdn/fonts/newsreader/newsreader_n4.b5d1a51abefc3e451a1095094f8cb52bc71994eb.woff2") format("woff2"),
+       url("/cdn/fonts/newsreader/newsreader_n4.faab5347776428001f201c86fe4c783d23b58a25.woff") format("woff");
+}
+
+  @font-face {
+  font-family: Inter;
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("/cdn/fonts/inter/inter_n5.d7101d5e168594dd06f56f290dd759fba5431d97.woff2") format("woff2"),
+       url("/cdn/fonts/inter/inter_n5.5332a76bbd27da00474c136abb1ca3cbbf259068.woff") format("woff");
+}
+
+
+  :root {
+    --nk-font-body: Inter, sans-serif;
+    --nk-font-heading: Newsreader, serif;
+    --nk-font-heading-weight: 400;
+    --nk-font-spec: Inter, sans-serif;
+    --nk-heading-case: none;
+    --nk-text-base: 15px;
+    --nk-heading-tracking: -0.02em;
+    --nk-display-tracking: -0.035em;
+    --nk-heading-leading: 1;
+    --nk-display-leading: 0.92;
+    --nk-label-tracking: 0.18em;
+    --nk-page-width: 1440px;
+    --nk-space-section: 112px;
+    --nk-gutter-mobile: 16px;
+    --nk-gutter-tablet: 24px;
+    --nk-gutter-desktop: 48px;
+    --nk-section-spacing-mobile-scale: 0.66;
+    --nk-corner-radius: 0px;
+    --nk-button-radius: 0px;
+--nk-button-height: 54px;
+--nk-button-padding: 30px;
+
+    --nk-logo-width: 150px;
+    --nk-logo-width-mobile: 120px;
+    --nk-card-ratio: 1 / 1;
+    --nk-card-fit: contain;
+    --nk-card-surface-padding: 0px;
+    --nk-card-surface-border: 0px;
+    --nk-card-surface-shadow: none;
+    --nk-color-error: #B42318;
+    --nk-color-success: #146C43;
+  }
+
+  
+:root, .color-scheme-1 {
+      --nk-color-bg: #FAF8F5;
+      --nk-color-surface: #EDE6DA;
+      --nk-color-text: #1E1915;
+      --nk-color-text-muted: #6B6157;
+      --nk-color-line: #DED5C8;
+      --nk-color-accent: #432D23;
+      --nk-color-accent-text: #F5ECDF;
+      --nk-color-disabled: #a49d96;
+      /* Accent family, derived from this scheme's accent (default: footer brown) so one Theme Editor
+         colour drives every state. Mixing toward the text colour darkens on light schemes and
+         lightens on dark ones; mixing toward the background makes tints. */
+      --nk-accent-hover: color-mix(in oklab, var(--nk-color-accent) 84%, var(--nk-color-text));
+      --nk-accent-active: color-mix(in oklab, var(--nk-color-accent) 70%, var(--nk-color-text));
+      --nk-accent-subtle: color-mix(in oklab, var(--nk-color-accent) 8%, var(--nk-color-bg));
+      --nk-accent-selected: color-mix(in oklab, var(--nk-color-accent) 16%, var(--nk-color-bg));
+      --nk-accent-border: color-mix(in oklab, var(--nk-color-accent) 38%, var(--nk-color-bg));
+      --nk-accent-muted: color-mix(in oklab, var(--nk-color-accent) 55%, var(--nk-color-bg));
+      --nk-focus: var(--nk-color-accent);
+      background-color: var(--nk-color-bg);
+      color: var(--nk-color-text);
+    }
+  
+.color-scheme-2 {
+      --nk-color-bg: #1E1915;
+      --nk-color-surface: #2B241F;
+      --nk-color-text: #F2EBE0;
+      --nk-color-text-muted: #B6AA9C;
+      --nk-color-line: #3A322B;
+      --nk-color-accent: #E7C9A0;
+      --nk-color-accent-text: #1E1915;
+      --nk-color-disabled: #797066;
+      /* Accent family, derived from this scheme's accent (default: footer brown) so one Theme Editor
+         colour drives every state. Mixing toward the text colour darkens on light schemes and
+         lightens on dark ones; mixing toward the background makes tints. */
+      --nk-accent-hover: color-mix(in oklab, var(--nk-color-accent) 84%, var(--nk-color-text));
+      --nk-accent-active: color-mix(in oklab, var(--nk-color-accent) 70%, var(--nk-color-text));
+      --nk-accent-subtle: color-mix(in oklab, var(--nk-color-accent) 8%, var(--nk-color-bg));
+      --nk-accent-selected: color-mix(in oklab, var(--nk-color-accent) 16%, var(--nk-color-bg));
+      --nk-accent-border: color-mix(in oklab, var(--nk-color-accent) 38%, var(--nk-color-bg));
+      --nk-accent-muted: color-mix(in oklab, var(--nk-color-accent) 55%, var(--nk-color-bg));
+      --nk-focus: var(--nk-color-accent);
+      background-color: var(--nk-color-bg);
+      color: var(--nk-color-text);
+    }
+  
+.color-scheme-3 {
+      --nk-color-bg: #432D23;
+      --nk-color-surface: #523A2E;
+      --nk-color-text: #F5ECDF;
+      --nk-color-text-muted: #CDB9A5;
+      --nk-color-line: #5E4537;
+      --nk-color-accent: #D7AE83;
+      --nk-color-accent-text: #432D23;
+      --nk-color-disabled: #968171;
+      /* Accent family, derived from this scheme's accent (default: footer brown) so one Theme Editor
+         colour drives every state. Mixing toward the text colour darkens on light schemes and
+         lightens on dark ones; mixing toward the background makes tints. */
+      --nk-accent-hover: color-mix(in oklab, var(--nk-color-accent) 84%, var(--nk-color-text));
+      --nk-accent-active: color-mix(in oklab, var(--nk-color-accent) 70%, var(--nk-color-text));
+      --nk-accent-subtle: color-mix(in oklab, var(--nk-color-accent) 8%, var(--nk-color-bg));
+      --nk-accent-selected: color-mix(in oklab, var(--nk-color-accent) 16%, var(--nk-color-bg));
+      --nk-accent-border: color-mix(in oklab, var(--nk-color-accent) 38%, var(--nk-color-bg));
+      --nk-accent-muted: color-mix(in oklab, var(--nk-color-accent) 55%, var(--nk-color-bg));
+      --nk-focus: var(--nk-color-accent);
+      background-color: var(--nk-color-bg);
+      color: var(--nk-color-text);
+    }
+  
+</style>
+
+<link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+      <link href="/cdn/fonts/inter/inter_n4.b2a3f24c19b4de56e8871f609e73ca7f6d2e2bb9.woff2" as="font" crossorigin="anonymous" rel="preload">
+<script type="application/json" id="nk-config">
+  {
+    "routes": {
+      "root": "\/",
+      "cart": "\/cart",
+      "cartAdd": "\/cart\/add",
+      "cartChange": "\/cart\/change",
+      "cartUpdate": "\/cart\/update",
+      "predictiveSearch": "\/search\/suggest",
+      "productRecommendations": "\/recommendations\/products",
+      "search": "\/search"
+    },
+    "motion": "standard",
+    "motionOptions": {
+      "smoothScroll": true,
+      "smoothStrength": "balanced",
+      "tempo": "balanced",
+      "stagger": "medium",
+      "scrollEffects": true,
+      "mobile": "simple"
+    },
+    "cart": {
+      "afterAdd": "drawer",
+      "flyAnimation": true,
+      "sections": []
+    },
+    "promotions": {
+      "conflictRule": "keep"
+    },
+    "strings": {
+      "search.predictive_error": "Suggestions aren\u0026#39;t available right now. You can still search.",
+      "search.submit": "Search",
+      "cart.added": "Added to cart",
+      "cart.removed": "Item removed from cart",
+      "cart.error": "Something went wrong. Please review your cart and try again.",
+      "cart.add_unconfirmed": "We couldn\u0026#39;t confirm whether the item was added. Please check your cart before trying again.",
+      "cart.add_not_applied": "The item wasn\u0026#39;t added. Please try again.",
+      "collection.load_more": "Load more",
+      "collection.loading_more": "Loading more products…",
+      "collection.loaded_more": "[count] more products loaded",
+      "collection.load_failed": "Couldn\u0026#39;t load more products. Try again.",
+      "promotions.remove_code": "Remove discount code [code]",
+      "promotions.applying": "Checking code…",
+      "promotions.applied": "Code [code] applied.",
+      "promotions.applied_at_checkout": "Code [code] is on your order. Its saving, such as free shipping, is shown at checkout.",
+      "promotions.already_applied": "Code [code] is already on your order.",
+      "promotions.replaced_automatic": "Code [code] applied. It replaced an automatic promotion that can\u0026#39;t be combined with it.",
+      "promotions.not_applicable": "Code [code] can\u0026#39;t be used with this cart. It may be invalid or expired, not available for these items or your account, need a higher order total, or not combine with a discount already applied.",
+      "promotions.removed": "Code [code] removed.",
+      "promotions.empty": "Enter a discount code.",
+      "promotions.error": "We couldn\u0026#39;t update discount codes. Please try again.",
+      "product.adding": "Adding…",
+      "product.add_to_cart": "Add to cart",
+      "product.sold_out": "Sold out",
+      "product.select_size_prompt": "Select a size",
+      "product.choose_options": "Choose options",
+      "product.choose_option": "Choose one",
+      "product.choose_named_option": "Choose a [option]",
+      "product.selection_failed": "This selection couldn\u0026#39;t be updated.",
+      "product.unavailable": "Unavailable",
+      "product.updating": "Updating…",
+      "marquee.pause": "Pause moving content",
+      "marquee.play": "Play moving content",
+      "media.play": "Play video",
+      "media.pause": "Pause video",
+      "cursor.view": "View",
+      "product.media_position": "[index] \/ [count]"
+    }
+  }
+</script>
+
+    <link href="/cdn/shop/t/14/assets/nk-global.css?v=174866481161392248581792934763" rel="stylesheet" type="text/css" media="all" />
+    <link rel="modulepreload" href="/cdn/shop/t/14/assets/nk-chunk-sections-DY7RJLXP.js">
+    <script src="/cdn/shop/t/14/assets/nk-global-buZOYG5n.js" type="module" defer></script>
+<link href="/cdn/shop/t/14/assets/nk-product.css?v=50319115416229468241792927920" rel="stylesheet" type="text/css" media="all" />
+    <link rel="modulepreload" href="/cdn/shop/t/14/assets/nk-chunk-sections-DY7RJLXP.js">
+    <link rel="modulepreload" href="/cdn/shop/t/14/assets/nk-chunk-measure-units-COCO7M0l.js">
+    <link rel="modulepreload" href="/cdn/shop/t/14/assets/nk-chunk-product-dom-CNAfK2vC.js">
+    <script src="/cdn/shop/t/14/assets/nk-product-BiSEH9o3.js" type="module" defer></script>
+<script>window.performance && window.performance.mark && window.performance.mark('shopify.content_for_header.start');</script><meta id="shopify-digital-wallet" name="shopify-digital-wallet" content="/99785179499/digital_wallets/dialog">
+<link rel="ucp" href="/.well-known/ucp" version="2026-08-25"><link rel="alternate" type="application/json+oembed" href="https://corsovelle.com/products/velle-luck-of-the-draw-tee.oembed">
+<script async="async" src="/checkouts/internal/preloads.js?locale=en-BD"></script>
+<script id="shopify-features" type="application/json">{"accessToken":"e0641f00f7e927fe2ec194cdafb3d2b9","betas":["rich-media-storefront-analytics"],"domain":"gbhr1g-hm.myshopify.com","predictiveSearch":true,"shopId":99785179499,"locale":"en"}</script>
+<script>var Shopify = Shopify || {};
+Shopify.shop = "gbhr1g-hm.myshopify.com";
+Shopify.locale = "en";
+Shopify.currency = {"active":"BDT","rate":"1.0"};
+Shopify.country = "BD";
+Shopify.theme = {"name":"Development (efd23f-Osayeed)","id":193548550507,"schema_name":"NK — Corso Velle","schema_version":"0.1.0","theme_store_id":null,"role":"development"};
+Shopify.theme.handle = "null";
+Shopify.theme.style = {"id":null,"handle":null};
+Shopify.cdnHost = "gbhr1g-hm.myshopify.com/cdn";
+Shopify.routes = Shopify.routes || {};
+Shopify.routes.root = "/";
+Shopify.previewMode = true;
+Shopify.shopJsCdnBaseUrl = "https://cdn.shopify.com/shopifycloud/shop-js";
+Shopify.SignInWithShop = Shopify.SignInWithShop || {};
+Shopify.SignInWithShop.User = Shopify.SignInWithShop.User || {};
+Shopify.SignInWithShop.User.recognized = false;</script>
+<script type="module">!function(o){(o.Shopify=o.Shopify||{}).modules=!0}(window);</script>
+<script>!function(o){function n(){var o=[];function n(){o.push(Array.prototype.slice.apply(arguments))}return n.q=o,n}var t=o.Shopify=o.Shopify||{};t.loadFeatures=n(),t.autoloadFeatures=n()}(window);</script>
+<script>
+  window.Shopify = window.Shopify || {};
+  window.Shopify.SignInWithShop = window.Shopify.SignInWithShop || {};
+  window.Shopify.SignInWithShop.assetMetrics = { sampleRate: 0.25 };
+  window.Shopify.SignInWithShop.eligible = true;
+</script>
+<script id="shop-js-analytics" type="application/json">{"pageType":"product"}</script>
+<script defer="defer" async type="module" src="https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/loader.init-shop-cart-sync.en.esm.js"></script>
+<script type="module">
+  await import("https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/loader.init-shop-cart-sync.en.esm.js");
+
+  window.Shopify.SignInWithShop?.initShopCartSync?.({"fedCMEnabled":true,"windoidEnabled":true,"backendHost":"Z2JocjFnLWhtLm15c2hvcGlmeS5jb20="});
+
+</script>
+<script>
+  window.Shopify = window.Shopify || {};
+  if (!window.Shopify.featureAssets) window.Shopify.featureAssets = {};
+  window.Shopify.featureAssets['shop-js'] = {"avatar":["modules/v2/loader.avatar.en.esm.js"],"checkout-modal":["modules/v2/loader.checkout-modal.en.esm.js"],"init-customer-accounts-sign-up":["modules/v2/loader.init-customer-accounts-sign-up.en.esm.js"],"init-customer-accounts":["modules/v2/loader.init-customer-accounts.en.esm.js"],"init-fed-cm":["modules/v2/loader.init-fed-cm.en.esm.js"],"init-shop-cart-sync":["modules/v2/loader.init-shop-cart-sync.en.esm.js"],"init-shop-email-lookup-coordinator":["modules/v2/loader.init-shop-email-lookup-coordinator.en.esm.js"],"init-shop-for-new-customer-accounts":["modules/v2/loader.init-shop-for-new-customer-accounts.en.esm.js"],"init-shop-user-recognition":["modules/v2/loader.init-shop-user-recognition.en.esm.js"],"init-windoid":["modules/v2/loader.init-windoid.en.esm.js"],"lead-capture":["modules/v2/loader.lead-capture.en.esm.js"],"listener":["modules/v2/loader.listener.en.esm.js"],"pay-button":["modules/v2/loader.pay-button.en.esm.js"],"payment-terms":["modules/v2/loader.payment-terms.en.esm.js"],"shop-button":["modules/v2/loader.shop-button.en.esm.js"],"shop-cart-sync":["modules/v2/loader.shop-cart-sync.en.esm.js"],"shop-cash-offers":["modules/v2/loader.shop-cash-offers.en.esm.js"],"shop-follow-button":["modules/v2/loader.shop-follow-button.en.esm.js"],"shop-login-button":["modules/v2/loader.shop-login-button.en.esm.js"],"shop-login":["modules/v2/loader.shop-login.en.esm.js"],"shop-toast-manager":["modules/v2/loader.shop-toast-manager.en.esm.js"],"shop-user-recognition":["modules/v2/loader.shop-user-recognition.en.esm.js"]};
+</script>
+<script id="hot-reload-client" src="/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js" defer crossorigin></script>
+<script id="__st">var __st={"a":99785179499,"offset":21600,"reqid":"b540cde3-ac2a-4ac7-8db0-02341829f441-1792936267","pageurl":"gbhr1g-hm.myshopify.com\/products\/velle-luck-of-the-draw-tee?_fd=0\u0026pb=0\u0026variant=53782211920235","u":"aa92d7363824","p":"product","rtyp":"product","rid":15224593580395};</script>
+<script>window.ShopifyPaypalV4VisibilityTracking = true;</script>
+<script id="captcha-bootstrap">!function(){'use strict';const t='contact',e='account',n='new_comment',o=[[t,t],['blogs',n],['comments',n],[t,'customer']],c=[[e,'customer_login'],[e,'guest_login'],[e,'recover_customer_password'],[e,'create_customer']],r=t=>t.map((([t,e])=>`form[action*='/${t}']:not([data-nocaptcha='true']) input[name='form_type'][value='${e}']`)).join(','),a=t=>()=>t?[...document.querySelectorAll(t)].map((t=>t.form)):[];function s(){const t=[...o],e=r(t);return a(e)}const i='password',u='form_key',d=['recaptcha-v3-token','g-recaptcha-response','h-captcha-response',i],f=()=>{try{return window.sessionStorage}catch{return}},m='__shopify_v',_=t=>t.elements[u];function p(t,e,n=!1){try{const o=window.sessionStorage,c=JSON.parse(o.getItem(e)),{data:r}=function(t){const{data:e,action:n}=t;return t[m]||n?{data:e,action:n}:{data:t,action:n}}(c);for(const[e,n]of Object.entries(r))t.elements[e]&&(t.elements[e].value=n);n&&o.removeItem(e)}catch(o){console.error('form repopulation failed',{error:o})}}const l='form_type',E='cptcha';function T(t){t.dataset[E]=!0}const w=window,h=w.document,L='Shopify',v='ce_forms',y='captcha';let A=!1;((t,e)=>{const n=(g='f06e6c50-85a8-45c8-87d0-21a2b65856fe',I='https://cdn.shopify.com/shopifycloud/storefront-forms-hcaptcha/ce_storefront_forms_captcha_hcaptcha.v1.5.3.iife.js',D={infoText:'Protected by hCaptcha',privacyText:'Privacy',termsText:'Terms'},(t,e,n)=>{const o=w[L][v],c=o.bindForm;if(c)return c(t,g,e,D).then(n);var r;o.q.push([[t,g,e,D],n]),r=I,A||(h.body.append(Object.assign(h.createElement('script'),{id:'captcha-provider',async:!0,src:r})),A=!0)});var g,I,D;w[L]=w[L]||{},w[L][v]=w[L][v]||{},w[L][v].q=[],w[L][y]=w[L][y]||{},w[L][y].protect=function(t,e){n(t,void 0,e),T(t)},Object.freeze(w[L][y]),function(t,e,n,w,h,L){const[v,y,A,g]=function(t,e,n){const i=e?o:[],u=t?c:[],d=[...i,...u],f=r(d),m=r(i),_=r(d.filter((([t,e])=>n.includes(e))));return[a(f),a(m),a(_),s()]}(w,h,L),I=t=>{const e=t.target;return e instanceof HTMLFormElement?e:e&&e.form},D=t=>v().includes(t);t.addEventListener('submit',(t=>{const e=I(t);if(!e)return;const n=D(e)&&!e.dataset.hcaptchaBound&&!e.dataset.recaptchaBound,o=_(e),c=g().includes(e)&&(!o||!o.value);(n||c)&&t.preventDefault(),c&&!n&&(function(t){try{if(!f())return;!function(t){const e=f();if(!e)return;const n=_(t);if(!n)return;const o=n.value;o&&e.removeItem(o)}(t);const e=Array.from(Array(32),(()=>Math.random().toString(36)[2])).join('');!function(t,e){_(t)||t.append(Object.assign(document.createElement('input'),{type:'hidden',name:u})),t.elements[u].value=e}(t,e),function(t,e){const n=f();if(!n)return;const o=[...t.querySelectorAll(`input[type='${i}']`)].map((({name:t})=>t)),c=[...d,...o],r={};for(const[a,s]of new FormData(t).entries())c.includes(a)||(r[a]=s);n.setItem(e,JSON.stringify({[m]:1,action:t.action,data:r}))}(t,e)}catch(e){console.error('failed to persist form',e)}}(e),e.submit())}));const S=(t,e)=>{t&&!t.dataset[E]&&(n(t,e.some((e=>e===t))),T(t))};for(const o of['focusin','change'])t.addEventListener(o,(t=>{const e=I(t);D(e)&&S(e,y())}));const B=e.get('form_key'),M=e.get(l),P=B&&M;t.addEventListener('DOMContentLoaded',(()=>{const t=y();if(P)for(const e of t)e.elements[l].value===M&&p(e,B);[...new Set([...A(),...v().filter((t=>'true'===t.dataset.shopifyCaptcha))])].forEach((e=>S(e,t)))}))}(h,new URLSearchParams(w.location.search),n,t,e,['guest_login'])})(!0,!0)}();</script>
+<script integrity="sha256-FYHzja/5XSmzkjz6zHj7s4rACJGFuVoYZdumgoO2Ecs=" data-source-attribution="shopify.loadfeatures" defer="defer" src="/cdn/shopifycloud/storefront/assets/storefront/load_feature-ed94c51f.js" crossorigin="anonymous"></script>
+<script>(function () {var userAgent = navigator.userAgent;var platform = navigator.platform;var maxTouchPoints = navigator.maxTouchPoints || 0;var isIOS = /iPad|iPhone|iPod/.test(platform) || (platform === 'MacIntel' && maxTouchPoints > 1);var isMacSafari = platform.indexOf('Mac') === 0 && /Safari/.test(userAgent) && !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR|Android/.test(userAgent);var isAppleSafari = isIOS || isMacSafari;if (isAppleSafari) {fetch('/sf_private_access_tokens' + location.search).catch(function () {});}function browserMajorVersion(pattern) {var match = userAgent.match(pattern);return match ? parseInt(match[1], 10) : null;}function shouldLoadAutosizesPolyfill() {if (!window.PerformanceObserver?.supportedEntryTypes?.includes('paint')) {return false;}var chromeVersion = browserMajorVersion(/Chrome\/(\d+)/);if (chromeVersion !== null) {return chromeVersion < 126;}var firefoxVersion = browserMajorVersion(/Firefox\/(\d+)/);if (firefoxVersion !== null) {return firefoxVersion < 150;}var safariVersion = isAppleSafari ? browserMajorVersion(/Version\/(\d+).*Safari\//) : null;if (safariVersion !== null) {return safariVersion < 27;}return true;}if (shouldLoadAutosizesPolyfill()) {var autosizesScript = document.createElement('script');autosizesScript.async = true;autosizesScript.crossOrigin = 'anonymous';autosizesScript.src = "/cdn/shopifycloud/storefront/assets/storefront/autosizes-84416378.js";(document.head || document.documentElement).appendChild(autosizesScript);}window.ShopifyAnalytics = window.ShopifyAnalytics || {};window.ShopifyAnalytics.performance = window.ShopifyAnalytics.performance || {};(function () {var LONG_FRAME_THRESHOLD = 50;var longAnimationFrames = [];var activeRafId = null;function collectLongFrames() {var previousTime = null;function rafMonitor(now) {if (activeRafId === null) {return;}var delta = now - previousTime;if (delta > LONG_FRAME_THRESHOLD) {longAnimationFrames.push({startTime: previousTime,endTime: now,});}previousTime = now;activeRafId = requestAnimationFrame(rafMonitor);}previousTime = performance.now();activeRafId = requestAnimationFrame(rafMonitor);}if (!window.PerformanceObserver?.supportedEntryTypes?.includes('long-animation-frame')) {collectLongFrames();var timeoutId = setTimeout(function () {cancelAnimationFrame(activeRafId);}, 10000);window.ShopifyAnalytics.performance.getLongAnimationFrames = function (stopCollection) {if (stopCollection === undefined) {stopCollection = false;}if (stopCollection) {clearTimeout(timeoutId);cancelAnimationFrame(activeRafId);}return longAnimationFrames;};}})();})();</script><script id="shopify-origin-trials" async="async" integrity="sha256-qJbe/jEZBHtr5W/BlA2cKAz3vkXu6vJQyLjgvgCC86g=" src="//cdn.shopify.com/shopifycloud/storefront/assets/storefront/origin_trials-318ab40a.js" crossorigin="anonymous" onload="window.__shopifyOriginTrialsDone = true" onerror="window.__shopifyOriginTrialsDone = true"></script>
+<script>(()=>{var d="shopify:webmcp_adapter_loaded",n=Symbol.for("shopify.webmcp_adapter_loading");function s(c,a,{win:r=window,doc:o=document}={}){function p(){try{return r.localStorage.getItem(d)==="true"}catch{return!1}}function l(){try{r.localStorage.setItem(d,"true")}catch{}}function u(){return typeof(o.modelContext||r.navigator?.modelContext)?.registerTool=="function"}function f(){if(r[n]||!u())return;let t=o.head||o.getElementsByTagName("head")[0];if(!t)return;let e=o.createElement("script");e.type="module",e.crossOrigin="anonymous",a&&(e.integrity=a),e.src=c,e.addEventListener("load",l,{once:!0}),e.addEventListener("error",()=>{r[n]=!1},{once:!0}),t.appendChild(e),r[n]=!0}function _(t){let e=o.getElementById("shopify-origin-trials");if(!e||r.__shopifyOriginTrialsDone){t();return}e.addEventListener("load",t,{once:!0}),e.addEventListener("error",t,{once:!0})}function i(){_(()=>r.setTimeout(f,0))}function m(){o.addEventListener("DOMContentLoaded",i,{once:!0})}p()?i():m()}s("\/\/gbhr1g-hm.myshopify.com\/cdn\/shopifycloud\/storefront\/assets\/storefront\/webmcp-23c12384.js","sha256-r8Pww6V2udgtSdaVbcRtdZ4Kg+gXP7aLPZOtQSJPrbM=");})();
+</script>
+<script data-source-attribution="shopify.dynamic_checkout.dynamic.init">var Shopify=Shopify||{};Shopify.PaymentButton=Shopify.PaymentButton||{isStorefrontPortableWallets:!0,init:function(){window.Shopify.PaymentButton.init=function(){};var t=document.createElement("script");t.src="/cdn/shopifycloud/portable-wallets/latest/portable-wallets.en.js",t.type="module",document.head.appendChild(t)}};
+</script>
+<script data-source-attribution="shopify.dynamic_checkout.buyer_consent">
+  function portableWalletsHideBuyerConsent(e){var t=document.getElementById("shopify-buyer-consent"),n=document.getElementById("shopify-subscription-policy-button");t&&n&&(t.classList.add("hidden"),t.setAttribute("aria-hidden","true"),n.removeEventListener("click",e))}function portableWalletsShowBuyerConsent(e){var t=document.getElementById("shopify-buyer-consent"),n=document.getElementById("shopify-subscription-policy-button");t&&n&&(t.classList.remove("hidden"),t.removeAttribute("aria-hidden"),n.addEventListener("click",e))}window.Shopify?.PaymentButton&&(window.Shopify.PaymentButton.hideBuyerConsent=portableWalletsHideBuyerConsent,window.Shopify.PaymentButton.showBuyerConsent=portableWalletsShowBuyerConsent);
+</script>
+<script data-source-attribution="shopify.dynamic_checkout.cart.bootstrap">document.addEventListener("DOMContentLoaded",(function(){function t(){return document.querySelector("shopify-accelerated-checkout-cart, shopify-accelerated-checkout")}if(t())Shopify.PaymentButton.init();else{new MutationObserver((function(e,n){t()&&(Shopify.PaymentButton.init(),n.disconnect())})).observe(document.body,{childList:!0,subtree:!0})}}));
+</script>
+<link rel="stylesheet" media="screen" href="/cdn/shop/t/14/compiled_assets/styles.css?v=47450015571553518241792934527">
+<script id="shopify-cfh-end">window.performance && window.performance.mark && window.performance.mark('shopify.content_for_header.end');</script>
+  <link href="https://monorail-edge.shopifysvc.com" rel="dns-prefetch">
+<script>(function(){if ("sendBeacon" in navigator && "performance" in window) {try {var session_token_from_headers = performance.getEntriesByType('navigation')[0].serverTiming.find(x => x.name == '_s').description;} catch {var session_token_from_headers = undefined;}var session_cookie_matches = document.cookie.match(/_shopify_s=([^;]*)/);var session_token_from_cookie = session_cookie_matches && session_cookie_matches.length === 2 ? session_cookie_matches[1] : "";var session_token = session_token_from_headers || session_token_from_cookie || "";function handle_abandonment_event(e) {var entries = performance.getEntries().filter(function(entry) {return /monorail-edge.shopifysvc.com/.test(entry.name);});if (!window.abandonment_tracked && entries.length === 0) {window.abandonment_tracked = true;var currentMs = Date.now();var navigation_start = performance.timing.navigationStart;var payload = {shop_id: 99785179499,url: window.location.href,navigation_start,duration: currentMs - navigation_start,session_token,page_type: "product"};window.navigator.sendBeacon("https://monorail-edge.shopifysvc.com/v1/produce", JSON.stringify({schema_id: "online_store_buyer_site_abandonment/1.1",payload: payload,metadata: {event_created_at_ms: currentMs,event_sent_at_ms: currentMs}}));}}window.addEventListener('pagehide', handle_abandonment_event);}}());</script>
+<script>
+  window.__TREKKIE_SHIM_QUEUE = window.__TREKKIE_SHIM_QUEUE || [];
+</script>
+<script>(function(){var wpmLoader=function(){"use strict";var e=/Googlebot|Storebot-Google|bingbot|Baiduspider|YandexBot|DuckDuckBot|Slurp|facebookexternalhit|Twitterbot|LinkedInBot|Applebot|AdsBot-Google|Mediapartners-Google|APIs-Google|PetalBot|SemrushBot|AhrefsBot|MJ12bot|DotBot|Acunetix|PerplexityBot|Perplexity-User/i,t=/bytedance/i;function i(){try{var e=document.cookie;if(!e||"string"!=typeof e)return;for(var t=0,i=e.split(";");t<i.length;t++){var n=i[t],r=n.indexOf("=");if(-1!==r){var o=n.slice(0,r).trim();if(o){var a=void 0;try{a=decodeURIComponent(o)}catch(e){a=o}if("_shopify_s"===a){var d=n.slice(r+1).trim();try{return decodeURIComponent(d)}catch(e){return d}}}}}return}catch(e){return}}function n(e){try{"undefined"!=typeof console&&"function"==typeof console.warn&&console.warn(e)}catch(e){}}function r(e,t){return"string"==typeof e&&e.length>0&&e.length<=t?e:void 0}function o(e){var t;switch(null==(t=null==e?void 0:e.navigation)?void 0:t.type){case 0:return"navigate";case 1:return"reload";case 2:return"back_forward";default:return}}function a(){var e,t,i;try{var n=null==(i=null==(t=null==(e=self.ShopifyAnalytics)?void 0:e.lib)?void 0:t.trekkie)?void 0:i.state;return"awaiting-consent"===n||"initialized"===n?n:void 0}catch(e){return}}return function(d,s,u,l){var c=arguments.length>4&&void 0!==arguments[4]?arguments[4]:{};try{var p=c.trekkieShim;!0!==p&&"true"!==p||null!=window.__TREKKIE_SHIM_QUEUE||(window.__TREKKIE_SHIM_QUEUE=[])}catch(e){}var f,v,h,y,g=(v=(f={modern:/Edge?\/(1{2}[4-9]|1[2-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Firefox\/(1{2}[4-9]|1[2-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Chrom(ium|e)\/(9{2}|\d{3,})\.\d+(\.\d+|)|(Maci|X1{2}).+ Version\/(15\.\d+|(1[6-9]|[2-9]\d|\d{3,})\.\d+)([,.]\d+|)( \(\w+\)|)( Mobile\/\w+|) Safari\/|Chrome.+OPR\/(9{2}|\d{3,})\.\d+\.\d+|(CPU[ +]OS|iPhone[ +]OS|CPU[ +]iPhone|CPU IPhone OS|CPU iPad OS)[ +]+(15[._]\d+|(1[6-9]|[2-9]\d|\d{3,})[._]\d+)([._]\d+|)|Android:?[ /-](14[89]|1[5-9]\d|[2-9]\d{2}|\d{4,})(\.\d+|)(\.\d+|)|Android.+Firefox\/(15\d|1[6-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Android.+Chrom(ium|e)\/(14[89]|1[5-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|SamsungBrowser\/([2-9]\d|\d{3,})\.\d+/,legacy:/Edge?\/(1[6-9]|[2-9]\d|\d{3,})\.\d+(\.\d+|)|Firefox\/(5[4-9]|[6-9]\d|\d{3,})\.\d+(\.\d+|)|Chrom(ium|e)\/(5[1-9]|[6-9]\d|\d{3,})\.\d+(\.\d+|)([\d.]+$|.*Safari\/(?![\d.]+ Edge\/[\d.]+$))|(Maci|X1{2}).+ Version\/(10\.\d+|(1[1-9]|[2-9]\d|\d{3,})\.\d+)([,.]\d+|)( \(\w+\)|)( Mobile\/\w+|) Safari\/|Chrome.+OPR\/(3[89]|[4-9]\d|\d{3,})\.\d+\.\d+|(CPU[ +]OS|iPhone[ +]OS|CPU[ +]iPhone|CPU IPhone OS|CPU iPad OS)[ +]+(10[._]\d+|(1[1-9]|[2-9]\d|\d{3,})[._]\d+)([._]\d+|)|Android:?[ /-](14[89]|1[5-9]\d|[2-9]\d{2}|\d{4,})(\.\d+|)(\.\d+|)|Mobile Safari.+OPR\/([89]\d|\d{3,})\.\d+\.\d+|Android.+Firefox\/(15\d|1[6-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Android.+Chrom(ium|e)\/(14[89]|1[5-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Android.+(UC? ?Browser|UCWEB|U3)[ /]?(15\.([5-9]|\d{2,})|(1[6-9]|[2-9]\d|\d{3,})\.\d+)\.\d+|SamsungBrowser\/(5\.\d+|([6-9]|\d{2,})\.\d+)|Android.+MQ{2}Browser\/(14(\.(9|\d{2,})|)|(1[5-9]|[2-9]\d|\d{3,})(\.\d+|))(\.\d+|)|K[Aa][Ii]OS\/(3\.\d+|([4-9]|\d{2,})\.\d+)(\.\d+|)/}).modern,h=f.legacy,(y=navigator.userAgent).match(e)?"bot":y.match(v)?"modern":y.match(h)?"legacy":y.match(t)?"bot":"unknown"),m=function(e){var t,i,n=r(e,128);try{var a=window.performance,d=null==(t=null==a?void 0:a.getEntriesByType)?void 0:t.call(a,"navigation")[0];if(!d)return{requestId:n,navigationType:o(a)};var s="type"in d?r(d.type,64):void 0,u="serverTiming"in d&&Array.isArray(d.serverTiming)?d.serverTiming:[];return{requestId:null!=n?n:r(null==(i=u.find(function(e){return"requestID"===e.name}))?void 0:i.description,128),navigationType:s}}catch(e){return{requestId:n}}}(c.requestId),w=function(e){var t=e.version,r=e.browserTarget,o=e.surface,a=e.shopId,d=e.monorailEndpoint,s=window.location.href;return{emit:function(e){var u=e.status,l=e.errorMsg,c=e.failureReason,p=e.useKeepaliveFallback,f=void 0!==p&&p,v=e.navigationType,h=e.pagehidePersisted,y=e.requestId,g=e.trekkieState;if(d){var m,w;try{var b=(new Date).getTime();m=JSON.stringify({metadata:{event_sent_at_ms:b},events:[{schema_id:"web_pixels_manager_load/3.3",payload:{version:t,bundle_target:r,page_url:s,status:u,surface:o,error_msg:l,failure_reason:c,navigation_type:v,pagehide_persisted:h,request_id:y,trekkie_state:g,shop_id:a,visit_token:i()},metadata:{event_created_at_ms:b}}]})}catch(e){return}try{if("function"==typeof window.navigator.sendBeacon&&-1===(w=window.navigator.userAgent).indexOf("iPhone; CPU iPhone OS 12_")&&-1===w.indexOf("iPad; CPU OS 12_")&&-1===w.indexOf("iPod touch; CPU iPhone OS 12_")&&window.navigator.sendBeacon.bind(window.navigator)(d,m))return}catch(e){}if(f)try{"function"==typeof window.fetch&&window.fetch(d,{method:"POST",headers:{"Content-Type":"text/plain"},body:m,keepalive:!0}).catch(function(){})}catch(e){}else try{var _=new XMLHttpRequest;_.open("POST",d,!0),_.setRequestHeader("Content-Type","text/plain"),_.send(m)}catch(e){n("[Web Pixels Manager] Got an unhandled error while logging to Monorail.")}}else n("[Web Pixels Manager] No Monorail endpoint provided, skipping logging.")}}}({version:u,browserTarget:g,surface:d.surface,shopId:d.shopId,monorailEndpoint:d.monorailEndpoint});if(Boolean(null==(_=null==(b=window.Shopify)?void 0:b.analytics)?void 0:_.replayQueue))w.emit({status:"setup-skipped",errorMsg:"replay queue already initialized."});else{var b,_;w.emit({status:"setup-started"}),window.Shopify=window.Shopify||{};var S=window.Shopify;S.analytics=S.analytics||{};var P=S.analytics;P.replayQueue=[],P.publish=function(e,t,i){return P.replayQueue.push([e,t,i]),!0};try{self.performance.mark("wpm:start")}catch(e){}var k,C="modern"===g?"modern":"legacy",E=(null!=l?l:{modern:"",legacy:""})[C],I=[(k={baseUrl:s,hashVersion:u,buildTarget:C}).baseUrl,"/wpm","/b",k.hashVersion,"modern"===k.buildTarget?"m":"l",".js"].join(""),O=!1,T=!1;try{c.browserTarget=g,function(){O=!0;try{window.addEventListener("pagehide",M)}catch(e){O=!1}}(),R(function(){try{R(x)}catch(e){D(e)}}),w.emit({status:"loading",requestId:m.requestId,navigationType:m.navigationType,trekkieState:a()})}catch(e){D(e)}}function U(){var e;if(q(),!function(){var e,t;return Boolean(null==(t=null==(e=window.Shopify)?void 0:e.analytics)?void 0:t.initialized)}()){var t,i,n;try{if("function"!=typeof(null==(e=window.webPixelsManager)?void 0:e.init))return void A();if(!(null!==(n=i=t=window.webPixelsManager.init(d))&&"function"!=typeof n&&Object(n)===n&&"publish"in i&&"function"==typeof i.publish&&"publishCustomEvent"in i&&"function"==typeof i.publishCustomEvent&&"visitor"in i&&"function"==typeof i.visitor))return void A()}catch(e){return void A(e)}var r=window.Shopify.analytics;r.replayQueue.forEach(function(e){var i=e[0],n=e[1],r=e[2];t.publishCustomEvent(i,n,r)}),r.replayQueue=[],r.publish=t.publishCustomEvent,r.visitor=t.visitor,r.initialized=!0}}function A(e){B("manager_api_unavailable",void 0===e?void 0:Q(e))}function x(){B("script_load_failed","".concat(I," has failed to load"))}function B(e,t){T||(T=!0,q(),w.emit({status:"failed",errorMsg:t,failureReason:e,requestId:m.requestId,navigationType:m.navigationType,trekkieState:a()}))}function M(e){O&&(q(),w.emit({status:"pagehide-while-loading",useKeepaliveFallback:!0,pagehidePersisted:e.persisted,requestId:m.requestId,navigationType:m.navigationType,trekkieState:a()}))}function q(){O=!1;try{window.removeEventListener("pagehide",M)}catch(e){}}function R(e){var t;!function(e){var t=e.src,i=e.async,n=void 0===i||i,r=e.onload,o=e.onerror,a=e.sri,d=e.scriptDataAttributes,s=void 0===d?{}:d,u=document.createElement("script"),l=document.querySelector("head"),c=document.querySelector("body");if(u.async=n,u.src=t,a&&(u.integrity=a,u.crossOrigin="anonymous"),s)for(var p in s)if(Object.prototype.hasOwnProperty.call(s,p))try{u.dataset[p]=String(s[p])}catch(e){}if(r&&u.addEventListener("load",r),o&&u.addEventListener("error",o),l)l.appendChild(u);else{if(!c)throw new Error("Did not find a head or body element to append the script");c.appendChild(u)}}({src:I,async:!0,onload:U,onerror:e,sri:(t=E,"string"==typeof t&&/^sha384-[A-Za-z0-9+/=]+$/.test(t)?E:""),scriptDataAttributes:c})}function D(e){B("script_append_failed",Q(e))}function Q(e){return e instanceof Error?e.message:"Unknown error"}}}();wpmLoader({shopId: 99785179499,storefrontBaseUrl: "https://corsovelle.com",extensionsBaseUrl: "https://extensions.shopifycdn.com/cdn/shopifycloud/web-pixels-manager",monorailEndpoint: "https://gbhr1g-hm.myshopify.com/.well-known/shopify/monorail/unstable/produce_batch",surface: "storefront-renderer",enabledBetaFlags: ["7b21cf0b","4c64608a"],webPixelsConfigList: [{"id":"2653946219","configuration":"{\"pixel_id\":\"1956791714979642\",\"pixel_type\":\"facebook_pixel\"}","eventPayloadVersion":"v1","runtimeContext":"OPEN","scriptVersion":"bd2f978c17a94bbb8a74d43de2165dc5","type":"APP","apiClientId":2329312,"privacyPurposes":["ANALYTICS","MARKETING","SALE_OF_DATA"],"dataSharingAdjustments":{"protectedCustomerApprovalScopes":["read_customer_address","read_customer_email","read_customer_name","read_customer_personal_data","read_customer_phone"],"dataSharingControls":["share_all_events"]},"dataSharingState":"optimized","enabledFlags":["9a3ed68a"]},{"id":"shopify-app-pixel","configuration":"{}","eventPayloadVersion":"v1","runtimeContext":"STRICT","scriptVersion":"0530","apiClientId":"shopify-pixel","type":"APP","privacyPurposes":["ANALYTICS","MARKETING"]},{"id":"shopify-custom-pixel","eventPayloadVersion":"v1","runtimeContext":"LAX","scriptVersion":"0530","apiClientId":"shopify-pixel","type":"CUSTOM","privacyPurposes":["ANALYTICS","MARKETING"]}],isMerchantRequest: false,initData: {"shop":{"name":"Corso Velle","paymentSettings":{"currencyCode":"BDT"},"myshopifyDomain":"gbhr1g-hm.myshopify.com","countryCode":"BD","storefrontUrl":"https:\/\/corsovelle.com"},"customer":null,"cart":null,"checkout":null,"productVariants":[{"price":{"amount":1200.0,"currencyCode":"BDT"},"product":{"title":"Velle Luck of the Draw Tee","vendor":"Corso Velle","id":"15224593580395","untranslatedTitle":"Velle Luck of the Draw Tee","url":"\/products\/velle-luck-of-the-draw-tee","type":""},"id":"53782211920235","image":{"src":"\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648"},"sku":null,"title":"S","untranslatedTitle":"S"},{"price":{"amount":1200.0,"currencyCode":"BDT"},"product":{"title":"Velle Luck of the Draw Tee","vendor":"Corso Velle","id":"15224593580395","untranslatedTitle":"Velle Luck of the Draw Tee","url":"\/products\/velle-luck-of-the-draw-tee","type":""},"id":"53782211953003","image":{"src":"\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648"},"sku":null,"title":"M","untranslatedTitle":"M"},{"price":{"amount":1200.0,"currencyCode":"BDT"},"product":{"title":"Velle Luck of the Draw Tee","vendor":"Corso Velle","id":"15224593580395","untranslatedTitle":"Velle Luck of the Draw Tee","url":"\/products\/velle-luck-of-the-draw-tee","type":""},"id":"53782211985771","image":{"src":"\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648"},"sku":null,"title":"L","untranslatedTitle":"L"},{"price":{"amount":1200.0,"currencyCode":"BDT"},"product":{"title":"Velle Luck of the Draw Tee","vendor":"Corso Velle","id":"15224593580395","untranslatedTitle":"Velle Luck of the Draw Tee","url":"\/products\/velle-luck-of-the-draw-tee","type":""},"id":"53782212018539","image":{"src":"\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648"},"sku":null,"title":"XL","untranslatedTitle":"XL"}],"products":[{"id":"15224593580395","handle":"velle-luck-of-the-draw-tee","isCollective":null,"title":"Velle Luck of the Draw Tee","type":null,"untranslatedTitle":"Velle Luck of the Draw Tee","url":"\/products\/velle-luck-of-the-draw-tee","vendor":"Corso Velle","remoteShopId":null,"variants":[{"id":"53782211920235","image":{"src":"\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648"},"price":{"amount":1200.0,"currencyCode":"BDT"},"sku":null,"title":"S","untranslatedTitle":"S"},{"id":"53782211953003","image":{"src":"\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648"},"price":{"amount":1200.0,"currencyCode":"BDT"},"sku":null,"title":"M","untranslatedTitle":"M"},{"id":"53782211985771","image":{"src":"\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648"},"price":{"amount":1200.0,"currencyCode":"BDT"},"sku":null,"title":"L","untranslatedTitle":"L"},{"id":"53782212018539","image":{"src":"\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648"},"price":{"amount":1200.0,"currencyCode":"BDT"},"sku":null,"title":"XL","untranslatedTitle":"XL"}]}],"purchasingCompany":null},},"https://gbhr1g-hm.myshopify.com/cdn","fcc46ef0w9d3a45bbp8938e2eamdcca70d4",{"modern":"","legacy":""},{"trekkieShim":true,"agentContext":true,"pixelHelper":true,"apiClientId":"580111","facebookCapiEnabled":"true","themeId":"193548550507","themePublished":"false","eventMetadataId":"440f70a0-7f6e-40e6-8173-73bd30206ec5","pageType":"product","resourceId":"15224593580395","shopId":"99785179499","storefrontBaseUrl":"https:\/\/corsovelle.com","extensionBaseUrl":"https:\/\/extensions.shopifycdn.com\/cdn\/shopifycloud\/web-pixels-manager","surface":"storefront-renderer","enabledBetaFlags":"[\"7b21cf0b\", \"4c64608a\"]","isMerchantRequest":"false","hashVersion":"fcc46ef0w9d3a45bbp8938e2eamdcca70d4","publish":"custom","events":"[[\"page_viewed\",{}],[\"product_viewed\",{\"productVariant\":{\"price\":{\"amount\":1200.0,\"currencyCode\":\"BDT\"},\"product\":{\"title\":\"Velle Luck of the Draw Tee\",\"vendor\":\"Corso Velle\",\"id\":\"15224593580395\",\"untranslatedTitle\":\"Velle Luck of the Draw Tee\",\"url\":\"\/products\/velle-luck-of-the-draw-tee\",\"type\":\"\"},\"id\":\"53782211920235\",\"image\":{\"src\":\"\/\/gbhr1g-hm.myshopify.com\/cdn\/shop\/files\/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648\"},\"sku\":null,\"title\":\"S\",\"untranslatedTitle\":\"S\"}}]]"});})();</script><script>
+  window.ShopifyAnalytics = window.ShopifyAnalytics || {};
+  window.ShopifyAnalytics.meta = window.ShopifyAnalytics.meta || {};
+  window.ShopifyAnalytics.meta.currency = 'BDT';
+  var meta = {"product":{"id":15224593580395,"gid":"gid:\/\/shopify\/Product\/15224593580395","vendor":"Corso Velle","type":"","handle":"velle-luck-of-the-draw-tee","variants":[{"id":53782211920235,"price":120000,"name":"Velle Luck of the Draw Tee - S","public_title":"S","sku":null},{"id":53782211953003,"price":120000,"name":"Velle Luck of the Draw Tee - M","public_title":"M","sku":null},{"id":53782211985771,"price":120000,"name":"Velle Luck of the Draw Tee - L","public_title":"L","sku":null},{"id":53782212018539,"price":120000,"name":"Velle Luck of the Draw Tee - XL","public_title":"XL","sku":null}],"remote":false},"page":{"pageType":"product","resourceType":"product","resourceId":15224593580395,"requestId":"b540cde3-ac2a-4ac7-8db0-02341829f441-1792936267"}};
+  for (var attr in meta) {
+    window.ShopifyAnalytics.meta[attr] = meta[attr];
+  }
+</script>
+<script class="analytics">
+  (function () {
+    var customDocumentWrite = function(content) {
+      var jquery = null;
+
+      if (window.jQuery) {
+        jquery = window.jQuery;
+      } else if (window.Checkout && window.Checkout.$) {
+        jquery = window.Checkout.$;
+      }
+
+      if (jquery) {
+        jquery('body').append(content);
+      }
+    };
+
+    var hasLoggedConversion = function(token) {
+      if (token) {
+        return document.cookie.indexOf('loggedConversion=' + token) !== -1;
+      }
+      return false;
+    }
+
+    var setCookieIfConversion = function(token) {
+      if (token) {
+        var twoMonthsFromNow = new Date(Date.now());
+        twoMonthsFromNow.setMonth(twoMonthsFromNow.getMonth() + 2);
+
+        document.cookie = 'loggedConversion=' + token + '; expires=' + twoMonthsFromNow;
+      }
+    }
+
+    var trekkie = window.ShopifyAnalytics.lib = window.trekkie = window.trekkie || [];
+    window.ShopifyAnalytics.lib.trekkie = window.trekkie;
+    if (trekkie.integrations) {
+      return;
+    }
+    trekkie.methods = [
+      'identify',
+      'page',
+      'ready',
+      'track',
+      'trackForm',
+      'trackLink'
+    ];
+    trekkie.factory = function(method) {
+      return function() {
+        var args = Array.prototype.slice.call(arguments);
+        args.unshift(method);
+        trekkie.push(args);
+        if (method == 'track' || method == 'page') {
+          var pageUrl;
+          try {
+            pageUrl = window.location.href;
+          } catch (e) {}
+          var pageReferrer;
+          try {
+            pageReferrer = document.referrer;
+          } catch (e) {}
+          try {
+            if (window.__TREKKIE_SHIM_QUEUE == null) {
+              window.__TREKKIE_SHIM_QUEUE = [];
+            }
+            window.__TREKKIE_SHIM_QUEUE.push({
+              from: 'trekkie-stub',
+              method: method,
+              args: args.slice(1),
+              pageContext: {
+                url: pageUrl,
+                referrer: pageReferrer
+              }
+            });
+          } catch (e) {
+            // no-op
+          }
+        }
+        return trekkie;
+      };
+    };
+    for (var i = 0; i < trekkie.methods.length; i++) {
+      var key = trekkie.methods[i];
+      trekkie[key] = trekkie.factory(key);
+    }
+    trekkie.load = function(config) {
+      trekkie.config = config || {};
+      trekkie.config.initialDocumentCookie = document.cookie;
+      var first = document.getElementsByTagName('script')[0];
+var script = document.createElement('script');
+script.type = 'text/javascript';
+script.onerror = function(e) {
+  var scriptFallback = document.createElement('script');
+  scriptFallback.type = 'text/javascript';
+  scriptFallback.onerror = function(error) {
+          var Monorail = {
+      produce: function produce(monorailDomain, schemaId, payload) {
+        var currentMs = new Date().getTime();
+        var event = {
+          schema_id: schemaId,
+          payload: payload,
+          metadata: {
+            event_created_at_ms: currentMs,
+            event_sent_at_ms: currentMs
+          }
+        };
+        return Monorail.sendRequest("https://" + monorailDomain + "/v1/produce", JSON.stringify(event));
+      },
+      sendRequest: function sendRequest(endpointUrl, payload) {
+        // Try the sendBeacon API
+        if (window && window.navigator && typeof window.navigator.sendBeacon === 'function' && typeof window.Blob === 'function' && !Monorail.isIos12()) {
+          var blobData = new window.Blob([payload], {
+            type: 'text/plain'
+          });
+
+          if (window.navigator.sendBeacon(endpointUrl, blobData)) {
+            return true;
+          } // sendBeacon was not successful
+
+        } // XHR beacon
+
+        var xhr = new XMLHttpRequest();
+
+        try {
+          xhr.open('POST', endpointUrl);
+          xhr.setRequestHeader('Content-Type', 'text/plain');
+          xhr.send(payload);
+        } catch (e) {
+          console.log(e);
+        }
+
+        return false;
+      },
+      isIos12: function isIos12() {
+        return window.navigator.userAgent.lastIndexOf('iPhone; CPU iPhone OS 12_') !== -1 || window.navigator.userAgent.lastIndexOf('iPad; CPU OS 12_') !== -1;
+      }
+    };
+    Monorail.produce('monorail-edge.shopifysvc.com',
+      'trekkie_storefront_load_errors/1.1',
+      {shop_id: 99785179499,
+      theme_id: 193548550507,
+      app_name: "storefront",
+      context_url: window.location.href,
+      source_url: "/cdn/s/trekkie.storefront.6efba1340ec6769622eb0d10b5cb070d43fb8d55.min.js"});
+
+  };
+  scriptFallback.async = true;
+  scriptFallback.src = '/cdn/s/trekkie.storefront.6efba1340ec6769622eb0d10b5cb070d43fb8d55.min.js';
+  first.parentNode.insertBefore(scriptFallback, first);
+};
+script.async = true;
+script.src = '/cdn/s/trekkie.storefront.6efba1340ec6769622eb0d10b5cb070d43fb8d55.min.js';
+first.parentNode.insertBefore(script, first);
+
+    };
+    trekkie.load(
+      {"Trekkie":{"appName":"storefront","development":false,"defaultAttributes":{"shopId":99785179499,"isMerchantRequest":null,"themeId":193548550507,"themeCityHash":"5380485480579644930","contentLanguage":"en","currency":"BDT","eventMetadataId":"440f70a0-7f6e-40e6-8173-73bd30206ec5"},"isServerSideCookieWritingEnabled":true,"monorailRegion":"shop_domain","enabledBetaFlags":["7b21cf0b","4c64608a"]},"Session Attribution":{},"S2S":{"facebookCapiEnabled":true,"source":"trekkie-storefront-renderer","apiClientId":580111}}
+    );
+
+    var loaded = false;
+    trekkie.ready(function() {
+      if (loaded) return;
+      loaded = true;
+
+      window.ShopifyAnalytics.lib = window.trekkie;
+
+      var originalDocumentWrite = document.write;
+      document.write = customDocumentWrite;
+      try { window.ShopifyAnalytics.merchantGoogleAnalytics.call(this); } catch(error) {};
+      document.write = originalDocumentWrite;
+
+      var match = window.location.pathname.match(/checkouts\/(.+)\/(thank_you|post_purchase)/)
+      var token = match? match[1]: undefined;
+      if (!hasLoggedConversion(token)) {
+        setCookieIfConversion(token);
+        window.ShopifyAnalytics.lib.track("Viewed Product",{"currency":"BDT","variantId":53782211920235,"productId":15224593580395,"productGid":"gid:\/\/shopify\/Product\/15224593580395","name":"Velle Luck of the Draw Tee - S","price":"1200.00","sku":null,"brand":"Corso Velle","variant":"S","category":"","nonInteraction":true,"remote":false,"available":false},undefined,undefined,{"shopifyEmitted":true});
+      }
+    });
+
+    window.ShopifyAnalytics.lib.page(null,{"pageType":"product","resourceType":"product","resourceId":15224593580395,"requestId":"b540cde3-ac2a-4ac7-8db0-02341829f441-1792936267","shopifyEmitted":true});
+
+    var eventsListenerScript = document.createElement('script');
+    eventsListenerScript.async = true;
+    eventsListenerScript.src = "/cdn/shopifycloud/storefront/assets/shop_events_listener-4e26a9ce.js";
+    document.getElementsByTagName('head')[0].appendChild(eventsListenerScript);
+})();</script>
+<script
+  defer
+  src="/cdn/shopifycloud/perf-kit/shopify-perf-kit-3.11.0.min.js"
+  data-application="storefront-renderer"
+  data-shop-id="99785179499"
+  data-render-region="gcp-us-central1"
+  data-page-type="product"
+  data-theme-instance-id="193548550507"
+  data-theme-name="NK — Corso Velle"
+  data-theme-version="0.1.0"
+  data-monorail-region="shop_domain"
+  data-resource-timing-sampling-rate="10"
+  data-shs="true"
+  data-shs-beacon="true"
+  data-shs-export-with-fetch="true"
+  data-shs-logs-sample-rate="1"
+  data-shs-beacon-endpoint="/api/collect"
+></script>
+<script src="https://cdn.shopify.com/storefront/web-components/account.js" type="module" crossorigin fetchpriority="low" async></script><script id="shopify-customer-account-data" type="application/json">{"customer":null,"shop":{"id":"99785179499","customerAccountTranslations":[{"key":"account_menu.signed_out_state.sheet_title","value":"Sign in or create account"},{"key":"account_menu.signed_out_state.section_divider","value":"More ways to sign in"},{"key":"account_menu.signed_out_state.alternate_divider","value":"OR"},{"key":"account_menu.signed_out_state.email_field_label","value":"Email"},{"key":"account_menu.signed_out_state.orders_button","value":"Orders"},{"key":"account_menu.signed_out_state.profile_button","value":"Profile"},{"key":"account_menu.signed_out_state.shop_login_button","value":"Sign in with Shop"},{"key":"account_menu.signed_out_state.continue_with_google","value":"Continue with Google"},{"key":"account_menu.signed_out_state.continue_with_facebook","value":"Continue with Facebook"},{"key":"account_menu.signed_out_state.marketing_consent_label","value":"Email me with news and offers"},{"key":"account_menu.signed_in_state.greeting_with_name","value":"Hi, {{first_name}}"},{"key":"account_menu.signed_in_state.greeting_without_name","value":"Account"},{"key":"account_menu.signed_in_state.orders_button","value":"Orders"},{"key":"account_menu.signed_in_state.profile_button","value":"Profile"},{"key":"account_menu.location_picker.sheet_title","value":"Locations"},{"key":"account_menu.location_picker.search_field_placeholder","value":"Search"},{"key":"account_menu.aria_labels.close_menu","value":"Close menu"},{"key":"account_menu.aria_labels.back_to_main_menu","value":"Back to main menu from {{title}}"},{"key":"account_menu.aria_labels.open_submenu","value":"{{title}}, opens submenu"},{"key":"account_menu.aria_labels.loading_menu","value":"Loading menu"},{"key":"account_menu.aria_labels.loading","value":"Loading"},{"key":"account_menu.aria_labels.account","value":"Account"},{"key":"account_menu.aria_labels.sign_in_with_email","value":"Sign in with email"},{"key":"account_menu.aria_labels.sign_in","value":"Sign in"}],"socialLoginProviders":[{"handle":"Shop"}],"legacyCustomerAccounts":false,"signInLinksVisible":true,"b2bEnabled":false,"marketingConsentSigninEnabled":true,"marketingConsentPreselected":false},"visitor":{"country":"BD","language":"en"}}</script>
+<meta name="shopify-y" content="e5257469-498d-4807-bdcd-ed3c2ef0ecf0" data-expiration="1824493868000"><meta name="shopify-s" content="826bb206-d0de-4a5b-81fa-5d5f4c9732a1" data-expiration="1792938068000"></head>
+
+  <body>
+    <a class="skip-link visually-hidden" href="#MainContent">Skip to content</a>
+
+    <!-- BEGIN sections: header-group -->
+<div id="shopify-section-sections--29114664649067__announcement" class="shopify-section shopify-section-group-header-group announcement-section"><div class="announcement full-width color-scheme-3" data-display="ticker" role="region" aria-label="Announcements"><nk-marquee class="announcement__ticker" direction="left" speed="40" hover-speed="0" style="--nk-marquee-gap: 28px;">
+        <div class="marquee__track" data-ref="track">
+          <ul class="marquee__list" data-ref="list" role="list"><li class="marquee__item" data-block-id="a1" ><a href="/collections/timeless-basics-26">Timeless Basics &#39;26 — now in store</a><span aria-hidden="true" style="margin-inline-start: 28px;">✳</span>
+                </li><li class="marquee__item" data-block-id="a2" ><a href="/collections/shackets">New shackets for the season</a><span aria-hidden="true" style="margin-inline-start: 28px;">✳</span>
+                </li><li class="marquee__item" data-block-id="a3" ><a href="/collections/linen">Linen, made for warm evenings</a><span aria-hidden="true" style="margin-inline-start: 28px;">✳</span>
+                </li></ul>
+        </div>
+        <button type="button" class="marquee__pause" data-ref="pause" aria-pressed="false" aria-label="Pause moving content" hidden>❚❚</button>
+      </nk-marquee></div>
+
+
+</div><div id="shopify-section-sections--29114664649067__header" class="shopify-section shopify-section-group-header-group header-section"><nk-header
+  class="color-scheme-1 full-width"
+  data-sticky="reveal"
+  data-nav-trigger="hover"
+  data-dropdown="auto"
+  data-logo-treatment="ink"
+  style="--header-height:76px;--header-height-mobile:64px;"
+  
+>
+  <div class="header header--center header--panel-floating">
+    <div class="header__start">
+      <button
+        type="button"
+        class="icon-button header__menu-button"
+        data-nk-open="MenuDrawer"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="MenuDrawer"
+        aria-label="Menu"
+      >
+        <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+
+      </button>
+      <a
+        class="icon-button header__search-icon--phone"
+        href="/search"
+        data-nk-open="SearchModal" aria-haspopup="dialog" aria-expanded="false"
+        aria-label="Search"
+      >
+        <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+
+      </a><nav class="header__nav" aria-label="Primary">
+          <ul class="nav" role="list"><li class="nav__item">
+                <a class="nav__link" href="/" >Home</a></li><li class="nav__item">
+                <a class="nav__link" href="/collections/all-products" >Catalog</a><details class="nav__disclosure">
+                    <summary aria-label="Show Catalog menu">
+                      <svg
+  width="12"
+  height="12"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M6 9l6 6 6-6"/></svg>
+
+                    </summary>
+                    <div class="nav__panel"><div class="nav__group">
+                            <a class="nav__group-heading spec" href="/collections/all">Shop All</a><ul role="list"><li><a href="/collections/timeless-basics-26">Timeless Basics &#39;26</a></li><li><a href="/collections/linen">Linen </a></li></ul></div></div>
+                  </details></li><li class="nav__item">
+                <a class="nav__link" href="/collections/tops" >Tops</a><details class="nav__disclosure">
+                    <summary aria-label="Show Tops menu">
+                      <svg
+  width="12"
+  height="12"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M6 9l6 6 6-6"/></svg>
+
+                    </summary>
+                    <div class="nav__panel"><ul class="nav__sublist" role="list"><li><a href="/collections/shirts">Shirt</a></li><li><a href="/collections/t-shirts">T-Shirt</a></li><li><a href="/collections/shackets">Shackets</a></li><li><a href="/collections/cropped-shirts">Cropped Shirt</a></li><li><a href="/collections/embroidered-shirt">Embroidered Shirt</a></li><li><a href="/collections/designer-shacket">Designer Shacket</a></li><li><a href="/collections/knit-polo">Knit Polo</a></li><li><a href="/collections/polo">Polo</a></li></ul></div>
+                  </details></li><li class="nav__item">
+                <a class="nav__link" href="/collections/bottoms-1" >Bottoms</a><details class="nav__disclosure">
+                    <summary aria-label="Show Bottoms menu">
+                      <svg
+  width="12"
+  height="12"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M6 9l6 6 6-6"/></svg>
+
+                    </summary>
+                    <div class="nav__panel"><ul class="nav__sublist" role="list"><li><a href="/collections/jeans-1">Jeans</a></li><li><a href="/collections/gurkha-flared-trouser-1">Gurkha Flared Trouser</a></li><li><a href="/collections/linen-pants">Linen Pants</a></li></ul></div>
+                  </details></li><li class="nav__item">
+                <a class="nav__link" href="/collections/footwear" >Footwear</a></li></ul>
+        </nav></div><script>
+        (function () {
+          try {
+            if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            var key = 'nk:logo-intro';
+            if (sessionStorage.getItem(key)) return;
+            sessionStorage.setItem(key, '1');
+            document.documentElement.setAttribute('data-logo-intro', "ink");
+          } catch (error) {}
+        })();
+      </script><a class="header__logo" href="/"><img src="/cdn/shop/files/CV_Neck_label-Photoroom.png?v=1786124829&amp;width=600" alt="Corso Velle" srcset="/cdn/shop/files/CV_Neck_label-Photoroom.png?v=1786124829&amp;width=352 352w, /cdn/shop/files/CV_Neck_label-Photoroom.png?v=1786124829&amp;width=600 600w" width="600" height="180" loading="eager" sizes="(min-width: 990px) 300px, 200px" class="header__logo-primary"></a>
+
+    <div class="header__end">
+      <nk-search-pill class="header__search-pill" data-resources="query,product,collection,page" data-limit="6" data-predictive>
+          <button
+            type="button"
+            class="icon-button search-pill__toggle"
+            data-ref="toggle"
+            aria-expanded="false"
+            aria-controls="HeaderSearchPill"
+            aria-label="Search"
+          >
+            <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+
+          </button>
+          <form class="search-pill__form" id="HeaderSearchPill" action="/search" method="get" role="search">
+            <span class="search-pill__icon" aria-hidden="true"><svg
+  width="16"
+  height="16"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+</span>
+            <label class="visually-hidden" for="HeaderSearchInput">Search</label>
+            <input
+              id="HeaderSearchInput"
+              type="search"
+              name="q"
+              placeholder="Search products"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              enterkeyhint="search"
+            >
+            <input type="hidden" name="options[prefix]" value="last">
+            <button type="button" class="icon-button search-pill__close" data-ref="close" aria-label="Close">
+              <svg
+  width="14"
+  height="14"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 5l14 14M19 5L5 19"/></svg>
+
+            </button>
+          </form>
+        </nk-search-pill><span class="header__account">
+          <shopify-store store-domain="https://gbhr1g-hm.myshopify.com" country="BD" language="en"></shopify-store>
+<shopify-account menu="customer-account-main-menu">
+            <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+
+          </shopify-account>
+        </span><a
+        class="icon-button header__cart"
+        href="/cart"
+        data-nk-open="CartDrawer"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        data-cart-count-label="Cart, [count] items"
+        aria-label="Cart, 0 items"
+      >
+        <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 7h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 7z"/><path d="M9 7V6a3 3 0 0 1 6 0v1"/></svg>
+
+        <span class="header__cart-count" data-cart-count hidden>0</span>
+      </a>
+    </div>
+  </div>
+</nk-header>
+
+<nk-nav-drawer id="MenuDrawer">
+  <dialog class="drawer menu-drawer--editorial" aria-labelledby="MenuDrawerTitle"><div class="menu-drawer__layers" aria-hidden="true">
+        <span class="menu-drawer__layer"></span><span class="menu-drawer__layer"></span>
+      </div><div class="drawer__header">
+      <h2 class="drawer__title spec" id="MenuDrawerTitle" tabindex="-1" data-autofocus>Menu</h2>
+      <button type="button" class="icon-button" data-nk-close aria-label="Close">
+        <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 5l14 14M19 5L5 19"/></svg>
+
+      </button>
+    </div>
+
+    <div class="drawer__body"><div class="menu-drawer__panel" data-level-panel="root">
+        <form class="menu-drawer__search" action="/search" method="get" role="search">
+          <label class="visually-hidden" for="MenuDrawerSearch">Search</label>
+          <input id="MenuDrawerSearch" type="search" name="q" placeholder="Search products">
+        </form><ul class="menu-drawer__list" role="list"><li><a class="menu-drawer__row" href="/" >Home</a></li><li><button type="button" class="menu-drawer__row" data-level-open="menu-2" aria-label="Show Catalog menu">
+                  <span aria-hidden="true">Catalog</span>
+                  <svg
+  width="18"
+  height="18"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+
+                </button></li><li><button type="button" class="menu-drawer__row" data-level-open="menu-3" aria-label="Show Tops menu">
+                  <span aria-hidden="true">Tops</span>
+                  <svg
+  width="18"
+  height="18"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+
+                </button></li><li><button type="button" class="menu-drawer__row" data-level-open="menu-4" aria-label="Show Bottoms menu">
+                  <span aria-hidden="true">Bottoms</span>
+                  <svg
+  width="18"
+  height="18"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+
+                </button></li><li><a class="menu-drawer__row" href="/collections/footwear" >Footwear</a></li></ul><div class="menu-drawer__footer"><a href="/account">Account</a></div>
+      </div><div class="menu-drawer__panel" data-level-panel="menu-2" hidden>
+            <button type="button" class="menu-drawer__row menu-drawer__back" data-level-back>
+              <svg
+  width="18"
+  height="18"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+
+              <span>Back: Catalog</span>
+            </button>
+            <ul class="menu-drawer__list" role="list">
+              <li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/all-products">Shop all Catalog</a></li><li><button type="button" class="menu-drawer__row menu-drawer__row--child" data-level-open="menu-2-1">
+                      <span>Shop All</span>
+                      <svg
+  width="18"
+  height="18"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+
+                    </button></li></ul></div><div class="menu-drawer__panel" data-level-panel="menu-2-1" hidden>
+                <button type="button" class="menu-drawer__row menu-drawer__back" data-level-back>
+                  <svg
+  width="18"
+  height="18"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+
+                  <span>Back: Shop All</span>
+                </button>
+                <ul class="menu-drawer__list" role="list">
+                  <li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/all">Shop all Shop All</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/timeless-basics-26" >Timeless Basics &#39;26</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/linen" >Linen </a></li></ul>
+              </div><div class="menu-drawer__panel" data-level-panel="menu-3" hidden>
+            <button type="button" class="menu-drawer__row menu-drawer__back" data-level-back>
+              <svg
+  width="18"
+  height="18"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+
+              <span>Back: Tops</span>
+            </button>
+            <ul class="menu-drawer__list" role="list">
+              <li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/tops">Shop all Tops</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/shirts" >Shirt</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/t-shirts" >T-Shirt</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/shackets" >Shackets</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/cropped-shirts" >Cropped Shirt</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/embroidered-shirt" >Embroidered Shirt</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/designer-shacket" >Designer Shacket</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/knit-polo" >Knit Polo</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/polo" >Polo</a></li></ul></div><div class="menu-drawer__panel" data-level-panel="menu-4" hidden>
+            <button type="button" class="menu-drawer__row menu-drawer__back" data-level-back>
+              <svg
+  width="18"
+  height="18"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+
+              <span>Back: Bottoms</span>
+            </button>
+            <ul class="menu-drawer__list" role="list">
+              <li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/bottoms-1">Shop all Bottoms</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/jeans-1" >Jeans</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/gurkha-flared-trouser-1" >Gurkha Flared Trouser</a></li><li><a class="menu-drawer__row menu-drawer__row--child" href="/collections/linen-pants" >Linen Pants</a></li></ul></div></div>
+  </dialog>
+</nk-nav-drawer>
+<nk-modal id="SearchModal">
+  <dialog class="search-modal" aria-labelledby="SearchModalTitle">
+    <nk-predictive-search class="search-modal__inner" data-resources="query,product,collection,page" data-limit="6">
+      <h2 class="visually-hidden" id="SearchModalTitle">Search</h2>
+      <form id="SearchModalForm" class="search-modal__field" action="/search" method="get" role="search">
+        <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+
+        <label class="visually-hidden" for="PredictiveSearchInput">Search</label>
+        <input
+          id="PredictiveSearchInput"
+          type="search"
+          name="q"
+          placeholder="Search products"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          enterkeyhint="search"
+          data-autofocus
+        >
+        <input type="hidden" name="options[prefix]" value="last">
+        <button type="button" class="icon-button" data-ref="clear" aria-label="Clear search" hidden>
+          <svg
+  width="18"
+  height="18"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 5l14 14M19 5L5 19"/></svg>
+
+        </button>
+        <button type="button" class="icon-button" data-nk-close aria-label="Close">
+          <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 5l14 14M19 5L5 19"/></svg>
+
+        </button>
+      </form>
+
+      <div class="search-modal__body">
+        <div data-ref="suggestions"><p class="spec text-muted">Popular collections</p>
+            <ul class="collection-pills search-modal__chips" role="list"><li><a href="/collections/all-products">All Products</a></li><li><a href="/collections/bottoms-1">bottoms</a></li><li><a href="/collections/cropped-shirts">Cropped Shirt</a></li><li><a href="/collections/designer-shacket">Designer Shacket</a></li><li><a href="/collections/embroidered-shirt">Embroidered Shirt</a></li><li><a href="/collections/footwear">Footwear</a></li></ul></div>
+
+        <div id="PredictiveSearchResults" data-ref="results" hidden></div>
+
+        <div class="message message--error" data-ref="error" role="alert" hidden>
+          <p>Suggestions aren&#39;t available right now. You can still search.</p>
+          <p class="search-modal__error-actions">
+            <button type="submit" form="SearchModalForm" class="button button--secondary">Search</button>
+            <button type="button" class="button button--secondary" data-ref="retry">Try again</button>
+          </p>
+        </div>
+      </div>
+    </nk-predictive-search>
+  </dialog>
+</nk-modal>
+
+</div>
+<!-- END sections: header-group -->
+
+    <main id="MainContent" tabindex="-1" data-focus-fallback><div id="shopify-section-template--29114664943979__main" class="shopify-section main-product-section"><div class="section-spacing section-presentation product-section color-scheme-1" data-product-section data-section-id="template--29114664943979__main" data-proportions="media" data-sticky-info="true" data-media-right="false" data-text-first="false" style="--product-info-gap:20px;">
+  <div class="product">
+    <nk-gallery
+  class="product__media"
+  aria-label="Product media"
+  role="region"
+  data-media-count="2"
+  data-layout="slider"
+  data-ratio="square"
+  data-fit="contain"
+  data-backdrop="white"
+  
+>
+  <div class="gallery__stage"><div class="gallery__thumbs" data-ref="thumbs" role="group" aria-label="Product media"><button
+            type="button"
+            class="gallery__thumb is-active"
+            data-gallery-thumb="0"
+            data-media-id="48890785268075"
+            aria-label="1 / 2"
+            aria-current="true"
+          >
+            <img src="/cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=180" alt="Velle Luck of the Draw Tee" srcset="/cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=90 90w, /cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=140 140w, /cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=180 180w" width="180" height="180" loading="lazy" sizes="72px">
+          </button><button
+            type="button"
+            class="gallery__thumb"
+            data-gallery-thumb="1"
+            data-media-id="48890785235307"
+            aria-label="2 / 2"
+            aria-current="false"
+          >
+            <img src="/cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&amp;width=180" alt="Velle Luck of the Draw Tee" srcset="/cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&amp;width=90 90w, /cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&amp;width=140 140w, /cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&amp;width=180 180w" width="180" height="180" loading="lazy" sizes="72px">
+          </button></div><div class="gallery__main">
+      <ul class="gallery__track" data-ref="track" role="list" tabindex="0" aria-label="Product media"><li
+            class="gallery__slide"
+            data-ref="slide"
+            data-media-id="48890785268075"
+            data-media-type="image"
+            data-slide-index="0"
+            
+              data-zoom-src="/cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&width=2200"
+              data-zoom-alt="Velle Luck of the Draw Tee"
+            
+          ><img src="/cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=1800" alt="Velle Luck of the Draw Tee" srcset="/cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=360 360w, /cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=540 540w, /cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=720 720w, /cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=900 900w, /cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=1080 1080w, /cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=1440 1440w, /cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=1800 1800w" width="1800" height="1800" loading="eager" fetchpriority="high" sizes="(min-width: 990px) 58vw, 100vw">
+                <button
+                  type="button"
+                  class="gallery__zoom-trigger icon-button"
+                  data-gallery-zoom="0"
+                  aria-label="Zoom image (1 / 2)"
+                >
+                  <svg
+  width="16"
+  height="16"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M12 5v14M5 12h14"/></svg>
+
+                </button></li><li
+            class="gallery__slide"
+            data-ref="slide"
+            data-media-id="48890785235307"
+            data-media-type="image"
+            data-slide-index="1"
+            
+              data-zoom-src="/cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&width=2200"
+              data-zoom-alt="Velle Luck of the Draw Tee"
+            
+          ><img src="/cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&amp;width=1800" alt="Velle Luck of the Draw Tee" srcset="/cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&amp;width=360 360w, /cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&amp;width=540 540w, /cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&amp;width=720 720w, /cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&amp;width=900 900w, /cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&amp;width=1080 1080w, /cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&amp;width=1440 1440w, /cdn/shop/files/73_ccf00d77-a274-4028-98fb-7b3e16d149cf.png?v=1787946648&amp;width=1800 1800w" width="1800" height="1800" loading="lazy" fetchpriority="auto" sizes="(min-width: 990px) 58vw, 100vw">
+                <button
+                  type="button"
+                  class="gallery__zoom-trigger icon-button"
+                  data-gallery-zoom="1"
+                  aria-label="Zoom image (2 / 2)"
+                >
+                  <svg
+  width="16"
+  height="16"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M12 5v14M5 12h14"/></svg>
+
+                </button></li></ul><div class="gallery__progress" data-ref="progress" aria-hidden="true">
+          <div class="gallery__progress-rail">
+            <span class="gallery__progress-fill"></span>
+            <span class="gallery__progress-count spec"><span data-ref="progress-index">01</span> / 02</span>
+          </div>
+        </div><div class="gallery__controls">
+          <button type="button" class="icon-button" data-gallery-step="-1" aria-label="Previous image">
+            <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+
+          </button>
+          <span class="spec" data-ref="counter">1 / 2</span>
+          <button type="button" class="icon-button" data-gallery-step="1" aria-label="Next image">
+            <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+
+          </button>
+        </div></div>
+  </div><dialog class="gallery-lightbox" data-ref="lightbox" closedby="any" aria-label="Product media">
+      <div class="gallery-lightbox__bar">
+        <span class="spec" data-ref="lightbox-counter">1 / 2</span>
+        <div class="gallery-lightbox__actions"><button type="button" class="icon-button" data-lightbox-step="-1" aria-label="Previous image">
+              <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+
+            </button>
+            <button type="button" class="icon-button" data-lightbox-step="1" aria-label="Next image">
+              <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+
+            </button><button type="button" class="icon-button" data-lightbox-close aria-label="Close">
+            <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 5l14 14M19 5L5 19"/></svg>
+
+          </button>
+        </div>
+      </div>
+      <div class="gallery-lightbox__stage" data-ref="lightbox-stage"></div>
+    </dialog></nk-gallery>
+
+
+    <div class="product__info"><div class="product__eyebrow-row" ><p class="product__eyebrow eyebrow">All Products</p><div class="product__badges" data-region="badges"></div>
+            </div><nk-text effect="cut" split="words" play-on-load >
+                <h1 class="product__title" style="--product-title-scale:1.0;" data-text-target>Velle Luck of the Draw Tee</h1>
+              </nk-text><div class="product__price-row" data-region="price" >
+              <div class="product__price">
+                <span class="price">
+  <span class="price__current">Tk 1,200.00</span></span>
+
+              </div>
+            </div><nk-variant-picker
+                class="picker"
+                data-region="picker"
+                data-section-id="template--29114664943979__main"
+                data-product-url="/products/velle-luck-of-the-draw-tee"
+                data-required-options="Size"
+                data-explicit-size-choice
+                
+                data-preselected
+                
+              ><fieldset
+                    class="option option--size"
+                    aria-labelledby="OptionLabel-template--29114664943979__main-1"
+                    data-option-position="1"
+                    data-option-name="Size"
+                    data-size-fieldset
+                  >
+                    <div class="option__header">
+                      <span class="option__legend" id="OptionLabel-template--29114664943979__main-1">
+                        <span class="spec">Size:
+                          <span class="option__selected-label" data-selected-value>S</span>
+                        </span>
+                      </span><button type="button" class="size-guide-link spec" data-nk-open="SizeGuide-template--29114664943979__main" aria-haspopup="dialog">Size guide<span class="fit-hint" data-fit-hint hidden>Estimated size <span data-part="size"></span></span></button></div>
+
+                    <div class="option__values option__values--size" data-size-values><div
+                          class="option__value option__value--sold-out"
+                          data-size-pill="S"
+                        >
+                          <input
+                            type="radio"
+                            id="template--29114664943979__main-1-1"
+                            name="template--29114664943979__main-option-1"
+                            value="S"
+                            data-option-value-id="9640656961899"
+                            
+                            data-focus-key="option-9640656961899"
+                            checked
+                            disabled
+                          >
+                          <label for="template--29114664943979__main-1-1"><span class="option__label-text" data-text="S">S</span><span class="visually-hidden">sold out</span></label>
+                        </div><div
+                          class="option__value option__value--available"
+                          data-size-pill="M"
+                        >
+                          <input
+                            type="radio"
+                            id="template--29114664943979__main-1-2"
+                            name="template--29114664943979__main-option-1"
+                            value="M"
+                            data-option-value-id="9640656994667"
+                            
+                            data-focus-key="option-9640656994667"
+                            
+                            
+                          >
+                          <label for="template--29114664943979__main-1-2"><span class="option__label-text" data-text="M">M</span></label>
+                        </div><div
+                          class="option__value option__value--available"
+                          data-size-pill="L"
+                        >
+                          <input
+                            type="radio"
+                            id="template--29114664943979__main-1-3"
+                            name="template--29114664943979__main-option-1"
+                            value="L"
+                            data-option-value-id="9640657027435"
+                            
+                            data-focus-key="option-9640657027435"
+                            
+                            
+                          >
+                          <label for="template--29114664943979__main-1-3"><span class="option__label-text" data-text="L">L</span><span class="stock-dot" aria-hidden="true" title="Only 3 left"></span>
+  <span class="visually-hidden">Only 3 left</span></label>
+                        </div><div
+                          class="option__value option__value--available"
+                          data-size-pill="XL"
+                        >
+                          <input
+                            type="radio"
+                            id="template--29114664943979__main-1-4"
+                            name="template--29114664943979__main-option-1"
+                            value="XL"
+                            data-option-value-id="9640657060203"
+                            
+                            data-focus-key="option-9640657060203"
+                            
+                            
+                          >
+                          <label for="template--29114664943979__main-1-4"><span class="option__label-text" data-text="XL">XL</span></label>
+                        </div><span class="option__underline" data-size-indicator aria-hidden="true"></span></div><div
+    class="measurement-panel"
+    data-measurement-panel
+    data-base-unit="in"
+    
+    hidden
+  ><template data-measurement-size-label="S">Small (S)</template><template data-measurement-size-label="M">Medium (M)</template><template data-measurement-size-label="L">Large (L)</template><template data-measurement-size-label="XL">Extra large (XL)</template><div class="measurement-panel__header">
+      <div class="measurement-panel__title-group">
+        <span class="measurement-panel__badge spec">
+          <strong data-measurement-active-size>—</strong>
+        </span>
+      </div>
+    </div>
+
+    <p class="measurement-panel__empty" data-measurement-empty hidden>Measurements for this size have not been provided.</p>
+    <div class="measurement-panel__rows"></div></div>
+</fieldset><p class="message message--error" data-picker-error role="alert" hidden>
+                  This selection couldn&#39;t be updated.
+                  <a href="/products/velle-luck-of-the-draw-tee">Reload the page with this selection</a>
+                </p>
+              </nk-variant-picker><nk-modal id="SizeGuide-template--29114664943979__main">
+                  <dialog
+                    class="drawer drawer--right size-guide-dialog"
+                    aria-labelledby="SizeGuideTitle-template--29114664943979__main"
+                    data-swipe-close
+                  >
+                    <div class="size-guide-dialog__header" data-drag-handle>
+                      <span class="size-guide-dialog__grip" aria-hidden="true"></span>
+                      <div class="size-guide-dialog__titles">
+                        <p class="size-guide-dialog__eyebrow spec">Find a starting size</p>
+                        <h2 class="size-guide-dialog__title" id="SizeGuideTitle-template--29114664943979__main" tabindex="-1" data-autofocus>Velle Luck of the Draw Tee</h2>
+                      </div>
+                      <button type="button" class="icon-button size-guide-dialog__close" data-nk-close aria-label="Close">
+                        <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 5l14 14M19 5L5 19"/></svg>
+
+                      </button>
+                    </div>
+                    <div class="drawer__body size-guide__body"><nk-fit-finder class="fit-finder" sizes="S,M,L,XL" option="Size" data-sex="male" hidden>
+  <div class="fit-finder__product"><img src="/cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=160" alt="" srcset="/cdn/shop/files/72_6fafd18d-cb8b-461c-aad9-ede7b02eece8.png?v=1787946648&amp;width=56 56w" width="56" height="56" loading="lazy" class="fit-finder__thumb">
+<div class="fit-finder__product-text">
+      <p class="fit-finder__product-title">Velle Luck of the Draw Tee</p>
+      <p class="fit-finder__product-price">Tk 1,200.00</p>
+    </div>
+  </div>
+
+  <div class="fit-finder__progress" aria-hidden="true"><span class="fit-finder__progress-bar"></span></div>
+  <p class="fit-finder__counter spec" data-ref="counter">01 / 03</p>
+
+  <div class="fit-finder__step" data-ref="step" data-step="1">
+    <h3 class="fit-finder__title" data-step-title tabindex="-1">Let’s find your fit</h3>
+    <p class="fit-finder__lede">A general clothing-size estimate. Always compare with the garment chart.</p>
+
+    <fieldset class="fit-finder__field">
+      <legend class="fit-finder__label spec">Sizing</legend>
+      <div class="fit-finder__segmented"><label class="fit-finder__segment">
+            <input type="radio" class="visually-hidden" name="fit-template--29114664943979__main:sex" value="female" data-ref="choice"><span>Female</span>
+          </label><label class="fit-finder__segment">
+            <input type="radio" class="visually-hidden" name="fit-template--29114664943979__main:sex" value="male" data-ref="choice" checked><span>Male</span>
+          </label></div>
+    </fieldset>
+
+    <div class="fit-finder__body">
+      <svg class="fit-finder__figure" viewBox="-8 0 68 140" aria-hidden="true" focusable="false">
+        <g class="fit-finder__ruler">
+          <line class="fit-finder__ruler-line" x1="-5" y1="3.6" x2="-5" y2="134.5"/>
+          <line class="fit-finder__ruler-mark" x1="-8" y1="3.6" x2="22" y2="3.6"/>
+        </g>
+        <ellipse class="fit-finder__ground" cx="30" cy="135" rx="15" ry="1.8"/>
+        <g class="fit-finder__person">
+          <circle cx="30" cy="10.2" r="6.6"/>
+          <path class="fit-finder__shape fit-finder__shape--male" d="M30 18.2L33.1 18.2C33.2 21.5 33.5 24.2 34.8 25.3C37.5 26.6 41.2 27.1 44 28.5C47 29.5 48.5 32 48.5 35C49 44 50 52 50.5 60C51 68 51.5 74 51 79C51 83 49 84.5 47.5 82.5C47 80 47.2 76 46.8 72C46 64 45.2 56 44.5 50C44 45 43.6 41 43 38C42.5 46 41.5 54 41 60C41.2 66 42 70 42 74C42 88 40.5 100 39.5 108C39 116 38.5 124 37.5 130C38.5 132 39 134 37 134.5L31.5 134.5C31.2 128 31.5 120 32 112C32.5 102 31.5 88 30 80C28.5 88 27.5 102 28 112C28.5 120 28.8 128 28.5 134.5L23 134.5C21 134 21.5 132 22.5 130C21.5 124 21 116 20.5 108C19.5 100 18 88 18 74C18 70 18.8 66 19 60C18.5 54 17.5 46 17 38C16.4 41 16 45 15.5 50C14.8 56 14 64 13.2 72C12.8 76 13 80 12.5 82.5C11 84.5 9 83 9 79C8.5 74 9 68 9.5 60C10 52 11 44 11.5 35C11.5 32 13 29.5 16 28.5C18.8 27.1 22.5 26.6 25.2 25.3C26.5 24.2 26.8 21.5 26.9 18.2L30 18.2Z"/>
+          <path class="fit-finder__shape fit-finder__shape--female" d="M30 18.2L32.5 18.2C32.6 21.5 32.9 24.2 34 25.3C36.3 26.6 39.2 27.1 41.5 28.5C44 29.5 45.3 32 45.3 35C45.8 44 46.8 52 47.5 60C48.3 68 48.8 74 48.5 79C48.5 83 46.6 84.2 45.3 82.2C44.9 79.5 45 76 44.5 72C43.8 64 42.8 56 42.2 50C41.8 45 41.4 41 40.8 38C41.5 42 40.8 46 39.2 52C38.2 56 38 58 38.5 61C40.5 66 42.5 70 42.5 76C42.3 90 40 100 38.8 108C38.2 116 37.6 124 36.6 130C37.4 132 37.6 134 35.8 134.5L31.4 134.5C31.2 128 31.5 120 31.8 112C32.2 102 31.4 90 30 82C28.6 90 27.8 102 28.2 112C28.5 120 28.8 128 28.6 134.5L24.2 134.5C22.4 134 22.6 132 23.4 130C22.4 124 21.8 116 21.2 108C20 100 17.7 90 17.5 76C17.5 70 19.5 66 21.5 61C22 58 21.8 56 20.8 52C19.2 46 18.5 42 19.2 38C18.6 41 18.2 45 17.8 50C17.2 56 16.2 64 15.5 72C15 76 15.1 79.5 14.7 82.2C13.4 84.2 11.5 83 11.5 79C11.2 74 11.7 68 12.5 60C13.2 52 14.2 44 14.7 35C14.7 32 16 29.5 18.5 28.5C20.8 27.1 23.7 26.6 26 25.3C27.1 24.2 27.4 21.5 27.5 18.2L30 18.2Z"/>
+        </g>
+      </svg>
+
+      <div class="fit-finder__controls"><div class="fit-finder__control">
+            <div class="fit-finder__control-head">
+              <span class="fit-finder__label spec" id="FitLabel-height-template--29114664943979__main">Height</span>
+              <div class="fit-finder__units" role="group" aria-label="Units"><button type="button" class="fit-finder__unit" data-ref="unit" data-field="height" value="cm" aria-pressed="true">cm</button><button type="button" class="fit-finder__unit" data-ref="unit" data-field="height" value="ftin" aria-pressed="false">ft/in</button></div>
+            </div>
+            <p class="fit-finder__value" data-ref="value" data-field="height" aria-live="polite">
+              <span data-part="number"></span><span class="fit-finder__value-unit" data-part="unit"></span>
+            </p>
+            <div class="fit-finder__slider">
+              <button type="button" class="fit-finder__nudge" data-ref="nudge" data-field="height" value="-1" aria-label="Decrease Height">−</button>
+              <input type="range" class="fit-finder__range" data-ref="range" data-field="height" min="140" max="210" step="1" aria-labelledby="FitLabel-height-template--29114664943979__main">
+              <button type="button" class="fit-finder__nudge" data-ref="nudge" data-field="height" value="1" aria-label="Increase Height">+</button>
+            </div>
+          </div><div class="fit-finder__control">
+            <div class="fit-finder__control-head">
+              <span class="fit-finder__label spec" id="FitLabel-weight-template--29114664943979__main">Weight</span>
+              <div class="fit-finder__units" role="group" aria-label="Units"><button type="button" class="fit-finder__unit" data-ref="unit" data-field="weight" value="kg" aria-pressed="true">kg</button><button type="button" class="fit-finder__unit" data-ref="unit" data-field="weight" value="lbs" aria-pressed="false">lbs</button></div>
+            </div>
+            <p class="fit-finder__value" data-ref="value" data-field="weight" aria-live="polite">
+              <span data-part="number"></span><span class="fit-finder__value-unit" data-part="unit"></span>
+            </p>
+            <div class="fit-finder__slider">
+              <button type="button" class="fit-finder__nudge" data-ref="nudge" data-field="weight" value="-1" aria-label="Decrease Weight">−</button>
+              <input type="range" class="fit-finder__range" data-ref="range" data-field="weight" min="40" max="150" step="1" aria-labelledby="FitLabel-weight-template--29114664943979__main">
+              <button type="button" class="fit-finder__nudge" data-ref="nudge" data-field="weight" value="1" aria-label="Increase Weight">+</button>
+            </div>
+          </div></div>
+    </div>
+  </div>
+
+  <div class="fit-finder__step" data-ref="step" data-step="2" hidden>
+    <h3 class="fit-finder__title" data-step-title tabindex="-1">Your shape</h3>
+    <p class="fit-finder__lede">Compared with most people your height. Skip if unsure.</p><fieldset class="fit-finder__field"><legend class="fit-finder__label spec">Chest</legend>
+        <div class="fit-finder__cards"><label class="fit-finder__card">
+              <input type="radio" class="visually-hidden" name="fit-template--29114664943979__main:chest" value="narrow" data-ref="choice">
+              <span class="fit-finder__card-icon fit-finder__card-icon--narrow" aria-hidden="true"></span>
+              <span class="fit-finder__card-label">Narrower</span>
+            </label><label class="fit-finder__card">
+              <input type="radio" class="visually-hidden" name="fit-template--29114664943979__main:chest" value="average" data-ref="choice" checked>
+              <span class="fit-finder__card-icon fit-finder__card-icon--average" aria-hidden="true"></span>
+              <span class="fit-finder__card-label">Average</span>
+            </label><label class="fit-finder__card">
+              <input type="radio" class="visually-hidden" name="fit-template--29114664943979__main:chest" value="broad" data-ref="choice">
+              <span class="fit-finder__card-icon fit-finder__card-icon--broad" aria-hidden="true"></span>
+              <span class="fit-finder__card-label">Broader</span>
+            </label></div>
+      </fieldset><fieldset class="fit-finder__field"><legend class="fit-finder__label spec">Stomach</legend>
+        <div class="fit-finder__cards"><label class="fit-finder__card">
+              <input type="radio" class="visually-hidden" name="fit-template--29114664943979__main:stomach" value="narrow" data-ref="choice">
+              <span class="fit-finder__card-icon fit-finder__card-icon--narrow" aria-hidden="true"></span>
+              <span class="fit-finder__card-label">Flatter</span>
+            </label><label class="fit-finder__card">
+              <input type="radio" class="visually-hidden" name="fit-template--29114664943979__main:stomach" value="average" data-ref="choice" checked>
+              <span class="fit-finder__card-icon fit-finder__card-icon--average" aria-hidden="true"></span>
+              <span class="fit-finder__card-label">Average</span>
+            </label><label class="fit-finder__card">
+              <input type="radio" class="visually-hidden" name="fit-template--29114664943979__main:stomach" value="broad" data-ref="choice">
+              <span class="fit-finder__card-icon fit-finder__card-icon--broad" aria-hidden="true"></span>
+              <span class="fit-finder__card-label">Rounder</span>
+            </label></div>
+      </fieldset></div>
+
+  <div class="fit-finder__step" data-ref="step" data-step="3" hidden>
+    <h3 class="fit-finder__title" data-step-title tabindex="-1">How do you like it to fit?</h3>
+    <p class="fit-finder__lede">We size up or down to match.</p>
+    <fieldset class="fit-finder__field">
+      <legend class="visually-hidden">How do you like it to fit?</legend>
+      <div class="fit-finder__options"><label class="fit-finder__option">
+            <input type="radio" class="visually-hidden" name="fit-template--29114664943979__main:fit" value="fitted" data-ref="choice">
+            <span class="fit-finder__option-name">Fitted</span>
+            <span class="fit-finder__option-note">Close to the body</span>
+          </label><label class="fit-finder__option">
+            <input type="radio" class="visually-hidden" name="fit-template--29114664943979__main:fit" value="regular" data-ref="choice" checked>
+            <span class="fit-finder__option-name">Regular</span>
+            <span class="fit-finder__option-note">As designed</span>
+          </label><label class="fit-finder__option">
+            <input type="radio" class="visually-hidden" name="fit-template--29114664943979__main:fit" value="relaxed" data-ref="choice">
+            <span class="fit-finder__option-name">Relaxed</span>
+            <span class="fit-finder__option-note">Room to move</span>
+          </label></div>
+    </fieldset>
+
+    <div class="fit-finder__result">
+      <p class="fit-finder__label spec">Estimated size</p>
+      <p class="fit-finder__result-size" data-ref="estimate" aria-live="polite"></p>
+      <p class="fit-finder__unmatched">This piece uses its own sizing. Compare with the chart below.</p>
+      <button type="button" class="button fit-finder__apply" data-ref="apply" hidden>
+        <span class="fit-finder__apply-select">Select size <span data-part="size"></span></span>
+        <span class="fit-finder__apply-sold-out"><span data-part="size"></span> · Sold out</span>
+      </button>
+      <button type="button" class="fit-finder__link" data-ref="restart">Start over</button>
+    </div>
+  </div>
+
+  <div class="fit-finder__estimate">
+    <div>
+      <p class="fit-finder__label spec">Live estimate</p>
+      <p class="fit-finder__estimate-note">Refined in the next steps</p>
+    </div>
+    <p class="fit-finder__estimate-size" data-ref="estimate" aria-live="polite"></p>
+  </div>
+
+  <div class="fit-finder__nav">
+    <button type="button" class="fit-finder__back" data-ref="back" hidden>Back</button>
+    <button type="button" class="button fit-finder__next" data-ref="next">Continue</button>
+  </div>
+
+  <p class="fit-finder__privacy">
+    <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><rect x="3" y="7" width="10" height="7" rx="1" fill="none" stroke="currentColor"/><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor"/></svg>
+    Select a size to save your preferences privately on this device.
+  </p>
+</nk-fit-finder>
+</div>
+                  </dialog>
+                </nk-modal><div ></div><div class="inventory-note" data-region="inventory" >
+              <span class="inventory-status inventory-status--sold-out spec">
+    <span class="inventory-status__dot" aria-hidden="true"></span>
+    Sold out
+  </span>
+            </div><nk-product-form data-source-id="template--29114664943979__main" ><form method="post" action="/cart/add" id="ProductForm-template--29114664943979__main" accept-charset="UTF-8" class="shopify-product-form" enctype="multipart/form-data" novalidate="novalidate"><input type="hidden" name="form_type" value="product" /><input type="hidden" name="utf8" value="✓" /><div
+                  class="buy"
+                  data-region="buy"
+                  data-availability="sold-out"
+                  data-variant-media-id=""
+                  data-variant-title="S"
+                  data-variant-price="Tk 1,200.00"
+                ><input type="hidden" name="quantity" value="1"><input type="hidden" name="id" value="53782211920235" ><button type="submit" name="add" class="button button--full buy__submit" disabled>
+                    <span data-button-label>Sold out</span></button>
+
+                </div><noscript>
+                    <p>Choose one</p><details class="disclosure">
+                        <summary>Size: S</summary>
+                        <ul role="list"><li><a href="/products/velle-luck-of-the-draw-tee?option_values=9640656961899">S</a></li><li><a href="/products/velle-luck-of-the-draw-tee?option_values=9640656994667">M</a></li><li><a href="/products/velle-luck-of-the-draw-tee?option_values=9640657027435">L</a></li><li><a href="/products/velle-luck-of-the-draw-tee?option_values=9640657060203">XL</a></li></ul>
+                      </details>
+                  </noscript><input type="hidden" name="product-id" value="15224593580395" /><input type="hidden" name="section-id" value="template--29114664943979__main" /></form><p class="message message--error" data-form-error role="alert" hidden></p>
+            </nk-product-form>
+<nk-disclosure >
+                <details class="disclosure" open><summary class="product__details-heading">Details</summary>
+                  <div class="disclosure__content rte"><p><span>- Unisex</span><br><span>- Printed Graphics on the front and back</span><br><span>- Cropped, Boxy fit</span><br><span>- 95% Cotton, 5% Spandex, 220 GSM</span><br><span>- Ultra-fine Cotton blend</span></p>
+                  </div>
+                </details>
+              </nk-disclosure>
+          <nk-disclosure >
+                <details class="disclosure" >
+                  <summary>Shipping + exchange</summary>
+                  <div class="disclosure__content rte"><h3>Shipping policy</h3>
+  <p><br></p>
+<p data-end="87" data-start="24">Corso Velle delivers throughout Bangladesh and internationally.</p>
+<h4 data-end="109" data-start="89" data-section-id="1cvhabm">Standard Delivery</h4>
+<ul data-end="239" data-start="111">
+<li data-end="145" data-start="111" data-section-id="112kk6w"><strong data-end="138" data-start="113">Dhaka and Chattogram:</strong> BDT 80</li>
+<li data-end="190" data-start="146" data-section-id="1yonrgk"><strong data-end="182" data-start="148">Other locations in Bangladesh:</strong> BDT 150</li>
+<li data-end="239" data-start="191" data-section-id="5b7y2d"><strong data-end="221" data-start="193">Estimated delivery time:</strong> 3–5 business days</li>
+</ul>
+<h4 data-end="260" data-start="241" data-section-id="10utzr7">Express Delivery</h4>
+<ul data-end="357" data-start="262">
+<li data-end="308" data-start="262" data-section-id="efymme"><strong data-end="300" data-start="264">Available throughout Bangladesh:</strong> BDT 250</li>
+<li data-end="357" data-start="309" data-section-id="prynlc"><strong data-end="339" data-start="311">Estimated delivery time:</strong> 1–2 business days</li>
+</ul>
+<h4 data-end="384" data-start="359" data-section-id="m8e7gj">International Delivery</h4>
+<p data-end="561" data-start="386">International shipping charges and estimated delivery times depend on the destination. Please contact us before placing an international order for an exact shipping quotation.</p>
+<p data-is-only-node="" data-is-last-node="" data-end="707" data-start="563">Delivery times are estimates and may vary due to public holidays, weather conditions, courier delays, or other circumstances beyond our control.</p>
+  <p><a href="/policies/shipping-policy">Shipping policy</a></p><h3>Refund policy</h3>
+  <h4 data-end="28" data-start="0" data-section-id="10wz40s"><br></h4>
+<p data-end="188" data-start="30">At <strong data-end="48" data-start="33">Corso Velle</strong>, we aim to provide high-quality products and a smooth shopping experience. Please review the following conditions before making a purchase.</p>
+<h4 data-end="226" data-start="190" data-section-id="1coaypt">Returns for Manufacturing Defects</h4>
+<ul data-end="810" data-start="228">
+<li data-end="312" data-start="228" data-section-id="kxezqq">Customers must inspect the product in the presence of the delivery representative.</li>
+<li data-end="482" data-start="313" data-section-id="yq2243">If the product has a visible manufacturing defect or fault, it must be reported immediately and returned to the delivery representative before completing the delivery.</li>
+<li data-end="593" data-start="483" data-section-id="6gurfv">The product must remain unused, unwashed, and in its original condition, with all tags and packaging intact.</li>
+<li data-end="657" data-start="594" data-section-id="faxoy2">Clear photographs or videos may be required for verification.</li>
+<li data-end="810" data-start="658" data-section-id="r64o3u">If the order was paid for in advance, the refund will be processed within <strong data-end="753" data-start="734">3 business days</strong> after the defective product’s return has been confirmed.</li>
+</ul>
+<h4 data-end="824" data-start="812" data-section-id="yavhm5">Exchanges</h4>
+<ul data-end="1253" data-start="826">
+<li data-end="918" data-start="826" data-section-id="1wj5nil">Exchanges are available only for size-related issues and are subject to size availability.</li>
+<li data-end="987" data-start="919" data-section-id="1bdr8ei">Exchange requests must be submitted within <strong data-end="986" data-start="964">3 days of delivery</strong>.</li>
+<li data-end="1061" data-start="988" data-section-id="mdkd6k">If the requested size is unavailable, the exchange cannot be fulfilled.</li>
+<li data-end="1137" data-start="1062" data-section-id="1jgqw6o">All delivery charges related to an exchange must be paid by the customer.</li>
+<li data-end="1253" data-start="1138" data-section-id="1ga2vjv">The product must be unused, unwashed, and returned in its original condition, with all tags and packaging intact.</li>
+</ul>
+<h4 data-end="1284" data-start="1255" data-section-id="oj5dxn">How to Request an Exchange</h4>
+<p data-end="1461" data-start="1286">Contact Corso Velle through one of the official channels below within 3 days of delivery. Please provide your name, order number, requested size, and relevant product details.</p>
+<h4 data-end="1485" data-start="1463" data-section-id="d0jpe1">Contact Information</h4>
+<ul data-end="1630" data-start="1487">
+<li data-end="1522" data-start="1487" data-section-id="1s01m2y"><strong data-end="1499" data-start="1489">Email:</strong> <a rel="noopener" class="decorated-link cursor-pointer" data-end="1522" data-start="1500">support@corsovelle.com</a></li>
+<li data-end="1591" data-start="1523" data-section-id="17sdf25"><strong data-end="1539" data-start="1525">Instagram:</strong> <a rel="noopener" class="decorated-link cursor-pointer" data-end="1591" data-start="1540">@corsovelle</a></li>
+<li data-end="1630" data-start="1592" data-section-id="1rvyyg5"><strong data-end="1613" data-start="1594">Contact Number:</strong> +880 1341-630198</li>
+</ul>
+<h4 data-end="1650" data-start="1632" data-section-id="9ghvog">Important Notes</h4>
+<ul data-is-only-node="" data-is-last-node="" data-end="2031" data-start="1652">
+<li data-end="1735" data-start="1652" data-section-id="9mr7ya">Products sent back without prior communication and approval will not be accepted.</li>
+<li data-end="1881" data-start="1736" data-section-id="1m797x2">Items that have been worn, washed, altered, damaged after delivery, or returned without their original tags and packaging will not be accepted.</li>
+<li data-is-last-node="" data-end="2031" data-start="1882" data-section-id="1j31td8">Corso Velle reserves the right to approve or decline any return or exchange request after reviewing the circumstances and condition of the product.</li>
+</ul>
+  <p><a href="/policies/refund-policy">Refund policy</a></p></div>
+                </details>
+              </nk-disclosure></div>
+  </div>
+</div>
+
+
+</div><div id="shopify-section-template--29114664943979__recommendations" class="shopify-section product-recommendations-section"><div class="product-recommendations section-spacing section-presentation color-scheme-1 full-width" data-align="left" style="--recommendations-gap:8px;">
+  <div style="width: var(--content-width); margin-inline: auto;">
+    <nk-recommendations url="/recommendations/products?section_id=template--29114664943979__recommendations&product_id=15224593580395&limit=4&intent=related" ></nk-recommendations>
+  </div>
+</div>
+
+
+
+
+</div>
+</main>
+
+    <!-- BEGIN sections: footer-group -->
+<div id="shopify-section-sections--29114664616299__footer" class="shopify-section shopify-section-group-footer-group footer-section"><nk-footer
+  class="full-width" data-layout="editorial" data-density="regular" data-mobile-menus="accordion" data-wordmark-scale="100"
+  data-reveal
+  data-beam
+  style="--footer-logo-width:220px; --footer-column-width:160px; --footer-background: #432d23; --footer-ink: #f5ecdf; --footer-accent: #d7ae83;"
+>
+<footer class="footer color-scheme-2">
+  <div class="footer__sky" aria-hidden="true">
+    <div class="footer__wash"></div>
+    <div class="footer__beam"></div>
+    <div class="footer__glow"></div>
+    <div class="footer__grain"></div>
+  </div>
+  <div class="footer__inner"><div class="footer__newsletter">
+        <div class="footer__newsletter-copy">
+          <p class="eyebrow">A note from us</p>
+          <h2>Good things, first.</h2>
+        </div>
+        <div class="footer__signup"><form method="post" action="/contact#FooterNewsletter-sections--29114664616299__footer" id="FooterNewsletter-sections--29114664616299__footer" accept-charset="UTF-8" class="footer__form"><input type="hidden" name="form_type" value="customer" /><input type="hidden" name="utf8" value="✓" /><input type="hidden" name="contact[tags]" value="newsletter">
+  <label class="visually-hidden" for="FooterNewsletter-sections--29114664616299__footer-email">Your email address</label>
+  <div class="footer__email-row newsletter-form__row">
+    <input id="FooterNewsletter-sections--29114664616299__footer-email" type="email" name="contact[email]" autocomplete="email" placeholder="Your email address" required >
+    <button type="submit" aria-label="Subscribe">Subscribe <span aria-hidden="true">↗</span></button>
+  </div></form><p class="footer__privacy"><a href="/policies/privacy-policy">Privacy policy</a></p>
+
+        </div>
+      </div><div class="footer__columns"><div class="footer__brand" >
+              <a class="footer__logo footer__logo--invert" href="/" aria-label="Corso Velle"><img src="/cdn/shop/files/CV_Neck_label-Photoroom.png?v=1786124829&amp;width=600" alt="Corso Velle" srcset="/cdn/shop/files/CV_Neck_label-Photoroom.png?v=1786124829&amp;width=352 352w, /cdn/shop/files/CV_Neck_label-Photoroom.png?v=1786124829&amp;width=600 600w" width="600" height="180" loading="lazy">
+</a><div class="text-muted"><p>Refined everyday essentials, designed for effortless, modern dressing.</p></div></div><nav class="footer__menu" aria-label="Main menu" >
+                <nk-disclosure>
+                  <details class="disclosure" data-footer-menu open>
+                    <summary>Explore</summary>
+                    <ul role="list" class="disclosure__content"><li><a href="/"><span class="footer__link-label">Home</span></a></li><li><a href="/collections/all-products"><span class="footer__link-label">Catalog</span></a></li><li><a href="/collections/tops"><span class="footer__link-label">Tops</span></a></li><li><a href="/collections/bottoms-1"><span class="footer__link-label">Bottoms</span></a></li><li><a href="/collections/footwear"><span class="footer__link-label">Footwear</span></a></li></ul>
+                  </details>
+                </nk-disclosure>
+              </nav><nav class="footer__menu" aria-label="Footer menu" >
+                <nk-disclosure>
+                  <details class="disclosure" data-footer-menu open>
+                    <summary>Customer care</summary>
+                    <ul role="list" class="disclosure__content"><li><a href="/policies/contact-information"><span class="footer__link-label">Contact Us</span></a></li><li><a href="/policies/privacy-policy"><span class="footer__link-label">Privacy Policy</span></a></li><li><a href="/policies/refund-policy"><span class="footer__link-label">Refund &amp; Exchange Policy</span></a></li><li><a href="/policies/shipping-policy"><span class="footer__link-label">Shipping Policy</span></a></li></ul>
+                  </details>
+                </nk-disclosure>
+              </nav></div>
+
+    <div class="footer__bottom">
+      <p>&copy; 2026 <a href="/" title="">Corso Velle</a></p><ul class="footer__payments" role="list"></ul><a class="footer__top" href="#MainContent">Back to top <span aria-hidden="true">↑</span></a>
+</div>
+  </div><div class="footer__wordmark-crop">
+      <a class="footer__wordmark" href="/" aria-label="Corso Velle">
+        <span class="footer__wordmark-text" data-footer-word aria-hidden="true"><span class="footer__letter-wrap" style="--footer-letter-delay: 100ms;"><span class="footer__letter">C</span></span><span class="footer__letter-wrap" style="--footer-letter-delay: 135ms;"><span class="footer__letter">O</span></span><span class="footer__letter-wrap" style="--footer-letter-delay: 170ms;"><span class="footer__letter">R</span></span><span class="footer__letter-wrap" style="--footer-letter-delay: 205ms;"><span class="footer__letter">S</span></span><span class="footer__letter-wrap" style="--footer-letter-delay: 240ms;"><span class="footer__letter">O</span></span><span class="footer__letter-wrap" style="--footer-letter-delay: 275ms;"><span class="footer__letter"> </span></span><span class="footer__letter-wrap" style="--footer-letter-delay: 310ms;"><span class="footer__letter">V</span></span><span class="footer__letter-wrap" style="--footer-letter-delay: 345ms;"><span class="footer__letter">E</span></span><span class="footer__letter-wrap" style="--footer-letter-delay: 380ms;"><span class="footer__letter">L</span></span><span class="footer__letter-wrap" style="--footer-letter-delay: 415ms;"><span class="footer__letter">L</span></span><span class="footer__letter-wrap" style="--footer-letter-delay: 450ms;"><span class="footer__letter">E</span></span></span>
+      </a>
+    </div></footer>
+</nk-footer>
+
+
+</div>
+<!-- END sections: footer-group -->
+
+    <div id="shopify-section-cart-drawer" class="shopify-section"><nk-cart-drawer id="CartDrawer">
+  <dialog class="drawer drawer--right cart-drawer color-scheme-1" data-line-density="regular" data-width="regular" aria-labelledby="CartDrawerTitle">
+    <div class="drawer__header">
+      <h2 class="drawer__title spec" id="CartDrawerTitle" tabindex="-1" data-autofocus>Cart</h2>
+      <button type="button" class="icon-button" data-nk-close aria-label="Close">
+        <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 5l14 14M19 5L5 19"/></svg>
+
+      </button>
+    </div>
+
+    <nk-cart-items id="CartDrawerItems" class="cart-drawer__items">
+      <p class="message message--error" data-cart-error role="alert" hidden></p>
+      <p class="message message--error" data-cart-render-error role="alert" hidden>
+        Something went wrong. Please review your cart and try again. <a href="/cart">View cart</a>
+      </p>
+      <form action="/cart" method="post" class="cart-drawer__form" data-cart-section="cart-drawer"><div class="cart-empty">
+            <p class="cart-empty__title">Your cart is empty</p><a class="button" href="/collections/all">Continue shopping</a>
+          </div></form>
+    </nk-cart-items>
+  </dialog>
+</nk-cart-drawer>
+
+
+</div>
+
+    <div class="cart-notification" data-cart-notification hidden>
+      <span>Added to cart</span>
+      <a href="/cart">View cart</a>
+      <button type="button" class="icon-button" data-cart-notification-close aria-label="Close">
+        <svg
+  width="22"
+  height="22"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+><path d="M5 5l14 14M19 5L5 19"/></svg>
+
+      </button>
+    </div>
+
+    <div id="nk-live-polite" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+    <div id="nk-live-assertive" class="visually-hidden" aria-live="assertive" aria-atomic="true"></div>
+  <script src="https://cdn.shopify.com/storefront/standard-actions.js" type="module" data-source-attribution="shopify.standard_actions"></script>
+</body>
+</html>

@@ -20,13 +20,14 @@
     </p>
     <form action="{{ routes.cart_url }}" method="post" data-cart-section="{{ section.id }}">
       {%- if cart.item_count == 0 -%}
-        <div class="cart-empty">
+        <div class="cart-empty cart-empty--page">
           <p class="cart-empty__title">{{ 'cart.empty' | t }}</p>
           {%- assign continue_url = settings.cart_empty_collection.url | default: routes.all_products_collection_url -%}
           <a class="button" href="{{ continue_url }}">{{ 'cart.continue_shopping' | t }}</a>
           {% if section.settings.show_empty_recommendations %}{% render 'cart-empty-recommendations', collection: section.settings.recommendation_collection, heading: section.settings.recommendation_heading %}{% endif %}
         </div>
       {%- else -%}
+        {% render 'free-shipping-bar' %}
         <div class="cart-page">
           <ul class="cart-lines" role="list">
             {%- for item in cart.items -%}
@@ -46,12 +47,14 @@
                 <span>{{ discount.title | escape }}</span><span>−{{ discount.total_allocated_amount | money }}</span>
               </div>
             {%- endfor -%}
+            {% render 'cart-discounts', context: 'page' %}
             <div class="cart-summary__row">
               <span>{{ 'cart.subtotal' | t }}</span>
               <span class="price">{{ cart.total_price | money_with_currency }}</span>
             </div>
             <p class="text-muted">
               {%- if cart.taxes_included -%}{{ 'cart.taxes_included' | t }}{%- else -%}{{ 'cart.taxes_excluded' | t }}{%- endif -%}
+              {%- if cart.discount_applications.size > 0 %} {{ 'promotions.checkout_confirms' | t }}{%- endif -%}
             </p>
             <button type="submit" name="update" class="button button--secondary button--full no-js-only">{{ 'cart.update' | t }}</button>
             <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>

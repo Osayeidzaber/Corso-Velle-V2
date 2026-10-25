@@ -1,0 +1,5 @@
+
+> nk-theme@0.1.0 check
+> npm run typecheck && npm run test && npm run build && npm run check:json && npm run check:contracts && npm run check:theme
+
+Please set the path to the nodist directory in the NODIST_PREFIX environment variable.
