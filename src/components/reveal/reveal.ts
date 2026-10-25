@@ -4,8 +4,8 @@ import { motionMode } from '../../core/motion';
 
 /**
  * <nk-reveal mode="cut|fade|wipe|split|fold" by="line|word|char"> — GSAP entrance for headings
- * and editorial blocks (master-plan/05 T1), now on GSAP + ScrollTrigger + SplitText as requested.
- * Covers the supplied Split Text, Animated Content, foldtext and textpercharacter examples.
+ * and editorial blocks, built on GSAP ScrollTrigger and SplitText. Clean-room rewrite of the
+ * behaviour of the React Bits Split Text / Animated Content demos and fold/per-character text demos.
  *
  * - Content is in the HTML and visible without JS; GSAP sets the start state only once motion is
  *   allowed (reduced motion / Motion off / theme editor never hide anything).

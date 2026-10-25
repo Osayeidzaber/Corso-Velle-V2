@@ -2,9 +2,8 @@
   Collection banner & editorial header:
   - When the collection has a banner image (or `use_product_image` is enabled), renders a
     full-bleed parallax hero banner (<nk-parallax>).
-  - When no banner image is set, renders a crisp wrclo.com-inspired architectural editorial
-    header with breadcrumbs, display title + live item count, optional description, and a
-    horizontal collection quick-switcher strip.
+  - Without a banner image, renders a text header: breadcrumbs, title, item count, optional
+    description and a horizontal collection switcher.
 {%- endcomment -%}
 {%- liquid
   assign image = section.settings.image | default: collection.image

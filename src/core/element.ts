@@ -1,5 +1,5 @@
 /**
- * Base class for every theme custom element (master-plan/04 §5.1).
+ * Base class for every theme custom element.
  *
  * Shopify's theme editor replaces section HTML at will, so components must assume they can be
  * connected, disconnected and reconnected any number of times. Each connection gets a fresh

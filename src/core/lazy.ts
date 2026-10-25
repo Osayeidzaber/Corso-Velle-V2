@@ -1,5 +1,5 @@
 /**
- * Loads a component module only when its tag is on the page (master-plan/12 §3 loading rules).
+ * Loads a component module only when its tag is on the page.
  * Each loader is a dynamic import, so Vite emits it as its own chunk (+ CSS) next to the entry in
  * theme/assets, fetched from the CDN relative to the entry's URL.
  *

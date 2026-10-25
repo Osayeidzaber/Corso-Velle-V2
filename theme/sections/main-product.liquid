@@ -1,6 +1,6 @@
 {%- comment -%}
-  Main product (master-plan/08). Info column is merchant-ordered local blocks (S8 fallback model;
-  theme-block nesting is validated on a dev store before switching).
+  Main product. The info column is merchant-ordered local section blocks (not nested theme
+  blocks), which keeps app blocks and the variant/price regions predictable.
 
   Re-render contract: the variant picker requests this section with ?option_values= and swaps
   only [data-region] price / picker / inventory / buy. Everything else — including app blocks —

@@ -207,7 +207,7 @@ h4 {
   }
 }
 
-/* Spec voice: the mono label layer (master-plan/02 §2). */
+/* Spec voice: the mono label layer. */
 .spec {
   font-family: var(--nk-font-spec);
   font-size: 0.75rem;

@@ -1,5 +1,7 @@
 # Promotions and discount codes
 
+[Back to README](../README.md) · [Customization](../CUSTOMIZATION.md) · [Development](../DEVELOPMENT.md)
+
 Discounts are created and managed in **Shopify admin > Discounts**. The theme never creates,
 edits, prices or validates a discount. It only:
 
@@ -24,9 +26,7 @@ combinations, tax, shipping and the final checkout price.
 | Keep codes through checkout | Yes | Codes on the cart carry into Shopify checkout, where Shopify validates them again. |
 | Change which products a code really applies to | No | Only Shopify admin does that. Theme associations don't change eligibility. |
 
-Verified on the live store (October 2026) with an anonymous test cart: multiple codes are accepted
-in one request, unknown codes come back as `applicable: false`, and codes persist across quantity
-changes. Checkout behaviour was **not** tested from the theme.
+The implementation relies on Shopify cart responses. Verify acceptance, allocations and checkout behavior on your own store using the checklist below.
 
 **Important:** for a code to give a discount on a product, the discount in Shopify admin must
 include that product (or apply to all products). The theme association only decides where the
@@ -38,7 +38,7 @@ All methods feed one association model (`snippets/promotion.liquid`). When a pro
 several promotions, the highest **priority** wins; ties keep the earlier source (metafield first,
 then Promotion 1, 2, 3, 4).
 
-### Theme settings > Promotions (four promotion slots)
+### Theme settings → Promotions (four promotion slots)
 
 Each slot has: **Enable**, **Shopify discount code**, **Applies to** (matching products or entire
 store), and any combination of:
@@ -50,6 +50,8 @@ store), and any combination of:
   `Oversized Tee` matches "The Oversized Tee – Sand" but not "Oversized Teen Hoodie".
 - **Product tag or promotion key**: matches a product tag (e.g. `summer-sale`) or the product's
   `custom.promotion` metafield. New products join the promotion just by being tagged.
+
+**Matching limitation:** slots have no collection picker. Select products/handles or use a shared tag/metafield key; configuring a Shopify discount for a collection does not automatically create a theme association. Turn on the global **Try promotion codes automatically in the cart** setting as well as the individual slot option when using automatic application.
 
 Plus **Priority** (1–10), **Try this code automatically**, **Show on product cards**, and
 optional **Badge text** / **Product page message** (`[code]` is replaced with the code).

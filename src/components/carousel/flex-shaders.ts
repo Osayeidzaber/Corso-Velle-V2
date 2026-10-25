@@ -1,4 +1,4 @@
-// Card and liquid-lens shaders adapted from the supplied FlexCarousel. Center emphasis is theme-owned.
+// Card and liquid-lens shaders adapted from the original React/OGL FlexCarousel. Center emphasis is theme-owned.
 
 export const cardVertex = `#version 300 es
 in vec3 position;

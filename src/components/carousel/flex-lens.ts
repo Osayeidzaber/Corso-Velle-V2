@@ -4,7 +4,7 @@ import { lensFragment, lensVertex } from './flex-shaders';
 const ANGLE = 62 * Math.PI / 180;
 const CA = Math.cos(ANGLE); const SA = Math.sin(ANGLE);
 const clamp = (n: number) => Math.min(1, Math.max(0, n));
-// Extend the flatter center, then curl the edges more strongly, as requested after the reference.
+// A wide, flat centre with edges that curl sharply, so the centred product stays undistorted.
 const LENS_WIDTH = .84; const LENS_HEIGHT = 1.28; const REACH = .34; const BEND = .42;
 
 /** The source component's default liquid preset. Map displayed points back to the scene for
@@ -31,7 +31,7 @@ export function lensScenePoint(x: number, y: number, width: number, height: numb
   return [x + ny * nx * swirl, y + lift + nx * nx * swirl];
 }
 
-/** OGL two-pass lens, with the supplied shader/preset and bounded renderer pixel budget. */
+/** OGL two-pass lens (shader and preset from the original FlexCarousel), with a bounded pixel budget. */
 export function createFlexLens(renderer: Renderer) {
   const gl = renderer.gl;
   const target = new RenderTarget(gl, { width: 2, height: 2, depth: false, minFilter: gl.LINEAR_MIPMAP_LINEAR, magFilter: gl.LINEAR });

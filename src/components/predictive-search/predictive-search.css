@@ -1,4 +1,4 @@
-/* Predictive search results (N-05). The dialog shell lives in styles/components/dialog.css. */
+/* Predictive search results. The dialog shell lives in styles/components/dialog.css. */
 nk-predictive-search [data-ref='results'][aria-busy='true'] {
   opacity: 0.5;
   transition: opacity var(--nk-dur-instant) var(--nk-ease-out);

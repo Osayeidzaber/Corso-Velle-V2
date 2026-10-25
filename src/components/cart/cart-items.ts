@@ -5,7 +5,7 @@ import { cart, CartError } from '../../services/cart';
 
 /**
  * <nk-cart-items> — quantity steppers, quantity inputs and remove buttons for cart lines, shared
- * by the drawer and the cart page (master-plan/09 CA-04). Lines carry data-line-key; changes go
+ * by the drawer and the cart page. Lines carry data-line-key; changes go
  * through the cart queue so rapid taps collapse to the latest absolute quantity.
  *
  * Without JS the same markup is a normal cart form (updates[] inputs + remove links).

@@ -200,7 +200,7 @@
         "options": [
           {
             "value": "editorial",
-            "label": "Editorial (current style)"
+            "label": "Editorial"
           },
           {
             "value": "natural",
@@ -221,7 +221,7 @@
         "options": [
           {
             "value": "editorial",
-            "label": "Editorial (current style)"
+            "label": "Editorial"
           },
           {
             "value": "comfortable",
@@ -237,7 +237,7 @@
         "options": [
           {
             "value": "editorial",
-            "label": "Editorial (current style)"
+            "label": "Editorial"
           },
           {
             "value": "natural",
@@ -609,7 +609,7 @@
           },
           {
             "value": "curtain",
-            "label": "Curtain reveal (original)"
+            "label": "Curtain reveal"
           }
         ],
         "default": "blur",
@@ -1018,6 +1018,482 @@
       {
         "type": "text",
         "id": "size_chart_5_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 6"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_6_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_6_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_6_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_6_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_6_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_6_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_6_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_6_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_6_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 7"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_7_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_7_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_7_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_7_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_7_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_7_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_7_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_7_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_7_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 8"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_8_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_8_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_8_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_8_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_8_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_8_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_8_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_8_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_8_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 9"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_9_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_9_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_9_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_9_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_9_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_9_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_9_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_9_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_9_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 10"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_10_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_10_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_10_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_10_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_10_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_10_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_10_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_10_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_10_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 11"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_11_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_11_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_11_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_11_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_11_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_11_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_11_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_11_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_11_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 12"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_12_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_12_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_12_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_12_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_12_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_12_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_12_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_12_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_12_note",
         "label": "Size guide note"
       }
     ]

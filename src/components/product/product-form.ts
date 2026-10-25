@@ -5,7 +5,7 @@ import { cart, CartError, type AddItem } from '../../services/cart';
 import type { NkVariantPicker } from './variant-picker';
 
 /**
- * <nk-product-form> wraps Shopify's `{% form 'product' %}` (master-plan/08 PR-05, 09 CA-01).
+ * <nk-product-form> wraps Shopify's `{% form 'product' %}`.
  *
  * Without JS the form posts to /cart/add normally. With JS:
  * - an incomplete selection never submits: focus moves to the first unchosen option group;

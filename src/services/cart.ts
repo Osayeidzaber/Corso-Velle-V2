@@ -2,7 +2,7 @@ import { config } from '../core/config';
 import { fetchJSON, HttpError, isAmbiguous, ParseError } from './request';
 
 /**
- * Cart mutation service (master-plan/09 CA-01).
+ * Cart mutation service.
  *
  * - Every mutation goes through one FIFO queue, so responses can never overwrite newer state.
  * - Queued (not yet sent) quantity changes for the same line coalesce to the latest absolute value.

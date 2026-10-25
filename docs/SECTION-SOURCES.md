@@ -1,6 +1,8 @@
 # Section kit: sources and licenses
 
-These 25 optional sections show up under **Add section** in the theme editor. None of them is used by a default template. Each one is adapted from an open-source component with a permissive license. The markup, schema and CSS were rewritten for this theme: Liquid settings and blocks, `section-presentation` width and padding inputs, `--nk-*` tokens instead of Tailwind utilities, `nk-anim` and reduced-motion guards, and native elements where the original relied on JavaScript or CSS tricks.
+[Back to README](../README.md) · [Customization](../CUSTOMIZATION.md) · [Development](../DEVELOPMENT.md)
+
+This provenance map covers 25 adapted optional sections available under **Add section**. It is not the complete theme inventory; see the [settings reference](SETTINGS-REFERENCE.md#theme-sections) for every section and its current controls. Default template arrangements can change independently of this source map. Each one is adapted from an open-source component with a permissive license. The markup, schema and CSS were rewritten for this theme: Liquid settings and blocks, `section-presentation` width and padding inputs, `--nk-*` tokens instead of Tailwind utilities, `nk-anim` and reduced-motion guards, and native elements where the original relied on JavaScript or CSS tricks.
 
 Sources were fetched on 2026-10-23 from these upstream commits:
 
@@ -50,6 +52,27 @@ Shared pieces:
 - `snippets/section-icon.liquid`: Heroicons paths (truck, arrow-path, scissors, sparkles, heart, globe-alt, lock-closed, shield-check, gift, bolt, adjustments-vertical, check).
 - `src/styles/components/section-kit.css`: button variants and layout helpers (`.kit-buttons`, `.kit-display`, `.kit-link`, `.kit-placeholder`).
 - Storefront text is in `locales/en.default.json` under `sections.*`.
+
+## Interactive components
+
+These custom elements reproduce the behaviour of public UI demos, mostly React components, in vanilla TypeScript, CSS and GSAP. **Clean-room rewrite** means the behaviour was reimplemented without copying the demo's code. **Adapted** means code or values (shaders, timing, presets) were carried over and changed. Check each reference's current license before commercial redistribution. React Bits, for example, publishes under MIT with the Commons Clause, which restricts selling the software itself.
+
+| Component | Reference | Relationship |
+| --- | --- | --- |
+| `nk-marquee` (`src/components/marquee/`) | Magic UI Marquee, React Bits Scroll Velocity, motion-primitives InfiniteSlider | Clean-room rewrite |
+| `nk-reveal`, `nk-text` | React Bits Split Text and Animated Content, fold and per-character text demos | Clean-room rewrite on GSAP SplitText |
+| `nk-tabs` | motion-primitives TransitionPanel | Clean-room rewrite, adds the WAI-ARIA tabs pattern |
+| `nk-expand-media` | "Scroll Expand" demo | Clean-room rewrite |
+| `nk-elastic-line` | "Elastic line" demo | Clean-room rewrite |
+| Size-pill glide (`src/components/product/size-glide.ts`) | React Bits Animated List | Inspired by; native radios unchanged |
+| `nk-accordion-gallery` | React Bits expanding gallery | Adapted to Liquid-first markup |
+| `nk-footer` wordmark beam | React "Beam Wordmark Footer" | Adapted |
+| WebGL carousel (`src/components/carousel/flex-*.ts`) | React/OGL "FlexCarousel" | Adapted: shaders, lens preset and motion settings |
+| Navigation drawer styles (`src/styles/components/header.css`) | React Bits menu and Aceternity UI navbar demos | Rewritten in CSS; not yet compared line by line with the demo code |
+| Text effects (`src/styles/components/effects.css`) | Shiny text, gradient text and progressive blur demos | Rewritten in plain CSS |
+| `nk-countdown` digits | daisyUI countdown (MIT) | Adapted, see the table above |
+
+The original demo sources are kept outside this repository.
 
 ## Editor options
 

@@ -11,7 +11,7 @@ const STORAGE_MOBILE_KEY = 'nk:grid-cols-mobile';
 const STORAGE_DESKTOP_KEY = 'nk:grid-cols-desktop';
 
 /**
- * <nk-facets data-section-id="…"> (master-plan/07 DC-02) wraps the filter form, active chips,
+ * <nk-facets data-section-id="…"> wraps the filter form, active chips,
  * interactive layout switcher, and the result grid of a collection or search section
  * (snippets/facets.liquid).
  *

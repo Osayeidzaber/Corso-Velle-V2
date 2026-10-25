@@ -187,3 +187,8 @@ data['metaobjects']['size_chart']['admin-chart'] = chart(72)
 guide = setup.render(**args)
 assert 'data-value="72"' in guide and '/files/shirt-chart.png' in guide
 print('Product-section wiring: tag assignment -> picture and reusable table guide pass')
+
+data = context(); data['product']['collections'] = []
+data['settings'].update(size_chart_12_products=[{'id': 'product'}], size_chart_12_table='Size,Chest\nM,73')
+check(data, 'rule:12')  # All editor slots, including the spare rule, can actually resolve.
+print('Chart slots: the last editor slot (12) resolves')

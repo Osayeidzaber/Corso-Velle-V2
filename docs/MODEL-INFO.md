@@ -1,4 +1,6 @@
-# Model info line
+# Model information
+
+[Back to README](../README.md) · [Customization](../CUSTOMIZATION.md) · [Development](../DEVELOPMENT.md)
 
 Product pages can show a line such as **"Model is 183 cm and wears size M"** under the size
 picker. It comes from the **Model info** block in the product template (Theme editor >

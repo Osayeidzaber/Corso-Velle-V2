@@ -1,4 +1,4 @@
-/* Header (N-01), announcement (N-02), desktop nav (N-03), phone drawer (N-04). */
+/* Header, announcement, desktop nav, phone drawer. */
 .announcement {
   display: flex;
   align-items: center;
@@ -411,7 +411,7 @@ nk-header[data-dropdown='list'] .nav__panel { grid-template-columns: minmax(0, 1
   min-height: var(--nk-tap);
 }
 
-/* ---------- Navigation styles from the supplied examples ---------- */
+/* ---------- Navigation drawer styles (cards / layered / editorial) ---------- */
 
 /* Floating mega-menu panel (navbar2 / navbatmain): a card under the item, morphing between items. */
 .header--panel-floating .nav__item {

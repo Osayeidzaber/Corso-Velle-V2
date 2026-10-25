@@ -1,4 +1,4 @@
-/* Product card (DC-03) and product grid. */
+/* Product card and product grid. */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(var(--nk-cols-mobile, 1), minmax(0, 1fr));

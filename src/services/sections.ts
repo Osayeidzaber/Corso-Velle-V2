@@ -51,18 +51,3 @@ export function replaceRegions(scope: Element, html: string, regions: string[]):
   restoreFocus(scope, focusKey);
   scope.dispatchEvent(new CustomEvent('nk:section:replaced', { bubbles: true, detail: { regions } }));
 }
-
-/** Replace a whole element by id-matching element in the response. */
-export function replaceElementById(html: string, id: string): boolean {
-  const current = document.getElementById(id);
-  const next = parseHTML(html).getElementById(id);
-  if (!current || !next) return false;
-  const focusKey = captureFocus(current);
-  current.replaceWith(document.importNode(next, true));
-  const fresh = document.getElementById(id);
-  if (fresh) {
-    restoreFocus(fresh, focusKey);
-    fresh.dispatchEvent(new CustomEvent('nk:section:replaced', { bubbles: true, detail: { id } }));
-  }
-  return true;
-}

@@ -2,7 +2,7 @@
   "name": "nk-theme",
   "version": "0.1.0",
   "private": true,
-  "description": "Reusable Shopify Online Store 2.0 clothing theme (project NKIL). Source in src/, deployable theme in theme/.",
+  "description": "Shopify Online Store 2.0 theme. Source in src/, deployable theme in theme/.",
   "type": "module",
   "engines": {
     "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
@@ -16,7 +16,7 @@
     "check:json": "node scripts/check-json.mjs",
     "check:contracts": "node --test scripts/theme-contracts.test.mjs && node scripts/customization-reference.mjs --check",
     "check": "npm run typecheck && npm run test && npm run build && npm run check:json && npm run check:contracts && npm run check:theme",
-    "dev": "shopify theme dev --path theme --store gbhr1g-hm.myshopify.com",
+    "dev": "shopify theme dev --path theme",
     "package": "npm run check && shopify theme package --path theme"
   },
   "devDependencies": {

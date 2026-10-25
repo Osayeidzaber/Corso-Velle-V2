@@ -1,7 +1,7 @@
 import type { NkElement } from '../core/element';
 
 /**
- * Theme editor adapter (master-plan/11 §1). Translates Shopify's editor events into calls on the
+ * Theme editor adapter. Translates Shopify's editor events into calls on the
  * owning component so selected content is revealed (open accordion, show slide, pause motion)
  * without page reloads. Components opt in by implementing onEditorSelect/onEditorDeselect.
  */

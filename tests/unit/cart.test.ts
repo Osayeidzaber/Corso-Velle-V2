@@ -3,7 +3,7 @@ import { setConfigForTests } from '../../src/core/config';
 import { CartError, CartService, type Cart } from '../../src/services/cart';
 
 /**
- * Cart queue behaviour (master-plan/09 failure matrix). fetch is replaced by a scripted fake
+ * Cart queue behaviour. fetch is replaced by a scripted fake
  * that records request order and can delay, fail or time out individual calls.
  */
 type Handler = (url: string, body: Record<string, unknown> | null) => Promise<Response> | Response;

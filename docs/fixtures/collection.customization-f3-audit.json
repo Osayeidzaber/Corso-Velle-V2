@@ -1,4 +1,0 @@
-{
-  "sections": { "audit": { "type": "customization-button-audit", "settings": {} } },
-  "order": ["audit"]
-}

@@ -1,4 +1,4 @@
-/* Facets toolbar, filter drawer, active chips (DC-02) and search page form (N-05). */
+/* Facets toolbar, filter drawer, active chips and search page form. */
 nk-facets {
   display: block;
 }
@@ -31,7 +31,7 @@ nk-facets[aria-busy='true'] .facets__results-grid {
   margin-bottom: clamp(20px, 3vw, 32px);
 }
 
-/* Full-bleed sticky architectural toolbar inspired by wrclo.com */
+/* Full-bleed toolbar (filter, layout switch, sort). */
 .facets__toolbar-wrap {
   position: sticky;
   top: var(--nk-header-h, 0px);
@@ -166,7 +166,7 @@ nk-facets[aria-busy='true'] .facets__results-grid {
   }
 }
 
-/* Interactive Grid Layout Switcher (wrclo.com style) */
+/* Grid column switcher */
 .facets__layout-switch {
   display: inline-flex;
   align-items: stretch;
