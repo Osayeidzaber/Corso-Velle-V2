@@ -4,8 +4,7 @@ import { motionMode } from '../../core/motion';
 
 /**
  * <nk-expand-media> — campaign media that opens from an inset card to full-bleed as the page
- * scrolls past (master-plan/05 T5). Clean-room rewrite of the supplied Scroll Expand example's
- * behaviour: tall track, sticky stage, clip-path inset + media zoom-out, title fades out
+ * scrolls past. Clean-room rewrite of a "Scroll Expand" demo's behaviour: tall track, sticky stage, clip-path inset + media zoom-out, title fades out
  * (40–88%), scrim and overlay content fade in (from 68%), scroll hint fades (0–12%).
  *
  * Uses native scrolling only (passive listener, never preventDefault). JS writes a handful of

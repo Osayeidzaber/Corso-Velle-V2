@@ -54,7 +54,7 @@ export class NkFooter extends NkElement {
     this.dispatchEvent(new Event('nk:footer:refresh'));
   }
 
-  /** Adapted from the supplied Beam Wordmark Footer: fit live brand text, then align
+  /** Adapted from a React "Beam Wordmark Footer" reference: fit live brand text, then align
    * each letter's painted light to the footer's coordinates, independent of its reveal. */
   #wordmark(): () => void {
     const word = this.querySelector<HTMLElement>('[data-footer-word]');
@@ -105,7 +105,7 @@ export class NkFooter extends NkElement {
     return schedule;
   }
 
-  /** Same slow beam drift and frame-rate-independent easing as the supplied React
+  /** Same slow beam drift and frame-rate-independent easing as the React reference
    * component, scoped to this element and paused offscreen or in background tabs. */
   #beam(): void {
     let frame = 0; let visible = false; let inside = false;

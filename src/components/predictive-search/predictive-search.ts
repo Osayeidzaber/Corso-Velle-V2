@@ -7,7 +7,7 @@ import { fetchText, Sequencer } from '../../services/request';
 import { scopeSearchResults, searchNamespace } from './results';
 
 /**
- * <nk-predictive-search> (master-plan/06 N-05). Wraps the search dialog's form; without JS (or
+ * <nk-predictive-search>. Wraps the search dialog's form; without JS (or
  * if this chunk fails) the form simply submits to the search page.
  *
  * - Debounced 200ms, minimum 2 characters; below that the merchant's suggestions show.

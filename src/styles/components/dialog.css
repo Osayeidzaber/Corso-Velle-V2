@@ -111,7 +111,7 @@
 }
 
 /*
- * Search dialog (N-05): a strip under the top edge on desktop, full screen on phones.
+ * Search dialog: a strip under the top edge on desktop, full screen on phones.
  * Results styling ships with the nk-predictive-search chunk.
  */
 .search-modal {

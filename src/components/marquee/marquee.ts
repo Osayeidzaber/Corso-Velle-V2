@@ -4,9 +4,9 @@ import { NkElement } from '../../core/element';
 import { motionMode, PHONE_QUERY } from '../../core/motion';
 
 /**
- * <nk-marquee> — endless ticker / message band / image strip / vertical reviews wall
- * (master-plan/05 T2). Clean-room rewrite of the behaviour of the supplied marquee (Magic UI),
- * Scroll Velocity (React Bits) and infiniteslider (motion-primitives) examples.
+ * <nk-marquee> — endless ticker / message band / image strip / vertical reviews wall.
+ * Clean-room rewrite of the behaviour of the Magic UI Marquee, React Bits Scroll Velocity and
+ * motion-primitives InfiniteSlider demos; no code from those projects is used.
  *
  * Attributes: direction="left|right|up|down" speed="40" (px/s) hover-speed="0.3" (playback rate
  * while hovered; 0 pauses) scroll-react (speed follows page scroll velocity).

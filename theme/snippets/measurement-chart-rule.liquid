@@ -9,7 +9,7 @@
     assign scopes = rule_scope | split: ','
   endif
   for scope in scopes
-    for index in (1..5)
+    for index in (1..12)
       assign prefix = 'size_chart_' | append: index
       assign table_key = prefix | append: '_table'
       assign image_key = prefix | append: '_image'

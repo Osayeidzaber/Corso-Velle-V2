@@ -1,5 +1,5 @@
 /**
- * Shared overlay manager (master-plan/06 N-06).
+ * Shared overlay manager.
  *
  * Every major overlay (menu drawer, search, quick add, size guide, cart, filters, zoom) is a
  * native <dialog> opened with showModal(), which gives inert background, focus containment, the

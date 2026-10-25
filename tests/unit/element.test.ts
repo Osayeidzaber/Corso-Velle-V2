@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { define } from '../../src/core/define';
 import { NkElement } from '../../src/core/element';
 
-/** Editor lifecycle contract (master-plan/11 §1): independent instances, full cleanup, reconnect. */
+/** Editor lifecycle contract: independent instances, full cleanup, reconnect. */
 const clicks = vi.fn();
 const disposed = vi.fn();
 

@@ -3,9 +3,9 @@ import { NkElement } from '../../core/element';
 import { animate } from '../../core/motion';
 
 /**
- * <nk-tabs> — accessible tabs with a sliding indicator and panel transition (master-plan/05 T4).
- * Clean-room rewrite of the supplied tabswithtransctition example (motion-primitives
- * TransitionPanel), adding the WAI-ARIA tabs pattern the example lacked.
+ * <nk-tabs> — accessible tabs with a sliding indicator and panel transition.
+ * Clean-room rewrite of the motion-primitives TransitionPanel demo's behaviour, adding the
+ * WAI-ARIA tabs pattern the demo lacked.
  *
  * Liquid renders every panel with its own heading and a hidden tab list, so without JS the
  * content reads as stacked sections. With JS: roving tabindex, ←/→/Home/End, automatic

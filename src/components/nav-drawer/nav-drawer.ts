@@ -2,7 +2,7 @@ import { animate, decorativeMotionAllowed, durations, easing } from '../../core/
 import { NkModal } from '../modal/modal';
 
 /**
- * <nk-nav-drawer> (master-plan/06 N-04): phone menu dialog with level panels.
+ * <nk-nav-drawer>: phone menu dialog with level panels.
  *
  * Markup: every panel is `[data-level-panel="<id>"]` (root is "root"); a row with children has a
  * `<button data-level-open="<id>">`; nested panels have `<button data-level-back>`. Going back

@@ -1,5 +1,6 @@
 /*
- * Text and surface effects — CSS-only rewrites of the supplied examples (master-plan/05).
+ * Text and surface effects (shine, gradient, blur), written in plain CSS; reference demos are
+ * listed in docs/SECTION-SOURCES.md.
  * Every effect is opt-in per section/block, stops under reduced motion / Motion off, and keeps
  * text as real text (selectable, translatable, read once by screen readers).
  */

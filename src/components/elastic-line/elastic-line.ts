@@ -4,7 +4,7 @@ import { motionMode } from '../../core/motion';
 
 /**
  * <nk-elastic-line> — decorative divider that bends toward the pointer and springs back
- * (clean-room rewrite of the supplied elasticline example). Purely decorative: aria-hidden, no
+ * (clean-room rewrite of an "elastic line" demo's behaviour). Purely decorative: aria-hidden, no
  * focus, nothing depends on it. The spring runs in rAF only while the line is moving.
  * Reduced motion / Motion off / editor: a static hairline.
  *

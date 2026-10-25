@@ -1,7 +1,7 @@
 import { config } from './config';
 
 /**
- * Motion policy (master-plan/12 §4). Reduced-motion preference and editor selection always win
+ * Motion policy. Reduced-motion preference and editor selection always win
  * over the merchant setting; purchase-path UI only ever uses the "instant" and "overlay" tokens.
  */
 export const durations = {

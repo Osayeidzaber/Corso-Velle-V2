@@ -1,195 +1,135 @@
-<h1 align="center">Corso Velle</h1>
+# Corso Velle
 
-![Corso Velle — an animated editorial wordmark in espresso, cream, and copper](docs/readme-cover.svg)
+**An editorial Shopify theme for considered commerce.**
 
-<p align="center"><em>A custom storefront for timeless essentials.</em><br><sub>SHOPIFY ONLINE STORE 2.0 &nbsp; · &nbsp; VANILLA TYPESCRIPT &nbsp; · &nbsp; PURPOSEFUL MOTION</sub></p>
+![Corso Velle editorial wordmark in espresso, cream and copper](docs/readme-cover.svg)
 
-<p align="center">
-  <a href="#the-experience">The experience</a> &nbsp; / &nbsp;
-  <a href="#local-development">Get started</a> &nbsp; / &nbsp;
-  <a href="#inside-the-project">Architecture</a> &nbsp; / &nbsp;
-  <a href="#project-notes">Project notes</a>
-</p>
+Built for Corsovelle, Corso Velle combines product-led layouts, configurable sections and purposeful motion with Shopify's catalog, cart and checkout. Liquid renders the storefront; TypeScript custom elements add interaction where it is needed.
 
-A custom **Shopify Online Store 2.0 theme** for Corso Velle: editorial layouts, generous product photography, deliberate motion, and commerce powered by Shopify's real catalog and cart.
+**Shopify Online Store 2.0 · Liquid · TypeScript · Vite · Tailwind CSS · GSAP**
 
-Built directly on Liquid, with vanilla TypeScript enhancing the interface. Shopify renders the storefront; Vite compiles its assets. No React, Hydrogen, or separate storefront backend.
+> **Release status:** this repository contains Corsovelle's configured theme. Commercial release defaults, licensing and support terms still require approval. See [distribution](docs/DISTRIBUTION.md). The current implementation does **not** include React.
 
-| Editorial by design | Native at the core | Built with care |
-| :--- | :--- | :--- |
-| Uncropped photography, considered typography, and a continuous collection rail. | Liquid sections, Shopify product data, native filters, and the AJAX cart. | Typed modules, scoped GSAP motion, responsive controls, and lifecycle cleanup. |
+## Contents
 
-> **Project status:** release acceptance remains open. See [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md) for the final evaluation, verified repairs, launch gates and separate private-distribution / Theme Store verdicts. Earlier audits record historical checkpoints.
+- [The storefront](#the-storefront)
+- [Get started](#get-started)
+- [Make it yours](#make-it-yours)
+- [How it works](#how-it-works)
+- [Documentation](#documentation)
+- [Compatibility and updates](#compatibility-and-updates)
+- [Licensing and support](#licensing-and-support)
 
-## The experience
+## The storefront
 
-<p><sub>01 / EXPLORE THE STOREFRONT</sub></p>
+| Area | Included capabilities |
+| --- | --- |
+| Editorial content | Image/video heroes and slideshows, media stories, expanding campaigns, category cards, lookbooks, FAQ, testimonials, feature grids and newsletter sections. |
+| Product discovery | Featured product grids, editorial WebGL carousel with native fallback, collection tabs, clothes rack, predictive search, collection filtering and sorting. |
+| Product pages | Configurable galleries, image zoom, variant selection, optional sticky purchase bar, reusable size charts, model information and product content blocks. |
+| Commerce | AJAX cart drawer and cart page, Shopify-calculated totals, existing discount-code associations, optional cart recommendations and configurable after-add behavior. |
+| Design controls | Color schemes, three font roles, responsive spacing, button styles, product-card presentation, per-section options and Riviera, Minimal and Quiet theme styles. |
+| Motion | Scoped GSAP entrances and scroll effects, optional Lenis wheel smoothing, reduced-motion handling and simplified phone behavior. |
 
-![Corso Velle product collection and infinite New Arrivals carousel](docs/evidence/infinite-carousel-desktop.png)
+Capabilities depend on each section's available controls and Shopify data. Reviews are merchant-entered content, discounts are managed in Shopify Admin, and a size chart does not create product variants.
 
-### A quieter way to explore
+## Get started
 
-Image and video heroes, editorial storytelling, category layouts, and a continuous **New Arrivals carousel** give the homepage its rhythm. The collection rail supports touch scrolling, previous/next controls, autoplay pause, and reduced-motion preferences.
+### Install a prepared theme
 
-Collection pages use Shopify's native filtering and Section Rendering APIs, with sorting, active filters, pagination, and browser-history synchronization. Product cards share real variant links and purchase behavior across the theme.
+Upload the **built theme ZIP** in Shopify Admin → **Online Store → Themes** using the theme import/upload action. Keep it unpublished while you select your own media, menus, products and collections. Merchants do not need Node.js, npm or Vite.
 
-### Product details that earn their space
+Follow [Installation](INSTALLATION.md#install-a-prepared-theme) for setup, preview and publishing checks. A repository download ZIP is source code, not an installable theme package.
 
-- **Photography first.** A large gallery, thumbnails, media controls, and an image zoom dialog keep the product in focus.
-- **An intentional size selector.** The animated underline and measurement panel remain, with explicit size selection and merchant-supplied measurements. Available charts support centimetres and inches.
-- **Real variant state.** Prices, compare-at prices, availability, quantity rules, and purchase controls update from Shopify responses.
-- **One clear purchase action.** The product page has a single Add to cart button. Cards offer direct size add when the choice is unambiguous; more complex products open an isolated quick-add dialog.
-- **Honest product content.** Care, composition, sibling products, and sizing use configured Shopify data. Missing measurements are never filled with sample values.
+### Develop from source
 
-<p align="center">
-  <img src="docs/evidence/product-desktop.png" alt="Corso Velle product page with large photography and product details" width="760">
-</p>
+Use Node.js **22.12+ within 22.x, 24.x, or 26+**, npm and authorized Shopify store access. From the repository root:
 
-### Commerce that stays connected
-
-| System | What it handles |
-| :--- | :--- |
-| Cart | Queued AJAX mutations, line-item quantities and removal, drawer/page updates, count synchronization, errors, and cart-page notes. Shopify remains authoritative for prices, discounts, and totals. |
-| Search | Predictive Shopify results, keyboard navigation, request cancellation, and recoverable failure states. |
-| Navigation | Desktop disclosures, mobile navigation panels, dialogs, focus management, and responsive header behavior. |
-| Motion | Scoped GSAP effects, section entrances, text reveals, and card interactions with cleanup and reduced-motion handling. |
-| Theme Editor | Component lifecycle handling for section changes and relevant selection events, without accumulating listeners or animation instances. |
-| Footer | Responsive link groups, Shopify newsletter signup, an oversized wordmark, and a desktop reveal when the available space permits it. |
-
-![Corso Velle footer with newsletter, navigation, and oversized brand wordmark](docs/evidence/footer-1440.png)
-
-*Screenshots capture the development preview. Catalog content and theme settings can change independently of the code.*
-
-## Local development
-
-<p><sub>02 / FROM SOURCE TO STOREFRONT</sub></p>
-
-### Prerequisites
-
-- **Node.js 22.12+ (22.x), 24.x, or 26+** and npm, matching the installed toolchain's supported ranges. Node 24 LTS was used for this evaluation.
-- Access to a Shopify store with permission to develop themes. Shopify CLI is included in the project dependencies.
-
-### Install and build
-
-```bash
+```sh
 npm ci
 npm run build
 ```
 
-The build compiles TypeScript and CSS into `.build/`, copies owned assets into `theme/assets/`, and generates the Liquid asset-loading snippet.
+Run these in separate terminals:
 
-### Start the storefront
-
-Run the asset watcher in one terminal:
-
-```bash
+```sh
 npm run watch
 ```
 
-Start the Shopify development preview in another:
-
-```bash
-npm run dev
+```sh
+npm run dev -- --store your-store.myshopify.com
 ```
 
-The dev script targets the configured store, `gbhr1g-hm.myshopify.com`. Follow the CLI authentication prompt and open the preview URL it prints. For a different store, use:
+Replace the example domain with your store. Shopify CLI is installed by `npm ci`; it prompts for authentication. Vite watches and builds assets while Shopify CLI serves the Liquid preview.
 
-```bash
-npx shopify theme dev --path theme --store your-store.myshopify.com
-```
+See [developer installation](INSTALLATION.md#develop-from-source) for requirements, commands, troubleshooting and packaging.
 
-Vite builds the assets; **Shopify CLI serves the Liquid storefront**. Keep both processes running while editing. No private Shopify API key is required in frontend code.
+## Make it yours
 
-### Commands
+Start in the **Theme Editor** for the unpublished theme. Select a template from the page selector, then edit its sections and blocks. Changes to a shared template affect every resource using it.
 
-| Command | Purpose |
-| :--- | :--- |
-| `npm run build` | Production asset build and synchronization into the theme. |
-| `npm run watch` | Rebuild and synchronize assets as source files change. |
-| `npm run dev` | Start the configured Shopify development preview. |
-| `npm run typecheck` | Check TypeScript without emitting files. |
-| `npm test` | Run Vitest component and service regressions with happy-dom. |
-| `npm run check:json` | Validate theme JSON. |
-| `npm run check:contracts` | Validate schema/composition contracts and customization-reference freshness. |
-| `npm run check:theme` | Run Shopify Theme Check with errors as the failure threshold. |
-| `npm run check` | Run types, tests, production build, JSON, schema contracts, customization freshness, and Theme Check. |
-| `npm run package` | Run all checks and create a Shopify theme package. |
+| To change… | Start here |
+| --- | --- |
+| Logo, colors, fonts, spacing and buttons | [Brand and design](CUSTOMIZATION.md#brand-and-design) |
+| Menus, announcements and footer | [Navigation and store shell](CUSTOMIZATION.md#navigation-and-store-shell) |
+| Homepage and campaign layouts | [Editorial sections](CUSTOMIZATION.md#editorial-sections) |
+| Collections, featured products and cards | [Product discovery](CUSTOMIZATION.md#product-discovery) |
+| Product galleries, content and sizing | [Product pages](CUSTOMIZATION.md#product-pages) and [size charts](docs/SIZE-CHART-SETTINGS.md) |
+| Cart behavior and promotional codes | [Cart and promotions](CUSTOMIZATION.md#cart-and-promotions) |
+| Animation and smooth scrolling | [Motion](CUSTOMIZATION.md#motion) |
+| Sections, snippets or interactive components | [Development](DEVELOPMENT.md) |
 
-**Preview not updating?** Confirm the watcher is running and the initial build succeeded. **CLI cannot access the store?** Check the store domain and account permissions. A theme package is a build artifact; creating it does not publish the production storefront.
+The [customization guide](CUSTOMIZATION.md) explains workflows and limitations. The [settings reference](docs/SETTINGS-REFERENCE.md) lists the exact settings, block types, presets and defaults generated from the current Shopify schemas.
 
-**Windows Nodist launcher error?** This machine's default Node/npm shims require a working
-`NODIST_PREFIX`. Use a correctly installed supported Node/npm pair or invoke the relevant CLI
-entrypoints with that Node executable. Do not treat a failed launcher as a passing project check.
-
-For another merchant, start from the [distribution and installation guide](docs/DISTRIBUTION.md).
-The current saved homepage/settings contain Corsovelle content and must not be sold as generic
-defaults. Native support-policy content is retained when theme support links are unconfigured.
-Product forms with uploaded line properties use Shopify's native multipart submission; ordinary
-adds retain the AJAX drawer experience.
-
-## Inside the project
-
-<p><sub>03 / THE CRAFT BEHIND THE INTERFACE</sub></p>
+## How it works
 
 ```text
-src/                         Authored TypeScript and CSS
-  core/                      Component lifecycle, config, DOM, lazy loading, motion policy
-  services/                  Cart, requests, sections, overlays, editor events, announcements
-  components/                Products, carousel, footer, navigation, search, filters, motion
-  entries/                   Global and product asset entrypoints
-  styles/                    Shared styles and component styling
-theme/                       Deployable Shopify theme
-  assets/                    Built assets and other theme assets
-  blocks/                    Liquid theme blocks
-  config/                    Theme settings schema and saved settings
-  layout/                    Storefront shell
-  locales/                   English storefront and editor translations
-  sections/                  Configurable Liquid sections
-  snippets/                  Shared Liquid and generated asset loader
-  templates/                 Shopify page templates
-scripts/                     Asset synchronization, watch process, JSON validation
-tests/unit/                  Commerce, request, lifecycle, and interaction regressions
-docs/                        Architecture, product audit, licenses, screenshot evidence
-infomation/master-plan/      Original implementation plans and decisions
-UPDATES.md                   Project change log
+Shopify data + JSON templates + Liquid sections
+                      ↓
+             Server-rendered storefront
+                      +
+TypeScript + CSS → Vite → theme/assets → Shopify CDN
+                      ↓
+       Custom elements enhance matching markup
 ```
 
-### How the pieces fit
+| Layer | Responsibility |
+| --- | --- |
+| Liquid and JSON | Page structure, sections, blocks, resource data, native forms and editor settings. |
+| TypeScript custom elements | Galleries, tabs, search, cart interactions and component lifecycle. |
+| Vite | Compiles entries and lazy chunks, stages output and generates asset loading through the sync script. |
+| Tailwind CSS 4 | Token-based utilities alongside authored CSS; no Tailwind preflight reset. |
+| GSAP, ScrollTrigger and SplitText | Scoped animation and text effects. |
+| Lenis / OGL | Optional desktop wheel smoothing / WebGL editorial carousel. |
 
-**Liquid renders the page → entrypoints register components → components enhance matching markup.** Shared services coordinate requests, overlays, cart state, and Theme Editor behavior. Larger components can initialize lazily; component teardown releases listeners, observers, and motion resources.
+Source lives in `src/`; the deployable Shopify theme lives in `theme/`. React is absent from dependencies and runtime. See [the developer guide](DEVELOPMENT.md#react-and-interactive-components) before planning a React integration.
 
-Edit application code in `src/` and storefront markup in `theme/`. The build generates `theme/snippets/nk-assets.liquid` from Vite's manifest and flattens compiled assets with an `nk-` prefix. Asset cleanup is limited to files tracked in `assets.owned.json`, preserving unrelated theme assets.
+## Documentation
 
-### Content belongs in Shopify
+| Guide | Audience and purpose |
+| --- | --- |
+| [Installation](INSTALLATION.md) | Merchant upload, source setup, preview, production build and package. |
+| [Customization](CUSTOMIZATION.md) | Configure the storefront through Shopify Admin and the Theme Editor. |
+| [Development](DEVELOPMENT.md) | Architecture, sections, snippets, interactive components, animations and checks. |
+| [Settings reference](docs/SETTINGS-REFERENCE.md) | Complete generated schema inventory. |
+| [Size chart settings](docs/SIZE-CHART-SETTINGS.md) | Assign chart pictures and measurement tables without code. |
+| [Reusable size charts](docs/SIZE-CHART-ADMIN.md) | Metaobject definitions, product/collection references and fallback order. |
+| [Model information](docs/MODEL-INFO.md) | Per-product model text and block settings. |
+| [Promotions](docs/PROMOTIONS.md) | Existing Shopify discount-code matching, display and application. |
+| [Distribution](docs/DISTRIBUTION.md) | Release preparation, updates, support decisions and media recommendations. |
+| [Section sources](docs/SECTION-SOURCES.md) | Adaptation provenance and retained upstream licenses. |
+| [License status](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md) | Pending project terms and existing attribution requirements. |
 
-Colors, typography, menus, section content, and layouts are configured through the Theme Editor. Product options, media, pricing, inventory, and collection filters come from Shopify. Optional product information and measurement charts use merchant-managed metafields, metaobjects, or explicitly configured, verified chart content.
+## Compatibility and updates
 
-See the [product data contract](docs/PRODUCT-SYSTEM-AUDIT.md#data-contract) before configuring charts or additional product details. Keep private credentials out of Liquid and browser assets.
+This is a Shopify Online Store 2.0 theme using JSON templates, section groups and theme blocks. JavaScript targets ES2022; the enhanced storefront uses modern browser APIs, including custom elements and native dialogs. Product links, forms and selected content have native fallbacks; some enhancements require JavaScript. WebGL is optional and has a native carousel fallback.
 
-## Project notes
+No certified browser, app, market/currency, accessibility or physical-device support matrix is published yet. Verify the combinations your store needs before launch. The standalone gift-card template uses its own layout rather than the animated storefront runtime.
 
-<p><sub>04 / DECISIONS, EVIDENCE &amp; NEXT STEPS</sub></p>
+Keep a backup before updating. Install updates as an unpublished theme, preserve merchant settings and template changes, then preview and test before publishing. There is no automatic updater or settings migration tool. Follow [the update workflow](docs/DISTRIBUTION.md#updates).
 
-| Read this | For |
-| :--- | :--- |
-| [Production readiness](PRODUCTION_READINESS.md) | Final verdicts for Corsovelle launch, private distribution and the Theme Store; launch gates and limitations. |
-| [Mobile testing](MOBILE_TESTING_REPORT.md) | Phone/tablet emulation results, fixed mobile defects, performance on throttled phones, open decisions and mobile ideas. |
-| [Updates](UPDATES.md) | Recent implementation changes and verification notes. |
-| [Storefront architecture](docs/STOREFRONT-ARCHITECTURE.md) | Module inventory, shared services, lifecycle decisions, and audit evidence. |
-| [Product system audit](docs/PRODUCT-SYSTEM-AUDIT.md) | Product behavior, data contracts, browser checks, and remaining verification. |
-| [Search and structured data](docs/SEO.md) | Meta tags, JSON-LD, crawl-safe motion, catalog findings, and Search Console / Merchant Center setup. |
-| [Advanced SEO audit](docs/SEO-ADVANCED-AUDIT-2026-10-25.md) | Current implementation, 73-URL crawls, browser evidence, Bangladesh Shopping eligibility, remaining catalog work and monitoring runbook. |
-| [25 October release audit](docs/AUDIT-2026-10-25.md) | Current findings, essential repairs, reference comparison, checkout evidence and ranked proposals. |
-| [Master plan](infomation/master-plan/README.md) | Original scope, specifications, and architectural decisions. |
+## Licensing and support
 
-TypeScript, unit tests, production compilation, JSON validation, and Theme Check have passing recorded runs. Browser evidence covers selected real Shopify products and collection/search flows, plus carousel and footer checks at multiple viewport sizes. These checks do not establish complete physical-device, screen-reader, Theme Editor, app-integration, international-currency, or checkout coverage. See the audit reports for the exact limits; no production publication is implied.
+The [LICENSE](LICENSE) records that project-wide commercial terms are pending; it does not grant a new license. Preserve the [third-party notices](THIRD_PARTY_NOTICES.md) and their linked license texts. Brand assets and demo media require separate rights review.
 
-### Provenance and licensing
-
-The project began with Shopify Skeleton at commit `a4f32d3`. Its [Shopify modified MIT license](docs/LICENSES/shopify-skeleton-theme.md) is retained and applies to that code. This README does not grant a separate license to the entire repository or its brand assets.
-
----
-
-<p align="center"><sub>Handcrafted for <strong>Corso Velle</strong> · Built by <strong>Osayeid Zaber</strong><br>Liquid at the foundation. Care in the details.</sub></p>
-
-<p align="center"><sub>The local SVG cover uses subtle CSS animation and respects reduced-motion preferences. Renderers without SVG animation display its static artwork.</sub></p>
+**Owner approval pending:** commercial product name, distribution channel, support contact, support scope, update entitlement and release policy. No purchase link or support service is announced by this repository. Prepare a reproducible issue with theme revision, browser, affected template and steps when requesting help through an approved channel.

@@ -3,7 +3,7 @@ import { animate, durations, easing } from '../../core/motion';
 import { overlay } from '../../services/overlay';
 
 /**
- * <nk-header> (master-plan/06 N-01).
+ * <nk-header>.
  * - Publishes its rendered height as --nk-header-h (never a hardcoded offset).
  * - data-sticky="reveal": hides after deliberate downward travel, returns on upward intent,
  *   never hides while it contains focus or an overlay/menu is open.

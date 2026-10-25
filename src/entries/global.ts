@@ -37,7 +37,7 @@ define('nk-cart-items', NkCartItems);
 define('nk-cart-discounts', NkCartDiscounts);
 define('nk-disclosure', NkDisclosure);
 
-// Rewrites of the supplied example components (master-plan/05).
+// Section-level components (provenance: docs/SECTION-SOURCES.md).
 registerLazy('nk-reveal', () => import('../components/reveal/reveal'));
 registerLazy('nk-text', () => import('../components/text/text'));
 registerLazy('nk-marquee', () => import('../components/marquee/marquee'));

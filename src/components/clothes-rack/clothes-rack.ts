@@ -353,7 +353,7 @@ export class NkClothesRack extends NkElement {
 
   /**
    * Points the availability button at a garment (or back at the collection for -1) and shows
-   * its stock: a status dot and the sizes, sold-out ones struck through.
+   * its stock: the sizes, sold-out ones struck through.
    */
   #showCta(index: number): void {
     const cta = this.ref<HTMLAnchorElement>('cta');

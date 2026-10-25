@@ -1,4 +1,4 @@
-/* Product page: layout, gallery (PR-01), horizontal size picker & measurement panel (PR-02/04), buy area (PR-05), sticky buy bar. */
+/* Product page: layout, gallery, horizontal size picker & measurement panel, buy area, sticky buy bar. */
 .product-section {
   width: 100%;
   min-width: 0;
@@ -1490,7 +1490,7 @@ html.no-js nk-variant-picker { display: none; }
   to { clip-path: inset(0); }
 }
 
-/* ---------------------------------------------------------------------- Premium slider gallery
+/* ---------------------------------------------------------------------- Slider gallery
    data-layout="slider" (default): one large photo, a vertical thumbnail rail on desktop, thin
    arrows and an index counter over the photo, a soft scale-and-fade between photos and
    intentional click-to-enlarge. */

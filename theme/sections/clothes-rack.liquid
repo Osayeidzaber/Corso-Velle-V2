@@ -150,7 +150,6 @@
 
     <div class="clothes-rack__cta">
       <a class="clothes-rack__availability" data-ref="cta" data-state="idle" href="{{ section.settings.collection.url | default: routes.all_products_collection_url }}">
-        <span class="clothes-rack__cta-dot" aria-hidden="true"></span>
         <span class="clothes-rack__cta-label" data-text="{{ cta_label | escape }}"><span>{{ cta_label | escape }}</span></span>
         <span class="clothes-rack__cta-sizes" aria-hidden="true"><span data-ref="sizes"></span></span>
         <span class="clothes-rack__cta-arrow" aria-hidden="true">{% render 'icon', name: 'arrow-right' %}</span>

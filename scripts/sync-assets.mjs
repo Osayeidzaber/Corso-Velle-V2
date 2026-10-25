@@ -1,6 +1,6 @@
 // Copies Vite's staged output into theme/assets and generates snippets/nk-assets.liquid.
 //
-// Rules (master-plan/04 §4):
+// Rules:
 // - Shopify's assets/ folder is flat, so any emitted path containing "/" fails the build.
 // - Only files this script produced (listed in assets.owned.json) are ever deleted, so merchant
 //   or hand-maintained assets survive a build.

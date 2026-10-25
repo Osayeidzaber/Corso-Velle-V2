@@ -5,7 +5,7 @@ import { overlay } from '../../services/overlay';
 import { ZoomPan } from './zoom-pan';
 
 /**
- * <nk-gallery> (master-plan/08 PR-01).
+ * <nk-gallery>.
  *
  * Supports:
  * - Native horizontal scroll-snap track on mobile and stacked/editorial grid on desktop

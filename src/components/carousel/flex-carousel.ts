@@ -40,7 +40,7 @@ interface CardEffect { alpha: number; x: number; y: number; scale: number }
 interface IntroEffects { sceneAlpha: number; strength: number; card: ((rel: number) => CardEffect) | null }
 interface Draw { i: number; rel: number; x: number; y: number; cw: number; ch: number; alpha: number; emphasis: number }
 
-/* Settings of the supplied FlexCarousel, tuned for product photography. */
+/* Settings from the original React/OGL FlexCarousel, tuned for product photography. */
 const CARD_HEIGHT = .5;
 const SQUEEZE = .16;
 const IDLE_MS = 2200;
@@ -55,10 +55,11 @@ const easeInOut = (value: number) => {
   const t = clamp01(value);
   return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 };
-const smooth = (value: number) => { const t = clamp01(value); return t * t * (3 - 2 * t); };const sourceOf = (image: HTMLImageElement | null | undefined) => image?.currentSrc || image?.src || '';
+const smooth = (value: number) => { const t = clamp01(value); return t * t * (3 - 2 * t); };
+const sourceOf = (image: HTMLImageElement | null | undefined) => image?.currentSrc || image?.src || '';
 
 /**
- * The user's FlexCarousel (React/ogl) ported to the theme's custom element. Kept: progressive
+ * A React/OGL "FlexCarousel" reference ported to a vanilla custom element. Kept: progressive
  * texture loading with colour placeholders, the cyclic infinite layout, spring integration, drag
  * inertia with flick stepping, speed squeeze, entrances, the liquid lens, autoplay and rolling
  * caption digits. Browse-only storefront instances link directly to products and add center

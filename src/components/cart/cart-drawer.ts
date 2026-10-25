@@ -3,7 +3,7 @@ import type { CartResult } from '../../services/cart';
 import { NkModal } from '../modal/modal';
 
 /**
- * <nk-cart-drawer> (master-plan/09 CA-02). Opening never mutates the cart. After a successful
+ * <nk-cart-drawer>. Opening never mutates the cart. After a successful
  * add it opens (when the merchant chose "drawer"); the cart renderer announces the result once.
  * Its contents are a cart section region refreshed by the cart renderer.
  */

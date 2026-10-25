@@ -12,7 +12,7 @@ import { readProduct, sizeChoices, type CarouselProduct, type CarouselVariant } 
 
 /**
  * Product rail with one highlighted product and, in shop mode, one Add to cart button for it.
- * - "liquid" effect: the user's infinite WebGL FlexCarousel (straight, with its pop-up focus and
+ * - "liquid" effect: the infinite WebGL rail in flex-carousel.ts (straight, with its pop-up focus and
  *   caption, which carries the purchase controls); a finite scroll-snap rail only for reduced
  *   motion or when WebGL can't start. Browse-only instances add the curved lens and link out.
  * - "native" effect: the classic continuously scrolling rail with a seamless loop.

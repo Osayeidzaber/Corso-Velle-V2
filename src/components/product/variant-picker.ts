@@ -16,7 +16,7 @@ const PANEL_HIDE_DELAY = 220;
 const OTHER_REGIONS = ['price', 'inventory', 'quantity', 'buy', 'badges'];
 
 /**
- * <nk-variant-picker> (master-plan/08 PR-02).
+ * <nk-variant-picker>.
  *
  * Liquid renders one <fieldset data-option-position="N"> per product option with radio inputs
  * carrying data-option-value-id. On change we re-render the product section through
@@ -385,7 +385,7 @@ export class NkVariantPicker extends NkElement {
     if (!jump) {
       const nextX = parseFloat(x);
       const stretch = Math.min(3, 1 + Math.abs(nextX - fromX) / 110);
-      // Adapt the supplied segmented control's stretch/settle to the screenshot's short underline.
+      // The underline stretches toward the new pill mid-flight, then settles to its 14px width.
       this.#indicatorAnimation = animate(indicator, [
         { transform: `translate3d(${fromX}px,0,0) scaleX(${fromScale})` },
         { transform: `translate3d(${(fromX + nextX) / 2 - 7 * (stretch - 1)}px,0,0) scaleX(${stretch})`, offset: .42 },

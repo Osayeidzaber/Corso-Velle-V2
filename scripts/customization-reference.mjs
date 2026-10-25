@@ -4,7 +4,7 @@ import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const target = join(root, 'CUSTOMIZATION.md');
+const target = join(root, 'docs', 'SETTINGS-REFERENCE.md');
 const marker = '<!-- schema-reference:start -->';
 const schemaLocale = JSON.parse(readFileSync(join(root, 'theme/locales/en.default.schema.json'), 'utf8'));
 const translate = (value) => {
@@ -15,7 +15,7 @@ const cell = (value) => String(value ?? '').replaceAll('|', '\\|').replaceAll('\
 const label = (value) => cell(translate(value));
 const code = (value) => `\`${cell(value)}\``;
 const lines = [marker, '## Implemented schema reference', '',
-  'Generated from current source schemas with `node scripts/customization-reference.mjs`. Run with `--check` to detect stale tables. Edit behavior notes above this marker; do not edit generated tables. These are schema defaults, not the saved values in a merchant template. Blank resource fields require selection; a preset may supply different values. Availability and runtime limitations are documented above and in the [source audit](docs/CUSTOMIZATION_AUDIT.md).', ''];
+  'Generated from current source schemas with `node scripts/customization-reference.mjs`. Run with `--check` to detect stale tables. Do not edit generated tables. These are schema defaults, not saved merchant values. Blank resource fields require selection; a preset may supply different values. A declared setting is not a runtime guarantee: see the [customization guide](../CUSTOMIZATION.md) for behavior and limitations.', ''];
 
 function settingsTable(settings = []) {
   const entries = settings.filter((setting) => setting.id);
@@ -78,5 +78,5 @@ if (process.argv.includes('--check')) {
   console.log('customization-reference: current');
 } else {
   writeFileSync(target, result);
-  console.log('customization-reference: updated CUSTOMIZATION.md');
+  console.log('customization-reference: updated docs/SETTINGS-REFERENCE.md');
 }

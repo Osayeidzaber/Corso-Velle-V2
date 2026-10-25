@@ -5,7 +5,7 @@ export function parseHTML(html: string): Document {
 
 /**
  * Remember the focused control inside `root` by its data-focus-key so it can be restored after
- * the region is replaced (master-plan/12 §2).
+ * the region is replaced.
  */
 export function captureFocus(root: Element): string | null {
   const active = document.activeElement;

@@ -1,5 +1,5 @@
 /**
- * Network layer with typed errors and "latest wins" sequencing (master-plan/04 §5.2).
+ * Network layer with typed errors and "latest wins" sequencing.
  * POSTs are never retried here; ambiguity is handled by the caller (see cart service).
  */
 export class NetworkError extends Error {
