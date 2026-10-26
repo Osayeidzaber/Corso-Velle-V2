@@ -549,7 +549,9 @@ nk-clothes-rack {
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scrollbar-width: none;
-    padding-inline: calc(var(--rack-w) * 0.4);
+    /* Half the rail minus half a slot each side, so the first and last garments can scroll to
+       the middle too (the garment in the middle is the one that turns and can be chosen). */
+    padding-inline: calc(50% - var(--rack-w) * max(var(--rack-slot), 34) / 200);
     /* The rail scrolls with the clothes. */
     background:
       linear-gradient(180deg, #ededed, #9a9a9a 55%, #c4c4c4) 0 0.35rem / 100% 0.35rem no-repeat local;

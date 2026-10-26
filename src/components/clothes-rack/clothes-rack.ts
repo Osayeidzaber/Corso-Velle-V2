@@ -64,7 +64,8 @@ export class NkClothesRack extends NkElement {
       const index = this.#hit(event.clientX);
       if (index !== this.#active) this.#setActive(index);
     });
-    this.on(this, 'pointerleave', () => this.#leaveSoon());
+    // A lifted finger "leaves" too; on touch the garment in the middle stays the chosen one.
+    this.on(this, 'pointerleave', (event) => { if (event.pointerType === 'mouse') this.#leaveSoon(); });
     this.dispose(() => window.clearTimeout(this.#leaveTimer));
     this.on(list, 'focusin', (event) => {
       const index = this.#garments.indexOf(event.target as HTMLAnchorElement);
