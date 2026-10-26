@@ -31,6 +31,12 @@
           "type": "social",
           "settings": {}
         },
+        "contact": {
+          "type": "contact",
+          "settings": {
+            "heading": "Contact"
+          }
+        },
         "shop": {
           "type": "menu",
           "settings": {
@@ -43,6 +49,7 @@
         "brand",
         "shop",
         "menu-1",
+        "contact",
         "social"
       ],
       "settings": {

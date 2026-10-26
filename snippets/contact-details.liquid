@@ -5,19 +5,40 @@
 {%- enddoc -%}
 <div class="shopify-policy__container support-contact">
   <div class="shopify-policy__title"><h1>{{ 'support.title' | t }}</h1></div>
-  <div class="shopify-policy__body rte">
-    {{ settings.support_intro }}
-    <dl>
-      {%- if settings.support_email != blank -%}
-        <dt>{{ 'support.email' | t }}</dt><dd><a href="mailto:{{ settings.support_email | strip | escape }}">{{ settings.support_email | escape }}</a></dd>
-      {%- endif -%}
-      {%- if settings.support_phone != blank -%}
-        {%- assign dial = settings.support_phone | remove: ' ' | remove: '-' | remove: '(' | remove: ')' -%}
-        <dt>{{ 'support.phone' | t }}</dt><dd><a href="tel:{{ dial | escape }}">{{ settings.support_phone | escape }}</a></dd>
-      {%- endif -%}
-      {%- if settings.support_instagram != blank -%}
-        <dt>Instagram</dt><dd><a href="{{ settings.support_instagram | escape }}">{{ settings.support_instagram_label | default: 'Instagram' | escape }}</a></dd>
-      {%- endif -%}
-    </dl>
-  </div>
+  {%- if settings.support_intro != blank -%}
+    <div class="support-contact__intro rte">{{ settings.support_intro }}</div>
+  {%- endif -%}
+  <ul class="support-contact__cards" role="list">
+    {%- if settings.support_email != blank -%}
+      <li>
+        <a class="support-contact__card" href="mailto:{{ settings.support_email | strip | escape }}">
+          <span class="support-contact__icon">{% render 'icon', name: 'mail', size: 20 %}</span>
+          <span class="spec support-contact__label">{{ 'support.email' | t }}</span>
+          <span class="support-contact__value">{{ settings.support_email | escape }}</span>
+          <span class="support-contact__action">{{ 'support.email_action' | t }} <span aria-hidden="true">→</span></span>
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.support_phone != blank -%}
+      {%- assign dial = settings.support_phone | remove: ' ' | remove: '-' | remove: '(' | remove: ')' -%}
+      <li>
+        <a class="support-contact__card" href="tel:{{ dial | escape }}">
+          <span class="support-contact__icon">{% render 'icon', name: 'phone', size: 20 %}</span>
+          <span class="spec support-contact__label">{{ 'support.phone' | t }}</span>
+          <span class="support-contact__value">{{ settings.support_phone | escape }}</span>
+          <span class="support-contact__action">{{ 'support.phone_action' | t }} <span aria-hidden="true">→</span></span>
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.support_instagram != blank -%}
+      <li>
+        <a class="support-contact__card" href="{{ settings.support_instagram | escape }}" target="_blank" rel="noopener">
+          <span class="support-contact__icon">{% render 'icon', name: 'instagram', size: 20 %}</span>
+          <span class="spec support-contact__label">Instagram</span>
+          <span class="support-contact__value">{{ settings.support_instagram_label | default: 'Instagram' | escape }}</span>
+          <span class="support-contact__action">{{ 'support.instagram_action' | t }} <span aria-hidden="true">↗</span></span>
+        </a>
+      </li>
+    {%- endif -%}
+  </ul>
 </div>

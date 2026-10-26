@@ -46,8 +46,13 @@
           endif
         endif
       -%}
-      {%- if request.path contains '/policies/contact-information' and theme_support -%}
-        {% render 'contact-details' %}
+      {%- if request.page_type == 'policy' -%}
+        {%- if request.path contains '/policies/contact-information' and theme_support -%}
+          {%- capture policy_content -%}{% render 'contact-details' %}{%- endcapture -%}
+        {%- else -%}
+          {%- capture policy_content -%}{{ content_for_layout }}{%- endcapture -%}
+        {%- endif -%}
+        {% render 'policy-page', content: policy_content %}
       {%- else -%}
         {{ content_for_layout }}
       {%- endif -%}

@@ -40,6 +40,8 @@
     "follow": "Follow",
     "payment_methods": "Payment methods",
     "social_setup": "Add social profile links in Theme settings › Social media.",
+    "contact": "Contact",
+    "contact_setup": "Add a support email or phone in Theme settings › Customer support.",
     "email": "Your email address",
     "subscribe": "Subscribe",
     "subscribed": "You're on the list. Thank you for subscribing.",
@@ -337,7 +339,14 @@
   "support": {
     "title": "Contact information",
     "email": "Email",
-    "phone": "Phone"
+    "phone": "Phone",
+    "email_action": "Write to us",
+    "phone_action": "Call us",
+    "instagram_action": "Message us",
+    "customer_care": "Customer care",
+    "help_heading": "Need a hand?",
+    "help_text": "Have a question about an order, sizing or a return? Get in touch.",
+    "contact_link": "All contact options"
   },
   "promotions": {
     "badge": "Code {{ code }}",
