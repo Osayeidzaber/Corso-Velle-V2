@@ -16,7 +16,7 @@
               {%- if block.settings.role != blank -%}<p class="text-muted">{{ block.settings.role | escape }}</p>{%- endif -%}
             </div>
             {%- if block.settings.link != blank -%}
-              <a class="team-grid__social" href="{{ block.settings.link }}" target="_blank" rel="noopener" aria-labelledby="TeamName-{{ block.id }} TeamLink-{{ block.id }}"><span id="TeamLink-{{ block.id }}">{{ block.settings.link_label | default: 'Profile' | escape }}</span> <span aria-hidden="true">↗</span></a>
+              <a class="team-grid__social" href="{{ block.settings.link }}" target="_blank" rel="noopener" aria-labelledby="TeamName-{{ block.id }} TeamLink-{{ block.id }}"><span id="TeamLink-{{ block.id }}">{{ block.settings.link_label | default: 'Profile' | escape }}</span> {% render 'icon', name: 'arrow-up-right', size: 12, class: 'icon--inline' %}</a>
             {%- endif -%}
           </div>
           {%- if section.settings.show_bio and block.settings.bio != blank -%}<div class="rte text-muted team-grid__bio">{{ block.settings.bio }}</div>{%- endif -%}

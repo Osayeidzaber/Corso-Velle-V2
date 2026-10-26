@@ -23,6 +23,7 @@
     "card_image_ratio": "1 / 1",
     "card_show_sizes": true,
     "motion_level": "standard",
+    "motion_mobile": "full",
     "cart_after_add": "drawer",
     "color_schemes": {
       "scheme-1": {

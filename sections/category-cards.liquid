@@ -16,7 +16,7 @@
           {% render 'reveal-heading', text: heading_html, italic: italic, entrance: section.settings.heading_entrance, class: 'display' %}
         </div>
         {%- if section.settings.link != blank -%}
-          <a class="category-cards__cta spec" href="{{ section.settings.link }}">{{ section.settings.link_label | escape }} <span aria-hidden="true">↗</span></a>
+          <a class="category-cards__cta spec" href="{{ section.settings.link }}">{{ section.settings.link_label | escape }} {% render 'icon', name: 'arrow-up-right', size: 12, class: 'icon--inline' %}</a>
         {%- endif -%}
       </div>
       {%- liquid
@@ -69,13 +69,13 @@
             <div class="category-card__content">
               <div class="category-card__title-row">
                 <h3 class="category-card__title display">{% if url != blank %}<a href="{{ url }}">{% endif %}<em>{{ title | escape }}</em>{% if url != blank %}</a>{% endif %}</h3>
-                {% if url != blank %}<span class="category-card__arrow" aria-hidden="true">↗</span>{% endif %}
+                {% if url != blank %}<span class="category-card__arrow" aria-hidden="true">{% render 'icon', name: 'arrow-up-right', size: 14, class: 'icon--inline' %}</span>{% endif %}
               </div>
               {%- if block.settings.description != blank and section.settings.show_description != false -%}<p class="category-card__description">{{ block.settings.description | escape }}</p>{%- endif -%}
               {%- assign sub = block.settings.menu -%}
               {%- if sub.links.size > 0 -%}
                 <ul class="category-card__links" role="list">
-                  {%- for link in sub.links limit: section.settings.menu_limit -%}<li><a class="spec link-underline" href="{{ link.url }}">{{ link.title | escape }} ↗</a></li>{%- endfor -%}
+                  {%- for link in sub.links limit: section.settings.menu_limit -%}<li><a class="spec link-underline" href="{{ link.url }}">{{ link.title | escape }} {% render 'icon', name: 'arrow-up-right', size: 12, class: 'icon--inline' %}</a></li>{%- endfor -%}
                 </ul>
               {%- endif -%}
             </div>

@@ -24,13 +24,19 @@
                   {%- else -%}
                     {{ block.settings.text | escape }}
                   {%- endif -%}
-                  <span aria-hidden="true" style="margin-inline-start: 28px;">{{ section.settings.separator | escape }}</span>
+                  {%- comment -%} ✳ and * draw as an icon: phones render the ✳ character as a colour emoji. Other text gets the text-style selector. {%- endcomment -%}
+                  {%- assign separator = section.settings.separator | strip | remove: '️' | remove: '︎' -%}
+                  {%- if separator == '✳' or separator == '*' -%}
+                    <span aria-hidden="true" style="margin-inline-start: 28px;">{% render 'icon', name: 'asterisk', size: 12, class: 'icon--inline' %}</span>
+                  {%- elsif separator != blank -%}
+                    <span aria-hidden="true" style="margin-inline-start: 28px;">{{ separator | escape }}&#xFE0E;</span>
+                  {%- endif -%}
                 </li>
               {%- endif -%}
             {%- endfor -%}
           </ul>
         </div>
-        <button type="button" class="marquee__pause" data-ref="pause" aria-pressed="false" aria-label="{{ 'marquee.pause' | t }}" hidden>❚❚</button>
+        <button type="button" class="marquee__pause media-toggle" data-ref="pause" aria-pressed="false" aria-label="{{ 'marquee.pause' | t }}" hidden>{% render 'icon', name: 'pause', size: 12 %}{% render 'icon', name: 'play', size: 12 %}</button>
       </nk-marquee>
     {%- else -%}
       {%- for block in section.blocks -%}
