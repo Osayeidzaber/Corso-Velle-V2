@@ -58,12 +58,3 @@
   border: 1px solid var(--nk-color-line);
   text-align: start;
 }
-
-/* Shopify's policy pages: room below the header and around the title. */
-.shopify-policy__container {
-  padding-block: clamp(32px, 6vw, 80px);
-}
-
-.shopify-policy__title {
-  margin-bottom: clamp(20px, 3vw, 32px);
-}

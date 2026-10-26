@@ -1,0 +1,323 @@
+/*
+ * Policy pages and the theme contact page (snippets/policy-page.liquid). Shopify renders the policy
+ * markup (.shopify-policy__container › __title h1 + __body .rte) and injects its own centring
+ * styles, which are reset here so the document sits in the theme's two-column frame.
+ */
+.policy-page {
+  --policy-aside: 264px;
+  display: grid;
+  gap: 40px;
+  width: min(1200px, calc(100% - var(--nk-gutter) * 2));
+  margin-inline: auto;
+  padding-block: clamp(32px, 6vw, 96px) clamp(56px, 8vw, 128px);
+}
+
+@media (min-width: 990px) {
+  .policy-page {
+    grid-template-columns: var(--policy-aside) minmax(0, 1fr);
+    column-gap: clamp(56px, 7vw, 120px);
+    align-items: start;
+  }
+  .policy-page__aside {
+    position: sticky;
+    top: calc(var(--nk-header-h, 72px) + 32px);
+    display: grid;
+    gap: 40px;
+  }
+}
+
+/* --- Customer-care navigation --------------------------------------------------------------- */
+.policy-page__eyebrow {
+  margin: 0 0 14px;
+  color: var(--nk-color-text-muted);
+}
+
+.policy-page__nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.policy-page__nav a {
+  display: block;
+  padding: 10px 0 10px 18px;
+  border-left: 1px solid var(--nk-color-line);
+  color: var(--nk-color-text-muted);
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: color 200ms var(--nk-ease-out), border-color 200ms var(--nk-ease-out);
+}
+
+.policy-page__nav a:hover { color: var(--nk-color-text); }
+
+.policy-page__nav a[aria-current='page'] {
+  border-left: 2px solid var(--nk-color-accent);
+  padding-left: 17px;
+  color: var(--nk-color-text);
+  font-weight: 600;
+}
+
+/* --- Support card --------------------------------------------------------------------------- */
+.policy-page__help {
+  display: grid;
+  gap: 10px;
+  padding: 24px;
+  border: 1px solid var(--nk-color-line);
+  border-radius: var(--nk-radius);
+  background: var(--nk-color-surface);
+}
+
+.policy-page__help-heading {
+  margin: 0;
+  font-family: var(--nk-font-heading);
+  font-size: 1.375rem;
+  line-height: 1.15;
+}
+
+.policy-page__help-text {
+  margin: 0 0 6px;
+  color: var(--nk-color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.policy-page__help ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.policy-page__help ul a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 32px;
+  color: var(--nk-color-text);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.policy-page__help ul svg { flex: none; color: var(--nk-color-accent); }
+.policy-page__help ul a:hover span { text-decoration: underline; text-underline-offset: 3px; }
+
+.policy-page__help-link {
+  margin-top: 6px;
+  font-family: var(--nk-font-spec);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--nk-color-accent);
+}
+
+.policy-page__help-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* --- The document --------------------------------------------------------------------------- */
+.policy-page .shopify-policy__container {
+  max-width: 46rem;
+  margin: 0;
+  padding: 0;
+  text-align: start;
+}
+
+.policy-page .shopify-policy__title {
+  margin: 0 0 clamp(32px, 4vw, 56px);
+  padding-bottom: clamp(24px, 3vw, 40px);
+  border-bottom: 1px solid var(--nk-color-line);
+  text-align: start;
+}
+
+.policy-page .shopify-policy__title h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 5.5vw, 4.25rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.policy-page .shopify-policy__body {
+  counter-reset: policy-section;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.policy-page .shopify-policy__body .rte > p:first-child {
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+/* Numbered sections, each opened by a hairline. */
+.policy-page .shopify-policy__body h2 {
+  counter-increment: policy-section;
+  margin-top: clamp(40px, 5vw, 64px);
+  padding-top: clamp(28px, 3vw, 40px);
+  border-top: 1px solid var(--nk-color-line);
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  line-height: 1.15;
+}
+
+.policy-page .shopify-policy__body h2::before {
+  content: counter(policy-section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 12px;
+  color: var(--nk-color-accent);
+  font-family: var(--nk-font-spec);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+}
+
+.policy-page .shopify-policy__body h3 { margin-top: 2em; font-size: 1.1875rem; }
+
+.policy-page .shopify-policy__body ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+.policy-page .shopify-policy__body ul > li {
+  position: relative;
+  padding-left: 24px;
+  line-height: 1.65;
+}
+
+.policy-page .shopify-policy__body ul > li::before {
+  content: '';
+  position: absolute;
+  top: 0.8em;
+  left: 2px;
+  width: 10px;
+  height: 1px;
+  background: var(--nk-color-accent);
+}
+
+.policy-page .shopify-policy__body li + li { margin-top: 0.65em; }
+.policy-page .shopify-policy__body strong { font-weight: 600; }
+
+.policy-page .shopify-policy__body a {
+  text-decoration-color: var(--nk-color-accent);
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+/* --- Contact page --------------------------------------------------------------------------- */
+.support-contact__intro {
+  max-width: 56ch;
+  margin-bottom: clamp(32px, 4vw, 48px);
+  color: var(--nk-color-text-muted);
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+/* One row per channel: icon, label over value, action. */
+.support-contact__cards {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.support-contact__card {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  grid-template-areas: 'icon label action' 'icon value action';
+  align-items: center;
+  column-gap: 20px;
+  row-gap: 2px;
+  padding: 22px 24px;
+  border: 1px solid var(--nk-color-line);
+  border-radius: var(--nk-radius);
+  background: var(--nk-color-surface);
+  color: var(--nk-color-text);
+  text-decoration: none;
+  transition: border-color 240ms var(--nk-ease-out), transform 240ms var(--nk-ease-out);
+}
+
+.support-contact__card:hover { border-color: var(--nk-color-accent); transform: translateY(-2px); }
+.support-contact__card:focus-visible { outline: 2px solid var(--nk-focus); outline-offset: 3px; }
+
+.support-contact__icon {
+  grid-area: icon;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--nk-color-line);
+  border-radius: 50%;
+  background: var(--nk-color-bg);
+  color: var(--nk-color-accent);
+}
+
+.support-contact__label { grid-area: label; align-self: end; color: var(--nk-color-text-muted); }
+
+.support-contact__value {
+  grid-area: value;
+  align-self: start;
+  font-family: var(--nk-font-heading);
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.support-contact__action {
+  grid-area: action;
+  color: var(--nk-color-accent);
+  white-space: nowrap;
+  font-family: var(--nk-font-spec);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.support-contact__action span { display: inline-block; transition: transform 240ms var(--nk-ease-out); }
+.support-contact__card:hover .support-contact__action span { transform: translateX(3px); }
+
+/* --- Phones and tablets: navigation becomes a row of chips above the document, help below. --- */
+@media (max-width: 989px) {
+  .policy-page { gap: 32px; }
+  .policy-page__aside { display: contents; }
+  .policy-page__nav { order: -1; min-width: 0; }
+  .policy-page__help { order: 1; }
+  .policy-page__nav ul {
+    display: flex;
+    gap: 8px;
+    margin-inline: calc(var(--nk-gutter) * -1);
+    padding-inline: var(--nk-gutter);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .policy-page__nav ul::-webkit-scrollbar { display: none; }
+  /* The current page leads the row, so it is never scrolled out of view. */
+  .policy-page__nav li:has([aria-current='page']) { order: -1; }
+  .policy-page__nav a,
+  .policy-page__nav a[aria-current='page'] {
+    padding: 10px 16px;
+    border: 1px solid var(--nk-color-line);
+    border-radius: 999px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+  .policy-page__nav a[aria-current='page'] {
+    border-color: var(--nk-color-text);
+    background: var(--nk-color-text);
+    color: var(--nk-color-bg);
+    font-weight: 500;
+  }
+}
+
+@media (max-width: 599px) {
+  .support-contact__card {
+    grid-template-columns: 44px minmax(0, 1fr);
+    grid-template-areas: 'icon label' 'icon value' 'icon action';
+    column-gap: 16px;
+    padding: 18px;
+  }
+  .support-contact__icon { width: 44px; height: 44px; align-self: start; }
+  .support-contact__action { margin-top: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .support-contact__card,
+  .support-contact__action span { transition: none; }
+  .support-contact__card:hover { transform: none; }
+}

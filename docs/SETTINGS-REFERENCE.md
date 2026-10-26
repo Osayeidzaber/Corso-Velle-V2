@@ -1356,6 +1356,12 @@ Supported block: **Social links** (`social`); type limit 1.
 
 No local settings.
 
+Supported block: **Contact** (`contact`); type limit 1.
+
+| Setting ID / label | Type | Schema default | Choices / range / help |
+| --- | --- | --- | --- |
+| `heading` — Heading | `text` | `Contact` |  |
+
 No add-menu preset: rendered by an existing template/layout/group or used as a rendering endpoint.
 
 #### Header (header)

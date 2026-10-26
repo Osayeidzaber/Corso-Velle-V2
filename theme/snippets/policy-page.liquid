@@ -1,0 +1,55 @@
+{%- doc -%}
+  Frame for Shopify's policy pages (and the theme contact page that can replace the contact
+  policy): customer-care navigation beside the document, and a support card. Shopify renders the
+  policy markup itself; only this frame belongs to the theme.
+
+  @param {string} content - The rendered page (content_for_layout or the contact-details snippet)
+{%- enddoc -%}
+{%- liquid
+  assign on_contact = false
+  if request.path contains '/policies/contact-information'
+    assign on_contact = true
+  endif
+  assign contact_url = ''
+  for policy in shop.policies
+    if policy.url contains '/policies/contact-information'
+      assign contact_url = policy.url
+    endif
+  endfor
+-%}
+<div class="policy-page">
+  <aside class="policy-page__aside">
+    <nav class="policy-page__nav" aria-label="{{ 'support.customer_care' | t | escape }}">
+      <p class="spec policy-page__eyebrow">{{ 'support.customer_care' | t }}</p>
+      <ul role="list">
+        {%- for policy in shop.policies -%}
+          <li>
+            <a href="{{ policy.url }}"{% if request.path == policy.url %} aria-current="page"{% endif %}>{{ policy.title | escape }}</a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+    {%- unless on_contact -%}
+      {%- if settings.support_email != blank or settings.support_phone != blank -%}
+        <div class="policy-page__help">
+          <p class="policy-page__help-heading">{{ 'support.help_heading' | t }}</p>
+          <p class="policy-page__help-text">{{ 'support.help_text' | t }}</p>
+          <ul role="list">
+            {%- if settings.support_email != blank -%}
+              <li><a href="mailto:{{ settings.support_email | strip | escape }}">{% render 'icon', name: 'mail', size: 16 %}<span>{{ settings.support_email | escape }}</span></a></li>
+            {%- endif -%}
+            {%- if settings.support_phone != blank -%}
+              {%- assign dial = settings.support_phone | remove: ' ' | remove: '-' | remove: '(' | remove: ')' -%}
+              <li><a href="tel:{{ dial | escape }}">{% render 'icon', name: 'phone', size: 16 %}<span>{{ settings.support_phone | escape }}</span></a></li>
+            {%- endif -%}
+          </ul>
+          {%- if contact_url != blank -%}
+            <a class="policy-page__help-link" href="{{ contact_url }}">{{ 'support.contact_link' | t }} <span aria-hidden="true">→</span></a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- endunless -%}
+  </aside>
+  {%- comment -%} Shopify's policy editor leaves blank lines behind; they render as stray gaps. {%- endcomment -%}
+  <div class="policy-page__document">{{ content | replace: '<p><br></p>', '' | replace: '<h1><br></h1>', '' | replace: '<h2><br></h2>', '' }}</div>
+</div>

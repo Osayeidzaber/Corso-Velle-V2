@@ -1,6 +1,7 @@
 @import './tailwind.css';
 @import './base.css';
 @import './components/rte.css';
+@import './components/policy.css';
 @import './components/feature-card.css';
 @import './components/controls.css';
 @import './components/dialog.css';
