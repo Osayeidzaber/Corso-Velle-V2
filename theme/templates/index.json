@@ -9,15 +9,6 @@
  */
 {
   "sections": {
-    "rack": {
-      "type": "clothes-rack",
-      "settings": {
-        "heading": "On the rail",
-        "collection": "t-shirts",
-        "limit": 7,
-        "color_scheme": "scheme-1"
-      }
-    },
     "hero": {
       "type": "hero",
       "blocks": {
@@ -25,7 +16,8 @@
           "type": "eyebrow",
           "settings": {
             "text": "Corso Velle · Collection 2026",
-            "shine": false
+            "shine": false,
+            "size": 100
           }
         },
         "heading": {
@@ -33,16 +25,20 @@
           "settings": {
             "heading": "Timeless Basics",
             "heading_italic": "'26",
+            "size": 100,
+            "size_mobile": 100,
+            "italic_style": "none",
             "entrance": "cut",
-            "text_style": "none",
             "hover": "none",
-            "italic_style": "none"
+            "text_style": "none"
           }
         },
         "text": {
           "type": "text",
           "settings": {
-            "text": "<p>Refined everyday essentials, designed for effortless, modern dressing.</p>"
+            "text": "<p>Refined everyday essentials, designed for effortless, modern dressing.</p>",
+            "size": 100,
+            "width": 42
           }
         },
         "buttons": {
@@ -50,8 +46,18 @@
           "settings": {
             "label_1": "Shop the collection",
             "link_1": "shopify://collections/timeless-basics-26",
+            "style_1": "solid",
+            "arrow": false,
             "label_2": "All products",
-            "link_2": "shopify://collections/all"
+            "link_2": "shopify://collections/all",
+            "style_2": "outline",
+            "corners": "inherit",
+            "size": "medium",
+            "alignment": "auto",
+            "arrangement": "row",
+            "full_width_mobile": false,
+            "gap": 14,
+            "offset": 0
           }
         }
       },
@@ -62,16 +68,39 @@
         "buttons"
       ],
       "settings": {
+        "scroll_exit": true,
+        "video_autoplay": true,
         "video_url": "https://corsovelle.com/cdn/shop/videos/c/vp/a2036364d55d46f887841a201374b3f2/a2036364d55d46f887841a201374b3f2.HD-1080p-7.2Mbps-91045694.mp4",
         "poster_url": "https://corsovelle.com/cdn/shop/files/preview_images/a2036364d55d46f887841a201374b3f2.thumbnail.0000000000_2000x.jpg",
         "collection": "timeless-basics-26",
+        "video_url_mobile": "",
+        "poster_url_mobile": "",
+        "slide_autoplay": true,
+        "slide_interval": 6,
+        "slide_transition": "fade",
+        "slide_dots": true,
+        "height_mobile": "inherit",
+        "media_fit": "cover",
+        "tint_direction": "bottom",
+        "layout": "overlay",
+        "media_position": "left",
         "height": "full",
         "position": "bottom-left",
+        "position_mobile": "same",
+        "text_align": "auto",
+        "content_width": 1100,
+        "block_gap": 22,
         "parallax": 14,
         "show_scroll_cue": false,
         "scrim_style": "solid",
         "scrim": 35,
-        "color_scheme": "scheme-2"
+        "color_scheme": "scheme-2",
+        "type_style": "signature",
+        "custom_heading_font": false,
+        "heading_font": "newsreader_n4",
+        "custom_text_font": false,
+        "text_font": "inter_n4",
+        "entrance": "fade-up"
       }
     },
     "band": {
@@ -134,7 +163,77 @@
         "speed": 40,
         "scroll_react": true,
         "outline_second": true,
-        "color_scheme": "scheme-3"
+        "color_scheme": "scheme-3",
+        "direction": "left",
+        "layout": "ticker",
+        "mobile_scale": "55",
+        "static_mobile": true
+      }
+    },
+    "rack": {
+      "type": "clothes-rack",
+      "settings": {
+        "heading": "On the rail",
+        "collection": "t-shirts",
+        "limit": 7,
+        "back_from_second": true,
+        "knock_out_white": true,
+        "garment_size": 16,
+        "spacing": 30,
+        "collar_overlap": 22,
+        "cta_label": "See availability",
+        "front_label": "Front",
+        "back_label": "Back",
+        "close_label": "Back to rack",
+        "color_scheme": "scheme-1",
+        "content_width": "inherit",
+        "spacing_mode": "inherit",
+        "padding_top": 72,
+        "padding_bottom": 72,
+        "padding_top_small": 48,
+        "padding_bottom_small": 48
+      }
+    },
+    "arrivals": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "The latest edit",
+        "heading": "New arrivals",
+        "heading_italic": "",
+        "description": "",
+        "show_collection_description": true,
+        "collection": "all-products",
+        "limit": 12,
+        "layout": "carousel",
+        "carousel_effect": "liquid",
+        "carousel_purchase": true,
+        "carousel_intro": "rise",
+        "carousel_center_products": 4,
+        "carousel_autoplay": true,
+        "carousel_interval": 1.5,
+        "carousel_speed": 35,
+        "columns_mobile": "1",
+        "columns_desktop": 3,
+        "show_view_all": true,
+        "color_scheme": "scheme-1",
+        "products": [],
+        "grid_style": "regular",
+        "grid_gap": 8,
+        "grid_gap_mobile": 8,
+        "heading_alignment": "left",
+        "show_count": true,
+        "link": "",
+        "link_label": "View all",
+        "content_width": "inherit",
+        "spacing_mode": "inherit",
+        "padding_top": 72,
+        "padding_bottom": 72,
+        "padding_top_small": 48,
+        "padding_bottom_small": 48,
+        "carousel_card_width": "regular",
+        "carousel_gap": "regular",
+        "carousel_emphasis": true,
+        "carousel_arrows": true
       }
     },
     "tabs": {
@@ -144,35 +243,40 @@
           "type": "tab",
           "settings": {
             "collection": "timeless-basics-26",
-            "label": "Timeless Basics '26"
+            "label": "Timeless Basics '26",
+            "limit": 0
           }
         },
         "t2": {
           "type": "tab",
           "settings": {
             "collection": "shirts",
-            "label": "Shirts"
+            "label": "Shirts",
+            "limit": 0
           }
         },
         "t3": {
           "type": "tab",
           "settings": {
             "collection": "shackets",
-            "label": "Shackets"
+            "label": "Shackets",
+            "limit": 0
           }
         },
         "t4": {
           "type": "tab",
           "settings": {
             "collection": "knit-polo",
-            "label": "Knit polo"
+            "label": "Knit polo",
+            "limit": 0
           }
         },
         "t5": {
           "type": "tab",
           "settings": {
             "collection": "footwear",
-            "label": "Footwear"
+            "label": "Footwear",
+            "limit": 0
           }
         }
       },
@@ -190,7 +294,25 @@
         "entrance": "cut",
         "limit": 8,
         "columns_desktop": 3,
-        "color_scheme": "scheme-1"
+        "color_scheme": "scheme-1",
+        "card_appearance": "inherit",
+        "card_ratio": "inherit",
+        "card_fit": "inherit",
+        "card_hover": "inherit",
+        "card_vendor": "inherit",
+        "card_price": "inherit",
+        "card_badges": "inherit",
+        "card_sizes": "inherit",
+        "tab_style": "underline",
+        "columns_mobile": "1",
+        "grid_gap": 8,
+        "transitions": true,
+        "content_width": "inherit",
+        "spacing_mode": "inherit",
+        "padding_top": 72,
+        "padding_bottom": 72,
+        "padding_top_small": 48,
+        "padding_bottom_small": 48
       }
     },
     "categories": {
@@ -202,7 +324,11 @@
             "collection": "shirts",
             "title": "Shirts",
             "description": "Oxford, linen and poplin, cut for warm evenings.",
-            "link": "shopify://collections/shirts"
+            "menu": "",
+            "link": "shopify://collections/shirts",
+            "image_fit": "inherit",
+            "custom_colors": false,
+            "color_scheme": ""
           }
         },
         "c2": {
@@ -211,7 +337,11 @@
             "collection": "shackets",
             "title": "Shackets",
             "description": "The layer between a shirt and a jacket.",
-            "link": "shopify://collections/shackets"
+            "menu": "",
+            "link": "shopify://collections/shackets",
+            "image_fit": "inherit",
+            "custom_colors": false,
+            "color_scheme": ""
           }
         },
         "c3": {
@@ -220,7 +350,11 @@
             "collection": "polo",
             "title": "Polo",
             "description": "Knit and piqué, softly structured.",
-            "link": "shopify://collections/polo"
+            "menu": "",
+            "link": "shopify://collections/polo",
+            "image_fit": "inherit",
+            "custom_colors": false,
+            "color_scheme": ""
           }
         },
         "c4": {
@@ -229,7 +363,11 @@
             "collection": "jeans-1",
             "title": "Jeans",
             "description": "Clean washes, straight lines.",
-            "link": "shopify://collections/jeans-1"
+            "menu": "",
+            "link": "shopify://collections/jeans-1",
+            "image_fit": "inherit",
+            "custom_colors": false,
+            "color_scheme": ""
           }
         },
         "c5": {
@@ -238,7 +376,11 @@
             "collection": "footwear",
             "title": "Footwear",
             "description": "To finish the look.",
-            "link": "shopify://collections/footwear"
+            "menu": "",
+            "link": "shopify://collections/footwear",
+            "image_fit": "inherit",
+            "custom_colors": false,
+            "color_scheme": ""
           }
         }
       },
@@ -255,7 +397,28 @@
         "heading_italic": "wardrobe",
         "link_label": "Shop all",
         "link": "shopify://collections/all",
-        "color_scheme": "scheme-1"
+        "color_scheme": "scheme-1",
+        "layout": "bento",
+        "columns": 4,
+        "mobile_layout": "stacked",
+        "image_ratio": "standard",
+        "gap": 16,
+        "card_palette": "studio",
+        "card_style": "overlay",
+        "card_outline": false,
+        "card_radius": 0,
+        "image_fit": "contain",
+        "show_index": true,
+        "show_count": true,
+        "show_description": true,
+        "menu_limit": 4,
+        "heading_entrance": "fold",
+        "content_width": "inherit",
+        "spacing_mode": "inherit",
+        "padding_top": 72,
+        "padding_bottom": 72,
+        "padding_top_small": 48,
+        "padding_bottom_small": 48
       }
     },
     "divider": {
@@ -264,7 +427,9 @@
         "style": "elastic",
         "grab": 14,
         "spacing": 24,
-        "color_scheme": "scheme-1"
+        "color_scheme": "scheme-1",
+        "width": "content",
+        "thickness": 1
       }
     },
     "story": {
@@ -284,7 +449,26 @@
         "heading_entrance": "rise",
         "entrance": "fade",
         "text_style": "none",
-        "color_scheme": "scheme-1"
+        "scene_preset": "cinematic",
+        "scene_direction": "up",
+        "scene_intensity": "soft",
+        "scene_parallax": true,
+        "scene_pin": false,
+        "scene_background": true,
+        "color_scheme": "scheme-1",
+        "content_width": "inherit",
+        "spacing_mode": "inherit",
+        "padding_top": 72,
+        "padding_bottom": 72,
+        "padding_top_small": 48,
+        "padding_bottom_small": 48,
+        "video_autoplay": true,
+        "text_align": "left",
+        "copy_width": 46,
+        "media_ratio": "inherit",
+        "media_fit": "cover",
+        "link_style": "text",
+        "overlay_colors": "light"
       }
     },
     "expand": {
@@ -293,14 +477,18 @@
         "heading": {
           "type": "heading",
           "settings": {
-            "heading": "Made for the evening passeggiata"
+            "heading": "Made for the evening passeggiata",
+            "scale": 100
           }
         },
         "button": {
           "type": "button",
           "settings": {
             "label": "Shop shirts",
-            "link": "shopify://collections/shirts"
+            "link": "shopify://collections/shirts",
+            "style": "solid",
+            "corners": "inherit",
+            "arrow": false
           }
         }
       },
@@ -309,61 +497,101 @@
         "button"
       ],
       "settings": {
+        "animate": true,
         "video_url": "https://corsovelle.com/cdn/shop/videos/c/vp/0c1da513350e4a3aa09f622ea39e8713/0c1da513350e4a3aa09f622ea39e8713.HD-1080p-7.2Mbps-91036918.mp4",
         "poster_url": "https://corsovelle.com/cdn/shop/files/preview_images/0c1da513350e4a3aa09f622ea39e8713.thumbnail.0000000000_2000x.jpg",
         "collection": "shirts",
-        "title": "Riviera nights",
+        "title": "Corso Velle",
         "hint": "Scroll",
         "start_width": 42,
         "start_height": 58,
         "length": "long",
         "scrim": 40,
-        "color_scheme": "scheme-3"
+        "color_scheme": "scheme-3",
+        "video_autoplay": true,
+        "alignment": "center",
+        "static_height": "regular",
+        "copy_width": 60
       }
     },
     "featured": {
       "type": "featured-collection",
       "settings": {
+        "eyebrow": "Featured drop",
         "heading": "Shackets",
+        "heading_italic": "",
+        "description": "",
+        "show_collection_description": true,
         "collection": "shackets",
         "limit": 4,
+        "layout": "grid",
+        "carousel_effect": "liquid",
+        "carousel_purchase": true,
+        "carousel_intro": "rise",
+        "carousel_center_products": 4,
+        "carousel_autoplay": true,
+        "carousel_interval": 1.5,
+        "carousel_speed": 35,
         "columns_mobile": "1",
         "columns_desktop": 3,
         "show_view_all": true,
-        "color_scheme": "scheme-1"
+        "color_scheme": "scheme-1",
+        "products": [],
+        "grid_style": "regular",
+        "grid_gap": 8,
+        "grid_gap_mobile": 8,
+        "heading_alignment": "left",
+        "show_count": true,
+        "link": "",
+        "link_label": "View all",
+        "content_width": "inherit",
+        "spacing_mode": "inherit",
+        "padding_top": 72,
+        "padding_bottom": 72,
+        "padding_top_small": 48,
+        "padding_bottom_small": 48,
+        "carousel_card_width": "regular",
+        "carousel_gap": "regular",
+        "carousel_emphasis": true,
+        "carousel_arrows": true
       }
     },
     "strip": {
       "type": "accordion-gallery",
-      "blocks": {},
-      "block_order": [],
       "settings": {
         "eyebrow": "The collection, in focus",
         "heading": "Explore the collection",
+        "heading_size": 76,
         "description": "Everyday pieces. A closer look at the details.",
         "collection": "timeless-basics-26",
         "limit": 5,
+        "light_text_panels": "",
         "height": 580,
+        "expand_ratio": 4,
+        "gap": 10,
+        "radius": 0,
+        "details_height": 168,
+        "image_fit": "cover",
+        "mobile_height": 510,
+        "mobile_collapsed": 76,
+        "label_size": 30,
+        "title_size": 34,
+        "show_numbers": true,
+        "show_price": true,
+        "show_link": true,
         "link_label": "Shop the piece",
-        "color_scheme": "scheme-1"
-      }
-    },
-    "arrivals": {
-      "type": "featured-collection",
-      "settings": {
-        "eyebrow": "The latest edit",
-        "heading": "New arrivals",
-        "collection": "all-products",
-        "layout": "carousel",
-        "carousel_speed": 35,
-        "carousel_effect": "liquid",
-        "carousel_intro": "rise",
-        "carousel_autoplay": true,
-        "limit": 12,
-        "columns_mobile": "1",
-        "columns_desktop": 3,
-        "show_view_all": true,
-        "color_scheme": "scheme-1"
+        "color_scheme": "scheme-1",
+        "text_color": "#432d23",
+        "panel_color": "#eee9e1",
+        "label_color": "#432d23",
+        "label_light_color": "#fff9f0",
+        "details_color": "#432d23",
+        "details_text_color": "#fff9f0",
+        "start_panel": 1,
+        "open_on_hover": true,
+        "hover_delay": 160,
+        "click_through": true,
+        "speed": 1200
       }
     }
   },
