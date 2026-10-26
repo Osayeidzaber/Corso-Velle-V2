@@ -1,0 +1,4 @@
+/* nk-dismissible — layout lives in sections/promo-banner.liquid; this only keeps the host a box. */
+nk-dismissible {
+  display: flex;
+}

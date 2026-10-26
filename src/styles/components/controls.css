@@ -1,0 +1,182 @@
+/* Buttons, icon buttons, quantity steppers, status messages. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 1px solid var(--nk-color-text);
+  border-radius: var(--nk-radius);
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity var(--nk-dur-instant) var(--nk-ease-out);
+}
+
+.button--secondary {
+  background: transparent;
+  color: var(--nk-color-text);
+}
+
+.button--full {
+  width: 100%;
+}
+
+.button--corners-square { --nk-button-radius: 0px; }
+.button--corners-soft { --nk-button-radius: 8px; }
+.button--corners-pill { --nk-button-radius: 999px; }
+
+.button[aria-disabled='true'],
+.button:disabled {
+  border-color: var(--nk-color-disabled);
+  background: var(--nk-color-disabled);
+  color: var(--nk-color-bg);
+  cursor: not-allowed;
+}
+
+.button[aria-busy='true'] {
+  opacity: 0.75;
+  cursor: progress;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--nk-tap);
+  min-height: var(--nk-tap);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.icon-button svg {
+  width: 22px;
+  height: 22px;
+}
+
+.quantity {
+  display: inline-grid;
+  grid-template-columns: var(--nk-tap) 3rem var(--nk-tap);
+  align-items: center;
+  border: 1px solid var(--nk-color-line);
+  border-radius: var(--nk-radius);
+}
+
+.quantity input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  font-family: var(--nk-font-spec);
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.quantity input::-webkit-inner-spin-button,
+.quantity input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.message {
+  padding: 12px;
+  border: 1px solid currentColor;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.message--error {
+  color: var(--nk-color-error);
+}
+
+.message--success {
+  color: var(--nk-color-success);
+}
+
+.price {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.price__compare {
+  margin-inline-start: 6px;
+  color: var(--nk-color-text-muted);
+  font-weight: 400;
+  /* A thin strike drawn as a background line, so it can animate in (price-transition.ts). */
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) no-repeat 0 55% / 100% 1px;
+}
+
+/* Forced colors drop backgrounds: keep a real strikethrough there. */
+@media (forced-colors: active) {
+  .price__compare { text-decoration: line-through; }
+}
+
+/* An amount never breaks between currency and number ("Tk / 1,900.00"); separate amounts may. */
+.price__current,
+.price__compare,
+.cart-summary .price {
+  white-space: nowrap;
+}
+
+/* Cart lines are narrow on phones: the line price and its original price stack. */
+.cart-line__top .price {
+  display: grid;
+  justify-items: end;
+  align-content: start;
+  white-space: nowrap;
+}
+
+.cart-line__top .price__compare {
+  margin-inline-start: 0;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 7px;
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+  font-family: var(--nk-font-spec);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.badge--sale {
+  background: var(--nk-color-accent);
+  color: var(--nk-color-accent-text);
+}
+
+/* Promotion code badge (snippets/promotion): an outlined label, quieter than the solid sale badge. */
+.badge--promo {
+  background: var(--nk-color-bg);
+  color: var(--nk-color-accent);
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
+/* Low-stock dot on size buttons and card quick-add sizes (snippets/size-stock). Global because
+   product cards appear on every page. */
+.stock-dot {
+  position: relative;
+  flex-shrink: 0;
+  width: 5px;
+  height: 5px;
+  margin-inline-start: 5px;
+  border-radius: 50%;
+  background: #c2701e;
+  transform: translateY(-0.45em);
+}
+
+.option__value label,
+.card__tray-pill {
+  position: relative;
+}

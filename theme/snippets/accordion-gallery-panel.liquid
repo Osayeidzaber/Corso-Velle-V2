@@ -1,0 +1,29 @@
+{%- doc -%}
+  @param {object} image - Panel image
+  @param {string} title - Panel title
+  @param {string} link - Destination
+  @param {string} id - Unique panel ID
+  @param {number} index - One-based panel index
+  @param {string} link_label - Shop link text
+  @param {object} [product] - Optional product for price
+  @param {object} [block] - Optional editor block
+  @param {boolean} [light_text] - Light labels for dark photos
+{%- enddoc -%}
+<article class="accordion-gallery__panel" data-ref="panel" {% if light_text %}data-tone="light" {% endif %}{% if block %}data-block-id="{{ block.id }}" {{ block.shopify_attributes }}{% endif %}>
+  <div class="accordion-gallery__media">
+    {% if image %}
+      {{ image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '240, 480, 720, 960, 1200', sizes: '(max-width: 749px) 90vw, 50vw', alt: title }}
+    {% else %}
+      {{ 'product-1' | placeholder_svg_tag }}
+    {% endif %}
+  </div>
+  <button type="button" class="accordion-gallery__toggle" data-gallery-toggle aria-expanded="false" aria-controls="{{ id }}" aria-label="{{ title | escape }}">
+    <span class="accordion-gallery__number">{% if index < 10 %}0{% endif %}{{ index }}</span>
+    <span class="accordion-gallery__collapsed-title">{{ title | escape }}</span>
+  </button>
+  <div class="accordion-gallery__details" id="{{ id }}" data-gallery-details>
+    <h3 class="accordion-gallery__title">{{ title | escape }}</h3>
+    {% if product %}<p class="accordion-gallery__price">{{ product.price | money }}</p>{% endif %}
+    {% if link != blank %}<a class="accordion-gallery__link" href="{{ link }}">{{ link_label | escape }}<span aria-hidden="true">↗</span><span class="visually-hidden">: {{ title | escape }}</span></a>{% endif %}
+  </div>
+</article>

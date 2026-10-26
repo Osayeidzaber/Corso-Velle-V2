@@ -1,0 +1,28 @@
+/* nk-reveal — GSAP owns the motion; CSS only provides layout for split pieces. */
+nk-reveal {
+  display: block;
+}
+
+nk-reveal .line,
+nk-reveal [class*='line-mask'] {
+  padding-bottom: 0.06em;
+}
+
+nk-reveal[mode='fold'] .word,
+nk-reveal[mode='fold'] [class*='word'] {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  nk-reveal * {
+    transform: none !important;
+    opacity: 1 !important;
+    clip-path: none !important;
+  }
+}
+
+/* Line masks clip at the glyph box; give italics and descenders room inside the mask. */
+nk-reveal [data-reveal-target] > div[aria-hidden='true'] {
+  padding: 0 0.12em 0.14em 0;
+  margin: 0 -0.12em -0.14em 0;
+}

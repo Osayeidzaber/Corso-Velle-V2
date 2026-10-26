@@ -1,0 +1,202 @@
+{%- doc -%}
+  Schema.org JSON-LD for the current page, rendered in <head> by meta-tags. Every value comes from
+  live Shopify data (product, variants, metafields, theme settings), so admin edits update it with
+  no code change. Nothing is inferred: a property is omitted when the store has no value for it.
+
+  - Home: OnlineStore (name, logo, social profiles) and WebSite (site name).
+  - Product: ProductGroup with one Product per variant (size/color/material/pattern from option
+    names, SKU, GTIN from a valid barcode, Shopify price and availability), or a single Product.
+    Prices are the variant price and genuine compare-at price only. Discount codes connected under
+    Theme settings > Promotions are never reflected: Shopify confirms them only in the cart.
+  - Article: Shopify's own article structured data.
+  BreadcrumbList is rendered beside the visible breadcrumbs instead (snippets/breadcrumb-schema).
+
+  Replaces Shopify's `product | structured_data` output, which lacks variant attributes; never
+  render both.
+{%- enddoc -%}
+{%- liquid
+  # The primary domain, matching canonical URLs even when the page is served from another host.
+  assign origin = shop.url
+  assign currency = cart.currency.iso_code
+  assign home_url = origin | append: routes.root_url
+-%}
+
+{%- if request.page_type == 'index' -%}
+  {%- liquid
+    assign same_as = ''
+    assign social_keys = 'social_instagram,social_tiktok,social_facebook,social_youtube' | split: ','
+    for key in social_keys
+      assign profile = settings[key] | strip
+      if profile != blank
+        assign same_as = same_as | append: '|' | append: profile
+      endif
+    endfor
+    assign same_as = same_as | remove_first: '|' | split: '|'
+  -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "OnlineStore",
+          "@id": {{ home_url | append: '#organization' | json }},
+          "name": {{ shop.name | json }},
+          "url": {{ home_url | json }}
+          {%- if shop.description != blank -%},
+            "description": {{ shop.description | strip_html | json }}
+          {%- endif -%}
+          {%- if settings.logo -%},
+            "logo": {{ settings.logo | image_url: width: 600 | prepend: 'https:' | json }}
+          {%- endif -%}
+          {%- if same_as.size > 0 -%},
+            "sameAs": {{ same_as | json }}
+          {%- endif %}
+        },
+        {
+          "@type": "WebSite",
+          "@id": {{ home_url | append: '#website' | json }},
+          "name": {{ shop.name | json }},
+          "url": {{ home_url | json }},
+          "publisher": { "@id": {{ home_url | append: '#organization' | json }} }
+        }
+      ]
+    }
+  </script>
+{%- endif -%}
+
+{%- if request.page_type == 'product' -%}
+  {%- liquid
+    assign product_url = origin | append: product.url
+
+    # Whitespace-normalised plain text; block tags get a space so words never run together.
+    capture description
+      render 'seo-text', text: product.description
+    endcapture
+
+    # Shared attributes: merchant metafields first, then Shopify's category metafields.
+    assign material = blank
+    assign material_field = product.metafields.custom.fabric | default: product.metafields.custom.materials
+    if material_field != blank
+      assign material = material_field | metafield_text | strip
+    endif
+    if material == blank
+      for entry in product.metafields.shopify.fabric.value
+        assign label = entry.label.value | default: entry.label
+        assign material = material | append: ', ' | append: label
+      endfor
+      assign material = material | remove_first: ', '
+    endif
+    assign pattern = blank
+    for entry in product.metafields.shopify.pattern.value
+      assign label = entry.label.value | default: entry.label
+      assign pattern = pattern | append: ', ' | append: label
+    endfor
+    assign pattern = pattern | remove_first: ', '
+    assign group_color = product.metafields.custom.color_name.value | strip
+
+    # Which variant properties the options map to, keyed by option position.
+    assign option_props = ''
+    assign varies_by = ''
+    for option in product.options_with_values
+      assign option_name = option.name | downcase | strip
+      assign prop = '-'
+      capture is_size
+        render 'size-option', name: option.name
+      endcapture
+      if is_size == 'true'
+        assign prop = 'size'
+      elsif option_name contains 'color' or option_name contains 'colour'
+        assign prop = 'color'
+      elsif option_name contains 'material' or option_name contains 'fabric'
+        assign prop = 'material'
+      elsif option_name contains 'pattern' or option_name contains 'print'
+        assign prop = 'pattern'
+      endif
+      assign option_props = option_props | append: prop | append: ','
+      if prop != '-'
+        assign varies_by = varies_by | append: 'https://schema.org/' | append: prop | append: ','
+        if prop == 'color'
+          assign group_color = blank
+        elsif prop == 'material'
+          assign material = blank
+        elsif prop == 'pattern'
+          assign pattern = blank
+        endif
+      endif
+    endfor
+    assign option_props = option_props | split: ','
+    assign varies_by = varies_by | split: ','
+
+    assign images = ''
+    for image in product.images limit: 10
+      assign image_src = image | image_url: width: 1920
+      assign images = images | append: '|https:' | append: image_src
+    endfor
+    assign images = images | remove_first: '|' | split: '|'
+    assign is_group = true
+    if product.has_only_default_variant
+      assign is_group = false
+    endif
+  -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": {% if is_group %}"ProductGroup"{% else %}"Product"{% endif %},
+      "@id": {{ product_url | append: '#product' | json }},
+      "name": {{ product.title | json }},
+      "url": {{ product_url | json }},
+      {%- if description != blank %}
+      "description": {{ description | json }},
+      {%- endif %}
+      {%- if images.size > 0 %}
+      "image": {{ images | json }},
+      {%- endif %}
+      {%- if product.vendor != blank %}
+      "brand": { "@type": "Brand", "name": {{ product.vendor | json }} },
+      {%- endif %}
+      {%- if product.category != blank %}
+      "category": {{ product.category.name | json }},
+      {%- endif %}
+      {%- if material != blank %}
+      "material": {{ material | json }},
+      {%- endif %}
+      {%- if pattern != blank %}
+      "pattern": {{ pattern | json }},
+      {%- endif %}
+      {%- if group_color != blank %}
+      "color": {{ group_color | json }},
+      {%- endif %}
+      {%- if is_group %}
+      "productGroupID": {{ product.id | append: '' | json }},
+      {%- if varies_by.size > 0 %}
+      "variesBy": {{ varies_by | json }},
+      {%- endif %}
+      "hasVariant": [
+        {%- assign selected_in_schema = false -%}
+        {%- assign selected_variant = product.selected_or_first_available_variant -%}
+        {%- for variant in product.variants limit: 50 -%}
+          {%- if variant.id == selected_variant.id -%}{%- assign selected_in_schema = true -%}{%- endif -%}
+          {% render 'structured-data-variant', variant: variant, product: product, product_url: product_url, currency: currency, option_props: option_props %}{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+        {%- comment -%}
+          Shopify limits Liquid loops and variant collections. A deep-linked variant can lie
+          outside both windows; always describe the actual selected variant, without serializing
+          thousands of offers or claiming the initial window is the complete catalog.
+        {%- endcomment -%}
+        {%- if selected_in_schema == false and selected_variant != blank -%}
+          {%- if product.variants.size > 0 -%},{%- endif -%}
+          {% render 'structured-data-variant', variant: selected_variant, product: product, product_url: product_url, currency: currency, option_props: option_props %}
+        {%- endif -%}
+      ]
+      {%- else -%}
+      {%- render 'structured-data-offer', variant: product.selected_or_first_available_variant, product: product, product_url: product_url, currency: currency %}
+      {%- endif %}
+    }
+  </script>
+{%- endif -%}
+
+{%- if request.page_type == 'article' -%}
+  <script type="application/ld+json">
+    {{ article | structured_data }}
+  </script>
+{%- endif -%}

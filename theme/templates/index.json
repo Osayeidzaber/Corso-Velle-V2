@@ -1,0 +1,383 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "rack": {
+      "type": "clothes-rack",
+      "settings": {
+        "heading": "On the rail",
+        "collection": "t-shirts",
+        "limit": 7,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "hero": {
+      "type": "hero",
+      "blocks": {
+        "eyebrow": {
+          "type": "eyebrow",
+          "settings": {
+            "text": "Corso Velle · Collection 2026",
+            "shine": false
+          }
+        },
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Timeless Basics",
+            "heading_italic": "'26",
+            "entrance": "cut",
+            "text_style": "none",
+            "hover": "none",
+            "italic_style": "none"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Refined everyday essentials, designed for effortless, modern dressing.</p>"
+          }
+        },
+        "buttons": {
+          "type": "buttons",
+          "settings": {
+            "label_1": "Shop the collection",
+            "link_1": "shopify://collections/timeless-basics-26",
+            "label_2": "All products",
+            "link_2": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "eyebrow",
+        "heading",
+        "text",
+        "buttons"
+      ],
+      "settings": {
+        "video_url": "https://corsovelle.com/cdn/shop/videos/c/vp/a2036364d55d46f887841a201374b3f2/a2036364d55d46f887841a201374b3f2.HD-1080p-7.2Mbps-91045694.mp4",
+        "poster_url": "https://corsovelle.com/cdn/shop/files/preview_images/a2036364d55d46f887841a201374b3f2.thumbnail.0000000000_2000x.jpg",
+        "collection": "timeless-basics-26",
+        "height": "full",
+        "position": "bottom-left",
+        "parallax": 14,
+        "show_scroll_cue": false,
+        "scrim_style": "solid",
+        "scrim": 35,
+        "color_scheme": "scheme-2"
+      }
+    },
+    "band": {
+      "type": "message-band",
+      "blocks": {
+        "m1": {
+          "type": "message",
+          "settings": {
+            "text": "Shirts",
+            "link": "shopify://collections/shirts"
+          }
+        },
+        "m2": {
+          "type": "message",
+          "settings": {
+            "text": "Shackets",
+            "link": "shopify://collections/shackets"
+          }
+        },
+        "m3": {
+          "type": "message",
+          "settings": {
+            "text": "Knit polo",
+            "link": "shopify://collections/knit-polo"
+          }
+        },
+        "m4": {
+          "type": "message",
+          "settings": {
+            "text": "Linen",
+            "link": "shopify://collections/linen"
+          }
+        },
+        "m5": {
+          "type": "message",
+          "settings": {
+            "text": "Jeans",
+            "link": "shopify://collections/jeans-1"
+          }
+        },
+        "m6": {
+          "type": "message",
+          "settings": {
+            "text": "Footwear",
+            "link": "shopify://collections/footwear"
+          }
+        }
+      },
+      "block_order": [
+        "m1",
+        "m2",
+        "m3",
+        "m4",
+        "m5",
+        "m6"
+      ],
+      "settings": {
+        "rows": "2",
+        "size": 88,
+        "speed": 40,
+        "scroll_react": true,
+        "outline_second": true,
+        "color_scheme": "scheme-3"
+      }
+    },
+    "tabs": {
+      "type": "collection-tabs",
+      "blocks": {
+        "t1": {
+          "type": "tab",
+          "settings": {
+            "collection": "timeless-basics-26",
+            "label": "Timeless Basics '26"
+          }
+        },
+        "t2": {
+          "type": "tab",
+          "settings": {
+            "collection": "shirts",
+            "label": "Shirts"
+          }
+        },
+        "t3": {
+          "type": "tab",
+          "settings": {
+            "collection": "shackets",
+            "label": "Shackets"
+          }
+        },
+        "t4": {
+          "type": "tab",
+          "settings": {
+            "collection": "knit-polo",
+            "label": "Knit polo"
+          }
+        },
+        "t5": {
+          "type": "tab",
+          "settings": {
+            "collection": "footwear",
+            "label": "Footwear"
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t5"
+      ],
+      "settings": {
+        "eyebrow": "New season",
+        "heading": "Just",
+        "heading_italic": "landed",
+        "entrance": "cut",
+        "limit": 8,
+        "columns_desktop": 3,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "categories": {
+      "type": "category-cards",
+      "blocks": {
+        "c1": {
+          "type": "category",
+          "settings": {
+            "collection": "shirts",
+            "title": "Shirts",
+            "description": "Oxford, linen and poplin, cut for warm evenings.",
+            "link": "shopify://collections/shirts"
+          }
+        },
+        "c2": {
+          "type": "category",
+          "settings": {
+            "collection": "shackets",
+            "title": "Shackets",
+            "description": "The layer between a shirt and a jacket.",
+            "link": "shopify://collections/shackets"
+          }
+        },
+        "c3": {
+          "type": "category",
+          "settings": {
+            "collection": "polo",
+            "title": "Polo",
+            "description": "Knit and piqué, softly structured.",
+            "link": "shopify://collections/polo"
+          }
+        },
+        "c4": {
+          "type": "category",
+          "settings": {
+            "collection": "jeans-1",
+            "title": "Jeans",
+            "description": "Clean washes, straight lines.",
+            "link": "shopify://collections/jeans-1"
+          }
+        },
+        "c5": {
+          "type": "category",
+          "settings": {
+            "collection": "footwear",
+            "title": "Footwear",
+            "description": "To finish the look.",
+            "link": "shopify://collections/footwear"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5"
+      ],
+      "settings": {
+        "eyebrow": "Shop by category",
+        "heading": "The",
+        "heading_italic": "wardrobe",
+        "link_label": "Shop all",
+        "link": "shopify://collections/all",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "divider": {
+      "type": "divider",
+      "settings": {
+        "style": "elastic",
+        "grab": 14,
+        "spacing": 24,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "story": {
+      "type": "media-text",
+      "settings": {
+        "collection": "timeless-basics-26",
+        "layout": "split",
+        "media_right": false,
+        "text_first_mobile": false,
+        "blur_scrim": true,
+        "index": "01 / Timeless Basics",
+        "heading": "Quietly",
+        "heading_italic": "considered",
+        "text": "<p>Timeless Basics by Corso Velle is a refined collection of everyday essentials designed for effortless, modern dressing.</p>",
+        "link_label": "Discover the collection",
+        "link": "shopify://collections/timeless-basics-26",
+        "heading_entrance": "rise",
+        "entrance": "fade",
+        "text_style": "none",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "expand": {
+      "type": "expand-media",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Made for the evening passeggiata"
+          }
+        },
+        "button": {
+          "type": "button",
+          "settings": {
+            "label": "Shop shirts",
+            "link": "shopify://collections/shirts"
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "button"
+      ],
+      "settings": {
+        "video_url": "https://corsovelle.com/cdn/shop/videos/c/vp/0c1da513350e4a3aa09f622ea39e8713/0c1da513350e4a3aa09f622ea39e8713.HD-1080p-7.2Mbps-91036918.mp4",
+        "poster_url": "https://corsovelle.com/cdn/shop/files/preview_images/0c1da513350e4a3aa09f622ea39e8713.thumbnail.0000000000_2000x.jpg",
+        "collection": "shirts",
+        "title": "Riviera nights",
+        "hint": "Scroll",
+        "start_width": 42,
+        "start_height": 58,
+        "length": "long",
+        "scrim": 40,
+        "color_scheme": "scheme-3"
+      }
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Shackets",
+        "collection": "shackets",
+        "limit": 4,
+        "columns_mobile": "1",
+        "columns_desktop": 3,
+        "show_view_all": true,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "strip": {
+      "type": "accordion-gallery",
+      "blocks": {},
+      "block_order": [],
+      "settings": {
+        "eyebrow": "The collection, in focus",
+        "heading": "Explore the collection",
+        "description": "Everyday pieces. A closer look at the details.",
+        "collection": "timeless-basics-26",
+        "limit": 5,
+        "height": 580,
+        "link_label": "Shop the piece",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "arrivals": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "The latest edit",
+        "heading": "New arrivals",
+        "collection": "all-products",
+        "layout": "carousel",
+        "carousel_speed": 35,
+        "carousel_effect": "liquid",
+        "carousel_intro": "rise",
+        "carousel_autoplay": true,
+        "limit": 12,
+        "columns_mobile": "1",
+        "columns_desktop": 3,
+        "show_view_all": true,
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "band",
+    "rack",
+    "arrivals",
+    "tabs",
+    "categories",
+    "divider",
+    "story",
+    "expand",
+    "featured",
+    "strip"
+  ]
+}

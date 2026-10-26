@@ -1,0 +1,28 @@
+.nk-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+  font-family: var(--nk-font-spec);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* Only hide the system cursor while the badge is actually running (motion on, script loaded). */
+html.nk-cursor-on [data-cursor='view'] {
+  cursor: none;
+}
+
+/* Unknown elements are inline, and transforms do not apply to inline boxes. */
+nk-magnetic {
+  display: inline-block;
+}

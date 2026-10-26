@@ -1,0 +1,61 @@
+# Corso Velle
+
+![Corso Velle wordmark](docs/readme-cover.svg)
+
+A Shopify Online Store 2.0 theme built for [Corsovelle](https://corsovelle.com). Liquid renders every page; TypeScript custom elements, GSAP and Vite add interaction on top. It uses Shopify's own catalog, cart, checkout, filters and SEO objects. There is no separate storefront app and no React.
+
+> This repository holds Corsovelle's configured theme. It is not yet packaged as a neutral commercial release, and no license is granted (see [LICENSE](LICENSE)).
+
+## Features
+
+| Area | What's included |
+| --- | --- |
+| Content | Image, video and slideshow heroes; media with text; expanding media; category cards; lookbook hotspots; FAQ; testimonials and reviews; feature, timeline, pricing and newsletter sections |
+| Discovery | Featured collections as a grid or a WebGL carousel (native fallback), collection tabs, clothes rack, predictive search, Search & Discovery filters, sorting, infinite or numbered pagination |
+| Product page | Gallery layouts with zoom, explicit size selection, size charts with cm/in switching, model information, sibling colourways, sticky add-to-cart bar |
+| Cart | AJAX drawer and cart page, quantity changes, notes, recommendations, free-shipping progress, Shopify discount codes (manual and automatic) |
+| Design | Colour schemes, three font roles, spacing, buttons, card styles, per-section options, Riviera / Minimal / Quiet theme styles |
+| Motion | GSAP entrances and scroll scenes, optional desktop wheel smoothing (Lenis), simplified phone motion, full reduced-motion support |
+
+## Quick start
+
+Install a built theme ZIP from Shopify Admin → **Online Store → Themes**. To work from source (Node.js 22.12+, 24 or 26+):
+
+```sh
+npm ci
+npm run build
+npm run watch                                      # terminal 1: rebuild assets on change
+npm run dev -- --store your-store.myshopify.com    # terminal 2: Shopify preview
+```
+
+Run `npm run check` before committing, and `npm run package` to build the installable ZIP. See [INSTALLATION.md](INSTALLATION.md) for details and troubleshooting.
+
+## Repository layout
+
+```text
+src/       TypeScript and CSS sources (built by Vite)
+theme/     The Shopify theme that gets uploaded (Liquid, JSON, built assets)
+scripts/   Asset sync, watcher, JSON/schema checks, settings-reference generator
+tests/     Vitest unit tests
+docs/      Setup guides, settings reference, licenses
+```
+
+Edit `src/` and `theme/`. Never edit `theme/assets/nk-*` or `theme/snippets/nk-assets.liquid` by hand; the build generates them.
+
+## Documentation
+
+| Guide | Covers |
+| --- | --- |
+| [INSTALLATION.md](INSTALLATION.md) | Installing a ZIP, developing from source, commands, packaging, troubleshooting |
+| [CUSTOMIZATION.md](CUSTOMIZATION.md) | Every Theme Editor area, what it controls and its limits |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Architecture, adding sections and components, animation, commerce code |
+| [docs/SETTINGS-REFERENCE.md](docs/SETTINGS-REFERENCE.md) | Every setting, default and block (generated from the schemas) |
+| [docs/SIZE-CHART-SETTINGS.md](docs/SIZE-CHART-SETTINGS.md) · [docs/SIZE-CHART-ADMIN.md](docs/SIZE-CHART-ADMIN.md) | Size charts from theme settings, or shared metaobject charts |
+| [docs/PROMOTIONS.md](docs/PROMOTIONS.md) | Connecting Shopify discount codes to products |
+| [docs/MODEL-INFO.md](docs/MODEL-INFO.md) | Model height and size text on product pages |
+| [docs/DISTRIBUTION.md](docs/DISTRIBUTION.md) | Preparing a release for another store, and updates |
+| [docs/SECTION-SOURCES.md](docs/SECTION-SOURCES.md) · [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) | Where adapted sections and components came from, and their licenses |
+
+## License
+
+No license is granted; all rights are reserved by the owner. Third-party parts keep their own licenses, listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The project started from [Shopify Skeleton](https://github.com/Shopify/skeleton-theme).

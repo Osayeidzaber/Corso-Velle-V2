@@ -1,0 +1,70 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header",
+  "sections": {
+    "announcement": {
+      "type": "announcement",
+      "blocks": {
+        "a1": {
+          "type": "message",
+          "settings": {
+            "text": "Timeless Basics '26 — now in store",
+            "link": "shopify://collections/timeless-basics-26"
+          }
+        },
+        "a2": {
+          "type": "message",
+          "settings": {
+            "text": "New shackets for the season",
+            "link": "shopify://collections/shackets"
+          }
+        },
+        "a3": {
+          "type": "message",
+          "settings": {
+            "text": "Linen, made for warm evenings",
+            "link": "shopify://collections/linen"
+          }
+        }
+      },
+      "block_order": [
+        "a1",
+        "a2",
+        "a3"
+      ],
+      "settings": {
+        "mode": "ticker",
+        "speed": 40,
+        "color_scheme": "scheme-3"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu": "main-menu",
+        "customer_account_menu": "customer-account-main-menu",
+        "layout": "center",
+        "sticky": "reveal",
+        "panel_style": "floating",
+        "link_hover": "underline",
+        "drawer_style": "editorial",
+        "search_style": "pill",
+        "overlay_home": true,
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": [
+    "announcement",
+    "header"
+  ]
+}

@@ -1,0 +1,245 @@
+/*
+ * Shared overlay surfaces (<dialog> opened via the overlay service).
+ * .drawer slides from an edge; .sheet rises from the bottom on phones.
+ * Entry/exit use @starting-style + allow-discrete where supported; otherwise they appear instantly.
+ */
+.drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: min(100vw, 420px);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition:
+    translate var(--nk-dur-overlay-out) var(--nk-ease-in),
+    overlay var(--nk-dur-overlay-out) allow-discrete,
+    display var(--nk-dur-overlay-out) allow-discrete;
+  translate: -100% 0;
+}
+
+.drawer:not([open]) {
+  display: none;
+}
+
+.drawer--right {
+  inset: 0 0 0 auto;
+  translate: 100% 0;
+}
+
+.drawer[open] {
+  translate: 0 0;
+  transition-duration: var(--nk-dur-overlay-in);
+  transition-timing-function: var(--nk-ease-out);
+}
+
+@starting-style {
+  .drawer[open] {
+    translate: -100% 0;
+  }
+
+  .drawer--right[open] {
+    translate: 100% 0;
+  }
+}
+
+.drawer::backdrop {
+  background: rgb(18 18 18 / 0.45);
+  transition:
+    opacity var(--nk-dur-overlay-out),
+    overlay var(--nk-dur-overlay-out) allow-discrete,
+    display var(--nk-dur-overlay-out) allow-discrete;
+  opacity: 0;
+}
+
+.drawer[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .drawer[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+.drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  padding: 0 6px 0 16px;
+  border-bottom: 1px solid var(--nk-color-line);
+}
+
+.drawer__title {
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.drawer__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.drawer__footer {
+  border-top: 1px solid var(--nk-color-text);
+  padding: 14px 16px calc(16px + env(safe-area-inset-bottom));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer,
+  .drawer--right {
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .drawer[open],
+    .drawer--right[open] {
+      translate: 0 0;
+      opacity: 0;
+    }
+  }
+}
+
+/*
+ * Search dialog: a strip under the top edge on desktop, full screen on phones.
+ * Results styling ships with the nk-predictive-search chunk.
+ */
+.search-modal {
+  position: fixed;
+  inset: 0 0 auto;
+  width: 100%;
+  max-width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--nk-color-line);
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+  opacity: 0;
+  translate: 0 -12px;
+  transition:
+    opacity var(--nk-dur-overlay-out) var(--nk-ease-in),
+    translate var(--nk-dur-overlay-out) var(--nk-ease-in),
+    overlay var(--nk-dur-overlay-out) allow-discrete,
+    display var(--nk-dur-overlay-out) allow-discrete;
+}
+
+.search-modal:not([open]) {
+  display: none;
+}
+
+.search-modal[open] {
+  opacity: 1;
+  translate: 0 0;
+  transition-duration: 240ms;
+  transition-timing-function: var(--nk-ease-out);
+}
+
+@starting-style {
+  .search-modal[open] {
+    opacity: 0;
+    translate: 0 -12px;
+  }
+}
+
+.search-modal::backdrop {
+  background: rgb(18 18 18 / 0.45);
+}
+
+.search-modal__inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.search-modal__field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 0 6px 0 16px;
+  border-bottom: 1px solid var(--nk-color-text);
+}
+
+.search-modal__field > svg {
+  flex: none;
+}
+
+.search-modal__field input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  /* 16px+ so iOS doesn't zoom on focus. */
+  font-size: max(16px, 1.125rem);
+}
+
+.search-modal__field input:focus-visible {
+  outline: none;
+}
+
+.search-modal__field:focus-within {
+  box-shadow: inset 0 -2px 0 var(--nk-focus);
+}
+
+.search-modal__field input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.search-modal__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
+}
+
+.search-modal__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.search-modal__error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+@media (min-width: 990px) {
+  .search-modal {
+    height: auto;
+    max-height: min(80dvh, 720px);
+  }
+
+  .search-modal__field,
+  .search-modal__body {
+    padding-inline: max(var(--nk-gutter), calc((100% - var(--nk-page-width, 1440px)) / 2 + var(--nk-gutter)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-modal,
+  .search-modal[open] {
+    translate: 0 0;
+  }
+}

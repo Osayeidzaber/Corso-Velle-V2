@@ -1,0 +1,2199 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "NK — Corso Velle",
+    "theme_version": "0.1.0",
+    "theme_author": "NKIL",
+    "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
+    "theme_support_url": "https://help.shopify.com/"
+  },
+  {
+    "name": "Logo",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo_inverse",
+        "label": "Logo over campaign images",
+        "info": "Used when the header overlays a dark hero image."
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "Shown in browser tabs and bookmarks. Square image, at least 96 × 96px."
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "label": "Logo width (desktop)",
+        "min": 60,
+        "max": 300,
+        "step": 10,
+        "unit": "px",
+        "default": 140
+      },
+      {
+        "type": "range",
+        "id": "logo_width_mobile",
+        "label": "Logo width (phone)",
+        "min": 60,
+        "max": 200,
+        "step": 10,
+        "unit": "px",
+        "default": 110
+      }
+    ]
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "color_scheme_group",
+        "id": "color_schemes",
+        "definition": [
+          {
+            "type": "color",
+            "id": "background",
+            "label": "Background",
+            "default": "#F3F2EE"
+          },
+          {
+            "type": "color",
+            "id": "surface",
+            "label": "Surface (cards, image placeholders)",
+            "default": "#E7E4DE"
+          },
+          {
+            "type": "color",
+            "id": "text",
+            "label": "Text",
+            "default": "#121212"
+          },
+          {
+            "type": "color",
+            "id": "text_muted",
+            "label": "Secondary text",
+            "default": "#55534E"
+          },
+          {
+            "type": "color",
+            "id": "line",
+            "label": "Lines and borders",
+            "default": "#D9D6CF"
+          },
+          {
+            "type": "color",
+            "id": "accent",
+            "label": "Accent (buttons, links, focus, selected states)",
+            "default": "#432D23",
+            "info": "Defaults to the footer brown. Hover, active, selected, border and focus shades are derived from it automatically."
+          },
+          {
+            "type": "color",
+            "id": "accent_text",
+            "label": "Text on accent",
+            "default": "#F5ECDF"
+          }
+        ],
+        "role": {
+          "background": "background",
+          "text": "text",
+          "primary_button": "text",
+          "on_primary_button": "background",
+          "primary_button_border": "text",
+          "secondary_button": "background",
+          "on_secondary_button": "text",
+          "secondary_button_border": "text",
+          "icons": "text",
+          "links": "accent"
+        }
+      },
+      {
+        "type": "header",
+        "content": "Status colors"
+      },
+      {
+        "type": "color",
+        "id": "color_error",
+        "label": "Errors",
+        "default": "#B42318"
+      },
+      {
+        "type": "color",
+        "id": "color_success",
+        "label": "Success",
+        "default": "#146C43"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "font_picker",
+        "id": "type_heading_font",
+        "label": "Headings",
+        "default": "newsreader_n4"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "label": "Body",
+        "default": "inter_n4"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_spec_font",
+        "label": "Labels (sizes, prices, details)",
+        "default": "inter_n5",
+        "info": "Used for small uppercase labels, sizes and prices."
+      },
+      {
+        "type": "select",
+        "id": "heading_case",
+        "label": "Heading case",
+        "options": [
+          {
+            "value": "none",
+            "label": "As typed"
+          },
+          {
+            "value": "uppercase",
+            "label": "Uppercase"
+          }
+        ],
+        "default": "uppercase"
+      },
+      {
+        "type": "select",
+        "id": "body_size",
+        "label": "Body text size",
+        "options": [
+          {
+            "value": "15",
+            "label": "Compact"
+          },
+          {
+            "value": "16",
+            "label": "Regular"
+          },
+          {
+            "value": "17",
+            "label": "Comfortable"
+          },
+          {
+            "value": "18",
+            "label": "Large"
+          }
+        ],
+        "default": "16"
+      },
+      {
+        "type": "select",
+        "id": "heading_tracking",
+        "label": "Shared heading letter spacing",
+        "options": [
+          {
+            "value": "editorial",
+            "label": "Editorial"
+          },
+          {
+            "value": "natural",
+            "label": "Natural"
+          },
+          {
+            "value": "tight",
+            "label": "Tight"
+          }
+        ],
+        "default": "editorial",
+        "info": "Shared headings and display text; specialized product/navigation typography keeps its own treatment."
+      },
+      {
+        "type": "select",
+        "id": "heading_leading",
+        "label": "Shared heading line spacing",
+        "options": [
+          {
+            "value": "editorial",
+            "label": "Editorial"
+          },
+          {
+            "value": "comfortable",
+            "label": "Comfortable"
+          }
+        ],
+        "default": "editorial"
+      },
+      {
+        "type": "select",
+        "id": "label_tracking",
+        "label": "Shared label letter spacing",
+        "options": [
+          {
+            "value": "editorial",
+            "label": "Editorial"
+          },
+          {
+            "value": "natural",
+            "label": "Natural"
+          }
+        ],
+        "default": "editorial"
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "select",
+        "id": "page_width",
+        "label": "Page width",
+        "options": [
+          {
+            "value": "1200px",
+            "label": "Narrow"
+          },
+          {
+            "value": "1440px",
+            "label": "Wide"
+          },
+          {
+            "value": "100vw",
+            "label": "Full"
+          }
+        ],
+        "default": "1440px"
+      },
+      {
+        "type": "select",
+        "id": "section_spacing",
+        "label": "Space between sections",
+        "options": [
+          {
+            "value": "48",
+            "label": "Compact"
+          },
+          {
+            "value": "72",
+            "label": "Regular"
+          },
+          {
+            "value": "112",
+            "label": "Airy"
+          }
+        ],
+        "default": "72"
+      },
+      {
+        "type": "select",
+        "id": "corner_radius",
+        "label": "Button and field corners",
+        "options": [
+          {
+            "value": "0",
+            "label": "Square"
+          },
+          {
+            "value": "2",
+            "label": "Soft"
+          },
+          {
+            "value": "999",
+            "label": "Pill"
+          }
+        ],
+        "default": "2"
+      },
+      {
+        "type": "header",
+        "content": "Responsive spacing"
+      },
+      {
+        "type": "paragraph",
+        "content": "Page gutters set the side space used by shared content containers. Full-width media and sections with their own spacing keep their layout."
+      },
+      {
+        "type": "range",
+        "id": "gutter_mobile",
+        "label": "Page gutter on phones",
+        "min": 12,
+        "max": 32,
+        "step": 2,
+        "unit": "px",
+        "default": 16,
+        "info": "Screens below 750px."
+      },
+      {
+        "type": "range",
+        "id": "gutter_tablet",
+        "label": "Page gutter on tablets",
+        "min": 16,
+        "max": 48,
+        "step": 2,
+        "unit": "px",
+        "default": 24,
+        "info": "Screens from 750px to 1199px."
+      },
+      {
+        "type": "range",
+        "id": "gutter_desktop",
+        "label": "Page gutter on large screens",
+        "min": 24,
+        "max": 80,
+        "step": 4,
+        "unit": "px",
+        "default": 48,
+        "info": "Screens from 1200px."
+      },
+      {
+        "type": "select",
+        "id": "section_spacing_mobile",
+        "label": "Section spacing on smaller screens",
+        "options": [
+          {
+            "value": "50",
+            "label": "Compact"
+          },
+          {
+            "value": "66",
+            "label": "Regular"
+          },
+          {
+            "value": "85",
+            "label": "Airy"
+          },
+          {
+            "value": "100",
+            "label": "Same as desktop"
+          }
+        ],
+        "default": "66",
+        "info": "Below 990px, sections using shared spacing use 50%, 66%, 85% or 100% of Space between sections."
+      }
+    ]
+  },
+  {
+    "name": "Buttons",
+    "settings": [
+      {
+        "type": "select",
+        "id": "button_size",
+        "label": "Default button size",
+        "options": [
+          {
+            "value": "compact",
+            "label": "Compact"
+          },
+          {
+            "value": "regular",
+            "label": "Regular"
+          },
+          {
+            "value": "large",
+            "label": "Large"
+          }
+        ],
+        "default": "regular",
+        "info": "Applies to shared boxed buttons. Product purchase buttons retain a 56px minimum; hero Small/Large choices override this size."
+      },
+      {
+        "type": "select",
+        "id": "button_corners",
+        "label": "Default button corners",
+        "options": [
+          {
+            "value": "inherit",
+            "label": "Use Layout corner setting"
+          },
+          {
+            "value": "square",
+            "label": "Square"
+          },
+          {
+            "value": "soft",
+            "label": "Rounded"
+          },
+          {
+            "value": "pill",
+            "label": "Pill"
+          }
+        ],
+        "default": "inherit"
+      },
+      {
+        "type": "select",
+        "id": "button_motion",
+        "label": "Button hover effects",
+        "options": [
+          {
+            "value": "expressive",
+            "label": "Sliding fill and hero label roll"
+          },
+          {
+            "value": "subtle",
+            "label": "Subtle fade"
+          },
+          {
+            "value": "none",
+            "label": "Instant states (no animation)"
+          }
+        ],
+        "default": "expressive",
+        "info": "Keyboard focus keeps its visible outline in all modes. Reduced motion and global Motion off always suppress travel."
+      }
+    ]
+  },
+  {
+    "name": "Product cards",
+    "settings": [
+      {
+        "type": "select",
+        "id": "card_surface",
+        "label": "Card surface",
+        "options": [
+          {
+            "value": "flat",
+            "label": "Flat"
+          },
+          {
+            "value": "bordered",
+            "label": "Bordered"
+          },
+          {
+            "value": "raised",
+            "label": "Raised"
+          }
+        ],
+        "default": "flat",
+        "info": "Applies to shared product and article cards; custom category cards retain their own design."
+      },
+      {
+        "type": "select",
+        "id": "card_image_ratio",
+        "label": "Image shape",
+        "options": [
+          {
+            "value": "4 / 5",
+            "label": "Portrait 4:5"
+          },
+          {
+            "value": "3 / 4",
+            "label": "Portrait 3:4"
+          },
+          {
+            "value": "1 / 1",
+            "label": "Square"
+          }
+        ],
+        "default": "4 / 5"
+      },
+      {
+        "type": "select",
+        "id": "card_image_fit",
+        "label": "Image fit",
+        "options": [
+          {
+            "value": "cover",
+            "label": "Fill"
+          },
+          {
+            "value": "contain",
+            "label": "Fit"
+          }
+        ],
+        "default": "contain"
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_secondary",
+        "label": "Show second image on hover",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_sizes",
+        "label": "Show available sizes",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_low_stock",
+        "label": "Mark low-stock sizes",
+        "default": true,
+        "info": "A small dot on quick-add sizes at or below the \"only a few left\" threshold in Product page settings."
+      },
+      {
+        "type": "text",
+        "id": "card_size_option_names",
+        "label": "Size option name(s)",
+        "default": "Size",
+        "info": "Comma-separated option names treated as sizes, e.g. Size, Waist."
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_badges",
+        "label": "Show sale and sold-out badges",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "card_appearance",
+        "label": "Product card appearance",
+        "options": [
+          {
+            "value": "minimal",
+            "label": "Minimal"
+          },
+          {
+            "value": "editorial",
+            "label": "Editorial"
+          },
+          {
+            "value": "bordered",
+            "label": "Bordered"
+          },
+          {
+            "value": "image-led",
+            "label": "Image focused"
+          }
+        ],
+        "default": "minimal"
+      },
+      {
+        "type": "select",
+        "id": "card_hover",
+        "label": "Product media on hover",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Video when available, otherwise second image"
+          },
+          {
+            "value": "image",
+            "label": "Second image only"
+          },
+          {
+            "value": "off",
+            "label": "No alternate media"
+          }
+        ],
+        "default": "auto"
+      },
+      {
+        "type": "select",
+        "id": "card_hover_animation",
+        "label": "Product hover animation",
+        "options": [
+          {
+            "value": "blur",
+            "label": "Smooth blur crossfade"
+          },
+          {
+            "value": "fade",
+            "label": "Soft crossfade"
+          },
+          {
+            "value": "zoom",
+            "label": "Gentle zoom crossfade"
+          },
+          {
+            "value": "slide",
+            "label": "Slide across"
+          },
+          {
+            "value": "curtain",
+            "label": "Curtain reveal"
+          }
+        ],
+        "default": "blur",
+        "info": "Applies to alternate images and video. Videos appear only when playback is ready."
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_vendor",
+        "label": "Show product vendor",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_price",
+        "label": "Show product price",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Product page",
+    "settings": [
+      {
+        "type": "text",
+        "id": "product_required_options",
+        "label": "Options shoppers must choose",
+        "default": "Size",
+        "info": "These options are never preselected, so shoppers can't add an unintended size. Comma-separated."
+      },
+      {
+        "type": "select",
+        "id": "product_sold_out_values",
+        "label": "Sold-out option values",
+        "options": [
+          {
+            "value": "strike",
+            "label": "Show crossed out"
+          },
+          {
+            "value": "hide",
+            "label": "Hide"
+          }
+        ],
+        "default": "strike"
+      },
+      {
+        "type": "range",
+        "id": "inventory_threshold",
+        "label": "Show \"only a few left\" at or below",
+        "min": 0,
+        "max": 20,
+        "step": 1,
+        "default": 3,
+        "info": "0 turns low-stock messages off. Only counts variants where Shopify tracks inventory and doesn't sell when out of stock."
+      }
+    ]
+  },
+  {
+    "name": "Size charts",
+    "settings": [
+      {
+        "type": "text",
+        "id": "size_chart_default_handle",
+        "label": "Default reusable chart handle",
+        "info": "Handle of a size_chart metaobject from Content > Metaobjects, e.g. classic-shirt. Used only when no product or collection assignment applies. Leave blank to preserve template fallbacks."
+      },
+      {
+        "type": "paragraph",
+        "content": "Edit reusable measurements in Admin > Content > Metaobjects. Assign a chart below by product, collection or exact product tag. Priority: product data, product rules, collection charts/rules, tag rules, default. Within a scope, the first usable rule wins."
+      },
+      {
+        "type": "header",
+        "content": "Chart 1"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_1_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_1_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_1_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_1_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_1_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_1_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_1_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_1_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_1_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 2"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_2_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_2_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_2_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_2_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_2_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_2_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_2_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_2_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_2_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 3"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_3_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_3_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_3_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_3_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_3_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_3_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_3_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_3_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_3_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 4"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_4_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_4_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_4_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_4_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_4_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_4_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_4_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_4_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_4_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 5"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_5_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_5_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_5_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_5_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_5_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_5_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_5_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_5_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_5_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 6"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_6_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_6_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_6_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_6_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_6_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_6_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_6_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_6_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_6_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 7"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_7_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_7_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_7_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_7_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_7_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_7_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_7_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_7_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_7_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 8"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_8_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_8_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_8_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_8_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_8_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_8_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_8_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_8_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_8_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 9"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_9_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_9_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_9_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_9_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_9_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_9_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_9_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_9_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_9_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 10"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_10_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_10_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_10_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_10_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_10_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_10_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_10_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_10_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_10_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 11"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_11_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_11_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_11_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_11_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_11_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_11_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_11_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_11_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_11_note",
+        "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 12"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_12_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_12_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_12_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_12_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_12_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_12_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_12_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_12_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_12_note",
+        "label": "Size guide note"
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_after_add",
+        "label": "After adding to cart",
+        "options": [
+          {
+            "value": "drawer",
+            "label": "Open cart drawer"
+          },
+          {
+            "value": "notification",
+            "label": "Stay on page"
+          },
+          {
+            "value": "page",
+            "label": "Go to cart page"
+          }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_fly_animation",
+        "label": "Add-to-cart animation",
+        "default": true,
+        "info": "The product photo flies into the cart after it is added. Follows Theme settings > Motion and reduced-motion preferences."
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_note",
+        "label": "Order note",
+        "default": false
+      },
+      {
+        "type": "collection",
+        "id": "cart_empty_collection",
+        "label": "Empty cart: suggested collection"
+      },
+      {
+        "type": "header",
+        "content": "Free shipping progress"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_free_shipping",
+        "label": "Show free shipping progress",
+        "default": false,
+        "info": "Shown in the cart drawer and on the cart page. Set up the matching free shipping rate in Settings > Shipping and delivery."
+      },
+      {
+        "type": "number",
+        "id": "cart_free_shipping_threshold",
+        "label": "Free shipping minimum order",
+        "default": 5000,
+        "info": "Amount in your store's default currency, after discounts. Shoppers browsing in another currency don't see the bar."
+      }
+    ]
+  },
+  {
+    "name": "Promotions",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Create and manage discount codes in Shopify admin > Discounts. Here you only connect an existing code to products so the store can show it and try it in the cart. Shopify always decides whether a code applies and how much it saves."
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_auto_apply",
+        "label": "Try promotion codes automatically in the cart",
+        "default": true,
+        "info": "When a product with a promotion code is in the cart, the code is sent to Shopify. It stays only if Shopify accepts it."
+      },
+      {
+        "type": "select",
+        "id": "promo_conflict_rule",
+        "label": "When codes can't be combined",
+        "options": [
+          {
+            "value": "keep",
+            "label": "Keep the code already applied"
+          },
+          {
+            "value": "priority",
+            "label": "Use the higher-priority promotion"
+          }
+        ],
+        "default": "keep",
+        "info": "Codes a shopper enters themselves are never replaced automatically."
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_code_field",
+        "label": "Show discount code field in cart",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Product metafield codes"
+      },
+      {
+        "type": "paragraph",
+        "content": "Products with a code in the custom.discount_code metafield use it directly. See docs/PROMOTIONS.md to create the metafield definitions."
+      },
+      {
+        "type": "range",
+        "id": "promo_metafield_priority",
+        "label": "Metafield code priority",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 10,
+        "info": "Higher wins when a product matches more than one promotion."
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_metafield_cards",
+        "label": "Show metafield codes on product cards",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Promotion 1"
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_1_enabled",
+        "label": "Enable",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "promo_1_code",
+        "label": "Shopify discount code",
+        "info": "Type the code exactly as it is set up in Shopify admin, for example TEE20."
+      },
+      {
+        "type": "select",
+        "id": "promo_1_scope",
+        "label": "Applies to",
+        "options": [
+          {
+            "value": "matched",
+            "label": "Matching products"
+          },
+          {
+            "value": "all",
+            "label": "Entire store"
+          }
+        ],
+        "default": "matched"
+      },
+      {
+        "type": "product_list",
+        "id": "promo_1_products",
+        "label": "Products",
+        "limit": 50
+      },
+      {
+        "type": "textarea",
+        "id": "promo_1_handles",
+        "label": "Product handles",
+        "info": "One per line or comma-separated. Most stable way to match products by text."
+      },
+      {
+        "type": "textarea",
+        "id": "promo_1_titles",
+        "label": "Product title phrases",
+        "info": "One per line. Matches whole words, ignoring case, for example Oversized Tee."
+      },
+      {
+        "type": "text",
+        "id": "promo_1_tag",
+        "label": "Product tag or promotion key",
+        "info": "Matches products tagged with this value, or whose custom.promotion metafield has it, for example summer-sale."
+      },
+      {
+        "type": "range",
+        "id": "promo_1_priority",
+        "label": "Priority",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_1_auto",
+        "label": "Try this code automatically in the cart",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_1_cards",
+        "label": "Show on product cards",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "promo_1_badge",
+        "label": "Badge text",
+        "info": "Leave blank for \"Code [code]\"."
+      },
+      {
+        "type": "text",
+        "id": "promo_1_message",
+        "label": "Product page message",
+        "info": "Leave blank for a standard message. Don't promise a saving: Shopify confirms eligibility in the cart."
+      },
+      {
+        "type": "header",
+        "content": "Promotion 2"
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_2_enabled",
+        "label": "Enable",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "promo_2_code",
+        "label": "Shopify discount code",
+        "info": "Type the code exactly as it is set up in Shopify admin, for example TEE20."
+      },
+      {
+        "type": "select",
+        "id": "promo_2_scope",
+        "label": "Applies to",
+        "options": [
+          {
+            "value": "matched",
+            "label": "Matching products"
+          },
+          {
+            "value": "all",
+            "label": "Entire store"
+          }
+        ],
+        "default": "matched"
+      },
+      {
+        "type": "product_list",
+        "id": "promo_2_products",
+        "label": "Products",
+        "limit": 50
+      },
+      {
+        "type": "textarea",
+        "id": "promo_2_handles",
+        "label": "Product handles",
+        "info": "One per line or comma-separated. Most stable way to match products by text."
+      },
+      {
+        "type": "textarea",
+        "id": "promo_2_titles",
+        "label": "Product title phrases",
+        "info": "One per line. Matches whole words, ignoring case, for example Oversized Tee."
+      },
+      {
+        "type": "text",
+        "id": "promo_2_tag",
+        "label": "Product tag or promotion key",
+        "info": "Matches products tagged with this value, or whose custom.promotion metafield has it, for example summer-sale."
+      },
+      {
+        "type": "range",
+        "id": "promo_2_priority",
+        "label": "Priority",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_2_auto",
+        "label": "Try this code automatically in the cart",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_2_cards",
+        "label": "Show on product cards",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "promo_2_badge",
+        "label": "Badge text",
+        "info": "Leave blank for \"Code [code]\"."
+      },
+      {
+        "type": "text",
+        "id": "promo_2_message",
+        "label": "Product page message",
+        "info": "Leave blank for a standard message. Don't promise a saving: Shopify confirms eligibility in the cart."
+      },
+      {
+        "type": "header",
+        "content": "Promotion 3"
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_3_enabled",
+        "label": "Enable",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "promo_3_code",
+        "label": "Shopify discount code",
+        "info": "Type the code exactly as it is set up in Shopify admin, for example TEE20."
+      },
+      {
+        "type": "select",
+        "id": "promo_3_scope",
+        "label": "Applies to",
+        "options": [
+          {
+            "value": "matched",
+            "label": "Matching products"
+          },
+          {
+            "value": "all",
+            "label": "Entire store"
+          }
+        ],
+        "default": "matched"
+      },
+      {
+        "type": "product_list",
+        "id": "promo_3_products",
+        "label": "Products",
+        "limit": 50
+      },
+      {
+        "type": "textarea",
+        "id": "promo_3_handles",
+        "label": "Product handles",
+        "info": "One per line or comma-separated. Most stable way to match products by text."
+      },
+      {
+        "type": "textarea",
+        "id": "promo_3_titles",
+        "label": "Product title phrases",
+        "info": "One per line. Matches whole words, ignoring case, for example Oversized Tee."
+      },
+      {
+        "type": "text",
+        "id": "promo_3_tag",
+        "label": "Product tag or promotion key",
+        "info": "Matches products tagged with this value, or whose custom.promotion metafield has it, for example summer-sale."
+      },
+      {
+        "type": "range",
+        "id": "promo_3_priority",
+        "label": "Priority",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_3_auto",
+        "label": "Try this code automatically in the cart",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_3_cards",
+        "label": "Show on product cards",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "promo_3_badge",
+        "label": "Badge text",
+        "info": "Leave blank for \"Code [code]\"."
+      },
+      {
+        "type": "text",
+        "id": "promo_3_message",
+        "label": "Product page message",
+        "info": "Leave blank for a standard message. Don't promise a saving: Shopify confirms eligibility in the cart."
+      },
+      {
+        "type": "header",
+        "content": "Promotion 4"
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_4_enabled",
+        "label": "Enable",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "promo_4_code",
+        "label": "Shopify discount code",
+        "info": "Type the code exactly as it is set up in Shopify admin, for example TEE20."
+      },
+      {
+        "type": "select",
+        "id": "promo_4_scope",
+        "label": "Applies to",
+        "options": [
+          {
+            "value": "matched",
+            "label": "Matching products"
+          },
+          {
+            "value": "all",
+            "label": "Entire store"
+          }
+        ],
+        "default": "matched"
+      },
+      {
+        "type": "product_list",
+        "id": "promo_4_products",
+        "label": "Products",
+        "limit": 50
+      },
+      {
+        "type": "textarea",
+        "id": "promo_4_handles",
+        "label": "Product handles",
+        "info": "One per line or comma-separated. Most stable way to match products by text."
+      },
+      {
+        "type": "textarea",
+        "id": "promo_4_titles",
+        "label": "Product title phrases",
+        "info": "One per line. Matches whole words, ignoring case, for example Oversized Tee."
+      },
+      {
+        "type": "text",
+        "id": "promo_4_tag",
+        "label": "Product tag or promotion key",
+        "info": "Matches products tagged with this value, or whose custom.promotion metafield has it, for example summer-sale."
+      },
+      {
+        "type": "range",
+        "id": "promo_4_priority",
+        "label": "Priority",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_4_auto",
+        "label": "Try this code automatically in the cart",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_4_cards",
+        "label": "Show on product cards",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "promo_4_badge",
+        "label": "Badge text",
+        "info": "Leave blank for \"Code [code]\"."
+      },
+      {
+        "type": "text",
+        "id": "promo_4_message",
+        "label": "Product page message",
+        "info": "Leave blank for a standard message. Don't promise a saving: Shopify confirms eligibility in the cart."
+      }
+    ]
+  },
+  {
+    "name": "Motion",
+    "settings": [
+      {
+        "type": "select",
+        "id": "motion_level",
+        "label": "Animation level",
+        "options": [
+          {
+            "value": "off",
+            "label": "Off"
+          },
+          {
+            "value": "minimal",
+            "label": "Minimal"
+          },
+          {
+            "value": "standard",
+            "label": "Standard"
+          }
+        ],
+        "default": "standard",
+        "info": "Shoppers who ask their device for reduced motion always get minimal motion."
+      },
+      {
+        "type": "select",
+        "id": "motion_tempo",
+        "label": "Animation tempo",
+        "options": [
+          {
+            "value": "relaxed",
+            "label": "Relaxed"
+          },
+          {
+            "value": "balanced",
+            "label": "Balanced"
+          },
+          {
+            "value": "brisk",
+            "label": "Brisk"
+          }
+        ],
+        "default": "balanced",
+        "info": "Overall speed of entrance animations. Scroll-linked scenes always follow the scroll."
+      },
+      {
+        "type": "select",
+        "id": "motion_stagger",
+        "label": "Stagger between items",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "short",
+            "label": "Short"
+          },
+          {
+            "value": "medium",
+            "label": "Medium"
+          },
+          {
+            "value": "long",
+            "label": "Long"
+          }
+        ],
+        "default": "medium",
+        "info": "Delay between cards, words and lines that reveal one after another."
+      },
+      {
+        "type": "checkbox",
+        "id": "motion_scroll_effects",
+        "label": "Scroll-linked effects",
+        "default": true,
+        "info": "Parallax, cinematic section scenes and pinning. Turn off for simple entrance animations only."
+      },
+      {
+        "type": "select",
+        "id": "motion_mobile",
+        "label": "Phone animations",
+        "options": [
+          {
+            "value": "simple",
+            "label": "Simplified"
+          },
+          {
+            "value": "full",
+            "label": "Same as desktop"
+          },
+          {
+            "value": "off",
+            "label": "Off"
+          }
+        ],
+        "default": "simple",
+        "info": "Simplified keeps quick fades and reveals but skips pinning, parallax and scroll-linked scenes on screens under 750px."
+      },
+      {
+        "type": "checkbox",
+        "id": "motion_smooth_scroll",
+        "label": "Smooth wheel scrolling",
+        "default": true,
+        "info": "Fluid mouse-wheel and touchpad scrolling on desktop. Phones keep native scrolling. Off when the visitor's device asks for reduced motion (on Windows: Settings > Accessibility > Visual effects > Animation effects), with Motion off, and in the theme editor."
+      },
+      {
+        "type": "select",
+        "id": "motion_smooth_strength",
+        "label": "Smooth scrolling strength",
+        "options": [
+          {
+            "value": "subtle",
+            "label": "Subtle"
+          },
+          {
+            "value": "balanced",
+            "label": "Balanced"
+          },
+          {
+            "value": "silky",
+            "label": "Silky (longest glide)"
+          }
+        ],
+        "default": "balanced"
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "url",
+        "id": "social_instagram",
+        "label": "Instagram"
+      },
+      {
+        "type": "url",
+        "id": "social_tiktok",
+        "label": "TikTok"
+      },
+      {
+        "type": "url",
+        "id": "social_facebook",
+        "label": "Facebook"
+      },
+      {
+        "type": "url",
+        "id": "social_youtube",
+        "label": "YouTube"
+      }
+    ]
+  },
+  {
+    "name": "Gift card page",
+    "settings": [
+      {
+        "type": "select",
+        "id": "gift_card_style",
+        "label": "Presentation",
+        "options": [
+          {
+            "value": "classic",
+            "label": "Classic"
+          },
+          {
+            "value": "minimal",
+            "label": "Minimal"
+          },
+          {
+            "value": "bordered",
+            "label": "Bordered panel"
+          }
+        ],
+        "default": "classic"
+      }
+    ]
+  },
+  {
+    "name": "Customer support",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Contact information page links. These settings belong to this theme; they do not change the published store policies."
+      },
+      {
+        "type": "checkbox",
+        "id": "support_replace_policy",
+        "label": "Show these links instead of the contact information policy",
+        "info": "Replaces the policy text from Settings › Policies on that page. Leave off if the policy contains details you must publish, such as your business address or registration number.",
+        "default": false
+      },
+      {
+        "type": "richtext",
+        "id": "support_intro",
+        "label": "Introduction"
+      },
+      {
+        "type": "text",
+        "id": "support_email",
+        "label": "Support email"
+      },
+      {
+        "type": "text",
+        "id": "support_phone",
+        "label": "Support phone"
+      },
+      {
+        "type": "url",
+        "id": "support_instagram",
+        "label": "Instagram profile URL"
+      },
+      {
+        "type": "text",
+        "id": "support_instagram_label",
+        "label": "Instagram link label"
+      }
+    ]
+  }
+]

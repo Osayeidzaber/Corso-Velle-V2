@@ -1,0 +1,586 @@
+{%- comment -%}
+  Header.
+  - Desktop parents: the title is a real link; a separate <details> disclosure opens its panel.
+  - Phone: menu button opens <nk-nav-drawer> (dialog with level panels). Without JS the button
+    is not shown and the desktop nav wraps, so every link stays reachable.
+  - <shopify-account> renders in the header on desktop and phone when accounts are enabled.
+{%- endcomment -%}
+{%- liquid
+  assign menu = section.settings.menu
+  assign is_home = false
+  if template.name == 'index'
+    assign is_home = true
+  endif
+  # Search links open the predictive search dialog with JS; without JS they go to the search page.
+  assign search_trigger = ''
+  if section.settings.predictive_search
+    assign search_trigger = 'data-nk-open="SearchModal" aria-haspopup="dialog" aria-expanded="false"'
+  endif
+-%}
+
+<nk-header
+  class="color-{{ section.settings.color_scheme }} full-width"
+  data-sticky="{{ section.settings.sticky }}"
+  data-nav-trigger="{{ section.settings.nav_trigger }}"
+  data-dropdown="{{ section.settings.dropdown_layout }}"
+  data-logo-treatment="{{ section.settings.logo_treatment }}"
+  style="--header-height:{{ section.settings.height | default: 76 }}px;--header-height-mobile:{{ section.settings.height_mobile | default: 64 }}px;"
+  {% if section.settings.overlay_home and is_home %}
+    data-overlay data-surface="overlay"
+  {% endif %}
+>
+  <div class="header header--{{ section.settings.layout }} header--panel-{{ section.settings.panel_style }}{% if section.settings.link_hover == 'swap' %} header--swap{% endif %}">
+    <div class="header__start">
+      <button
+        type="button"
+        class="icon-button header__menu-button"
+        data-nk-open="MenuDrawer"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="MenuDrawer"
+        aria-label="{{ 'header.menu' | t }}"
+      >
+        {% render 'icon', name: 'menu' %}
+      </button>
+      {% if section.settings.show_search != false %}<a
+        class="icon-button header__search-icon--phone"
+        href="{{ routes.search_url }}"
+        {{ search_trigger }}
+        aria-label="{{ 'header.search' | t }}"
+      >
+        {% render 'icon', name: 'search' %}
+      </a>{% endif %}
+
+      {%- if menu.links.size > 0 -%}
+        <nav class="header__nav" aria-label="{{ 'header.primary_navigation' | t }}">
+          <ul class="nav" role="list">
+            {%- for link in menu.links -%}
+              <li class="nav__item">
+                <a class="nav__link" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>
+                  {%- if section.settings.link_hover == 'swap' -%}
+                    {% render 'letter-swap', text: link.title %}
+                  {%- else -%}
+                    {{- link.title | escape -}}
+                  {%- endif -%}
+                </a>
+                {%- if link.links.size > 0 -%}
+                  <details class="nav__disclosure">
+                    <summary aria-label="{{ 'header.show_submenu' | t: title: link.title | escape }}">
+                      {% render 'icon', name: 'chevron-down', size: 12 %}
+                    </summary>
+                    <div class="nav__panel">
+                      {%- assign has_grandchildren = false -%}
+                      {%- for child in link.links -%}
+                        {%- if child.links.size > 0 -%}{%- assign has_grandchildren = true -%}{%- endif -%}
+                      {%- endfor -%}
+                      {%- if has_grandchildren -%}
+                        {%- for child in link.links -%}
+                          <div class="nav__group">
+                            <a class="nav__group-heading spec" href="{{ child.url }}">{{ child.title | escape }}</a>
+                            {%- if child.links.size > 0 -%}
+                              <ul role="list">
+                                {%- for grandchild in child.links -%}
+                                  <li><a href="{{ grandchild.url }}">{{ grandchild.title | escape }}</a></li>
+                                {%- endfor -%}
+                              </ul>
+                            {%- endif -%}
+                          </div>
+                        {%- endfor -%}
+                      {%- else -%}
+                        <ul class="nav__sublist" role="list">
+                          {%- for child in link.links -%}
+                            <li><a href="{{ child.url }}">{{ child.title | escape }}</a></li>
+                          {%- endfor -%}
+                        </ul>
+                      {%- endif -%}
+                      {%- for block in section.blocks -%}
+                        {%- if block.type == 'promo' and block.settings.menu_item == link.title -%}
+                          {% render 'menu-promo', block: block %}
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </div>
+                  </details>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
+    </div>
+
+    {%- liquid
+      assign logo_intro = section.settings.logo_animation | default: 'none'
+      if request.design_mode or settings.motion_level == 'off' or settings.motion_level == 'minimal'
+        assign logo_intro = 'none'
+      endif
+    -%}
+    {%- if logo_intro != 'none' -%}
+      {%- comment -%}
+        Decided before the logo paints so it never flashes: once per browser session (or every page
+        load), never with reduced motion. CSS in styles/components/header.css.
+      {%- endcomment -%}
+      <script>
+        (function () {
+          try {
+            if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            var key = 'nk:logo-intro';
+            {% if section.settings.logo_animation_frequency != 'every' %}if (sessionStorage.getItem(key)) return;
+            sessionStorage.setItem(key, '1');{% endif %}
+            document.documentElement.setAttribute('data-logo-intro', {{ logo_intro | json }});
+          } catch (error) {}
+        })();
+      </script>
+    {%- endif -%}
+    <a class="header__logo" href="{{ routes.root_url }}">
+      {%- if settings.logo -%}
+        {%- assign logo_alt = settings.logo.alt | default: shop.name -%}
+        {%- assign inverse_logo = false -%}
+        {%- if settings.logo_inverse and section.settings.overlay_home and is_home -%}{%- assign inverse_logo = true -%}{%- endif -%}
+        {{ settings.logo | image_url: width: 600 | image_tag: alt: logo_alt, loading: 'eager', sizes: '(min-width: 990px) 300px, 200px', class: 'header__logo-primary' }}
+        {%- if inverse_logo -%}
+          {%- comment -%} Shown instead of the main logo only while the header is transparent over the hero. {%- endcomment -%}
+          {{ settings.logo_inverse | image_url: width: 600 | image_tag: alt: '', loading: 'eager', sizes: '(min-width: 990px) 300px, 200px', class: 'header__logo-inverse', aria-hidden: 'true' }}
+        {%- endif -%}
+      {%- else -%}
+        {{ shop.name | escape }}
+      {%- endif -%}
+    </a>
+
+    <div class="header__end">
+      {% if section.settings.show_search != false %}
+      {%- if section.settings.search_style == 'pill' -%}
+        <nk-search-pill class="header__search-pill" data-resources="{{ section.settings.search_resources }}" data-limit="{{ section.settings.search_limit }}" {% if section.settings.predictive_search %}data-predictive{% endif %}>
+          <button
+            type="button"
+            class="icon-button search-pill__toggle"
+            data-ref="toggle"
+            aria-expanded="false"
+            aria-controls="HeaderSearchPill"
+            aria-label="{{ 'header.search' | t }}"
+          >
+            {% render 'icon', name: 'search' %}
+          </button>
+          <form class="search-pill__form" id="HeaderSearchPill" action="{{ routes.search_url }}" method="get" role="search">
+            <span class="search-pill__icon" aria-hidden="true">{% render 'icon', name: 'search', size: 16 %}</span>
+            <label class="visually-hidden" for="HeaderSearchInput">{{ 'header.search' | t }}</label>
+            <input
+              id="HeaderSearchInput"
+              type="search"
+              name="q"
+              placeholder="{{ 'header.search_placeholder' | t }}"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              enterkeyhint="search"
+            >
+            <input type="hidden" name="options[prefix]" value="last">
+            <button type="button" class="icon-button search-pill__close" data-ref="close" aria-label="{{ 'general.close' | t }}">
+              {% render 'icon', name: 'close', size: 14 %}
+            </button>
+          </form>
+        </nk-search-pill>
+      {%- else -%}
+        <a
+          class="icon-button header__search-icon--desktop"
+          href="{{ routes.search_url }}"
+          {{ search_trigger }}
+          aria-label="{{ 'header.search' | t }}"
+        >
+          {% render 'icon', name: 'search' %}
+        </a>
+      {%- endif -%}
+      {% endif %}
+
+      {%- if shop.customer_accounts_enabled and section.settings.show_account != false -%}
+        <span class="header__account">
+          <shopify-account menu="{{ section.settings.customer_account_menu }}">
+            {% render 'icon', name: 'account' %}
+          </shopify-account>
+        </span>
+      {%- endif -%}
+      <a
+        class="icon-button header__cart"
+        href="{{ routes.cart_url }}"
+        data-nk-open="CartDrawer"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        data-cart-count-label="{{ 'header.cart_count' | t: count: '[count]' | escape }}"
+        aria-label="{{ 'header.cart_count' | t: count: cart.item_count }}"
+      >
+        {% render 'icon', name: 'cart' %}
+        <span class="header__cart-count" data-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>
+          {{- cart.item_count -}}
+        </span>
+      </a>
+    </div>
+  </div>
+</nk-header>
+
+{% render 'nav-drawer', menu: menu, section: section %}
+
+{%- if section.settings.predictive_search -%}
+  {% render 'search-modal', suggested_collections: section.settings.search_collections, resources: section.settings.search_resources, limit: section.settings.search_limit, suggestion_limit: section.settings.suggestion_limit %}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "header-section",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "link_list",
+      "id": "customer_account_menu",
+      "label": "Customer account menu",
+      "default": "customer-account-main-menu"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Desktop layout",
+      "options": [
+        {
+          "value": "center",
+          "label": "Logo centered"
+        },
+        {
+          "value": "left",
+          "label": "Logo left"
+        },
+        {
+          "value": "two-row",
+          "label": "Centered logo with navigation below"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "sticky",
+      "label": "Sticky header",
+      "options": [
+        {
+          "value": "off",
+          "label": "Off"
+        },
+        {
+          "value": "always",
+          "label": "Always visible"
+        },
+        {
+          "value": "reveal",
+          "label": "Show when scrolling up"
+        }
+      ],
+      "default": "reveal"
+    },
+    {
+      "type": "select",
+      "id": "panel_style",
+      "label": "Desktop menu panels",
+      "options": [
+        {
+          "value": "attached",
+          "label": "Full width"
+        },
+        {
+          "value": "floating",
+          "label": "Floating card (morphs between items)"
+        }
+      ],
+      "default": "attached"
+    },
+    {
+      "type": "select",
+      "id": "link_hover",
+      "label": "Menu link hover",
+      "options": [
+        {
+          "value": "underline",
+          "label": "Underline"
+        },
+        {
+          "value": "swap",
+          "label": "Letter swap"
+        }
+      ],
+      "default": "underline"
+    },
+    {
+      "type": "select",
+      "id": "drawer_style",
+      "label": "Phone menu style",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard list"
+        },
+        {
+          "value": "editorial",
+          "label": "Editorial (large numbered items)"
+        },
+        {
+          "value": "cards",
+          "label": "Cards"
+        }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "search_style",
+      "label": "Desktop search",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon"
+        },
+        {
+          "value": "pill",
+          "label": "Expanding field"
+        }
+      ],
+      "default": "icon"
+    },
+    {
+      "type": "checkbox",
+      "id": "predictive_search",
+      "label": "Show search suggestions as you type",
+      "default": true,
+      "info": "Search opens a panel with products, collections and suggested queries."
+    },
+    {
+      "type": "collection_list",
+      "id": "search_collections",
+      "label": "Collections suggested in search"
+    },
+    {
+      "type": "checkbox",
+      "id": "overlay_home",
+      "label": "Overlay the homepage hero",
+      "default": false,
+      "info": "Only applies when the first homepage section supports overlay (for example the campaign hero)."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "nav_trigger",
+      "label": "Desktop submenu opening",
+      "options": [
+        {
+          "value": "hover",
+          "label": "Hover or click"
+        },
+        {
+          "value": "click",
+          "label": "Click only"
+        }
+      ],
+      "default": "hover"
+    },
+    {
+      "type": "select",
+      "id": "dropdown_layout",
+      "label": "Dropdown links",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Automatic grouping"
+        },
+        {
+          "value": "list",
+          "label": "Stacked groups"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "logo_treatment",
+      "label": "Logo image colors",
+      "options": [
+        {
+          "value": "ink",
+          "label": "Original theme ink treatment"
+        },
+        {
+          "value": "original",
+          "label": "Preserve uploaded colors"
+        }
+      ],
+      "default": "ink"
+    },
+    {
+      "type": "select",
+      "id": "logo_animation",
+      "label": "Logo animation on load",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "ink",
+          "label": "Ink reveal (written left to right)"
+        },
+        {
+          "value": "rise",
+          "label": "Soft rise"
+        }
+      ],
+      "default": "ink",
+      "info": "Follows Theme settings > Motion; never plays with reduced motion or in the theme editor."
+    },
+    {
+      "type": "select",
+      "id": "logo_animation_frequency",
+      "label": "Play logo animation",
+      "options": [
+        {
+          "value": "session",
+          "label": "Once per visit"
+        },
+        {
+          "value": "every",
+          "label": "On every page"
+        }
+      ],
+      "default": "session"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Minimum desktop header height",
+      "min": 60,
+      "max": 120,
+      "step": 4,
+      "default": 76,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Minimum phone header height",
+      "min": 56,
+      "max": 88,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show customer account",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show header search",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "search_resources",
+      "label": "Search suggestions",
+      "options": [
+        {
+          "value": "query,product,collection,page",
+          "label": "Products, collections, pages and queries"
+        },
+        {
+          "value": "query,product,collection",
+          "label": "Products, collections and queries"
+        },
+        {
+          "value": "product",
+          "label": "Products only"
+        }
+      ],
+      "default": "query,product,collection,page"
+    },
+    {
+      "type": "range",
+      "id": "search_limit",
+      "label": "Results per suggestion type",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "suggestion_limit",
+      "label": "Initial collection suggestions",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    }
+  ],
+  "blocks": [
+    {
+      "type": "group_description",
+      "name": "Menu card description",
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_item",
+          "label": "Menu item title",
+          "info": "Shown in the Cards phone menu under this top-level item."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Description"
+        }
+      ]
+    },
+    {
+      "type": "promo",
+      "name": "Menu promo card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_item",
+          "label": "Show under menu item",
+          "info": "Type the exact title of a top-level menu item."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Campaign"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "enabled_on": {
+    "groups": [
+      "header"
+    ]
+  },
+  "limit": 1
+}
+{% endschema %}

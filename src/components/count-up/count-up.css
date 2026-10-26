@@ -1,0 +1,4 @@
+/* nk-count-up — tabular digits so the counter doesn't jitter while the width changes. */
+nk-count-up {
+  font-variant-numeric: tabular-nums;
+}

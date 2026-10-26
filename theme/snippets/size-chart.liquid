@@ -1,0 +1,220 @@
+{%- doc -%}
+  Size guide content.
+
+  Sources, first match wins (no measurement is ever inferred):
+  1. Product metafield custom.size_chart → metaobject "size_chart" with fields
+     title, measurement_basis, unit, table (JSON), notes (rich text), fallback (rich text).
+     table JSON: {"columns":[{"key":"chest","label":"Chest"}],"rows":[{"size":"S","values":{"chest":52}}]}
+  2. Product metafield custom.measurements: JSON with the same columns/rows shape plus "unit".
+  3. Inline CSV (theme size chart rule or block setting): first line = headings, one size per line.
+     Shown only when a row matches one of the product's size values. Category guesses (footwear,
+     bottoms) are skipped when the chart was assigned explicitly (verified_chart).
+  4. A page chosen in the block settings.
+  Renders nothing when none exists. Numbers switch between inches and centimetres in <nk-size-guide>.
+
+  @param {object} product - The product
+  @param {object} [chart] - Reusable chart resolved from product, collection or global assignment
+  @param {boolean} [show_units] - Allow unit switching (default true)
+  @param {boolean} [highlight] - Mark the selected size (default true)
+  @param {object} [page] - Fallback page
+  @param {image} [image] - Optional rule chart picture; reusable chart image takes priority
+  @param {string} [table_csv] - Inline table, e.g. "Size,Chest\nS,40"
+  @param {string} [unit] - Unit the inline table is written in: in or cm
+  @param {string} [note] - Line shown under the inline table
+  @param {string} [heading] - Measurement basis shown above the table when the source has none
+  @param {string} [option] - Option name to highlight, e.g. Size
+  @param {string} [verified_chart] - Index of an explicitly assigned chart rule; bypasses category guesses
+
+  @example
+  {% render 'size-chart', product: product, page: block.settings.size_guide_page %}
+{%- enddoc -%}
+{%- liquid
+  assign chart = chart | default: product.metafields.custom.size_chart.value
+  assign chart_fallback = chart.fallback.value | default: ''
+  assign chart_notes = chart.notes.value | default: ''
+  assign metaobject_image = chart.image.value | default: ''
+  assign chart_image = metaobject_image | default: image | default: ''
+  assign custom_json = product.metafields.custom.measurements.value
+  assign option_name = option | default: 'Size'
+  assign source = ''
+  assign basis = heading
+  assign base_unit = unit | default: 'in' | downcase
+
+  if chart.table.value.rows.size > 0 and chart.table.value.columns.size > 0
+    assign source = 'metaobject'
+    assign table = chart.table.value
+  elsif chart_fallback != blank or chart_notes != blank or metaobject_image != blank
+    assign source = 'metaobject'
+  endif
+
+  if source == 'metaobject'
+    assign base_unit = chart.unit.value | default: base_unit | downcase
+    if chart.measurement_basis.value != blank
+      assign basis = chart.measurement_basis.value
+    endif
+  elsif custom_json and custom_json.rows.size > 0 and custom_json.columns.size > 0
+    assign source = 'json'
+    assign table = custom_json
+    assign base_unit = custom_json.unit | default: base_unit | downcase
+  elsif table_csv != blank
+    assign title_down = product.title | downcase
+    assign type_down = product.type | downcase
+    assign collections_str = product.collections | map: 'handle' | join: ' ' | downcase
+    assign context_str = title_down | append: ' ' | append: type_down | append: ' ' | append: collections_str
+
+    assign active_csv = table_csv
+    if verified_chart == blank
+      if context_str contains 'shoe' or context_str contains 'loafer' or context_str contains 'boot' or context_str contains 'mule' or context_str contains 'footwear' or context_str contains 'sneaker' or context_str contains 'sandal'
+        assign active_csv = blank
+      elsif context_str contains 'trouser' or context_str contains 'pant' or context_str contains 'jean' or context_str contains 'bottom' or context_str contains 'chino' or context_str contains 'short' or context_str contains 'gurkha'
+        if active_csv contains 'Chest'
+          assign active_csv = blank
+        endif
+      endif
+    endif
+
+    if active_csv != blank
+      assign lines = active_csv | strip | newline_to_br | split: '<br />'
+      assign head = lines | first | strip | split: ','
+      assign target_opt_name = option_name | downcase
+      assign product_size_opt = nil
+      for opt in product.options_with_values
+        assign opt_down = opt.name | downcase
+        if opt_down == target_opt_name or opt_down contains 'size'
+          assign product_size_opt = opt
+          break
+        endif
+      endfor
+      if head.size > 1 and lines.size > 1
+      for line in lines offset: 1
+        assign cells = line | strip | split: ','
+        assign row_size = cells.first | strip | downcase
+        if product_size_opt
+          for opt_val in product_size_opt.values
+            assign opt_clean = opt_val | strip | downcase
+            if opt_clean == row_size
+              assign source = 'csv'
+              break
+            endif
+          endfor
+        elsif row_size != blank
+          assign source = 'csv'
+        endif
+        if source == 'csv'
+          break
+        endif
+      endfor
+      endif
+    endif
+  endif
+
+  if source == '' and chart_image != blank
+    assign source = 'image'
+  endif
+  if source == '' and page != blank
+    assign source = 'page'
+  endif
+  assign unit_label = 'product.inches' | t
+  if base_unit == 'cm'
+    assign unit_label = 'product.centimetres' | t
+  endif
+-%}
+{%- if source == 'page' -%}
+  <div class="size-chart size-chart--page rte">{{ page.content }}</div>
+{%- elsif source != '' -%}
+  <nk-size-guide class="size-chart" unit="{{ base_unit }}" option="{{ option_name | escape }}"{% if highlight == false %} data-highlight-disabled{% endif %}{% if show_units == false %} data-unit-switch-disabled{% endif %}>
+    <div class="size-chart__toolbar">
+      <p class="size-chart__basis">
+        {%- if basis != blank -%}{{ basis | escape }}{%- else -%}{{ 'product.size_table_heading' | t }}{%- endif -%}
+      </p>
+      {%- if show_units != false and source != 'image' -%}
+      {%- if source == 'csv' or table.rows.size > 0 -%}
+      <div class="size-guide__units" role="group" aria-label="{{ 'product.units' | t }}">
+        <button type="button" class="size-guide__unit" data-ref="unit" value="in" aria-pressed="{% if base_unit == 'in' %}true{% else %}false{% endif %}" hidden>{{ 'product.inches' | t }}</button>
+        <button type="button" class="size-guide__unit" data-ref="unit" value="cm" aria-pressed="{% if base_unit == 'cm' %}true{% else %}false{% endif %}" hidden>{{ 'product.centimetres' | t }}</button>
+      </div>
+      {%- endif -%}
+      {%- endif -%}
+    </div>
+
+    {%- if chart_image != blank -%}
+      {%- assign image_alt = chart_image.alt | default: chart.title.value | default: product.title -%}
+      <a class="size-chart__image" href="{{ chart_image | image_url: width: 3000 }}" target="_blank" rel="noopener">
+        {{ chart_image | image_url: width: 1600 | image_tag: loading: 'lazy', widths: '360, 540, 720, 1080, 1600', sizes: '(min-width: 750px) 560px, 100vw', alt: image_alt, style: 'width:100%;height:auto;display:block;' }}
+        <span class="visually-hidden">{{ 'accessibility.open_in_new_tab' | t }}</span>
+      </a>
+    {%- endif -%}
+
+    {%- if source == 'csv' or table.rows.size > 0 -%}
+      <div class="size-table-wrap" tabindex="0" role="region" aria-label="{{ 'product.size_table' | t }}">
+        <table class="size-table">
+          <caption class="visually-hidden">
+            {{- chart.title | default: product.title | escape }} · {{ 'product.measurements_in' | t }} <span data-ref="unit-label">{{ unit_label }}</span>
+          </caption>
+          <thead>
+            <tr>
+              {%- if source == 'csv' -%}
+                {%- for cell in head -%}
+                  <th scope="col">
+                    {{- cell | strip | escape -}}
+                    {%- unless forloop.first -%}<span class="size-table__unit" data-ref="unit-label" aria-hidden="true">{{ unit_label }}</span>{%- endunless -%}
+                  </th>
+                {%- endfor -%}
+              {%- else -%}
+                <th scope="col">{{ 'product.size' | t }}</th>
+                {%- for column in table.columns -%}
+                  <th scope="col">
+                    {{- column.label | escape -}}
+                    <span class="size-table__unit" data-ref="unit-label" aria-hidden="true">{{ unit_label }}</span>
+                  </th>
+                {%- endfor -%}
+              {%- endif -%}
+            </tr>
+          </thead>
+          <tbody>
+            {%- if source == 'csv' -%}
+              {%- for line in lines offset: 1 -%}
+                {%- assign cells = line | strip | split: ',' -%}
+                {%- if cells.size > 0 -%}
+                  <tr data-size-row="{{ cells.first | strip | escape }}">
+                    {%- for cell in cells -%}
+                      {%- assign value = cell | strip -%}
+                      {%- if forloop.first -%}
+                        <th scope="row">
+                          <span class="size-table__size">{{ value | escape }}</span>
+                          <span class="size-table__tag">{{ 'product.size_selected' | t }}</span>
+                        </th>
+                      {%- else -%}
+                        <td data-value="{{ value | escape }}">{{ value | escape }}</td>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </tr>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- else -%}
+              {%- for row in table.rows -%}
+                <tr data-size-row="{{ row.size | escape }}">
+                  <th scope="row">
+                    <span class="size-table__size">{{ row.size | escape }}</span>
+                    <span class="size-table__tag">{{ 'product.size_selected' | t }}</span>
+                  </th>
+                  {%- for column in table.columns -%}
+                    <td data-value="{{ row.values[column.key] | escape }}">{{ row.values[column.key] | escape }}</td>
+                  {%- endfor -%}
+                </tr>
+              {%- endfor -%}
+            {%- endif -%}
+          </tbody>
+        </table>
+      </div>
+    {%- elsif chart_fallback != blank -%}
+      <div class="size-chart__fallback rte">{{ chart.fallback | metafield_tag }}</div>
+    {%- endif -%}
+
+    {%- if source == 'metaobject' and chart_notes != blank -%}
+      <div class="size-chart__notes rte">{{ chart.notes | metafield_tag }}</div>
+    {%- elsif note != blank -%}
+      <p class="size-chart__notes">{{ note | escape }}</p>
+    {%- endif -%}
+  </nk-size-guide>
+{%- endif -%}

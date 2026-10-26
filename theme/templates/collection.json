@@ -1,0 +1,36 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-collection",
+      "settings": {
+        "products_per_page": 24,
+        "columns_mobile": "1",
+        "columns_desktop": 3,
+        "show_description": true,
+        "show_header": false,
+        "show_filters": true
+      }
+    },
+    "banner": {
+      "type": "collection-banner",
+      "settings": {
+        "show_description": true,
+        "use_product_image": false,
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "main"
+  ]
+}

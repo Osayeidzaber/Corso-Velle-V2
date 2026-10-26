@@ -1,0 +1,218 @@
+{%- doc -%}
+  Inline dark measurement panel for the product size selector.
+  Automatically resolves garment measurements from:
+  1. Product metafield `custom.size_chart` (metaobject with `table` JSON, `unit`, `measurement_basis`)
+  2. Product metafield `custom.measurements` (JSON with `columns` and `rows`)
+  3. Category-matched block fallback CSV (`table_csv` for tops/outerwear, `bottoms_csv` for bottoms)
+     ONLY when at least one row matches the product's actual size option values and the product is not footwear/accessories without matching sizes.
+
+  Never invents measurements if no matching data exists for the product's sizes.
+
+  @param {object} product - The product
+  @param {object} [chart] - Same resolved reusable chart used by the full guide
+  @param {boolean} [show_units] - Allow unit switching (default true)
+  @param {object} [size_option] - The product option object for Size
+  @param {string} [table_csv] - Fallback CSV for tops (e.g. "Size,Chest,Length,Shoulder,Sleeves\nS,40,27,17.5,24.5")
+  @param {string} [bottoms_csv] - Fallback CSV for bottoms (e.g. "Size,Waist,Length,Thigh,Leg Opening\nS,30,40,24,16")
+  @param {string} [unit] - Default unit ('in' or 'cm')
+  @param {string} [heading] - Measurement basis caption
+  @param {string} [verified_chart] - Explicit collection/product rule index; bypass category guesses
+  @param {string} [modal_id] - Optional size guide modal ID to open full chart
+
+  @example
+  {% render 'product-measurements', product: product, size_option: option, table_csv: block.settings.size_table, unit: block.settings.size_unit, modal_id: size_guide_modal_id %}
+{%- enddoc -%}
+{%- liquid
+  assign chart = chart | default: product.metafields.custom.size_chart.value
+  assign chart_fallback = chart.fallback.value | default: ''
+  assign chart_notes = chart.notes.value | default: ''
+  assign chart_image = chart.image.value | default: ''
+  assign custom_json = product.metafields.custom.measurements.value
+  assign base_unit = unit | default: 'in' | downcase
+  assign basis_label = heading
+  if basis_label == blank
+    assign basis_label = 'product.size_table' | t
+  endif
+  assign has_valid_data = false
+  assign use_metaobject = false
+
+  if chart and chart.table.value.rows.size > 0 and chart.table.value.columns.size > 0
+    assign table_data = chart.table.value
+    assign base_unit = chart.unit.value | default: base_unit | downcase
+    if chart.measurement_basis.value != blank
+      assign basis_label = chart.measurement_basis.value
+    endif
+    assign has_valid_data = true
+    assign use_metaobject = true
+  elsif chart_fallback != blank or chart_notes != blank or chart_image != blank
+    comment
+      An assigned instructions-only chart must not mix in measurements from a lower priority source.
+    endcomment
+  elsif custom_json and custom_json.rows.size > 0 and custom_json.columns.size > 0
+    assign table_data = custom_json
+    assign base_unit = custom_json.unit | default: base_unit | downcase
+    assign has_valid_data = true
+    assign use_metaobject = true
+  else
+    assign title_down = product.title | downcase
+    assign type_down = product.type | downcase
+    assign collections_str = product.collections | map: 'handle' | join: ' ' | downcase
+    assign context_str = title_down | append: ' ' | append: type_down | append: ' ' | append: collections_str
+
+    assign is_footwear = false
+    if context_str contains 'shoe' or context_str contains 'loafer' or context_str contains 'boot' or context_str contains 'mule' or context_str contains 'footwear' or context_str contains 'sneaker' or context_str contains 'sandal'
+      assign is_footwear = true
+    endif
+
+    assign is_bottom = false
+    if context_str contains 'trouser' or context_str contains 'pant' or context_str contains 'jean' or context_str contains 'bottom' or context_str contains 'chino' or context_str contains 'short' or context_str contains 'gurkha'
+      assign is_bottom = true
+    endif
+
+    if verified_chart != blank
+      assign is_footwear = false
+      assign is_bottom = false
+    endif
+    assign active_csv = table_csv
+    if is_bottom
+      if bottoms_csv != blank
+        assign active_csv = bottoms_csv
+      elsif active_csv contains 'Chest' or active_csv contains 'Shoulder' or active_csv contains 'Sleeve'
+        assign active_csv = blank
+      endif
+    endif
+
+    if is_footwear == false and active_csv != blank
+      assign csv_lines = active_csv | strip | newline_to_br | split: '<br />'
+      assign csv_head = csv_lines | first | strip | split: ','
+      if csv_lines.size > 1 and csv_head.size > 1
+        assign matched_rows = 0
+        for line in csv_lines offset: 1
+          assign cells = line | strip | split: ','
+          assign row_size = cells.first | strip | downcase
+          if size_option
+            for opt_val in size_option.values
+              assign opt_clean = opt_val | strip | downcase
+              if opt_clean == row_size
+                assign matched_rows = matched_rows | plus: 1
+                break
+              endif
+            endfor
+          else
+            assign matched_rows = matched_rows | plus: 1
+          endif
+        endfor
+        if matched_rows > 0
+          assign has_valid_data = true
+        endif
+      endif
+    endif
+  endif
+-%}
+
+  <div
+    class="measurement-panel"
+    data-measurement-panel
+    data-base-unit="{{ base_unit }}"
+    {% if show_units == false %}data-unit-switch-disabled{% endif %}
+    hidden
+  >
+    {%- for size_value in size_option.values -%}
+      <template data-measurement-size-label="{{ size_value | strip | upcase | escape }}">{% render 'size-display-label', value: size_value %}</template>
+    {%- endfor -%}
+    <div class="measurement-panel__header">
+      <div class="measurement-panel__title-group">
+        <span class="measurement-panel__badge spec">
+          <strong data-measurement-active-size>—</strong>
+        </span>
+      </div>
+    </div>
+
+    <p class="measurement-panel__empty" data-measurement-empty hidden>{{ 'product.measurements_unavailable' | t }}</p>
+    <div class="measurement-panel__rows">
+      {%- if use_metaobject -%}
+        {%- for row in table_data.rows -%}
+          <div
+            class="measurement-panel__grid"
+            data-measurement-row="{{ row.size | strip | upcase | escape }}"
+            hidden
+          >
+            {%- for column in table_data.columns -%}
+              {%- assign raw_val = row.values[column.key] -%}
+              {%- if raw_val != blank -%}
+                <div class="measurement-panel__cell">
+                  <span class="measurement-panel__label spec">{{ column.label | escape }}</span>
+                  <span class="measurement-panel__val">
+                    <span data-measure-value="{{ raw_val | escape }}">{{ raw_val | escape }}</span>
+                    <span class="measurement-panel__unit-suffix" data-measure-suffix>{{ base_unit }}</span>
+                  </span>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for line in csv_lines offset: 1 -%}
+          {%- assign cells = line | strip | split: ',' -%}
+          {%- if cells.size > 1 -%}
+            {%- assign row_key = cells.first | strip | upcase -%}
+            <div class="measurement-panel__grid" data-measurement-row="{{ row_key | escape }}" hidden>
+              {%- for cell in cells offset: 1 -%}
+                {%- assign col_idx = forloop.index -%}
+                {%- assign col_label = csv_head[col_idx] | strip -%}
+                {%- assign cell_val = cell | strip -%}
+                {%- if col_label != blank and cell_val != blank -%}
+                  <div class="measurement-panel__cell">
+                    <span class="measurement-panel__label spec">{{ col_label | escape }}</span>
+                    <span class="measurement-panel__val">
+                      <span data-measure-value="{{ cell_val | escape }}">{{ cell_val | escape }}</span>
+                      <span class="measurement-panel__unit-suffix" data-measure-suffix>{{ base_unit }}</span>
+                    </span>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- if has_valid_data -%}
+    <div class="measurement-panel__footer" data-measurement-footer>
+      <span class="measurement-panel__basis">{{ basis_label | escape }}</span>
+      <div class="measurement-panel__actions">
+        {%- unless show_units == false -%}
+        <div class="measurement-panel__units" role="group" aria-label="{{ 'product.units' | t }}">
+          <button
+            type="button"
+            class="measurement-panel__unit"
+            data-measure-unit="in"
+            aria-pressed="{% if base_unit == 'in' %}true{% else %}false{% endif %}"
+          >
+            {{ 'product.inches' | t }}
+          </button>
+          <button
+            type="button"
+            class="measurement-panel__unit"
+            data-measure-unit="cm"
+            aria-pressed="{% if base_unit == 'cm' %}true{% else %}false{% endif %}"
+          >
+            {{ 'product.centimetres' | t }}
+          </button>
+        </div>
+        {%- endunless -%}
+
+        {%- if modal_id != blank -%}
+          <button
+            type="button"
+            class="measurement-panel__chart-btn spec"
+            data-nk-open="{{ modal_id }}"
+            aria-haspopup="dialog"
+          >
+            {{ 'product.size_guide' | t }} ↗
+          </button>
+        {%- endif -%}
+      </div>
+    </div>
+    {%- endif -%}
+  </div>

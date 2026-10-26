@@ -1,0 +1,60 @@
+{% doc %}
+ Product description/specification and care display.
+ @param {object} product - Product and metafields
+ @param {object} block - Description block settings
+{% enddoc %}
+{%- liquid
+              assign outer_tag = 'nk-disclosure'
+              assign details_tag = 'details'
+              assign heading_tag = 'summary'
+              if block.settings.presentation == 'inline'
+                assign outer_tag = 'div'
+                assign details_tag = 'div'
+                assign heading_tag = 'h2'
+              endif
+              assign fabric_meta = product.metafields.custom.fabric | default: product.metafields.custom.materials
+              assign fit_meta = product.metafields.custom.fit.value
+              assign origin_meta = product.metafields.custom.origin.value
+              assign care_meta = product.metafields.custom.care.value | default: product.metafields.custom.care_instructions.value
+            -%}
+            {%- if product.description != blank or fabric_meta != blank or fit_meta != blank or origin_meta != blank -%}
+              <{{ outer_tag }} {{ block.shopify_attributes }}>
+                <{{ details_tag }} class="disclosure" {% if details_tag == 'details' and block.settings.open %}open{% endif %}>
+                  {%- assign details_heading = 'product.details' | t -%}
+                  <{{ heading_tag }} class="product__details-heading">{{ block.settings.heading | default: details_heading | escape }}</{{ heading_tag }}>
+                  <div class="disclosure__content rte">
+                    {%- if fabric_meta != blank or fit_meta != blank or origin_meta != blank -%}
+                      <dl class="product__specs">
+                        {%- if fabric_meta != blank -%}
+                          <div class="product__spec-item">
+                            <dt class="spec text-muted">Composition</dt>
+                            <dd>{{ fabric_meta | metafield_tag }}</dd>
+                          </div>
+                        {%- endif -%}
+                        {%- if fit_meta != blank -%}
+                          <div class="product__spec-item">
+                            <dt class="spec text-muted">Fit</dt>
+                            <dd>{{ fit_meta | escape }}</dd>
+                          </div>
+                        {%- endif -%}
+                        {%- if origin_meta != blank -%}
+                          <div class="product__spec-item">
+                            <dt class="spec text-muted">Origin</dt>
+                            <dd>{{ origin_meta | escape }}</dd>
+                          </div>
+                        {%- endif -%}
+                      </dl>
+                    {%- endif -%}
+                    {{ product.description }}
+                  </div>
+                </{{ details_tag }}>
+              </{{ outer_tag }}>
+            {%- endif -%}
+            {%- if care_meta != blank and block.settings.show_care != false -%}
+              <nk-disclosure>
+                <details class="disclosure">
+                  <summary>{{ block.settings.care_heading | default: 'Fabric & Care' | escape }}</summary>
+                  <div class="disclosure__content rte">{{ product.metafields.custom.care | default: product.metafields.custom.care_instructions | metafield_tag }}</div>
+                </details>
+              </nk-disclosure>
+            {%- endif -%}

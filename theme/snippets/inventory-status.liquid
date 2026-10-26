@@ -1,0 +1,48 @@
+{%- doc -%}
+  Inventory status line on the product page (inventory block, re-rendered with the variant).
+  Low stock uses Theme settings > Product page > "Show only a few left" (0 = off) and only counts
+  variants whose inventory Shopify tracks and doesn't oversell, so the number is always real.
+
+  Before a required size is chosen, no single variant is "the" selection: instead of quoting the
+  first available variant's count (misleading), it names the sizes that are running low.
+
+  @param {object} product - The product
+  @param {object} variant - The selected (or first available) variant
+  @param {string} availability - 'available', 'sold-out' or 'unavailable'
+  @param {boolean} needs_choice - A required option (size) hasn't been chosen yet
+
+  @example
+  {% render 'inventory-status', product: product, variant: variant, availability: availability, needs_choice: needs_choice %}
+{%- enddoc -%}
+{%- liquid
+  assign threshold = settings.inventory_threshold | default: 0
+  assign low_values = ''
+  if needs_choice and threshold > 0
+    for candidate in product.variants
+      if candidate.available and candidate.inventory_management == 'shopify' and candidate.inventory_policy == 'deny' and candidate.inventory_quantity > 0 and candidate.inventory_quantity <= threshold
+        assign low_values = low_values | append: candidate.title | append: '|'
+      endif
+    endfor
+    assign low_values = low_values | remove_last: '|' | split: '|' | uniq | join: ' · '
+  endif
+-%}
+{%- if needs_choice -%}
+  {%- if low_values != blank -%}
+    <span class="inventory-status inventory-status--low spec">
+      <span class="inventory-status__dot" aria-hidden="true"></span>
+      {{ 'product.low_stock_sizes' | t: sizes: low_values }}
+    </span>
+  {%- endif -%}
+{%- elsif variant and variant.available -%}
+  {%- if threshold > 0 and variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny' and variant.inventory_quantity > 0 and variant.inventory_quantity <= threshold -%}
+    <span class="inventory-status inventory-status--low spec">
+      <span class="inventory-status__dot" aria-hidden="true"></span>
+      {{ 'product.low_stock' | t: count: variant.inventory_quantity }}
+    </span>
+  {%- endif -%}
+{%- elsif availability == 'sold-out' -%}
+  <span class="inventory-status inventory-status--sold-out spec">
+    <span class="inventory-status__dot" aria-hidden="true"></span>
+    {{ 'product.sold_out' | t }}
+  </span>
+{%- endif -%}

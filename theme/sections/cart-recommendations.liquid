@@ -1,0 +1,97 @@
+{%- comment -%}
+  "Complete the look" rows for the cart drawer. Never placed on a template: <nk-cart-recommendations>
+  requests it through the product recommendations route with ?section_id=cart-recommendations,
+  so `recommendations` is filled for the newest cart line's product. Products already in the cart
+  and sold-out products are skipped. Sizes add straight to the cart via the shared quick-add
+  handler (src/components/product/card-interactions.ts); anything needing more choices links to
+  its product page.
+{%- endcomment -%}
+{%- liquid
+  assign limit = 3
+  if recommendations.performed and recommendations.products_count > 0
+    capture in_cart
+      echo ','
+      for item in cart.items
+        echo item.product_id
+        echo ','
+      endfor
+    endcapture
+  endif
+  assign shown = 0
+-%}
+<div class="cart-recs__results" data-recommendations-intent="{{ recommendations.intent }}">
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <ul class="cart-recs__list" role="list">
+      {%- for product in recommendations.products -%}
+        {%- capture product_key -%},{{ product.id }},{%- endcapture -%}
+        {%- if product.available == false or in_cart contains product_key or shown >= limit -%}
+          {%- continue -%}
+        {%- endif -%}
+        {%- assign shown = shown | plus: 1 -%}
+        <li class="cart-rec" data-product-id="{{ product.id }}">
+          <a class="cart-rec__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+            {%- if product.featured_media -%}
+              {{ product.featured_media | image_url: width: 200 | image_tag: loading: 'lazy', sizes: '64px', alt: '' }}
+            {%- endif -%}
+          </a>
+          <div class="cart-rec__info">
+            <a class="cart-rec__title" href="{{ product.url }}">{{ product.title | escape }}</a>
+            <div class="cart-rec__price">{% render 'price', product: product %}</div>
+            {%- liquid
+              assign size_option = nil
+              if product.options.size == 1 and product.requires_selling_plan == false and product.has_only_default_variant == false
+                for option in product.options_with_values
+                  capture is_size
+                    render 'size-option', name: option.name
+                  endcapture
+                  if is_size == 'true'
+                    assign size_option = option
+                  endif
+                endfor
+              endif
+            -%}
+            {%- if product.has_only_default_variant and product.requires_selling_plan == false -%}
+              {%- assign only_variant = product.selected_or_first_available_variant -%}
+              <div class="cart-rec__actions">
+                <button
+                  type="button"
+                  class="cart-rec__add"
+                  data-quick-add="{{ only_variant.id }}"
+                  data-quick-add-quantity="{{ only_variant.quantity_rule.min | default: 1 }}"
+                  aria-label="{{ 'cart.recommendations_add_one' | t: title: product.title | escape }}"
+                >
+                  {{- 'cart.add' | t -}}
+                </button>
+              </div>
+            {%- elsif size_option -%}
+              <div class="cart-rec__actions" role="group" aria-label="{{ 'product.sizes_label' | t }}">
+                {%- for value in size_option.values -%}
+                  {%- if value.available and value.variant -%}
+                    <button
+                      type="button"
+                      class="cart-rec__add"
+                      data-quick-add="{{ value.variant.id }}"
+                      data-quick-add-quantity="{{ value.variant.quantity_rule.min | default: 1 }}"
+                      aria-label="{{ 'cart.recommendations_add' | t: title: product.title, size: value | escape }}"
+                    >
+                      {{- value | escape -}}
+                    </button>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- else -%}
+              <a class="cart-rec__choose spec" href="{{ product.url }}">{{ 'product.choose_options' | t }}</a>
+            {%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Cart recommendations",
+  "settings": []
+}
+{% endschema %}

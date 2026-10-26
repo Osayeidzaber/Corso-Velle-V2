@@ -1,0 +1,202 @@
+.product-carousel { display: block; min-width: 0; }
+.product-carousel__viewport { position: relative; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; overscroll-behavior-inline: contain; overflow-anchor: none; scroll-behavior: auto; }
+.product-carousel__viewport::-webkit-scrollbar { display: none; }
+.product-carousel__track { position: relative; display: flex; align-items: flex-start; width: max-content; gap: clamp(12px, 2vw, 28px); margin: 0; padding: 0; list-style: none; }
+.product-carousel__slide { flex: 0 0 auto; width: min(78vw, 380px); }
+.product-carousel[data-gap='compact'] .product-carousel__track { gap: 8px; }
+.product-carousel[data-gap='airy'] .product-carousel__track { gap: 40px; }
+.product-carousel[data-no-arrows] [data-carousel-step] { display: none; }
+.product-carousel[data-no-emphasis][data-ready]:not([data-effect-ready]) .product-carousel__slide .card { opacity: 1; }
+.product-carousel[data-no-emphasis] .product-carousel__slide .card__media-wrap::after { display: none; }
+@media (min-width: 990px) {
+  .product-carousel[data-card-width='compact'] .product-carousel__slide { width: min(23vw, 320px); }
+  .product-carousel[data-card-width='wide'] .product-carousel__slide { width: min(36vw, 540px); }
+  .product-carousel[data-snap][data-card-width='compact'] .product-carousel__track { padding-inline: calc(50% - min(11.5vw, 160px)); }
+  .product-carousel[data-snap][data-card-width='wide'] .product-carousel__track { padding-inline: calc(50% - min(18vw, 270px)); }
+}
+.product-carousel__slide .card { width: 100%; }
+.product-carousel__controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--nk-color-line); }
+.product-carousel__buttons { display: flex; align-items: center; gap: 10px; }
+.product-carousel__pause { min-height: 44px; padding: 0 10px; border: 0; background: none; color: inherit; cursor: pointer; }
+@media (min-width: 600px) { .product-carousel__slide { width: min(44vw, 420px); } }
+@media (min-width: 990px) { .product-carousel__slide { width: min(28vw, 420px); } }
+@media (prefers-reduced-motion: reduce) { .product-carousel__viewport { scroll-snap-type: x proximity; } .product-carousel__slide { scroll-snap-align: start; } }
+
+/* Fallback swipe rail (reduced motion, or no WebGL): native momentum, centred snapping. */
+.product-carousel[data-snap] .product-carousel__viewport { scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+.product-carousel[data-snap] .product-carousel__track { padding-inline: calc(50% - min(39vw, 190px)); }
+.product-carousel[data-snap] .product-carousel__slide { scroll-snap-align: center; scroll-snap-stop: always; }
+@media (min-width: 600px) { .product-carousel[data-snap] .product-carousel__track { padding-inline: calc(50% - min(22vw, 210px)); } }
+@media (min-width: 990px) { .product-carousel[data-snap] .product-carousel__track { padding-inline: calc(50% - min(14vw, 210px)); } }
+
+/* Native rails: the centred product stays bright with an underline, the others recede. */
+.product-carousel[data-ready]:not([data-effect-ready]) .product-carousel__slide .card { transition: opacity 420ms var(--nk-ease-out); }
+.product-carousel[data-ready]:not([data-effect-ready]) .product-carousel__slide:not([data-active]) .card { opacity: .5; }
+.product-carousel[data-ready]:not([data-effect-ready]) .product-carousel__slide .card__media-wrap::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 3;
+  height: 2px;
+  background: var(--nk-color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 520ms cubic-bezier(.22,1,.36,1);
+  pointer-events: none;
+}
+.product-carousel[data-ready]:not([data-effect-ready]) .product-carousel__slide[data-active] .card__media-wrap::after { transform: scaleX(1); }
+@media (hover: hover) and (pointer: fine) {
+  .product-carousel[data-ready]:not([data-effect-ready]) .product-carousel__slide:hover .card { opacity: 1; }
+}
+
+/* Reference FlexCarousel: an OGL photographic scene with a liquid lens and minimal caption. */
+.product-carousel__stage {
+  position: relative;
+  width: calc(100% + var(--nk-gutter) * 2);
+  height: calc(clamp(600px, 62vw, 860px) + var(--carousel-details-height, 0px));
+  margin-inline: calc(var(--nk-gutter) * -1);
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+  overscroll-behavior: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+.product-carousel__stage[data-hover='open'] { cursor: zoom-in; }
+.product-carousel__stage[data-hover='close'] { cursor: zoom-out; }
+.product-carousel__stage[data-hover='product'] { cursor: pointer; }
+.product-carousel__stage[data-dragging] { cursor: grabbing; }
+.product-carousel[data-browse-only] .product-carousel__stage {
+  width: var(--carousel-viewport-width, 100%);
+  margin-inline: calc((100% - var(--carousel-viewport-width, 100%)) / 2);
+}
+.product-carousel__stage:focus-visible { box-shadow: inset 0 0 0 2px var(--nk-focus); outline: none; }
+.product-carousel__stage canvas { display: block; width: 100%; height: 100%; }
+/* Highlight underline under the centred product; with autoplay it fills as the countdown. */
+.product-carousel__marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--nk-accent-selected);
+  pointer-events: none;
+  will-change: transform, width;
+}
+.product-carousel__marker::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--nk-color-accent);
+  transform: scaleX(var(--progress, 1));
+  transform-origin: left;
+}
+.product-carousel__caption {
+  position: absolute;
+  inset: 0 0 auto;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding-inline: 16px;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  cursor: auto;
+  user-select: text;
+  will-change: transform;
+}
+.product-carousel[data-revealed] .product-carousel__caption { opacity: 1; animation: flex-carousel-reveal 240ms ease both; }
+.product-carousel__caption > * { pointer-events: auto; }
+@keyframes flex-carousel-title { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes flex-carousel-reveal { from { opacity: 0; } to { opacity: 1; } }
+.product-carousel[data-effect-ready] .product-carousel__viewport { overflow: visible; width: min(100%, 38rem); }
+.product-carousel[data-effect-ready] .product-carousel__track { display: block; width: 100%; }
+.product-carousel[data-effect-ready] .product-carousel__slide { width: 100%; }
+.product-carousel[data-effect-ready] .product-carousel__slide[hidden] { display: none; }
+.product-carousel[data-effect-ready] .card__media-wrap { display: none; }
+.product-carousel[data-effect-ready] .card { margin-inline: auto; gap: 4px; }
+.product-carousel[data-effect-ready] .card__meta { text-align: center; animation: flex-carousel-title 520ms cubic-bezier(.22,1,.36,1); }
+.product-carousel[data-effect-ready] .card__price-row,
+.product-carousel[data-effect-ready] .card__swatches { justify-content: center; }
+.product-carousel[data-effect-ready] .card__title { font-size: 15px; font-weight: 500; line-height: 1.35; }
+.product-carousel[data-effect-ready] .product-carousel__controls { margin-top: 8px; }
+.product-carousel[data-effect-ready] .product-carousel__purchase { margin-top: 8px; animation: flex-carousel-title 520ms 60ms cubic-bezier(.22,1,.36,1) both; }
+@keyframes product-carousel-meta { from { opacity: 0; transform: translateY(6px); } }
+.product-carousel__position { display: inline-flex; flex: none; align-items: center; gap: 3px; margin-left: auto; color: var(--nk-color-text-muted); font-size: 12px; line-height: 1; font-variant-numeric: tabular-nums; }
+.product-carousel__caption .product-carousel__position { margin-left: 0; opacity: .7; transition: opacity 400ms; }
+.product-carousel[data-browse-only] .card__swatches,
+.product-carousel[data-browse-only] .card__vendor,
+.product-carousel[data-browse-only] .card__badges { display: none; }
+.product-carousel[data-browse-only][data-effect-ready] .product-carousel__controls {
+  justify-content: center; margin-top: 0; padding-top: 0; border-top: 0;
+}
+.product-carousel[data-browse-only][data-effect-ready] [data-carousel-step] { display: none; }
+.product-carousel[data-browse-only][data-revealed] .product-carousel__caption { animation-duration: 160ms; }
+.product-carousel[data-browse-only][data-effect-ready] .card__meta { animation-duration: 260ms; }
+.product-carousel[data-browse-only] .product-carousel__digit-strip { transition-duration: 260ms; }
+.product-carousel[data-focus-open] .product-carousel__caption .product-carousel__position { opacity: 0; }
+.product-carousel__digit { display: inline-block; height: 1em; overflow: hidden; line-height: 1; letter-spacing: 0; }
+.product-carousel__digit-strip { display: flex; flex-direction: column; transition: transform 600ms cubic-bezier(.22,1,.36,1); }
+.product-carousel__digit-strip > span { height: 1em; line-height: 1; }
+
+/* Size selector and the one Add to cart button for the highlighted product. */
+.product-carousel__purchase { display: grid; justify-items: center; gap: 12px; margin-top: 18px; width: min(100%, 38rem); }
+.product-carousel__sizes { display: grid; justify-items: center; gap: 8px; }
+/* Add to cart opens the sizes. Closed, they keep their space in the WebGL caption (so the cards
+   don't resize when they open) but are invisible and unfocusable; native rails simply hide them. */
+.product-carousel__sizes[hidden],
+.product-carousel__sizes:not([data-open]) { display: none; }
+.product-carousel[data-effect-ready] .product-carousel__sizes:not([hidden]):not([data-open]) { display: grid; visibility: hidden; }
+.product-carousel__sizes[aria-busy='true'] .product-carousel__size { cursor: progress; opacity: .6; }
+.product-carousel__add[aria-busy] { cursor: progress; }
+.product-carousel__sizes-label { color: var(--nk-color-text-muted); }
+.product-carousel__size-options { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.product-carousel__size {
+  min-width: 48px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--nk-color-line);
+  border-radius: var(--nk-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 200ms var(--nk-ease-out), background-color 200ms var(--nk-ease-out), color 200ms var(--nk-ease-out);
+  animation: product-carousel-meta 360ms var(--nk-ease-out) both;
+  animation-delay: calc(var(--i, 0) * 30ms);
+}
+.product-carousel__size:not(:disabled):hover { border-color: var(--nk-accent-border); background: var(--nk-accent-subtle); }
+.product-carousel__size:focus-visible { border-color: var(--nk-color-accent); outline: 2px solid var(--nk-focus); outline-offset: 2px; }
+.product-carousel__size:disabled { color: var(--nk-color-text-muted); cursor: not-allowed; text-decoration: line-through; opacity: .55; }
+.product-carousel__add { position: relative; min-width: min(100%, 300px); max-width: 100%; overflow: hidden; transition: opacity var(--nk-dur-instant) var(--nk-ease-out), background-color 240ms var(--nk-ease-out), color 240ms var(--nk-ease-out); }
+.product-carousel__add-product { overflow: hidden; max-width: 22ch; font-weight: 400; text-overflow: ellipsis; text-transform: none; white-space: nowrap; letter-spacing: 0; opacity: .72; }
+.product-carousel__add-product:not(:empty)::before { content: '·'; margin-right: 8px; }
+.product-carousel__add[data-added]::after { content: '✓'; margin-left: 2px; }
+.product-carousel[data-effect-ready] .product-carousel__add-product { display: none; }
+.product-carousel__purchase-status { min-height: 1.4em; margin: 0; font-size: .875rem; color: var(--nk-color-text-muted); }
+.product-carousel__purchase-status:empty { min-height: 0; }
+
+/* Measurements follow the sizes; the engine reserves extra height below the photographic scene. */
+.product-carousel__measurements { width: 100%; min-width: 0; }
+.product-carousel__measurements .measurement-panel { margin-top: 0; }
+.product-carousel__measurements[hidden], .product-carousel__measurements [hidden] { display: none !important; }
+.product-carousel__size-details { display: inline-flex; align-items: center; min-height: 44px; font-size: .8125rem; text-underline-offset: 4px; }
+
+@media (max-width: 599px) {
+  .product-carousel__stage { height: calc(640px + var(--carousel-details-height, 0px)); }
+  .product-carousel[data-effect-ready] .product-carousel__controls { flex-wrap: wrap; }
+  .product-carousel[data-effect-ready] .product-carousel__controls > .text-muted { flex-basis: 100%; }
+  .product-carousel__add { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-carousel__digit-strip,
+  .product-carousel__add,
+  .product-carousel__size,
+  .product-carousel__slide .card,
+  .product-carousel__slide .card__media-wrap::after { transition: none; }
+  .product-carousel[data-snap] .product-carousel__viewport { scroll-behavior: auto; }
+  .product-carousel[data-effect-ready] .card__meta,
+  .product-carousel[data-effect-ready] .product-carousel__purchase,
+  .product-carousel[data-revealed] .product-carousel__caption,
+  .product-carousel__size { animation: none; }
+}

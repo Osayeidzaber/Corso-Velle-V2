@@ -1,0 +1,646 @@
+/* Header, announcement, desktop nav, phone drawer. */
+.announcement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 4px var(--nk-gutter);
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+  font-family: var(--nk-font-spec);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Announcement links were only as tall as their text (~14px). Extend the hit area into the bar's
+   own padding so a fingertip lands on them; the negative margin keeps the bar's height. */
+.announcement a {
+  display: inline-block;
+  padding-block: 12px;
+  margin-block: -12px;
+}
+
+nk-header {
+  display: block;
+  position: relative;
+  z-index: 30;
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+  border-bottom: 1px solid var(--nk-color-line);
+  transition:
+    translate var(--nk-dur-small) var(--nk-ease-out),
+    background-color var(--nk-dur-small),
+    border-color var(--nk-dur-small),
+    color var(--nk-dur-small);
+}
+
+.header-section {
+  position: relative;
+  z-index: 30;
+}
+
+/* Sticky lives on the section wrapper: nk-header's own parent is only as tall as the header. */
+.header-section:has(> nk-header[data-sticky='always']),
+.header-section:has(> nk-header[data-sticky='reveal']) {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+/* Overlay: the first section slides up under the (transparent) header. */
+.header-section:has(> nk-header[data-overlay]) {
+  margin-bottom: calc(-1 * var(--nk-header-h));
+}
+
+nk-header[data-hidden] {
+  translate: 0 -100%;
+}
+
+nk-header[data-scrolled] {
+  background: color-mix(in oklab, var(--nk-color-bg) 92%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom-color: var(--nk-color-line);
+}
+
+nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]):not([data-scrolled]):not(:has(.nav__disclosure[open])):not(:has(nk-search-pill[data-open])) {
+  background: transparent;
+  color: var(--nk-overlay-text, #fff);
+  border-bottom-color: transparent;
+}
+
+/* Theme settings > Logo over campaign images: swapped in only while the header is transparent. */
+.header__logo .header__logo-inverse { display: none; }
+nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]):not([data-scrolled]):not(:has(.nav__disclosure[open])):not(:has(nk-search-pill[data-open])) .header__logo:has(.header__logo-inverse) {
+  .header__logo-primary { display: none; }
+  .header__logo-inverse { display: block; filter: none; }
+}
+
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  max-width: var(--nk-page-width, 1440px);
+  margin: 0 auto;
+  padding: 0 max(10px, calc(var(--nk-gutter) - 6px));
+}
+
+nk-header .header { min-height: var(--header-height-mobile, 64px); }
+nk-header[data-logo-treatment='original'] .header__logo img { filter: none !important; }
+nk-header[data-dropdown='list'] .nav__panel { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 990px) {
+  nk-header .header { min-height: var(--header-height, 76px); }
+  nk-header .header--two-row { grid-template-rows: minmax(44px, auto) auto; row-gap: 8px; padding-block: 12px; }
+  .header--two-row .header__start { display: contents; }
+  .header--two-row .header__logo { grid-row: 1; grid-column: 2; }
+  .header--two-row .header__end { grid-row: 1; grid-column: 3; }
+  .header--two-row .header__nav { grid-row: 2; grid-column: 1/-1; justify-content: center; }
+  .header--two-row .nav { justify-content: center; flex-wrap: wrap; }
+}
+
+.header__start,
+.header__end {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.header__end {
+  justify-content: flex-end;
+}
+
+.header__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-self: center;
+  min-height: var(--nk-tap);
+  text-decoration: none;
+  font-family: var(--nk-font-heading);
+  font-weight: 800;
+  font-size: 1.375rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.header__logo img {
+  width: var(--nk-logo-width-mobile, 110px);
+  height: auto;
+}
+
+.header__nav {
+  display: none;
+}
+
+.header__cart-count {
+  min-width: 20px;
+  margin-inline-start: 4px;
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-family: var(--nk-font-spec);
+  font-size: 0.75rem;
+  line-height: 18px;
+  text-align: center;
+}
+
+.header__label {
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.header__account {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--nk-tap);
+  min-height: var(--nk-tap);
+}
+
+.header__account svg {
+  width: 22px;
+  height: 22px;
+}
+
+.nav__item {
+  position: static;
+}
+
+@media (min-width: 990px) {
+  .header {
+    min-height: 72px;
+    gap: 24px;
+    padding: 0 var(--nk-gutter);
+  }
+
+  .header__start,
+  .header__end {
+    gap: 6px;
+  }
+
+  .header--left {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 32px;
+  }
+
+  .header--left .header__logo {
+    order: -1;
+    justify-self: start;
+  }
+
+  .header__menu-button {
+    display: none;
+  }
+
+  .header__nav {
+    display: flex;
+    min-width: 0;
+  }
+
+  .header__logo img {
+    width: var(--nk-logo-width, 140px);
+  }
+}
+
+/* Desktop navigation: link + separate disclosure (details) per parent item. */
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.nav__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nav__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--nk-tap);
+  text-decoration: none;
+  transition: opacity var(--nk-dur-instant);
+}
+
+@media (hover: hover) {
+  .nav__link:hover {
+    opacity: 0.72;
+  }
+}
+
+.nav__link[aria-current='page'] {
+  text-decoration: underline;
+}
+
+.nav__disclosure > summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  min-height: var(--nk-tap);
+  cursor: pointer;
+  list-style: none;
+  opacity: 0.75;
+}
+
+.nav__disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav__disclosure > summary svg {
+  width: 11px;
+  transition: rotate var(--nk-dur-instant);
+}
+
+.nav__disclosure[open] > summary svg {
+  rotate: 180deg;
+}
+
+.nav__panel {
+  position: absolute;
+  inset: 100% 0 auto;
+  z-index: 35;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 24px 32px;
+  max-height: calc(100dvh - var(--nk-header-h));
+  overflow-y: auto;
+  padding: 28px var(--nk-gutter);
+  border-top: 1px solid var(--nk-color-line);
+  border-bottom: 1px solid var(--nk-color-line);
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+  text-transform: none;
+  font-family: var(--nk-font-body);
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.nav__group-heading {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--nk-color-text-muted);
+}
+
+.nav__panel ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav__panel a {
+  display: inline-block;
+  padding-block: 2px;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .nav__panel a:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Phone drawer. */
+.menu-drawer__panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.menu-drawer__search {
+  padding: 12px 16px;
+}
+
+.menu-drawer__search input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--nk-color-text);
+  background: transparent;
+}
+
+.menu-drawer__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-drawer__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 20px;
+  border: 0;
+  border-top: 1px solid var(--nk-color-line);
+  background: transparent;
+  font-family: var(--nk-font-heading);
+  font-weight: 700;
+  font-size: 1.125rem;
+  text-align: start;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.menu-drawer__row--child {
+  font-family: var(--nk-font-body);
+  font-weight: 500;
+  font-size: 1rem;
+  text-transform: none;
+}
+
+.menu-drawer__group-title {
+  padding: 18px 20px 8px;
+}
+
+.menu-drawer__back {
+  font-weight: 700;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+}
+
+.menu-drawer__promos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 16px 20px;
+}
+
+.menu-drawer__promos a {
+  display: grid;
+  gap: 6px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+}
+
+.menu-drawer__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: auto;
+  padding: 12px 20px calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--nk-color-line);
+}
+
+.menu-drawer__footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--nk-tap);
+}
+
+/* ---------- Navigation drawer styles (cards / layered / editorial) ---------- */
+
+/* Floating mega-menu panel (navbar2 / navbatmain): a card under the item, morphing between items. */
+.header--panel-floating .nav__item {
+  position: relative;
+}
+
+.header--panel-floating .nav__panel {
+  inset: calc(100% + 8px) auto auto 50%;
+  translate: calc(-50% + var(--nk-panel-shift, 0px)) 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 36px;
+  width: max-content;
+  min-width: 220px;
+  max-width: min(720px, calc(100vw - 32px));
+  border: 1px solid var(--nk-color-line);
+  border-radius: var(--nk-radius);
+  box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.35);
+  padding: 20px 24px;
+}
+
+/* Invisible hover bridge so moving the pointer from the trigger into the floating panel never drops hover. */
+.header--panel-floating .nav__panel::before {
+  content: '';
+  position: absolute;
+  inset: -12px 0 auto;
+  height: 12px;
+}
+
+.header--panel-floating .menu-promo {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.menu-promo {
+  display: grid;
+  gap: 6px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+}
+
+.menu-promo img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.header--panel-floating .menu-promo img {
+  aspect-ratio: 2 / 1;
+}
+
+/* Editorial drawer (menu.md / StaggeredMenu): big numbered rows, coloured layers slide first. */
+.menu-drawer--editorial .menu-drawer__list {
+  counter-reset: nk-menu;
+}
+
+.menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row {
+  min-height: 64px;
+  border-top: 0;
+  font-size: clamp(2rem, 9vw, 3.25rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row::before {
+  counter-increment: nk-menu;
+  content: counter(nk-menu, decimal-leading-zero);
+  align-self: flex-start;
+  margin-top: 10px;
+  margin-right: 10px;
+  order: 2;
+  font-family: var(--nk-font-spec);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--nk-color-accent);
+}
+
+.menu-drawer__layers {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.menu-drawer__layer {
+  position: absolute;
+  inset: 0;
+  translate: -100% 0;
+}
+
+.menu-drawer__layer:nth-child(1) {
+  background: var(--nk-color-accent);
+}
+
+.menu-drawer__layer:nth-child(2) {
+  background: var(--nk-color-surface);
+}
+
+/* Cards drawer (cardnav): level-1 groups as cards with their links inside. */
+.menu-drawer__cards {
+  display: grid;
+  gap: 8px;
+  padding: 8px 16px 16px;
+}
+
+.menu-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--nk-radius);
+  background: var(--nk-color-surface);
+}
+
+.menu-card__title {
+  font-family: var(--nk-font-heading);
+  font-weight: 700;
+  font-size: 1.125rem;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.menu-card__description {
+  color: var(--nk-color-text-muted);
+  font-size: 0.875rem;
+}
+
+.menu-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-card__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.menu-card__links a::before {
+  content: '↗';
+  font-size: 0.75rem;
+  color: var(--nk-color-accent);
+}
+
+.header--swap .nav__link {
+  text-decoration: none;
+}
+
+.header__search-pill,
+.header__search-icon--desktop {
+  display: none;
+}
+
+@media (min-width: 990px) {
+  .header__search-pill,
+  .header__search-icon--desktop {
+    display: inline-flex;
+  }
+
+  .header__search-icon--phone {
+    display: none;
+  }
+
+  /* header.ts: the merchant's menu would wrap at this width, so keep the drawer button instead. */
+  nk-header[data-nav-compact] .header__nav {
+    display: none;
+  }
+
+  nk-header[data-nav-compact] .header__menu-button {
+    display: inline-flex;
+  }
+}
+
+.menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row {
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row::before {
+  order: 1;
+  margin: 8px 0 0;
+}
+
+.menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row > svg {
+  order: 2;
+  margin-inline-start: auto;
+}
+
+/* Drawer headings receive focus only so screen readers start there; no visible ring needed. */
+.drawer__title:focus {
+  outline: none;
+}
+
+/* Logo intro (header.liquid sets html[data-logo-intro] before first paint, once per visit).
+   "Ink": a soft-edged mask sweeps left to right like a pen writing the script logo. Masks don't
+   touch `filter`, so logo color treatments keep working. Never runs with reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-logo-intro='ink'] .header__logo img,
+  html[data-logo-intro='ink'] .header__logo:not(:has(img)) {
+    -webkit-mask-image: linear-gradient(90deg, #000 42%, transparent 58%);
+    mask-image: linear-gradient(90deg, #000 42%, transparent 58%);
+    -webkit-mask-size: 260% 100%;
+    mask-size: 260% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    animation: nk-logo-ink 1.7s cubic-bezier(0.65, 0, 0.35, 1) 0.15s both;
+  }
+
+  html[data-logo-intro='rise'] .header__logo {
+    animation: nk-logo-rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+  }
+}
+
+@keyframes nk-logo-ink {
+  from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+  to { -webkit-mask-position: 0 0; mask-position: 0 0; }
+}
+
+@keyframes nk-logo-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}

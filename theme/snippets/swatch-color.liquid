@@ -1,0 +1,46 @@
+{%- doc -%}
+  Resolves a CSS background value (`#hex` or `url(...)`) for an option value swatch.
+  Outputs the raw CSS value (or empty string if none).
+
+  @param {object} value - ProductOptionValue drop
+  @param {boolean} [is_color_option] - Whether the parent option is a Color/Colour option
+{%- enddoc -%}
+{%- liquid
+  assign swatch_bg = ''
+  if value.swatch
+    if value.swatch.image
+      assign swatch_bg = value.swatch.image | image_url: width: 60 | prepend: 'url(' | append: ')'
+    elsif value.swatch.color
+      assign swatch_bg = value.swatch.color
+    endif
+  elsif is_color_option
+    assign val_down = value | downcase | strip
+    case val_down
+      when 'black', 'noir', 'onyx', 'jet'
+        assign swatch_bg = '#141312'
+      when 'white', 'ivory', 'chalk', 'blanc'
+        assign swatch_bg = '#F6F4EF'
+      when 'cream', 'ecru', 'off-white', 'bone', 'oat'
+        assign swatch_bg = '#EAE3D5'
+      when 'sand', 'beige', 'stone', 'taupe', 'khaki'
+        assign swatch_bg = '#C8B9A6'
+      when 'camel', 'tan', 'caramel', 'cognac'
+        assign swatch_bg = '#A67B5B'
+      when 'brown', 'espresso', 'chocolate', 'mocha'
+        assign swatch_bg = '#4A3728'
+      when 'navy', 'midnight', 'marine'
+        assign swatch_bg = '#1D2939'
+      when 'blue', 'sky', 'cobalt', 'slate'
+        assign swatch_bg = '#4B6B88'
+      when 'olive', 'sage', 'khaki green', 'moss', 'forest', 'green'
+        assign swatch_bg = '#556049'
+      when 'burgundy', 'wine', 'bordeaux', 'merlot', 'oxblood'
+        assign swatch_bg = '#5E2129'
+      when 'terracotta', 'rust', 'clay'
+        assign swatch_bg = '#9E4732'
+      when 'grey', 'gray', 'charcoal', 'ash'
+        assign swatch_bg = '#6E6D6A'
+    endcase
+  endif
+  echo swatch_bg
+-%}

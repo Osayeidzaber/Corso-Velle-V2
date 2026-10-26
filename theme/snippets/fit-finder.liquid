@@ -1,0 +1,174 @@
+{%- doc -%}
+  Three-step size finder shown at the top of the size guide drawer. Height and weight (step 1),
+  body shape (step 2) and fit preference (step 3) give an estimated letter size, mapped onto the
+  product's own size values. Answers stay in localStorage only. Hidden without JavaScript.
+
+  @param {object} product - The product
+  @param {object} size_option - The product option holding sizes (product.options_with_values entry)
+  @param {string} id - Unique suffix for radio names, e.g. section.id
+
+  @example
+  {% render 'fit-finder', product: product, size_option: option, id: section.id %}
+{%- enddoc -%}
+{%- liquid
+  assign sizes = size_option.values | join: ','
+  assign fv = product.selected_or_first_available_variant
+  assign shapes = 'narrow,average,broad' | split: ','
+  assign fits = 'fitted,regular,relaxed' | split: ','
+-%}
+<nk-fit-finder class="fit-finder" sizes="{{ sizes | escape }}" option="{{ size_option.name | escape }}" data-sex="male" hidden>
+  <div class="fit-finder__product">
+    {%- if product.featured_image -%}
+      {{ product.featured_image | image_url: width: 160 | image_tag: class: 'fit-finder__thumb', loading: 'lazy', alt: '', width: 56, height: 56 }}
+    {%- endif -%}
+    <div class="fit-finder__product-text">
+      <p class="fit-finder__product-title">{{ product.title | escape }}</p>
+      <p class="fit-finder__product-price">{{ fv.price | money }}</p>
+    </div>
+  </div>
+
+  <div class="fit-finder__progress" aria-hidden="true"><span class="fit-finder__progress-bar"></span></div>
+  <p class="fit-finder__counter spec" data-ref="counter">01 / 03</p>
+
+  <div class="fit-finder__step" data-ref="step" data-step="1">
+    <h3 class="fit-finder__title" data-step-title tabindex="-1">{{ 'product.fit_finder.step_1_title' | t }}</h3>
+    <p class="fit-finder__lede">{{ 'product.fit_finder.step_1_lede' | t }}</p>
+
+    <fieldset class="fit-finder__field">
+      <legend class="fit-finder__label spec">{{ 'product.fit_finder.sizing' | t }}</legend>
+      <div class="fit-finder__segmented">
+        {%- for sex in (1..2) -%}
+          {%- if forloop.first -%}{%- assign value = 'female' -%}{%- else -%}{%- assign value = 'male' -%}{%- endif -%}
+          <label class="fit-finder__segment">
+            <input type="radio" class="visually-hidden" name="fit-{{ id }}:sex" value="{{ value }}" data-ref="choice"{% if value == 'male' %} checked{% endif %}>
+            {%- assign sex_key = 'product.fit_finder.' | append: value -%}
+            <span>{{ sex_key | t }}</span>
+          </label>
+        {%- endfor -%}
+      </div>
+    </fieldset>
+
+    <div class="fit-finder__body">
+      <svg class="fit-finder__figure" viewBox="-8 0 68 140" aria-hidden="true" focusable="false">
+        <g class="fit-finder__ruler">
+          <line class="fit-finder__ruler-line" x1="-5" y1="3.6" x2="-5" y2="134.5"/>
+          <line class="fit-finder__ruler-mark" x1="-8" y1="3.6" x2="22" y2="3.6"/>
+        </g>
+        <ellipse class="fit-finder__ground" cx="30" cy="135" rx="15" ry="1.8"/>
+        <g class="fit-finder__person">
+          <circle cx="30" cy="10.2" r="6.6"/>
+          <path class="fit-finder__shape fit-finder__shape--male" d="M30 18.2L33.1 18.2C33.2 21.5 33.5 24.2 34.8 25.3C37.5 26.6 41.2 27.1 44 28.5C47 29.5 48.5 32 48.5 35C49 44 50 52 50.5 60C51 68 51.5 74 51 79C51 83 49 84.5 47.5 82.5C47 80 47.2 76 46.8 72C46 64 45.2 56 44.5 50C44 45 43.6 41 43 38C42.5 46 41.5 54 41 60C41.2 66 42 70 42 74C42 88 40.5 100 39.5 108C39 116 38.5 124 37.5 130C38.5 132 39 134 37 134.5L31.5 134.5C31.2 128 31.5 120 32 112C32.5 102 31.5 88 30 80C28.5 88 27.5 102 28 112C28.5 120 28.8 128 28.5 134.5L23 134.5C21 134 21.5 132 22.5 130C21.5 124 21 116 20.5 108C19.5 100 18 88 18 74C18 70 18.8 66 19 60C18.5 54 17.5 46 17 38C16.4 41 16 45 15.5 50C14.8 56 14 64 13.2 72C12.8 76 13 80 12.5 82.5C11 84.5 9 83 9 79C8.5 74 9 68 9.5 60C10 52 11 44 11.5 35C11.5 32 13 29.5 16 28.5C18.8 27.1 22.5 26.6 25.2 25.3C26.5 24.2 26.8 21.5 26.9 18.2L30 18.2Z"/>
+          <path class="fit-finder__shape fit-finder__shape--female" d="M30 18.2L32.5 18.2C32.6 21.5 32.9 24.2 34 25.3C36.3 26.6 39.2 27.1 41.5 28.5C44 29.5 45.3 32 45.3 35C45.8 44 46.8 52 47.5 60C48.3 68 48.8 74 48.5 79C48.5 83 46.6 84.2 45.3 82.2C44.9 79.5 45 76 44.5 72C43.8 64 42.8 56 42.2 50C41.8 45 41.4 41 40.8 38C41.5 42 40.8 46 39.2 52C38.2 56 38 58 38.5 61C40.5 66 42.5 70 42.5 76C42.3 90 40 100 38.8 108C38.2 116 37.6 124 36.6 130C37.4 132 37.6 134 35.8 134.5L31.4 134.5C31.2 128 31.5 120 31.8 112C32.2 102 31.4 90 30 82C28.6 90 27.8 102 28.2 112C28.5 120 28.8 128 28.6 134.5L24.2 134.5C22.4 134 22.6 132 23.4 130C22.4 124 21.8 116 21.2 108C20 100 17.7 90 17.5 76C17.5 70 19.5 66 21.5 61C22 58 21.8 56 20.8 52C19.2 46 18.5 42 19.2 38C18.6 41 18.2 45 17.8 50C17.2 56 16.2 64 15.5 72C15 76 15.1 79.5 14.7 82.2C13.4 84.2 11.5 83 11.5 79C11.2 74 11.7 68 12.5 60C13.2 52 14.2 44 14.7 35C14.7 32 16 29.5 18.5 28.5C20.8 27.1 23.7 26.6 26 25.3C27.1 24.2 27.4 21.5 27.5 18.2L30 18.2Z"/>
+        </g>
+      </svg>
+
+      <div class="fit-finder__controls">
+        {%- for field in (1..2) -%}
+          {%- liquid
+            if forloop.first
+              assign f = 'height'
+              assign min = 140
+              assign max = 210
+              assign units = 'cm,ftin' | split: ','
+            else
+              assign f = 'weight'
+              assign min = 40
+              assign max = 150
+              assign units = 'kg,lbs' | split: ','
+            endif
+            assign label_key = 'product.fit_finder.' | append: f
+            assign field_label = label_key | t
+          -%}
+          <div class="fit-finder__control">
+            <div class="fit-finder__control-head">
+              <span class="fit-finder__label spec" id="FitLabel-{{ f }}-{{ id }}">{{ label_key | t }}</span>
+              <div class="fit-finder__units" role="group" aria-label="{{ 'product.units' | t }}">
+                {%- for unit in units -%}
+                  {%- assign unit_key = 'product.fit_finder.unit_' | append: unit -%}
+                  <button type="button" class="fit-finder__unit" data-ref="unit" data-field="{{ f }}" value="{{ unit }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">{{ unit_key | t }}</button>
+                {%- endfor -%}
+              </div>
+            </div>
+            <p class="fit-finder__value" data-ref="value" data-field="{{ f }}" aria-live="polite">
+              <span data-part="number"></span><span class="fit-finder__value-unit" data-part="unit"></span>
+            </p>
+            <div class="fit-finder__slider">
+              <button type="button" class="fit-finder__nudge" data-ref="nudge" data-field="{{ f }}" value="-1" aria-label="{{ 'product.fit_finder.decrease' | t: field: field_label }}">−</button>
+              <input type="range" class="fit-finder__range" data-ref="range" data-field="{{ f }}" min="{{ min }}" max="{{ max }}" step="1" aria-labelledby="FitLabel-{{ f }}-{{ id }}">
+              <button type="button" class="fit-finder__nudge" data-ref="nudge" data-field="{{ f }}" value="1" aria-label="{{ 'product.fit_finder.increase' | t: field: field_label }}">+</button>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+
+  <div class="fit-finder__step" data-ref="step" data-step="2" hidden>
+    <h3 class="fit-finder__title" data-step-title tabindex="-1">{{ 'product.fit_finder.step_2_title' | t }}</h3>
+    <p class="fit-finder__lede">{{ 'product.fit_finder.step_2_lede' | t }}</p>
+    {%- assign areas = 'chest,stomach' | split: ',' -%}
+    {%- for area in areas -%}
+      <fieldset class="fit-finder__field">
+        {%- assign area_key = 'product.fit_finder.' | append: area -%}
+        <legend class="fit-finder__label spec">{{ area_key | t }}</legend>
+        <div class="fit-finder__cards">
+          {%- for shape in shapes -%}
+            {%- assign option_key = 'product.fit_finder.' | append: area | append: '_' | append: shape -%}
+            <label class="fit-finder__card">
+              <input type="radio" class="visually-hidden" name="fit-{{ id }}:{{ area }}" value="{{ shape }}" data-ref="choice"{% if shape == 'average' %} checked{% endif %}>
+              <span class="fit-finder__card-icon fit-finder__card-icon--{{ shape }}" aria-hidden="true"></span>
+              <span class="fit-finder__card-label">{{ option_key | t }}</span>
+            </label>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+    {%- endfor -%}
+  </div>
+
+  <div class="fit-finder__step" data-ref="step" data-step="3" hidden>
+    <h3 class="fit-finder__title" data-step-title tabindex="-1">{{ 'product.fit_finder.step_3_title' | t }}</h3>
+    <p class="fit-finder__lede">{{ 'product.fit_finder.step_3_lede' | t }}</p>
+    <fieldset class="fit-finder__field">
+      <legend class="visually-hidden">{{ 'product.fit_finder.step_3_title' | t }}</legend>
+      <div class="fit-finder__options">
+        {%- for fit in fits -%}
+          {%- assign fit_key = 'product.fit_finder.fit_' | append: fit -%}
+          <label class="fit-finder__option">
+            <input type="radio" class="visually-hidden" name="fit-{{ id }}:fit" value="{{ fit }}" data-ref="choice"{% if fit == 'regular' %} checked{% endif %}>
+            <span class="fit-finder__option-name">{{ fit_key | t }}</span>
+            <span class="fit-finder__option-note">{%- assign note_key = fit_key | append: '_note' -%}{{ note_key | t }}</span>
+          </label>
+        {%- endfor -%}
+      </div>
+    </fieldset>
+
+    <div class="fit-finder__result">
+      <p class="fit-finder__label spec">{{ 'product.fit_finder.your_size' | t }}</p>
+      <p class="fit-finder__result-size" data-ref="estimate" aria-live="polite"></p>
+      <p class="fit-finder__unmatched">{{ 'product.fit_finder.unmatched' | t }}</p>
+      <button type="button" class="button fit-finder__apply" data-ref="apply" hidden>
+        <span class="fit-finder__apply-select">{{ 'product.fit_finder.select' | t }} <span data-part="size"></span></span>
+        <span class="fit-finder__apply-sold-out"><span data-part="size"></span> · {{ 'product.sold_out' | t }}</span>
+      </button>
+      <button type="button" class="fit-finder__link" data-ref="restart">{{ 'product.fit_finder.restart' | t }}</button>
+    </div>
+  </div>
+
+  <div class="fit-finder__estimate">
+    <div>
+      <p class="fit-finder__label spec">{{ 'product.fit_finder.live_estimate' | t }}</p>
+      <p class="fit-finder__estimate-note">{{ 'product.fit_finder.refined' | t }}</p>
+    </div>
+    <p class="fit-finder__estimate-size" data-ref="estimate" aria-live="polite"></p>
+  </div>
+
+  <div class="fit-finder__nav">
+    <button type="button" class="fit-finder__back" data-ref="back" hidden>{{ 'product.fit_finder.back' | t }}</button>
+    <button type="button" class="button fit-finder__next" data-ref="next">{{ 'product.fit_finder.next' | t }}</button>
+  </div>
+
+  <p class="fit-finder__privacy">
+    <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><rect x="3" y="7" width="10" height="7" rx="1" fill="none" stroke="currentColor"/><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor"/></svg>
+    {{ 'product.fit_finder.privacy' | t }}
+  </p>
+</nk-fit-finder>

@@ -1,0 +1,237 @@
+/*
+ * Base: reset + element defaults + layout grid.
+ * Reset adapted from Shopify Skeleton's critical.css (docs/LICENSES/shopify-skeleton-theme.md).
+ * All values come from tokens set by snippets/css-variables.liquid; fallbacks below are only for
+ * the unlikely case the snippet fails.
+ */
+:root {
+  --nk-header-h: 64px;
+  --nk-gutter: var(--nk-gutter-mobile, 16px);
+  --nk-radius: var(--nk-corner-radius, 2px);
+  /* Fallback only; snippets/css-variables.liquid sets --nk-focus per colour scheme. */
+  --nk-focus: var(--nk-color-accent, #432d23);
+  --nk-dur-instant: 120ms;
+  --nk-dur-small: 200ms;
+  --nk-dur-overlay-in: 280ms;
+  --nk-dur-overlay-out: 200ms;
+  --nk-ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --nk-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --nk-tap: 44px;
+}
+
+@media (min-width: 750px) {
+  :root {
+    --nk-gutter: var(--nk-gutter-tablet, 24px);
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --nk-gutter: var(--nk-gutter-desktop, 48px);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--nk-header-h) + 8px);
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+/* Lenis moves the page every frame; native smooth behaviour would animate each of those moves. */
+html.lenis {
+  scroll-behavior: auto !important;
+}
+
+html.nk-locked {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  font-family: var(--nk-font-body);
+  font-size: var(--nk-text-base, 16px);
+  line-height: 1.5;
+  background-color: var(--nk-color-bg);
+  color: var(--nk-color-text);
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* 16px minimum avoids iOS zoom on focus. */
+input,
+textarea,
+select {
+  font-size: max(16px, 1em);
+  border-radius: var(--nk-radius);
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--nk-font-heading);
+  font-weight: var(--nk-font-heading-weight, 700);
+  line-height: 1.05;
+  text-transform: var(--nk-heading-case, none);
+}
+
+:focus-visible {
+  outline: 2px solid var(--nk-focus);
+  outline-offset: 2px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link:focus {
+  position: fixed;
+  z-index: 100;
+  top: 8px;
+  left: 8px;
+  width: auto;
+  height: auto;
+  clip: auto;
+  margin: 0;
+  padding: 12px 16px;
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+}
+
+/* Section grid (from Skeleton): content column with full-bleed escape hatch. */
+.shopify-section {
+  --content-width: min(calc(var(--nk-page-width, 1440px) - var(--nk-gutter) * 2), calc(100% - var(--nk-gutter) * 2));
+  --content-margin: minmax(var(--nk-gutter), 1fr);
+  --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--content-grid);
+  width: 100%;
+}
+
+.shopify-section > * {
+  grid-column: 2;
+}
+
+.shopify-section > .full-width {
+  grid-column: 1 / -1;
+}
+
+.section-spacing {
+  padding-block: calc(var(--nk-space-section, 72px) * var(--nk-section-spacing-mobile-scale, 0.66));
+}
+
+@media (min-width: 990px) {
+  .section-spacing {
+    padding-block: var(--nk-space-section, 72px);
+  }
+}
+
+/* Opt-in presentation contract. Inputs live on each section root, never on :root. */
+.section-presentation {
+  --content-width: min(calc(var(--nk-section-page-width, var(--nk-page-width, 1440px)) - var(--nk-gutter) * 2), calc(100% - var(--nk-gutter) * 2));
+}
+
+.section-presentation.section-spacing {
+  padding-block-start: var(--nk-section-padding-top-small, calc(var(--nk-space-section, 72px) * var(--nk-section-spacing-mobile-scale, 0.66)));
+  padding-block-end: var(--nk-section-padding-bottom-small, calc(var(--nk-space-section, 72px) * var(--nk-section-spacing-mobile-scale, 0.66)));
+}
+
+@media (min-width: 990px) {
+  .section-presentation.section-spacing {
+    padding-block-start: var(--nk-section-padding-top, var(--nk-space-section, 72px));
+    padding-block-end: var(--nk-section-padding-bottom, var(--nk-space-section, 72px));
+  }
+}
+
+/* Spec voice: the mono label layer. */
+.spec {
+  font-family: var(--nk-font-spec);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.text-muted {
+  color: var(--nk-color-text-muted);
+}
+
+.utility-page { width: 100%; min-width: 0; margin-inline: auto; overflow-wrap: anywhere; }
+.utility-page[data-width='narrow'] { max-width: 60ch; }
+.utility-page[data-width='regular'] { max-width: 80ch; }
+.utility-page__signup { margin-top: 40px; }
+.utility-page__signup h2 { margin-bottom: 20px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

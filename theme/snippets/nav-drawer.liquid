@@ -1,0 +1,143 @@
+{%- doc -%}
+  Phone menu drawer. One panel per menu level: root, then one panel per
+  parent link (and per parent child). Rows with children are buttons that open the child
+  panel; child panels start with a named Back button and a "Shop all" link.
+
+  @param {object} menu - The link list
+  @param {object} section - The header section (for promo blocks)
+
+  @example
+  {% render 'nav-drawer', menu: section.settings.menu, section: section %}
+{%- enddoc -%}
+{%- assign drawer_style = section.settings.drawer_style | default: 'standard' -%}
+<nk-nav-drawer id="MenuDrawer">
+  <dialog class="drawer menu-drawer--{{ drawer_style }}" aria-labelledby="MenuDrawerTitle">
+    {%- if drawer_style == 'editorial' -%}
+      <div class="menu-drawer__layers" aria-hidden="true">
+        <span class="menu-drawer__layer"></span><span class="menu-drawer__layer"></span>
+      </div>
+    {%- endif -%}
+    <div class="drawer__header">
+      <h2 class="drawer__title spec" id="MenuDrawerTitle" tabindex="-1" data-autofocus>{{ 'header.menu' | t }}</h2>
+      <button type="button" class="icon-button" data-nk-close aria-label="{{ 'general.close' | t }}">
+        {% render 'icon', name: 'close' %}
+      </button>
+    </div>
+
+    <div class="drawer__body">
+      {%- # Root level -%}
+      <div class="menu-drawer__panel" data-level-panel="root">
+        <form class="menu-drawer__search" action="{{ routes.search_url }}" method="get" role="search">
+          <label class="visually-hidden" for="MenuDrawerSearch">{{ 'header.search' | t }}</label>
+          <input id="MenuDrawerSearch" type="search" name="q" placeholder="{{ 'header.search_placeholder' | t }}">
+        </form>
+
+        {%- if drawer_style == 'cards' -%}
+          {%- # Cards style (cardnav): each top-level item is a card with its links inside. -%}
+          <div class="menu-drawer__cards">
+            {%- for link in menu.links -%}
+              <div class="menu-card">
+                <a class="menu-card__title" href="{{ link.url }}">{{ link.title | escape }}</a>
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'group_description' and block.settings.menu_item == link.title -%}
+                    <p class="menu-card__description" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</p>
+                  {%- endif -%}
+                {%- endfor -%}
+                {%- if link.links.size > 0 -%}
+                  <ul class="menu-card__links" role="list">
+                    {%- for child in link.links -%}
+                      <li><a href="{{ child.url }}" {% if child.current %}aria-current="page"{% endif %}>{{ child.title | escape }}</a></li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- else -%}
+        <ul class="menu-drawer__list" role="list">
+          {%- for link in menu.links -%}
+            <li>
+              {%- if link.links.size > 0 -%}
+                <button type="button" class="menu-drawer__row" data-level-open="menu-{{ forloop.index }}" aria-label="{{ 'header.show_submenu' | t: title: link.title | escape }}">
+                  <span aria-hidden="true">{{ link.title | escape }}</span>
+                  {% render 'icon', name: 'arrow-right', size: 18 %}
+                </button>
+              {%- else -%}
+                <a class="menu-drawer__row" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+        {%- endif -%}
+
+        {%- assign promos = section.blocks | where: 'type', 'promo' -%}
+        {%- if promos.size > 0 -%}
+          <div class="menu-drawer__promos">
+            {%- for block in promos limit: 2 -%}
+              {% render 'menu-promo', block: block %}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <div class="menu-drawer__footer">
+          {%- if shop.customer_accounts_enabled -%}
+            <a href="{{ routes.account_url }}">{{ 'header.account' | t }}</a>
+          {%- endif -%}
+          {%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
+            <span class="spec text-muted">{{ localization.country.name }} · {{ localization.language.endonym_name }}</span>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- # Level 2 and 3 panels -%}
+      {%- for link in menu.links -%}
+        {%- if link.links.size > 0 -%}
+          {%- assign parent_index = forloop.index -%}
+          <div class="menu-drawer__panel" data-level-panel="menu-{{ parent_index }}" hidden>
+            <button type="button" class="menu-drawer__row menu-drawer__back" data-level-back>
+              {% render 'icon', name: 'arrow-left', size: 18 %}
+              <span>{{ 'general.back_to' | t: title: link.title }}</span>
+            </button>
+            <ul class="menu-drawer__list" role="list">
+              <li><a class="menu-drawer__row menu-drawer__row--child" href="{{ link.url }}">{{ 'general.shop_all' | t: title: link.title }}</a></li>
+              {%- for child in link.links -%}
+                <li>
+                  {%- if child.links.size > 0 -%}
+                    <button type="button" class="menu-drawer__row menu-drawer__row--child" data-level-open="menu-{{ parent_index }}-{{ forloop.index }}">
+                      <span>{{ child.title | escape }}</span>
+                      {% render 'icon', name: 'arrow-right', size: 18 %}
+                    </button>
+                  {%- else -%}
+                    <a class="menu-drawer__row menu-drawer__row--child" href="{{ child.url }}" {% if child.current %}aria-current="page"{% endif %}>{{ child.title | escape }}</a>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'promo' and block.settings.menu_item == link.title -%}
+                <div class="menu-drawer__promos">{% render 'menu-promo', block: block %}</div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+
+          {%- for child in link.links -%}
+            {%- if child.links.size > 0 -%}
+              <div class="menu-drawer__panel" data-level-panel="menu-{{ parent_index }}-{{ forloop.index }}" hidden>
+                <button type="button" class="menu-drawer__row menu-drawer__back" data-level-back>
+                  {% render 'icon', name: 'arrow-left', size: 18 %}
+                  <span>{{ 'general.back_to' | t: title: child.title }}</span>
+                </button>
+                <ul class="menu-drawer__list" role="list">
+                  <li><a class="menu-drawer__row menu-drawer__row--child" href="{{ child.url }}">{{ 'general.shop_all' | t: title: child.title }}</a></li>
+                  {%- for grandchild in child.links -%}
+                    <li><a class="menu-drawer__row menu-drawer__row--child" href="{{ grandchild.url }}" {% if grandchild.current %}aria-current="page"{% endif %}>{{ grandchild.title | escape }}</a></li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </dialog>
+</nk-nav-drawer>

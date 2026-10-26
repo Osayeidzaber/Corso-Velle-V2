@@ -1,0 +1,180 @@
+/* Existing measurement panel, using the storefront brown / warm-white scheme. */
+.measurement-panel {
+  --measurement-background: var(--nk-color-accent);
+  --measurement-ink: var(--nk-color-accent-text);
+  --nk-focus: var(--measurement-ink);
+  background: var(--measurement-background);
+  color: var(--measurement-ink);
+  border: 1px solid color-mix(in srgb, var(--measurement-ink) 12%, transparent);
+  padding: 22px 24px;
+  margin-top: 20px;
+  border-radius: 3px;
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--measurement-background) 22%, transparent);
+  display: grid;
+  gap: 18px;
+}
+
+.measurement-panel[hidden] {
+  display: none !important;
+}
+
+.measurement-panel__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--measurement-ink) 12%, transparent);
+}
+
+.measurement-panel__title-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  justify-content: center;
+}
+
+.measurement-panel__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--measurement-ink);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.measurement-panel__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--measurement-ink) 65%, var(--measurement-background));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--measurement-ink) 25%, transparent);
+}
+
+.measurement-panel__basis {
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--measurement-ink) 62%, transparent);
+}
+
+.measurement-panel__empty {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  opacity: 0.75;
+}
+
+.measurement-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.measurement-panel__footer { display: grid; gap: 8px; text-align: center; }
+.measurement-panel__footer[hidden] { display: none; }
+
+.measurement-panel__units {
+  display: inline-flex;
+  border: 1px solid color-mix(in srgb, var(--measurement-ink) 22%, transparent);
+}
+
+.measurement-panel__unit {
+  min-width: 44px;
+  min-height: 40px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--measurement-ink) 65%, transparent);
+  font-family: var(--nk-font-spec);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.measurement-panel__unit[aria-pressed='true'] {
+  background: var(--measurement-ink);
+  color: var(--measurement-background);
+  font-weight: 600;
+}
+
+.measurement-panel__chart-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: color-mix(in srgb, var(--measurement-ink) 78%, transparent);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .measurement-panel__chart-btn:hover {
+    color: var(--measurement-ink);
+  }
+}
+
+.measurement-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(64px, 100%), 1fr));
+  gap: 12px 8px;
+}
+
+.measurement-panel__grid[hidden] {
+  display: none !important;
+}
+
+.measurement-panel__cell {
+  display: grid;
+  gap: 4px;
+  text-align: center;
+  justify-items: center;
+}
+
+.measurement-panel__cell:last-child {
+  border-right: 0;
+}
+
+.measurement-panel__label {
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--measurement-ink) 72%, transparent);
+}
+
+.measurement-panel__val {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  font-family: var(--nk-font-spec);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--measurement-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.measurement-panel__unit-suffix {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: color-mix(in srgb, var(--measurement-ink) 56%, transparent);
+  text-transform: lowercase;
+}
+
+
+/* All authored rows contribute their height, while only the active row paints. This prevents
+   shorter/longer measurement sets from moving the purchase button during a hover sweep. */
+.measurement-panel__rows { display: grid; }
+.measurement-panel__rows > [data-measurement-row] { grid-area: 1 / 1; align-self: start; }
+.measurement-panel__rows > [data-measurement-row][hidden] { display: grid !important; visibility: hidden; pointer-events: none; }
+
+/* Disclosure owns clipping only while the chart expands/collapses. */
+.measurement-panel-shell { display: flow-root; overflow: hidden; min-width: 0; }

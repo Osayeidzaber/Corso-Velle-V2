@@ -1,0 +1,21 @@
+{%- doc -%}
+  Instance-scoped CSS inputs for the shared section-presentation class.
+  Render inside the section root's style attribute; static CSS consumes the inputs.
+  Inherited settings emit nothing, so saved sections keep their global defaults.
+
+  @param {object} presentation - Section settings with content_width and spacing_mode
+
+  @example
+  <div class="section-presentation section-spacing" style="{% render 'section-presentation', presentation: section.settings %}"></div>
+{%- enddoc -%}
+{%- case presentation.content_width -%}
+  {%- when 'narrow' -%}--nk-section-page-width: 1200px;
+  {%- when 'wide' -%}--nk-section-page-width: 1440px;
+  {%- when 'full' -%}--nk-section-page-width: 100%;
+{%- endcase -%}
+{%- if presentation.spacing_mode == 'custom' -%}
+  --nk-section-padding-top: {{ presentation.padding_top | default: 72 }}px;
+  --nk-section-padding-bottom: {{ presentation.padding_bottom | default: 72 }}px;
+  --nk-section-padding-top-small: {{ presentation.padding_top_small | default: 48 }}px;
+  --nk-section-padding-bottom-small: {{ presentation.padding_bottom_small | default: 48 }}px;
+{%- endif -%}

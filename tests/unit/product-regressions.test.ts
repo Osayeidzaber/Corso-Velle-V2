@@ -1,0 +1,326 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { define } from '../../src/core/define';
+import { setConfigForTests, config } from '../../src/core/config';
+import { NkVariantPicker } from '../../src/components/product/variant-picker';
+import { NkProductForm } from '../../src/components/product/product-form';
+import { namespaceProductHTML } from '../../src/components/product/product-dom';
+import { replaceRegions } from '../../src/services/sections';
+import '../../src/components/size-guide/size-guide';
+import { installCardInteractions } from '../../src/components/product/card-interactions';
+import { cart, type CartResult } from '../../src/services/cart';
+
+define('nk-variant-picker', NkVariantPicker);
+define('nk-product-form', NkProductForm);
+installCardInteractions();
+
+const pickerMarkup = (selected = 'S') => `<nk-variant-picker data-region="picker" data-section-id="main" data-product-url="/products/shirt" data-preselected>
+  <fieldset data-option-position="1" data-option-name="Size" data-size-fieldset>
+    ${['S', 'M', 'L'].map(s => `<div data-size-pill="${s}"><input type="radio" name="size" value="${s}" data-option-value-id="${s}" ${s === selected ? 'checked' : ''}></div>`).join('')}
+  </fieldset></nk-variant-picker>`;
+const buyMarkup = (state = 'available', id = '101') => `<div data-region="buy" data-availability="${state}"><input name="id" value="${id}" type="hidden"><button type="submit"><span data-button-label>Add</span></button><div class="shopify-payment-button"></div></div>`;
+const sectionMarkup = (selected = 'S', state = 'available', id = '101') => `<section data-product-section>
+  <div data-region="price">${id}</div>${pickerMarkup(selected)}<nk-product-form><form>
+  <div data-region="quantity"><input type="number" name="quantity" value="2" min="2" max="8" step="2"></div>${buyMarkup(state,id)}
+  </form><p data-form-error hidden></p></nk-product-form></section>`;
+function mount(html: string) {
+  document.body.innerHTML = html;
+  for (const el of document.querySelectorAll<NkVariantPicker | NkProductForm>('nk-variant-picker,nk-product-form')) { el.disconnectedCallback(); el.connectedCallback(); }
+}
+function choose(value: string) {
+  const input = document.querySelector<HTMLInputElement>(`input[type="radio"][value="${value}"]`)!;
+  input.checked = true;
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+}
+const response = (html: string) => new Response(html, { headers: { 'Content-Type': 'text/html' } });
+beforeEach(() => {
+  sessionStorage.clear();
+  setConfigForTests({ ...config(), motion: 'off', strings: { 'product.add_to_cart': 'Add to cart', 'product.sold_out': 'Sold out', 'product.selection_failed': 'Selection failed', 'product.unavailable': 'Unavailable', 'product.choose_named_option': 'Choose a [option]' } });
+});
+afterEach(() => { document.body.replaceChildren(); vi.restoreAllMocks(); vi.unstubAllGlobals(); setConfigForTests(null); });
+
+describe('product purchase regressions', () => {
+  it('preserves uploaded properties through the native multipart product form', async () => {
+    mount(sectionMarkup());
+    const NativeFormData = FormData;
+    vi.stubGlobal('FormData', class extends NativeFormData {
+      constructor(form?: HTMLFormElement) {
+        super(form);
+        this.append('properties[Artwork]', new File(['artwork'], 'artwork.txt'));
+      }
+    });
+    const nativeSubmit = vi.spyOn(HTMLFormElement.prototype, 'submit').mockImplementation(() => {});
+    const add = vi.spyOn(cart, 'add').mockResolvedValue({} as CartResult);
+    document.querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
+    await Promise.resolve();
+    expect(nativeSubmit).toHaveBeenCalledOnce();
+    expect(document.querySelector('form')!.enctype).toBe('multipart/form-data');
+    expect(add).not.toHaveBeenCalled();
+    const restored = new Event('pageshow');
+    Object.defineProperty(restored, 'persisted', { value: true });
+    window.dispatchEvent(restored);
+    expect(document.querySelector('nk-product-form')!.hasAttribute('data-pending')).toBe(false);
+    document.querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
+    expect(nativeSubmit).toHaveBeenCalledTimes(2);
+  });
+  it('validates required customization fields before adding and preserves their values', async () => {
+    mount(sectionMarkup().replace('</form>', '<input name="properties[Monogram]" required></form>'));
+    const add = vi.spyOn(cart, 'add').mockResolvedValue({} as CartResult);
+    const button = document.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    button.click();
+    await Promise.resolve();
+    expect(add).not.toHaveBeenCalled();
+    document.querySelector<HTMLInputElement>('[name="properties[Monogram]"]')!.value = 'AB';
+    button.click();
+    await vi.waitFor(() => expect(add).toHaveBeenCalledExactlyOnceWith(
+      [{ id: 101, quantity: 2, properties: { Monogram: 'AB' } }], expect.any(String),
+    ));
+  });
+  it('uses the full display name while matching measurements by the unchanged actual size', () => {
+    mount(sectionMarkup('M').replace('</fieldset>', `<div data-measurement-panel data-base-unit="cm" hidden>
+      <template data-measurement-size-label="M">Medium (M)</template><span data-measurement-active-size></span>
+      <p data-measurement-empty hidden>No chart</p><div data-measurement-row="M" hidden><span data-measure-value="104">104</span></div>
+      <div data-measurement-footer>Units</div></div></fieldset>`));
+    expect(document.querySelector('[data-measurement-active-size]')!.textContent).toBe('Medium (M)');
+    expect(document.querySelector<HTMLElement>('[data-measurement-row="M"]')!.hidden).toBe(false);
+    expect(document.querySelector<HTMLElement>('[data-measurement-footer]')!.hidden).toBe(false);
+    expect(document.querySelector<HTMLInputElement>('input:checked')!.value).toBe('M');
+  });
+  it('can disable hover previews while retaining selected measurements', () => {
+    mount(sectionMarkup('M').replace('data-preselected', 'data-preselected data-measure-preview-disabled')
+      .replace('</fieldset>', '<div data-measurement-panel data-base-unit="cm" hidden><span data-measurement-active-size></span><div data-measurement-row="M" hidden><span data-measure-value="104">104</span></div><div data-measurement-row="L" hidden><span data-measure-value="110">110</span></div></div></fieldset>'));
+    document.querySelector('[data-size-pill="L"]')!.dispatchEvent(new Event('pointerover', { bubbles: true }));
+    expect(document.querySelector('[data-measurement-active-size]')!.textContent).toBe('M');
+    expect(document.querySelector<HTMLElement>('[data-measurement-row="M"]')!.hidden).toBe(false);
+    expect(document.querySelector<HTMLElement>('[data-measurement-row="L"]')!.hidden).toBe(true);
+  });
+
+  it('keeps a fixed-unit chart in its authored unit despite saved or broadcast preferences', () => {
+    sessionStorage.setItem('nk:measure-unit', 'cm');
+    document.body.innerHTML = '<nk-size-guide unit="in" data-unit-switch-disabled data-highlight-disabled><table><tbody><tr data-size-row="M"><td data-value="40">40</td></tr></tbody></table></nk-size-guide>';
+    const guide = document.querySelector<any>('nk-size-guide'); guide.disconnectedCallback(); guide.connectedCallback();
+    document.dispatchEvent(new CustomEvent('nk:unit:changed', { detail: { unit: 'cm' } }));
+    expect(document.querySelector('td')!.textContent).toBe('40');
+    expect(document.querySelector('[data-current]')).toBeNull();
+  });
+  it('preserves a chosen size when Shopify changes the rendered option set', async () => {
+    mount(sectionMarkup().replace('data-preselected', 'data-preselected data-explicit-size-choice'));
+    const incoming = sectionMarkup('M', 'available', '102')
+      .replace('data-preselected', 'data-preselected data-explicit-size-choice')
+      .replace(/<div data-size-pill="S">.*?<\/div>/, '');
+    vi.stubGlobal('fetch', vi.fn(async () => response(incoming)));
+    choose('M');
+    await vi.waitFor(() => expect(document.querySelector<NkVariantPicker>('nk-variant-picker')!.resolvedVariantId).toBe('102'));
+    expect(document.querySelector<HTMLInputElement>('input:checked')?.value).toBe('M');
+  });
+  it('shows an honest missing-measurement state and restores the selected size after hover', () => {
+    mount(sectionMarkup('M').replace('</fieldset>', `<div data-measurement-panel data-base-unit="cm" hidden>
+      <span data-measurement-active-size></span><div class="measurement-panel__actions">Units</div>
+      <p data-measurement-empty hidden>Measurements have not been provided.</p>
+      <div data-measurement-row="M" hidden><span data-measure-value="104">104</span></div>
+    </div></fieldset>`));
+    const picker = document.querySelector<NkVariantPicker>('nk-variant-picker')!;
+    document.querySelector('[data-size-pill="L"]')!.dispatchEvent(new Event('pointerover', { bubbles: true }));
+    expect(document.querySelector('[data-measurement-active-size]')!.textContent).toBe('L');
+    expect(document.querySelector<HTMLElement>('[data-measurement-empty]')!.hidden).toBe(false);
+    expect(document.querySelector<HTMLElement>('[data-measurement-row="M"]')!.hidden).toBe(true);
+    expect(picker.state).toBe('available');
+    picker.dispatchEvent(new Event('pointerleave'));
+    expect(document.querySelector('[data-measurement-active-size]')!.textContent).toBe('M');
+    expect(document.querySelector<HTMLElement>('[data-measurement-row="M"]')!.hidden).toBe(false);
+  });
+  it('keeps waiting for a slow video and reveals it when playback becomes ready', async () => {
+    vi.useFakeTimers();
+    try {
+      setConfigForTests({ ...config(), motion: 'standard' });
+      document.body.innerHTML = '<article class="card"><video data-card-video></video></article>';
+      const card = document.querySelector<HTMLElement>('.card')!;
+      let finish!: () => void;
+      vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(() => new Promise<void>(resolve => { finish = resolve; }));
+      const pause = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
+      card.dispatchEvent(new Event('pointerover', { bubbles: true }));
+      await vi.advanceTimersByTimeAsync(1200);
+      expect(card.hasAttribute('data-video-failed')).toBe(false);
+      expect(card.hasAttribute('data-video-intent')).toBe(true);
+      expect(pause).not.toHaveBeenCalled();
+      finish();
+      await Promise.resolve();
+      expect(card.hasAttribute('data-video-playing')).toBe(true);
+    } finally { vi.useRealTimers(); }
+  });
+  it('ignores an old playback failure after the pointer leaves and re-enters the same card', async () => {
+    setConfigForTests({ ...config(), motion: 'standard' });
+    document.body.innerHTML = '<article class="card"><video data-card-video></video></article>';
+    const card = document.querySelector<HTMLElement>('.card')!;
+    let rejectOld!: (error: Error) => void;
+    let startNew!: () => void;
+    vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
+    vi.spyOn(HTMLMediaElement.prototype, 'play')
+      .mockImplementationOnce(() => new Promise<void>((_, reject) => { rejectOld = reject; }))
+      .mockImplementationOnce(() => new Promise<void>(resolve => { startNew = resolve; }));
+    card.dispatchEvent(new Event('pointerover', { bubbles: true }));
+    card.dispatchEvent(new Event('pointerout', { bubbles: true }));
+    card.dispatchEvent(new Event('pointerover', { bubbles: true }));
+    rejectOld(new Error('interrupted earlier playback'));
+    await Promise.resolve(); await Promise.resolve();
+    expect(card.hasAttribute('data-video-intent')).toBe(true);
+    startNew();
+    await Promise.resolve();
+    expect(card.hasAttribute('data-video-playing')).toBe(true);
+  });
+  it('requires a fresh size choice even on a variant link, while hover only previews exact rows', () => {
+    const html = sectionMarkup('M').replace('data-preselected', 'data-preselected data-explicit-size-choice')
+      .replace('</fieldset>', `<div data-measurement-panel data-base-unit="cm" hidden>
+        <span data-measurement-active-size></span>
+        <div data-measurement-row="M" hidden><span data-measure-value="104">104</span></div>
+        <div data-measurement-row="L" hidden><span data-measure-value="110">110</span></div>
+      </div></fieldset>`);
+    mount(html);
+    const picker = document.querySelector<NkVariantPicker>('nk-variant-picker')!;
+    expect(picker.state).toBe('incomplete');
+    expect(document.querySelector('input:checked')).toBeNull();
+    expect(document.querySelector('[data-button-label]')!.textContent).toBe('Choose a Size');
+    expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
+    for (const size of ['M', 'L']) {
+      document.querySelector(`[data-size-pill="${size}"]`)!.dispatchEvent(new Event('pointerover', { bubbles: true }));
+      expect(document.querySelector('[data-measurement-active-size]')!.textContent).toBe(size);
+      expect(document.querySelector<HTMLElement>(`[data-measurement-row="${size}"]`)!.hidden).toBe(false);
+      expect(picker.state).toBe('incomplete');
+      expect(document.querySelector<HTMLInputElement>('input[name="id"]')!.disabled).toBe(true);
+    }
+  });
+  it('reveals card video only after playback starts and cancels a late hover response', async () => {
+    setConfigForTests({ ...config(), motion: 'standard' });
+    document.body.innerHTML = '<article class="card"><video data-card-video></video></article>';
+    const card = document.querySelector<HTMLElement>('.card')!;
+    let ready!: () => void;
+    vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(() => new Promise<void>(done => { ready = done; }));
+    const pause = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
+    card.dispatchEvent(new Event('pointerover', { bubbles: true }));
+    expect(card.hasAttribute('data-video-playing')).toBe(false);
+    card.dispatchEvent(new Event('pointerout', { bubbles: true }));
+    ready();
+    await Promise.resolve();
+    expect(card.hasAttribute('data-video-playing')).toBe(false);
+    expect(pause).toHaveBeenCalled();
+    card.dispatchEvent(new Event('pointerover', { bubbles: true }));
+    ready();
+    await Promise.resolve();
+    expect(card.hasAttribute('data-video-playing')).toBe(true);
+  });
+  it('quick-adds the exact size and minimum quantity once under repeated clicks', async () => {
+    document.body.innerHTML = '<article class="card"><div class="card__meta"><button data-quick-add="123" data-quick-add-quantity="3">M</button></div></article>';
+    let resolve!: (value: CartResult) => void;
+    const add = vi.spyOn(cart, 'add').mockImplementation(() => new Promise(done => { resolve = done; }));
+    const button = document.querySelector<HTMLButtonElement>('button')!;
+    button.click(); button.click();
+    expect(add).toHaveBeenCalledExactlyOnceWith([{ id: 123, quantity: 3 }], 'quick-add');
+    expect(button.disabled).toBe(true);
+    resolve({} as CartResult);
+    await vi.waitFor(() => expect(button.textContent).toBe('✓'));
+  });
+  it('restores the size label after a repeat quick add made during the confirmation', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      document.body.innerHTML = '<article class="card"><div class="card__meta"><button data-quick-add="123">M</button></div></article>';
+      vi.spyOn(cart, 'add').mockResolvedValue({} as CartResult);
+      const button = document.querySelector<HTMLButtonElement>('button')!;
+      button.click();
+      await vi.waitFor(() => expect(button.textContent).toBe('✓'));
+      button.click();
+      await vi.waitFor(() => expect(button.hasAttribute('data-busy')).toBe(false));
+      expect(button.textContent).toBe('✓');
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(button.textContent).toBe('M');
+      expect(button.hasAttribute('data-added')).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+  it('requires an explicit Shoe size choice under the default Size policy', () => {
+    mount(sectionMarkup().replace('data-preselected', '').replace('data-option-name="Size"', 'data-option-name="Shoe size"'));
+    expect(document.querySelector<NkVariantPicker>('nk-variant-picker')!.state).toBe('incomplete');
+    expect(document.querySelector<HTMLInputElement>('input[name="id"]')!.disabled).toBe(true);
+  });
+  it.each([['sold-out', '102'], ['unavailable', '']])('blocks %s variants, including accelerated checkout', async (state, id) => {
+    mount(sectionMarkup());
+    vi.stubGlobal('fetch', vi.fn(async () => response(sectionMarkup('M', state, id))));
+    choose('M');
+    await vi.waitFor(() => expect(document.querySelector<NkVariantPicker>('nk-variant-picker')!.state).toBe(state));
+    expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
+    expect(document.querySelector<HTMLElement>('.shopify-payment-button')!.hidden).toBe(true);
+  });
+  it('queues an add made during resolution and sends only the resolved variant', async () => {
+    mount(sectionMarkup());
+    let finish!: (response: Response) => void;
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>(resolve => { finish = resolve; })));
+    const add = vi.spyOn(cart, 'add').mockResolvedValue({} as CartResult);
+    choose('M');
+    const button = document.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    expect(button.disabled).toBe(false);
+    expect(document.querySelector<HTMLElement>('.shopify-payment-button')!.hidden).toBe(true);
+    button.click(); button.click();
+    expect(add).not.toHaveBeenCalled();
+    finish(response(sectionMarkup('M', 'available', '102')));
+    await vi.waitFor(() => expect(add).toHaveBeenCalledExactlyOnceWith([{ id: 102, quantity: 2 }], expect.any(String)));
+  });
+  it('drops a queued add when the resolved variant is sold out', async () => {
+    mount(sectionMarkup());
+    let finish!: (response: Response) => void;
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>(resolve => { finish = resolve; })));
+    const add = vi.spyOn(cart, 'add').mockResolvedValue({} as CartResult);
+    choose('M');
+    document.querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
+    finish(response(sectionMarkup('M', 'sold-out', '102')));
+    await vi.waitFor(() => expect(document.querySelector<NkVariantPicker>('nk-variant-picker')!.state).toBe('sold-out'));
+    await new Promise(resolve => setTimeout(resolve, 10));
+    expect(add).not.toHaveBeenCalled();
+  });
+  it('disables both checkout paths after a network failure', async () => {
+    mount(sectionMarkup());
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('offline'); }));
+    choose('M');
+    expect(document.querySelector<HTMLElement>('.shopify-payment-button')!.hidden).toBe(true);
+    await vi.waitFor(() => expect(document.querySelector<NkVariantPicker>('nk-variant-picker')!.state).toBe('failed'));
+    expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
+    expect(document.querySelector<HTMLElement>('.shopify-payment-button')!.hidden).toBe(true);
+  });
+  it('updates quantity rules with the resolved variant and preserves app markup', async () => {
+    mount(sectionMarkup().replace('</section>', '<div data-app><input value="merchant state"></div></section>'));
+    const app = document.querySelector('[data-app]');
+    vi.stubGlobal('fetch', vi.fn(async () => response(sectionMarkup('M', 'available', '102').replace('min="2" max="8" step="2"', 'min="3" max="9" step="3"'))));
+    choose('M');
+    await vi.waitFor(() => expect(document.querySelector<HTMLInputElement>('input[name="quantity"]')!.step).toBe('3'));
+    expect(document.querySelector('[data-app]')).toBe(app);
+  });
+  it('rejects stale variant fragments even when the old request ignores abort', async () => {
+    mount(sectionMarkup());
+    let finishOld!: (response: Response) => void;
+    let calls = 0;
+    vi.stubGlobal('fetch', vi.fn(() => ++calls === 1 ? new Promise<Response>(resolve => { finishOld = resolve; }) : Promise.resolve(response(sectionMarkup('L', 'available', '103')))));
+    choose('M'); choose('L');
+    await vi.waitFor(() => expect(document.querySelector<NkVariantPicker>('nk-variant-picker')!.resolvedVariantId).toBe('103'));
+    finishOld(response(sectionMarkup('M', 'available', '102')));
+    await new Promise(resolve => setTimeout(resolve, 10));
+    expect(document.querySelector<NkVariantPicker>('nk-variant-picker')!.resolvedVariantId).toBe('103');
+  });
+  it('does not leave partially updated availability attributes when a fragment is missing', () => {
+    mount(sectionMarkup());
+    const before = document.querySelector('[data-region="buy"]')!.outerHTML;
+    expect(() => replaceRegions(document.querySelector('section')!, buyMarkup('sold-out') + pickerMarkup(), ['buy', 'price'])).toThrow();
+    expect(document.querySelector('[data-region="buy"]')!.outerHTML).toBe(before);
+  });
+  it('namespaces quick-add labels, form associations, and radio groups independently', () => {
+    const html = namespaceProductHTML('<form id="Product"><input id="Size" type="radio" name="size" form="Product"><label for="Size">M</label></form>', 'Quick-');
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    expect(doc.querySelector('input')!.name).toBe('Quick-size');
+    expect(doc.querySelector('label')!.htmlFor).toBe('Quick-Size');
+    expect(doc.querySelector('input')!.getAttribute('form')).toBe('Quick-Product');
+  });
+  it('preserves non-numeric measurement ranges instead of inventing converted values', () => {
+    document.body.innerHTML = '<nk-size-guide unit="in"><button data-ref="unit" value="cm">cm</button><table><tbody><tr><td data-value="38-40">38-40</td><td data-value="40">40</td></tr></tbody></table></nk-size-guide>';
+    const guide = document.querySelector<any>('nk-size-guide'); guide.disconnectedCallback(); guide.connectedCallback();
+    document.querySelector<HTMLButtonElement>('button')!.click();
+    expect(document.querySelectorAll('td')[0]!.textContent).toBe('38-40 (in)');
+    expect(document.querySelectorAll('td')[1]!.textContent).toBe('101.6');
+  });
+});

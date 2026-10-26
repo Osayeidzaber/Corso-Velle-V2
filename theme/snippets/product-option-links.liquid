@@ -1,0 +1,19 @@
+{%- doc -%}
+  Server navigation fallback for variant selection, including products above the variant-list limit.
+  @param {object} product - Product whose option values are being selected
+{%- enddoc -%}
+                    <p>{{ 'product.choose_option' | t }}</p>
+                    {%- for option in product.options_with_values -%}
+                      <details class="disclosure">
+                        <summary>{{ option.name | escape }}: {{ option.selected_value | escape }}</summary>
+                        <ul class="option-links" role="list">
+                          {%- for value in option.values -%}
+                            {%- capture option_url -%}{{ value.product_url | default: product.url }}?option_values={{ value.id }}{%- endcapture -%}
+                            {%- if value.product_url == blank -%}
+                              {%- capture option_url -%}{{ product.url }}?option_values={%- for other_option in product.options_with_values -%}{%- if other_option.position == option.position -%}{{ value.id }}{%- else -%}{%- for other_value in other_option.values -%}{%- if other_value.selected -%}{{ other_value.id }}{%- endif -%}{%- endfor -%}{%- endif -%}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}{%- endcapture -%}
+                            {%- endif -%}
+                            <li><a href="{{ option_url | escape }}">{{ value | escape }}</a></li>
+                          {%- endfor -%}
+                        </ul>
+                      </details>
+                    {%- endfor -%}

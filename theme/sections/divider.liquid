@@ -1,0 +1,137 @@
+{%- comment -%}
+  Divider — a hairline between sections; "Elastic" bends toward the pointer and springs back
+  (rewrite of the supplied elasticline example). Decorative only (aria-hidden).
+{%- endcomment -%}
+<div class="divider full-width color-{{ section.settings.color_scheme }}" aria-hidden="true" data-width="{{ section.settings.width }}" style="padding-block: {{ section.settings.spacing }}px;">
+  <div class="divider__inner">
+    {%- if section.settings.style == 'elastic' -%}
+      <nk-elastic-line grab="{{ section.settings.grab }}" release="60">
+        <svg viewBox="0 -50 100 100" preserveAspectRatio="none" focusable="false">
+          <path d="M0 0 Q 50 0 100 0" fill="none" stroke="currentColor" stroke-width="{{ section.settings.thickness | default: 1 }}" vector-effect="non-scaling-stroke"></path>
+        </svg>
+      </nk-elastic-line>
+    {%- elsif section.settings.style != 'space' -%}
+      <hr style="border: 0; border-top: {{ section.settings.thickness | default: 1 }}px {% if section.settings.style == 'dashed' %}dashed{% else %}solid{% endif %} var(--nk-color-line); margin: 0;">
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+ .divider__inner { width: var(--content-width); margin-inline: auto; }
+ .divider[data-width='short'] .divider__inner { width: min(var(--content-width), 640px); }
+ .divider[data-width='full'] .divider__inner { width: 100%; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Divider",
+  "class": "divider-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        {
+          "value": "line",
+          "label": "Line"
+        },
+        {
+          "value": "elastic",
+          "label": "Elastic line (reacts to the pointer)"
+        },
+        {
+          "value": "dashed",
+          "label": "Dashed line"
+        },
+        {
+          "value": "space",
+          "label": "Blank spacing"
+        }
+      ],
+      "default": "elastic"
+    },
+    {
+      "type": "range",
+      "id": "grab",
+      "label": "Pointer catch distance",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "spacing",
+      "label": "Spacing",
+      "min": 0,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Line width",
+      "options": [
+        {
+          "value": "content",
+          "label": "Page width"
+        },
+        {
+          "value": "short",
+          "label": "Short centered line"
+        },
+        {
+          "value": "full",
+          "label": "Full bleed"
+        }
+      ],
+      "default": "content"
+    },
+    {
+      "type": "range",
+      "id": "thickness",
+      "label": "Line thickness",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 1,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Divider"
+    },
+    {
+      "name": "Quiet separator",
+      "settings": {
+        "style": "line",
+        "width": "short",
+        "spacing": 48
+      }
+    },
+    {
+      "name": "Section spacer",
+      "settings": {
+        "style": "space"
+      }
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
+}
+{% endschema %}

@@ -1,0 +1,36 @@
+{
+  "name": "nk-theme",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shopify Online Store 2.0 theme. Source in src/, deployable theme in theme/.",
+  "type": "module",
+  "engines": {
+    "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
+  },
+  "scripts": {
+    "build": "vite build && node scripts/sync-assets.mjs",
+    "watch": "node scripts/watch.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check:theme": "shopify theme check --path theme --fail-level error",
+    "check:json": "node scripts/check-json.mjs",
+    "check:contracts": "node --test scripts/theme-contracts.test.mjs && node scripts/customization-reference.mjs --check",
+    "check": "npm run typecheck && npm run test && npm run build && npm run check:json && npm run check:contracts && npm run check:theme",
+    "dev": "shopify theme dev --path theme",
+    "package": "npm run check && shopify theme package --path theme"
+  },
+  "devDependencies": {
+    "@shopify/cli": "4.9.0",
+    "@tailwindcss/vite": "4.3.3",
+    "happy-dom": "21.0.4",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "vite": "8.3.4",
+    "vitest": "5.0.3"
+  },
+  "dependencies": {
+    "gsap": "3.15.0",
+    "lenis": "1.3.27",
+    "ogl": "1.0.11"
+  }
+}

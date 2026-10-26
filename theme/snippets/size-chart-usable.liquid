@@ -1,0 +1,13 @@
+{%- comment -%}Only populated charts qualify; an instructions-only chart is intentional.{%- endcomment -%}
+{%- liquid
+  assign notes = chart.notes.value | default: ''
+  assign fallback = chart.fallback.value | default: ''
+  assign picture = chart.image.value | default: ''
+-%}
+{%- if chart.table.value.rows.size > 0 and chart.table.value.columns.size > 0 -%}
+  true
+{%- elsif notes != blank or fallback != blank -%}
+  true
+{%- elsif picture != blank -%}
+  true
+{%- endif -%}

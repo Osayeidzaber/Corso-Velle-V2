@@ -1,0 +1,138 @@
+/* Section kit (docs/SECTION-SOURCES.md): theme-wide button styles rendered by snippets/nk-button
+   and layout helpers shared by the optional sections. Button variants adapt Uiverse (MIT) and
+   HyperUI (MIT) examples onto theme tokens. */
+.nk-btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--nk-button-height, 48px);
+  padding: 0 var(--nk-button-padding, 24px);
+  border: 1px solid var(--nk-color-text);
+  border-radius: var(--nk-button-radius, var(--nk-radius));
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  max-width: 100%;
+  text-align: center;
+}
+.nk-btn__label { min-width: 0; overflow-wrap: anywhere; }
+.nk-btn[aria-disabled='true'] { opacity: 0.5; cursor: not-allowed; }
+.nk-btn:focus-visible { outline: 2px solid var(--nk-focus); outline-offset: 3px; }
+
+/* Outline: transparent until hover (Uiverse ArturCodeCraft/witty-deer-63). */
+.nk-btn--outline { background: transparent; color: var(--nk-color-text); }
+.nk-btn--outline:hover { background: var(--nk-color-text); color: var(--nk-color-bg); }
+
+/* Pill: HyperUI marketing/buttons #1. */
+.nk-btn--pill { border-radius: 999px; }
+.nk-btn--pill:hover { opacity: 0.85; }
+
+/* Center sweep: fill grows out from the middle (Uiverse adamgiebl/popular-termite-0). */
+.nk-btn--sweep { background: transparent; color: var(--nk-color-text); }
+.nk-btn--sweep::before { content: ''; position: absolute; inset: 0 50%; z-index: -1; background: var(--nk-color-text); opacity: 0; }
+.nk-btn--sweep:hover, .nk-btn--sweep:focus-visible { color: var(--nk-color-bg); }
+.nk-btn--sweep:hover::before, .nk-btn--sweep:focus-visible::before { inset: 0; opacity: 1; }
+
+/* Offset shadow + arrow reveal (Uiverse mi-series/bright-termite-75). */
+.nk-btn--offset { overflow: visible; }
+.nk-btn--offset .nk-btn__arrow { width: 0; overflow: hidden; }
+.nk-btn--offset:hover { background: var(--nk-color-bg); color: var(--nk-color-text); box-shadow: 6px 6px 0 var(--nk-color-text); translate: -3px -3px; }
+.nk-btn--offset:hover .nk-btn__arrow { width: 1.2em; }
+
+/* 3D press (Uiverse satyamchaudharydev/purple-rat-85). */
+.nk-btn--press { overflow: visible; box-shadow: 0 5px 0 color-mix(in srgb, var(--nk-color-text) 55%, #000); margin-bottom: 5px; }
+.nk-btn--press:active { translate: 0 3px; box-shadow: 0 2px 0 color-mix(in srgb, var(--nk-color-text) 55%, #000); }
+
+/* Text link with arrow. */
+.nk-btn--link { min-height: 44px; padding: 0; border: 0; border-radius: 0; background: none; color: var(--nk-color-text); overflow: visible; }
+.nk-btn--link .nk-btn__label { text-decoration: underline; text-underline-offset: 0.3em; }
+.nk-btn--link:hover .nk-btn__arrow { translate: 4px 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .nk-anim .nk-btn, .nk-anim .nk-btn::before, .nk-anim .nk-btn__arrow {
+    transition: background-color 0.3s var(--nk-ease-out), color 0.3s var(--nk-ease-out), box-shadow 0.3s var(--nk-ease-out), translate 0.3s var(--nk-ease-out), inset 0.4s var(--nk-ease-out), opacity 0.3s var(--nk-ease-out), width 0.3s var(--nk-ease-out);
+  }
+  .nk-anim .nk-btn--press:active { transition-duration: 0.05s; }
+}
+
+/* Design group shared by every kit section: heading scale, corners, button size. */
+.kit-section { --kit-heading-scale: 1; --kit-radius: var(--nk-radius, 0px); }
+.kit-section[data-heading='small'] { --kit-heading-scale: 0.8; }
+.kit-section[data-heading='large'] { --kit-heading-scale: 1.2; }
+.kit-section[data-heading='xlarge'] { --kit-heading-scale: 1.45; }
+.kit-section[data-corners='square'] { --kit-radius: 0px; --nk-button-radius: 0px; }
+.kit-section[data-corners='soft'] { --kit-radius: 8px; --nk-button-radius: 8px; }
+.kit-section[data-corners='round'] { --kit-radius: 20px; --nk-button-radius: 999px; }
+.kit-section[data-buttons='compact'] { --nk-button-height: 42px; --nk-button-padding: 20px; }
+.kit-section[data-buttons='large'] { --nk-button-height: 60px; --nk-button-padding: 40px; }
+.kit-section[data-buttons='large'] .nk-btn { font-size: 0.9375rem; }
+.kit-entrance { display: block; }
+
+/* Intro heading (snippets/section-heading) and display headings in content blocks. */
+.kit-intro { display: grid; gap: 14px; max-width: 46rem; min-width: 0; overflow-wrap: anywhere; }
+.kit-intro[data-align='center'] { justify-self: center; text-align: center; }
+.kit-intro[data-align='right'] { justify-self: end; text-align: end; }
+.kit-intro__heading { font-size: calc(clamp(2rem, 4vw, 3.5rem) * var(--kit-heading-scale, 1)); line-height: 1.1; }
+.kit-display { font-size: calc(clamp(1.75rem, 3.5vw, 3rem) * var(--kit-heading-scale, 1)); line-height: 1.1; overflow-wrap: anywhere; }
+.kit-display--small { font-size: calc(clamp(1.4rem, 2.5vw, 2rem) * var(--kit-heading-scale, 1)); }
+.kit-display--large { font-size: calc(clamp(2.25rem, 5.5vw, 4.5rem) * var(--kit-heading-scale, 1)); }
+.kit-display--xlarge { font-size: calc(clamp(2.75rem, 8vw, 6.5rem) * var(--kit-heading-scale, 1)); line-height: 1; }
+.kit-italic { font-style: italic; }
+.kit-caption { margin: 0; font-family: var(--nk-font-spec); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--nk-color-text-muted); }
+.kit-caption[data-style='badge'] { justify-self: start; padding: 4px 10px; background: var(--nk-color-text); color: var(--nk-color-bg); border-radius: var(--nk-button-radius, 0); }
+[data-align='center'] .kit-caption[data-style='badge'] { justify-self: center; }
+.kit-caption[data-style='plain'] { font-family: inherit; font-size: 0.9375rem; letter-spacing: 0; text-transform: none; }
+.kit-text[data-size='small'] { font-size: 0.875rem; }
+.kit-text[data-size='large'] { font-size: 1.1875rem; line-height: 1.6; }
+.kit-text[data-color='muted'] { color: var(--nk-color-text-muted); }
+.kit-spacer { display: block; }
+
+/* Links, button rows, placeholders. */
+.kit-link { font-weight: 600; text-decoration: underline; text-underline-offset: 0.25em; }
+.kit-buttons { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; }
+.kit-placeholder { display: block; width: 100%; height: 100%; background: var(--nk-color-surface); fill: var(--nk-color-text-muted); }
+
+/* Card styles: sections set data-card on their root; repeated items carry .kit-card. */
+.kit-card { border-radius: var(--kit-radius); }
+.kit-section[data-card='surface'] .kit-card { padding: clamp(20px, 2.5vw, 32px); background: var(--nk-color-surface); }
+.kit-section[data-card='outline'] .kit-card { padding: clamp(20px, 2.5vw, 32px); border: 1px solid var(--nk-color-line); }
+.kit-section[data-card='shadow'] .kit-card { padding: clamp(20px, 2.5vw, 32px); background: var(--nk-color-bg); box-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 10px 30px rgb(0 0 0 / 0.08); }
+
+/* Media frames: data-ratio, data-fit and data-zoom on .kit-media. */
+.kit-media { position: relative; overflow: hidden; border-radius: var(--kit-radius); }
+.kit-media > img, .kit-media > svg { display: block; width: 100%; height: 100%; object-fit: cover; }
+.kit-media[data-ratio='adapt'] > img { height: auto; }
+.kit-media[data-ratio='square'] { aspect-ratio: 1; }
+.kit-media[data-ratio='circle'] { aspect-ratio: 1; border-radius: 50%; }
+.kit-media[data-ratio='portrait'] { aspect-ratio: 4 / 5; }
+.kit-media[data-ratio='tall'] { aspect-ratio: 2 / 3; }
+.kit-media[data-ratio='landscape'] { aspect-ratio: 3 / 2; }
+.kit-media[data-ratio='wide'] { aspect-ratio: 16 / 9; }
+.kit-media[data-ratio='adapt'] > svg { aspect-ratio: 4 / 5; height: auto; }
+.kit-media[data-fit='contain'] > img { object-fit: contain; background: var(--nk-color-surface); }
+@media (prefers-reduced-motion: no-preference) {
+  .nk-anim .kit-media[data-zoom] > img { transition: scale 0.6s var(--nk-ease-out); }
+  .nk-anim :is(a, li, .kit-card, .collage__card):hover > .kit-media[data-zoom] > img,
+  .nk-anim .kit-media[data-zoom]:hover > img { scale: 1.04; }
+}
+
+/* Newsletter form (snippets/newsletter-form) inside kit sections: field + submit styles. */
+.kit-form { width: min(100%, var(--kit-form-width, 480px)); }
+[data-align='center'] .kit-form { justify-self: center; }
+.kit-section[data-form='boxed'] .kit-form .newsletter-form__row,
+.kit-section[data-form='pill'] .kit-form .newsletter-form__row { padding-inline: 16px 6px; border: 1px solid currentColor; border-radius: var(--kit-radius); }
+.kit-section[data-form='pill'] .kit-form .newsletter-form__row { border-radius: 999px; padding-inline-start: 22px; }
+.kit-section[data-form-button='solid'] .kit-form .newsletter-form__row button { min-height: 42px; margin-block: 5px; padding: 0 20px; background: var(--nk-color-text); color: var(--nk-color-bg); border-radius: var(--nk-button-radius, var(--kit-radius)); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.kit-section[data-form='pill'][data-form-button='solid'] .kit-form .newsletter-form__row button { border-radius: 999px; }
+.kit-section[data-form-button='solid'] .kit-form .newsletter-form__row button span { display: none; }
+.kit-section[data-privacy='false'] .kit-form .footer__privacy { display: none; }

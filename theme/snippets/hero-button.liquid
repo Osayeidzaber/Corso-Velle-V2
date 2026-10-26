@@ -1,0 +1,51 @@
+{%- doc -%}
+  Hero call to action. Box styles double the label so it can roll up on hover; the copy is
+  aria-hidden, so assistive tech reads it once. The link style animates its underline instead. Without a link it renders only in the theme editor, as a
+  disabled placeholder.
+
+  @param {string} label - Button text
+  @param {string} [link] - Destination URL
+  @param {string} [style] - solid, outline, glass or link (default solid)
+  @param {string} [size] - small, medium or large (default medium)
+  @param {boolean} [arrow] - Show a trailing arrow (always shown for link)
+  @param {string} [corners] - inherit, square, soft or pill; boxed buttons only
+
+  @example
+  {% render 'hero-button', label: 'Shop now', link: '/collections/all', style: 'outline', arrow: true %}
+{%- enddoc -%}
+{%- liquid
+  assign style = style | default: 'solid'
+  assign show_arrow = arrow
+  if style == 'link'
+    assign show_arrow = true
+  endif
+  assign size = size | default: 'medium'
+  assign classes = 'hero-cta hero-cta--' | append: style | append: ' hero-cta--' | append: size
+  if style != 'link'
+    assign classes = 'button ' | append: classes
+    if corners != blank and corners != 'inherit'
+      assign classes = classes | append: ' button--corners-' | append: corners
+    endif
+  endif
+-%}
+{%- comment -%} Liquid reads this as: label and (link or editor). {%- endcomment -%}
+{%- if label != blank and link != blank or request.design_mode -%}
+  <a
+    class="{{ classes }}"
+    {% if link != blank %}
+      href="{{ link }}"
+    {% else %}
+      role="link" aria-disabled="true"
+    {% endif %}
+  >
+    <span class="hero-cta__roll">
+      <span class="hero-cta__text">{{ label | escape }}</span>
+      {%- if style != 'link' -%}
+        <span class="hero-cta__text" aria-hidden="true">{{ label | escape }}</span>
+      {%- endif -%}
+    </span>
+    {%- if show_arrow -%}
+      <span class="hero-cta__arrow">{% render 'icon', name: 'arrow-right', size: 16 %}</span>
+    {%- endif -%}
+  </a>
+{%- endif -%}

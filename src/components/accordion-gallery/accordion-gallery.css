@@ -1,0 +1,72 @@
+/* Every --gallery-* value is a theme editor setting (sections/accordion-gallery.liquid); these are the fallbacks. */
+.accordion-gallery {
+  --gallery-text: #432d23; --gallery-panel-bg: #eee9e1; --gallery-details-bg: #432d23; --gallery-details-text: #fff9f0;
+  --gallery-label: #432d23; --gallery-label-light: #fff9f0;
+  --gallery-grow: 4; --gallery-gap: 10px; --gallery-radius: 0px; --gallery-details-height: 168px; --gallery-fit: cover;
+  --gallery-heading-size: 76px; --gallery-title-size: 34px; --gallery-label-size: 30px;
+  --gallery-speed: 1200ms; --gallery-mobile-height: 510px; --gallery-mobile-collapsed: 76px;
+  color: var(--gallery-text);
+}
+.accordion-gallery__inner { width: var(--content-width); margin-inline: auto; }
+.accordion-gallery__header { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 32px; }
+.accordion-gallery__eyebrow { margin: 0 0 14px; }
+.accordion-gallery__heading { font-size: clamp(36px, 5.4vw, var(--gallery-heading-size)); line-height: 1.03; font-weight: 400; margin: 0; }
+.accordion-gallery__intro { max-width: 28ch; font-size: 14px; line-height: 1.6; margin: 0; }
+nk-accordion-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.accordion-gallery__panel { position: relative; min-width: 0; background: var(--gallery-panel-bg); border-radius: var(--gallery-radius); overflow: hidden; isolation: isolate; }
+.accordion-gallery__media { height: 390px; position: relative; overflow: hidden; }
+.accordion-gallery__media img, .accordion-gallery__media svg { width: 100%; height: 100%; display: block; object-fit: var(--gallery-fit); }
+.accordion-gallery__toggle { display: none; }
+.accordion-gallery__details { padding: 24px; background: var(--gallery-details-bg); color: var(--gallery-details-text); }
+.accordion-gallery__details[hidden] { display: none; }
+.accordion-gallery__title { font-size: clamp(22px, 2.4vw, var(--gallery-title-size)); font-weight: 400; margin: 0 0 8px; line-height: 1.12; }
+.accordion-gallery__price { margin: 0; opacity: .8; font-size: 13px; }
+.accordion-gallery__link { display: inline-flex; min-height: 44px; align-items: center; gap: 24px; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; text-underline-offset: 5px; margin-top: 12px; }
+.accordion-gallery__link:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+nk-accordion-gallery[data-enhanced] { display: flex; height: var(--gallery-height, 580px); gap: var(--gallery-gap); }
+nk-accordion-gallery[data-enhanced] .accordion-gallery__panel { flex: 1 1 0; }
+nk-accordion-gallery[data-enhanced] .accordion-gallery__panel[data-active] { flex-grow: var(--gallery-grow); }
+nk-accordion-gallery[data-enhanced] .accordion-gallery__media { position: absolute; inset: 0; height: auto; }
+nk-accordion-gallery[data-enhanced] .accordion-gallery__media img { position: absolute; left: 50%; transform: translateX(-50%); width: var(--gallery-image-width, 100%); max-width: none; }
+nk-accordion-gallery[data-enhanced] [data-active] .accordion-gallery__media { bottom: var(--gallery-details-height); }
+nk-accordion-gallery[data-enhanced] .accordion-gallery__toggle { display: block; position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; border: 0; padding: 0; color: var(--gallery-label); background: transparent; cursor: pointer; text-align: left; }
+/* Product shots are mostly white, so labels sit over a soft wash of the panel colour; dark photos ("Light text") get a shade instead. */
+nk-accordion-gallery[data-enhanced] .accordion-gallery__toggle::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, color-mix(in srgb, var(--gallery-panel-bg) 55%, transparent), transparent 25%, transparent 50%, color-mix(in srgb, var(--gallery-panel-bg) 75%, transparent)); opacity: 1; }
+nk-accordion-gallery[data-enhanced] [data-tone="light"] .accordion-gallery__toggle { color: var(--gallery-label-light); }
+nk-accordion-gallery[data-enhanced] [data-tone="light"] .accordion-gallery__toggle::before { background: linear-gradient(180deg, color-mix(in srgb, var(--gallery-details-bg) 30%, transparent), transparent 30%, transparent 50%, color-mix(in srgb, var(--gallery-details-bg) 70%, transparent)); }
+nk-accordion-gallery[data-enhanced] [data-active] .accordion-gallery__toggle::before { opacity: 0; }
+nk-accordion-gallery[data-click-through] [data-active] .accordion-gallery__toggle { cursor: alias; }
+.accordion-gallery__number { position: absolute; top: 22px; left: 20px; font-size: 11px; letter-spacing: .12em; }
+nk-accordion-gallery[data-hide-numbers] .accordion-gallery__number { display: none; }
+[data-active] .accordion-gallery__number { color: var(--gallery-label); }
+[data-active][data-tone="light"] .accordion-gallery__number { color: var(--gallery-label-light); }
+.accordion-gallery__collapsed-title { position: absolute; bottom: 24px; left: 50%; writing-mode: vertical-rl; transform: translateX(-50%) rotate(180deg); font-family: var(--nk-font-heading); font-size: clamp(22px, 2.5vw, var(--gallery-label-size)); white-space: nowrap; max-height: calc(100% - 100px); overflow: hidden; text-overflow: ellipsis; }
+[data-active] .accordion-gallery__collapsed-title { opacity: 0; }
+nk-accordion-gallery[data-enhanced] .accordion-gallery__details { position: absolute; bottom: 0; inset-inline: 0; min-height: var(--gallery-details-height); z-index: 3; opacity: 0; transform: translateY(18px); visibility: hidden; pointer-events: none; }
+nk-accordion-gallery[data-enhanced] [data-active] .accordion-gallery__details { opacity: 1; transform: translateY(0); visibility: visible; pointer-events: auto; }
+.accordion-gallery__toggle:focus-visible { outline: 2px solid #a77a4d; outline-offset: -5px; }
+nk-accordion-gallery[data-motion] { --gallery-ease: cubic-bezier(.65, 0, .35, 1); --gallery-ease-out: cubic-bezier(.22, .61, .36, 1); }
+nk-accordion-gallery[data-motion] .accordion-gallery__panel { transition: flex-grow var(--gallery-speed) var(--gallery-ease); }
+nk-accordion-gallery[data-motion] .accordion-gallery__media { transition: bottom var(--gallery-speed) var(--gallery-ease); }
+nk-accordion-gallery[data-motion] .accordion-gallery__toggle::before,
+nk-accordion-gallery[data-motion] .accordion-gallery__collapsed-title,
+nk-accordion-gallery[data-motion] .accordion-gallery__number { transition: opacity calc(var(--gallery-speed) * .58) var(--gallery-ease), color calc(var(--gallery-speed) * .67) var(--gallery-ease); }
+nk-accordion-gallery[data-motion] .accordion-gallery__details { transition: opacity calc(var(--gallery-speed) / 3) var(--gallery-ease-out), transform calc(var(--gallery-speed) / 2) var(--gallery-ease-out), visibility 0s linear calc(var(--gallery-speed) / 2); }
+nk-accordion-gallery[data-motion] [data-active] .accordion-gallery__details { transition: opacity calc(var(--gallery-speed) * .58) var(--gallery-ease-out) calc(var(--gallery-speed) / 3), transform calc(var(--gallery-speed) * .75) var(--gallery-ease-out) calc(var(--gallery-speed) * .29), visibility 0s; }
+@media (max-width: 749px) {
+  .accordion-gallery__header { display: block; margin-bottom: 24px; }
+  .accordion-gallery__intro { margin-top: 18px; max-width: 38ch; }
+  nk-accordion-gallery[data-enhanced] { flex-direction: column; height: auto; }
+  nk-accordion-gallery[data-enhanced] .accordion-gallery__panel { flex: none; height: var(--gallery-mobile-collapsed); }
+  nk-accordion-gallery[data-enhanced] .accordion-gallery__panel[data-active] { flex: none; height: var(--gallery-mobile-height); }
+  nk-accordion-gallery[data-enhanced] .accordion-gallery__toggle::before { background: color-mix(in srgb, var(--gallery-panel-bg) 70%, transparent); }
+  nk-accordion-gallery[data-enhanced] [data-tone="light"] .accordion-gallery__toggle::before { background: color-mix(in srgb, var(--gallery-details-bg) 50%, transparent); }
+  nk-accordion-gallery[data-enhanced] .accordion-gallery__media img { width: 100%; }
+  .accordion-gallery__collapsed-title { writing-mode: horizontal-tb; transform: none; left: 58px; bottom: 25px; font-size: 23px; max-width: calc(100% - 80px); }
+  nk-accordion-gallery[data-hide-numbers] .accordion-gallery__collapsed-title { left: 18px; max-width: calc(100% - 36px); }
+  .accordion-gallery__number { top: 28px; left: 18px; }
+  nk-accordion-gallery[data-motion] .accordion-gallery__panel { transition: height calc(var(--gallery-speed) * .83) var(--gallery-ease); }
+}
+@media (prefers-reduced-motion: reduce) { nk-accordion-gallery[data-motion] *, nk-accordion-gallery[data-motion] *::before { transition: none !important; } }
+nk-accordion-gallery[data-hide-price] .accordion-gallery__price,
+nk-accordion-gallery[data-hide-link] .accordion-gallery__link { display: none; }

@@ -1,0 +1,512 @@
+{%- comment -%}
+  Collection page: header, merchandising pills, filters + sort + layout
+  switcher (snippets/facets.liquid + <nk-facets>), product grid and real pagination links.
+  <nk-facets> re-renders this section with Section Rendering, so everything that depends on the
+  active filters lives inside it; the header above shows the unfiltered total. The header can be
+  turned off when a Collection banner section sits above.
+{%- endcomment -%}
+{%- paginate collection.products by section.settings.products_per_page -%}
+  <div class="main-collection{% if section.settings.show_header %} section-spacing{% else %} main-collection--flush-top{% endif %}">
+    {%- if section.settings.show_header -%}
+      <div class="collection-header collection-header--riviera">
+        <span class="eyebrow">{{ 'collection.product_count' | t: count: collection.all_products_count }}</span>
+        {%- assign collection_title = collection.title | escape -%}
+        {% render 'reveal-heading', text: collection_title, entrance: section.settings.title_animation, split: section.settings.title_split, class: 'display', tag: 'h1', play_on_load: true %}
+      </div>
+
+      {%- if section.settings.show_description and collection.description != blank -%}
+        <div class="rte text-muted main-collection__description">{{ collection.description }}</div>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- assign pills = section.settings.pills_menu -%}
+    {%- if pills.links.size > 0 -%}
+      <nav aria-label="{{ 'collection.categories' | t }}">
+        <ul class="collection-pills" role="list">
+          {%- for link in pills.links -%}
+            <li><a href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>{{ link.title | escape }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+
+    <nk-facets data-section-id="{{ section.id }}" data-toolbar="{{ section.settings.toolbar_width }}" data-toolbar-sticky="{{ section.settings.toolbar_sticky }}" data-results-gap style="--results-gap:{{ section.settings.grid_gap | default: 8 }}px;" {% if section.settings.show_layout_switch == false %}data-layout-locked{% endif %}>
+      {%- comment -%}
+        An empty collection has nothing to filter, sort or re-grid. Filters that narrow a
+        non-empty collection to zero keep the toolbar so shoppers can clear them.
+      {%- endcomment -%}
+      {%- if collection.all_products_count > 0 -%}
+        {% render 'facets',
+          results: collection,
+          section_id: section.id,
+          results_url: collection.url,
+          count: collection.products_count,
+          show_filters: section.settings.show_filters,
+          show_sort: section.settings.show_sort,
+          show_layout_switch: section.settings.show_layout_switch,
+          columns_mobile: section.settings.columns_mobile,
+          columns_desktop: section.settings.columns_desktop
+        %}
+      {%- endif -%}
+
+      <div class="facets__results-grid" data-facets-results>
+        {%- if collection.products.size > 0 -%}
+          <nk-stagger>
+            <ul
+              class="product-grid"
+              role="list"
+              style="--nk-cols-mobile: {{ section.settings.columns_mobile }}; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
+            >
+              {%- for product in collection.products -%}
+                <li data-stagger-item>
+                  {%- assign eager = false -%}
+                  {%- if forloop.index <= 4 -%}{%- assign eager = true -%}{%- endif -%}
+                  {% render 'product-card', product: product, eager: eager, heading_tag: 'h2', card_options: section.settings %}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </nk-stagger>
+        {%- elsif collection.all_products_count > 0 -%}
+          <div class="main-collection__empty">
+            <p class="eyebrow">{{ 'facets.zero_results' | t }}</p>
+            <p class="main-collection__empty-title">{{ 'facets.no_matches' | t }}</p>
+            <nk-magnetic strength="0.18">
+              <a class="button" href="{{ collection.url }}" data-facets-link>{{ 'facets.clear_all' | t }}</a>
+            </nk-magnetic>
+          </div>
+        {%- else -%}
+          <div class="main-collection__empty">
+            <p class="eyebrow">{{ collection.title | escape }}</p>
+            <p class="main-collection__empty-title">{{ 'collection.empty' | t }}</p>
+            <nk-magnetic strength="0.18">
+              <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'collection.shop_all' | t }}</a>
+            </nk-magnetic>
+          </div>
+        {%- endif -%}
+
+        {% render 'infinite-pagination', paginate: paginate, section_id: section.id, mode: section.settings.pagination_style, auto_pages: section.settings.infinite_auto_pages, total: collection.products_count %}
+      </div>
+    </nk-facets>
+  </div>
+{%- endpaginate -%}
+
+{% stylesheet %}
+  .main-collection--flush-top {
+    padding-bottom: clamp(56px, 8vw, 112px);
+  }
+
+  .main-collection__description {
+    max-width: 65ch;
+    margin-bottom: 24px;
+  }
+
+  .main-collection__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: clamp(56px, 9vw, 112px) 24px;
+    border: 1px solid var(--nk-color-line);
+    text-align: center;
+  }
+
+  .main-collection__empty-title {
+    margin: 0 0 6px;
+    font-family: var(--nk-font-heading);
+    font-size: clamp(1.35rem, 2.5vw, 2rem);
+  }
+
+  .main-collection__pagination {
+    margin-top: clamp(40px, 6vw, 72px);
+    padding-top: 24px;
+    border-top: 1px solid var(--nk-color-line);
+  }
+
+  .main-collection__pagination .pagination {
+    margin-top: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product grid",
+  "class": "main-collection-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show title and description",
+      "default": true,
+      "info": "Turn off when a Collection banner section is above."
+    },
+    {
+      "type": "select",
+      "id": "title_animation",
+      "label": "Title animation",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "rise",
+          "label": "Rise from a mask"
+        },
+        {
+          "value": "blur",
+          "label": "Blur in"
+        },
+        {
+          "value": "fold",
+          "label": "Fold up"
+        },
+        {
+          "value": "skew",
+          "label": "Skewed rise"
+        },
+        {
+          "value": "fade",
+          "label": "Fade up"
+        }
+      ],
+      "default": "rise",
+      "info": "Plays once when the page opens. Follows Theme settings > Motion and reduced-motion preferences."
+    },
+    {
+      "type": "select",
+      "id": "title_split",
+      "label": "Animate title by",
+      "options": [
+        {
+          "value": "words",
+          "label": "Word"
+        },
+        {
+          "value": "chars",
+          "label": "Letter"
+        },
+        {
+          "value": "lines",
+          "label": "Line"
+        }
+      ],
+      "default": "words"
+    },
+    {
+      "type": "select",
+      "id": "pagination_style",
+      "label": "Pagination",
+      "options": [
+        {
+          "value": "infinite",
+          "label": "Infinite scroll"
+        },
+        {
+          "value": "button",
+          "label": "Load more button"
+        },
+        {
+          "value": "numbers",
+          "label": "Page numbers"
+        }
+      ],
+      "default": "infinite"
+    },
+    {
+      "type": "range",
+      "id": "infinite_auto_pages",
+      "label": "Infinite scroll: pages before a button",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3,
+      "info": "After this many pages load automatically, a Load more button appears so the footer stays reachable."
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on phones",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "link_list",
+      "id": "pills_menu",
+      "label": "Category links menu",
+      "info": "Optional row of links to related collections."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show collection description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Show filters",
+      "default": true,
+      "info": "Filters come from Shopify's Search & Discovery app."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "Show sort",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "card_appearance",
+      "label": "Card appearance",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        },
+        {
+          "value": "editorial",
+          "label": "Editorial"
+        },
+        {
+          "value": "bordered",
+          "label": "Bordered"
+        },
+        {
+          "value": "image-led",
+          "label": "Image focused"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_ratio",
+      "label": "Image ratio",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (2:3)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "cover",
+          "label": "Fill"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_hover",
+      "label": "Alternate media",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "auto",
+          "label": "Video with image fallback"
+        },
+        {
+          "value": "image",
+          "label": "Second image only"
+        },
+        {
+          "value": "off",
+          "label": "Off"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_vendor",
+      "label": "Show vendor",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_price",
+      "label": "Show price",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_badges",
+      "label": "Show badges",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_sizes",
+      "label": "Show sizes",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_layout_switch",
+      "label": "Allow shoppers to change grid columns",
+      "default": true,
+      "info": "Off uses merchant columns and ignores previous shopper grid preferences."
+    },
+    {
+      "type": "select",
+      "id": "toolbar_width",
+      "label": "Filter toolbar width",
+      "options": [
+        {
+          "value": "full",
+          "label": "Full bleed"
+        },
+        {
+          "value": "contained",
+          "label": "Within content"
+        }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "checkbox",
+      "id": "toolbar_sticky",
+      "label": "Sticky filter toolbar",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Product column gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    }
+  ],
+  "enabled_on": {
+    "templates": [
+      "collection"
+    ]
+  },
+  "limit": 1
+}
+{% endschema %}

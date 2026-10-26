@@ -1,0 +1,15 @@
+{%- doc -%}
+  Shared merchant-authored feature. Image precedes curated decorative icon.
+  @param {object} block - Feature settings and Shopify editor attributes
+  @param {string} [heading_tag] - Semantic heading (default h3)
+{%- enddoc -%}
+{% assign tag = heading_tag | default: 'h3' %}
+<article class="feature-card feature-card--{{ block.settings.appearance | default: 'inherit' }}" {{ block.shopify_attributes }}>
+  {% if block.settings.image %}{{ block.settings.image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '', class: 'feature-card__icon' }}
+  {% elsif block.settings.icon != blank and block.settings.icon != 'none' %}{% render 'feature-icon', name: block.settings.icon %}{% endif %}
+  <div>
+    {% if block.settings.heading != blank %}<{{ tag }} class="feature-card__heading">{{ block.settings.heading | escape }}</{{ tag }}>{% endif %}
+    {% if block.settings.text != blank %}<div class="rte">{{ block.settings.text }}</div>{% endif %}
+    {% if block.settings.link != blank and block.settings.link_label != blank %}<a class="link-underline" href="{{ block.settings.link }}">{{ block.settings.link_label | escape }}</a>{% endif %}
+  </div>
+</article>

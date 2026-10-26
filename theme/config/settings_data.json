@@ -1,0 +1,305 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "current": {
+    "logo": "shopify://shop_images/CV_Neck_label-Photoroom.png",
+    "logo_width": 150,
+    "logo_width_mobile": 120,
+    "type_heading_font": "newsreader_n4",
+    "type_body_font": "inter_n4",
+    "type_spec_font": "inter_n5",
+    "heading_case": "none",
+    "body_size": "15",
+    "page_width": "1440px",
+    "section_spacing": "112",
+    "corner_radius": "0",
+    "card_image_ratio": "1 / 1",
+    "card_show_sizes": true,
+    "motion_level": "standard",
+    "cart_after_add": "drawer",
+    "color_schemes": {
+      "scheme-1": {
+        "settings": {
+          "background": "#FAF8F5",
+          "surface": "#EDE6DA",
+          "text": "#1E1915",
+          "text_muted": "#6B6157",
+          "line": "#DED5C8",
+          "accent": "#432D23",
+          "accent_text": "#F5ECDF"
+        }
+      },
+      "scheme-2": {
+        "settings": {
+          "background": "#1E1915",
+          "surface": "#2B241F",
+          "text": "#F2EBE0",
+          "text_muted": "#B6AA9C",
+          "line": "#3A322B",
+          "accent": "#E7C9A0",
+          "accent_text": "#1E1915"
+        }
+      },
+      "scheme-3": {
+        "settings": {
+          "background": "#432D23",
+          "surface": "#523A2E",
+          "text": "#F5ECDF",
+          "text_muted": "#CDB9A5",
+          "line": "#5E4537",
+          "accent": "#D7AE83",
+          "accent_text": "#432D23"
+        }
+      }
+    },
+    "support_replace_policy": true,
+    "support_email": "support@corsovelle.com",
+    "support_phone": "+880 1341-630198",
+    "support_instagram": "https://www.instagram.com/corsovelle/",
+    "support_instagram_label": "@corsovelle",
+    "support_intro": "<p>Need assistance with an order, product, return or exchange? Contact us using the links below. Please include your order number for an existing order.</p>",
+    "size_chart_1_products": [
+      "velle-luck-of-the-draw-tee",
+      "velle-rodeo-estate-tee",
+      "velle-basic-tee",
+      "velle-timeless-basics-tee",
+      "velle-crane-tee",
+      "velle-riviera-club-tee",
+      "velle-members-club-tee"
+    ],
+    "size_chart_1_table": "Size,Chest,Length\nS,40,25\nM,42,25.5\nL,44,26\nXL,46,27",
+    "size_chart_1_unit": "in",
+    "size_chart_1_basis": "T-Shirt",
+    "size_chart_2_products": [
+      "classic-white-rib-tank"
+    ],
+    "size_chart_2_table": "Size,Chest,Length\nM,32,26\nL,34,27\nXL,36,28",
+    "size_chart_2_unit": "in",
+    "size_chart_2_basis": "tanktop",
+    "size_chart_3_products": [
+      "the-checkered-shirt",
+      "siena-embroidered-shirt",
+      "azure-embroidered-shirt"
+    ],
+    "size_chart_3_table": "Size,Chest,Length,Shoulder,Sleeves\nM,42,25,20,23\nL,45,26,21,23.5\nXL,48,27,22,24",
+    "size_chart_3_unit": "in",
+    "size_chart_3_basis": "Collar Shirt Long Sleeve",
+    "size_chart_4_products": [
+      "the-portofino-shirt",
+      "evyan-embroidered-shirt",
+      "libre-embroidered-shirt"
+    ],
+    "size_chart_4_table": "Size,Chest,Length,Shoulder,Sleeves\nM,42,25,20,9\nL,45,26,21,9.5\nXL,48,27,22,10",
+    "size_chart_4_unit": "in",
+    "size_chart_4_basis": "Collar Shirt Short Sleeve",
+    "size_chart_5_products": [
+      "the-velle-signature-shirt"
+    ],
+    "size_chart_5_table": "Size,Chest,Length,Shoulder,Sleeves\nM,42,24,20,9\nL,45,25,21,9.5\nXL,48,26,22,10",
+    "size_chart_5_unit": "in",
+    "size_chart_5_basis": "Boxy Cropped Shirt Half Sleeve",
+    "size_chart_6_products": [
+      "puro-linen-shorts"
+    ],
+    "size_chart_6_table": "Size,Waist,Rise,Length,Leg Opening\nS,30,10.5,16,9\nM,32,11,16.5,9.5\nL,34,11.5,17,10\nXL,36,12,17.5,10.5",
+    "size_chart_6_unit": "in",
+    "size_chart_6_basis": "Shorts",
+    "size_chart_7_products": [
+      "puro-linen-trouser",
+      "firenze-gurkha-flared-trouser-1",
+      "firenze-gurkha-flared-trouser"
+    ],
+    "size_chart_7_table": "Size,Waist,Rise,Length,Leg Opening\nS,30,10.5,39,9\nM,32,11,40,9.5\nL,34,11.5,41,10\nXL,36,12,42,10.5",
+    "size_chart_7_unit": "in",
+    "size_chart_7_basis": "Trouser",
+    "size_chart_8_products": [
+      "kumo-baggy-jeans-1",
+      "kumo-baggy-jeans"
+    ],
+    "size_chart_8_table": "Size,Waist,Length,Front Rise,Hip,Leg Opening\nS,28,38.5,11.2,19,9.8\nM,30,39.5,11.5,19.5,10.2\nL,32,39.5,11.7,20,10.6\nXL,34,40.5,12,21,11",
+    "size_chart_8_unit": "in",
+    "size_chart_8_basis": "Jeans",
+    "size_chart_9_products": [
+      "ornate-shacket",
+      "amaya-embroidered-shacket",
+      "meisen-embroidered-shacket"
+    ],
+    "size_chart_9_table": "Size,Chest,Length,Shoulder,Sleeves\nS,41,25.5,8.5,22\nM,43,26,9,22.5\nL,45,26.3,9.5,23\nXL,47,26.5,10,23.5",
+    "size_chart_9_unit": "in",
+    "size_chart_9_basis": "Shacket",
+    "size_chart_10_products": [
+      "andre-linen-shirt-1",
+      "andre-linen-shirt"
+    ],
+    "size_chart_10_table": "Size,Chest,Length,Shoulder,Sleeves\nS,40,27,17.5,24.5\nM,42,28,18,25\nL,44,29,18.5,25.5\nXL,46,30,19,26",
+    "size_chart_10_unit": "in",
+    "size_chart_10_basis": "Linen shirt Full Sleeve",
+    "size_chart_11_products": [
+      "bellagio-knit-polo-1",
+      "bellagio-knit-polo"
+    ],
+    "size_chart_11_table": "Size,Chest,Body Length,Shoulder,Sleeve Length\nM,41,26.00,18.00,9.50\nL,43,27.00,19.00,9.50\nXL,45,28.00,20.00,9.50",
+    "size_chart_11_unit": "in",
+    "size_chart_11_basis": "Polo"
+  },
+  "presets": {
+    "Riviera": {
+      "logo": "shopify://shop_images/CV_Neck_label-Photoroom.png",
+      "logo_width": 150,
+      "logo_width_mobile": 120,
+      "type_heading_font": "newsreader_n4",
+      "type_body_font": "inter_n4",
+      "type_spec_font": "inter_n5",
+      "heading_case": "none",
+      "body_size": "15",
+      "page_width": "1440px",
+      "section_spacing": "112",
+      "corner_radius": "0",
+      "card_image_ratio": "1 / 1",
+      "card_show_sizes": true,
+      "motion_level": "standard",
+      "cart_after_add": "drawer",
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "background": "#FAF8F5",
+            "surface": "#EDE6DA",
+            "text": "#1E1915",
+            "text_muted": "#6B6157",
+            "line": "#DED5C8",
+            "accent": "#432D23",
+            "accent_text": "#F5ECDF"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "background": "#1E1915",
+            "surface": "#2B241F",
+            "text": "#F2EBE0",
+            "text_muted": "#B6AA9C",
+            "line": "#3A322B",
+            "accent": "#E7C9A0",
+            "accent_text": "#1E1915"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "background": "#432D23",
+            "surface": "#523A2E",
+            "text": "#F5ECDF",
+            "text_muted": "#CDB9A5",
+            "line": "#5E4537",
+            "accent": "#D7AE83",
+            "accent_text": "#432D23"
+          }
+        }
+      }
+    },
+    "Minimal": {
+      "type_heading_font": "inter_n5",
+      "type_body_font": "inter_n4",
+      "type_spec_font": "inter_n5",
+      "heading_case": "none",
+      "body_size": "16",
+      "heading_tracking": "natural",
+      "heading_leading": "comfortable",
+      "label_tracking": "natural",
+      "page_width": "1200px",
+      "section_spacing": "72",
+      "corner_radius": "0",
+      "button_size": "compact",
+      "button_corners": "square",
+      "button_motion": "subtle",
+      "card_surface": "bordered",
+      "card_image_ratio": "4 / 5",
+      "card_image_fit": "contain",
+      "card_show_sizes": false,
+      "motion_level": "minimal",
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "background": "#FFFFFF",
+            "surface": "#F4F4F4",
+            "text": "#202020",
+            "text_muted": "#626262",
+            "line": "#DDDDDD",
+            "accent": "#202020",
+            "accent_text": "#FFFFFF"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "background": "#202020",
+            "surface": "#303030",
+            "text": "#FFFFFF",
+            "text_muted": "#CCCCCC",
+            "line": "#555555",
+            "accent": "#FFFFFF",
+            "accent_text": "#202020"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "background": "#F4F4F4",
+            "surface": "#FFFFFF",
+            "text": "#202020",
+            "text_muted": "#626262",
+            "line": "#DDDDDD",
+            "accent": "#202020",
+            "accent_text": "#FFFFFF"
+          }
+        }
+      }
+    },
+    "Quiet": {
+      "heading_case": "none",
+      "corner_radius": "0",
+      "card_image_ratio": "1 / 1",
+      "card_show_sizes": false,
+      "motion_level": "minimal",
+      "section_spacing": "112",
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "background": "#EFEAE3",
+            "surface": "#DCD3C6",
+            "text": "#2A2622",
+            "text_muted": "#6B5E52",
+            "line": "#D3C8BA",
+            "accent": "#6B4E3D",
+            "accent_text": "#FFFFFF"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "background": "#2A2622",
+            "surface": "#3A342F",
+            "text": "#EFEAE3",
+            "text_muted": "#CFC3B4",
+            "line": "#4A433C",
+            "accent": "#D9B99B",
+            "accent_text": "#2A2622"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "background": "#FFFFFF",
+            "surface": "#EFEAE3",
+            "text": "#2A2622",
+            "text_muted": "#6B5E52",
+            "line": "#D3C8BA",
+            "accent": "#6B4E3D",
+            "accent_text": "#FFFFFF"
+          }
+        }
+      }
+    }
+  }
+}

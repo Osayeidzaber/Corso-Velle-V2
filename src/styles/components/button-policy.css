@@ -1,0 +1,31 @@
+/* Shared interaction policy, after hero/Riviera styles. State feedback stays available. */
+[data-button-motion='subtle'] .button::before {
+  transform: none !important;
+  opacity: 0;
+  transition: opacity 160ms var(--nk-ease-out) !important;
+}
+[data-button-motion='subtle'] .button:not(:disabled, [aria-disabled='true']):focus-visible::before { opacity: 1; }
+@media (hover: hover) {
+  [data-button-motion='subtle'] .button:not(:disabled, [aria-disabled='true']):hover::before { opacity: 1; }
+}
+:is([data-button-motion='subtle'], [data-button-motion='none'], .nk-motion-off) .hero-cta {
+  scale: none !important;
+}
+:is([data-button-motion='subtle'], [data-button-motion='none'], .nk-motion-off) .hero-cta__text,
+:is([data-button-motion='subtle'], [data-button-motion='none'], .nk-motion-off) .hero-cta__arrow svg,
+:is([data-button-motion='subtle'], [data-button-motion='none'], .nk-motion-off) .hero-cta--link::after {
+  translate: none !important;
+  animation: none !important;
+}
+:is([data-button-motion='subtle'], [data-button-motion='none'], .nk-motion-off) .hero-cta__text + .hero-cta__text { visibility: hidden; }
+:is([data-button-motion='none'], .nk-motion-off) .button,
+:is([data-button-motion='none'], .nk-motion-off) .button::before,
+:is([data-button-motion='none'], .nk-motion-off) .hero-cta,
+:is([data-button-motion='none'], .nk-motion-off) .hero-cta::after,
+:is([data-button-motion='none'], .nk-motion-off) .hero-cta__text,
+:is([data-button-motion='none'], .nk-motion-off) .hero-cta__arrow svg { transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-cta { scale: none !important; }
+  .hero-cta__text, .hero-cta__arrow svg, .hero-cta--link::after { translate: none !important; animation: none !important; }
+  .hero-cta__text + .hero-cta__text { visibility: hidden; }
+}

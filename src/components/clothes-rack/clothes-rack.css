@@ -1,0 +1,593 @@
+/*
+ * Clothes rack. Garments hang edge-on (rotateY) and turn to face the visitor on hover.
+ *
+ * Knock-out: with [data-knockout] each garment multiplies onto the section colour so white
+ * studio backgrounds vanish. Multiply only reaches the backdrop when nothing between the garment
+ * and nk-clothes-rack is a stacking context, so opacity, filter, transform and z-index live
+ * on .clothes-rack__turn / .clothes-rack__spin themselves, never on the li, the a or the focus.
+ */
+nk-clothes-rack {
+  --rack-garment: 16rem;
+  --rack-slot: 30;
+  --rack-collar: 22%;
+  --rack-w: var(--rack-garment);
+  --rack-hanger: calc(var(--rack-w) * 0.2);
+  --rack-side: 68deg;
+  --rack-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --rack-turn-ease: cubic-bezier(0.34, 1.22, 0.64, 1);
+  /* How far neighbours slide aside so the garment facing the visitor has room. */
+  --rack-gap: calc((var(--rack-w) * 0.86 - var(--rack-w) * var(--rack-slot) / 100) / 2);
+  display: block;
+  /* The blend group is the whole section, so a photo edge that pokes past the stage (the
+     lifted garment's top margin, at the rail) still blends into the section colour. */
+  isolation: isolate;
+  background: var(--nk-color-bg);
+}
+
+@media (max-width: 749px) {
+  nk-clothes-rack {
+    --rack-w: min(var(--rack-garment), 46vw);
+  }
+}
+
+.clothes-rack__heading {
+  margin: 0 auto 1.25rem;
+  max-width: var(--nk-section-page-width, var(--nk-page-width));
+  padding-inline: var(--nk-gutter-mobile);
+  text-align: center;
+  color: var(--nk-color-text-muted);
+}
+
+.clothes-rack__stage {
+  position: relative;
+  color: var(--nk-color-text);
+}
+
+/* Rail: a brushed-steel bar with end posts, behind the hanger hooks. */
+.clothes-rack__rail {
+  position: absolute;
+  inset-inline: max(var(--nk-gutter-mobile), calc((100% - var(--nk-section-page-width, var(--nk-page-width))) / 2 + 2rem));
+  top: 0.35rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f2f2f2 0%, #a9a9a9 45%, #6f6f6f 70%, #c9c9c9 100%);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.18);
+  pointer-events: none;
+}
+
+.clothes-rack__rail::before,
+.clothes-rack__rail::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 0.6rem;
+  height: 1.1rem;
+  border-radius: 0.2rem;
+  background: linear-gradient(90deg, #8a8a8a, #e6e6e6 50%, #7a7a7a);
+  transform: translateY(-50%);
+}
+
+.clothes-rack__rail::before { left: -0.3rem; }
+.clothes-rack__rail::after { right: -0.3rem; }
+
+.clothes-rack__items {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0 var(--nk-gutter-mobile) 3rem;
+  list-style: none;
+  /* Fixed height (room for the focused view too): nothing below the rack moves when it opens. */
+  min-height: calc(var(--rack-w) * 1.2 + 6.5rem);
+}
+
+.clothes-rack__item {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: calc(var(--rack-w) * var(--rack-slot) / 100);
+}
+
+.clothes-rack__garment {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  width: var(--rack-w);
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+.clothes-rack__turn {
+  position: relative;
+  display: block;
+  transform-origin: 50% 0;
+  transform: perspective(70rem) rotateY(var(--rack-side));
+  /* --rack-shift is -1/0/1 per item (set by the script): left of, on, or right of the garment
+     in front. Layout never changes, so only compositor-friendly properties animate. */
+  translate: calc(var(--rack-shift, 0) * var(--rack-gap)) 0;
+  will-change: transform, translate;
+  transition:
+    transform 700ms var(--rack-turn-ease),
+    translate 620ms var(--rack-ease),
+    opacity 420ms var(--rack-ease);
+}
+
+/* Alternate a little so the row reads as real cloth, not a copy-paste. */
+.clothes-rack__item:nth-child(3n + 2) .clothes-rack__turn { --rack-side: 64deg; }
+.clothes-rack__item:nth-child(3n) .clothes-rack__turn { --rack-side: 72deg; }
+
+[data-knockout] .clothes-rack__turn,
+[data-knockout] .clothes-rack__spin,
+[data-knockout] .clothes-rack__tag img {
+  mix-blend-mode: multiply;
+}
+
+.clothes-rack__hanger {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 46%;
+  margin-inline: auto;
+  color: color-mix(in srgb, var(--nk-color-text) 70%, transparent);
+}
+
+.clothes-rack__hanger svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.clothes-rack__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: calc(var(--rack-collar) * -1);
+  pointer-events: none;
+  user-select: none;
+}
+
+.clothes-rack__img--placeholder {
+  aspect-ratio: 4 / 5;
+  background: var(--nk-color-surface);
+}
+
+/* Hover / keyboard focus: the garment turns to face the visitor; neighbours slide aside. */
+.clothes-rack__item.is-active .clothes-rack__turn {
+  z-index: 2;
+  transform: perspective(70rem) rotateY(0deg);
+}
+
+.clothes-rack__label {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: max-content;
+  max-width: 18rem;
+  margin-top: 0.75rem;
+  font-family: var(--nk-font-spec);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--nk-color-text-muted);
+  opacity: 0;
+  transform: translate(-50%, 0.35rem);
+  transition: opacity 240ms ease, transform 420ms var(--rack-ease);
+  pointer-events: none;
+}
+
+.clothes-rack__title { color: var(--nk-color-text); }
+
+.clothes-rack__item.is-active .clothes-rack__label {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.clothes-rack__garment:focus-visible .clothes-rack__label {
+  outline: 2px solid var(--nk-focus, currentColor);
+  outline-offset: 4px;
+}
+
+/*
+ * "See availability" pill. Idle it is a plain call to action; once a garment faces the visitor
+ * it becomes a live stock read-out for that garment: its sizes (sold-out sizes
+ * struck through) slide open inside the pill. Hover wipes a fill across, rolls the label and
+ * sends the arrow through. Only the size strip animates layout (a 0fr -> 1fr grid track).
+ */
+.clothes-rack__cta {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 0.5rem;
+}
+
+.clothes-rack__availability,
+.clothes-rack__sides,
+.clothes-rack__close {
+  font-family: var(--nk-font-spec);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.clothes-rack__availability {
+  --cta-fg: var(--nk-color-text);
+  --cta-bg: var(--nk-color-bg);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 0.3rem 0.3rem 1.1rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--cta-fg) 85%, transparent);
+  border-radius: 999px;
+  color: var(--cta-fg);
+  text-decoration: none;
+  transition: color 380ms var(--rack-ease), border-color 380ms var(--rack-ease), box-shadow 380ms var(--rack-ease);
+}
+
+/* The fill wipes in from the left and leaves to the right. */
+.clothes-rack__availability::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  background: var(--cta-fg);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 520ms var(--rack-ease);
+}
+
+.clothes-rack__availability:is(:hover, :focus-visible) {
+  color: var(--cta-bg);
+  box-shadow: 0 10px 24px -14px color-mix(in srgb, var(--cta-fg) 60%, transparent);
+}
+
+.clothes-rack__availability:is(:hover, :focus-visible)::before {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+.clothes-rack__availability:active { scale: 0.98; }
+
+/* Label rolls up to a copy of itself on hover. */
+.clothes-rack__cta-label {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.clothes-rack__cta-label > span,
+.clothes-rack__cta-label::after {
+  display: block;
+  transition: translate 460ms var(--rack-ease);
+}
+
+.clothes-rack__cta-label::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 100% 0 auto;
+}
+
+/* Separate selectors: a pseudo-element is not allowed inside :is(). */
+.clothes-rack__availability:is(:hover, :focus-visible) .clothes-rack__cta-label > span,
+.clothes-rack__availability:is(:hover, :focus-visible) .clothes-rack__cta-label::after {
+  translate: 0 -100%;
+}
+
+/* Sizes slide open inside the pill once a garment is chosen. */
+.clothes-rack__cta-sizes {
+  display: grid;
+  grid-template-columns: 0fr;
+  opacity: 0;
+  transition: grid-template-columns 520ms var(--rack-ease), opacity 260ms ease;
+}
+
+.clothes-rack__cta-sizes > span {
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+:is([data-state='ready'], [data-state='soldout']) .clothes-rack__cta-sizes.has-sizes {
+  grid-template-columns: 1fr;
+  opacity: 1;
+  transition: grid-template-columns 520ms var(--rack-ease), opacity 360ms ease 120ms;
+}
+
+.clothes-rack__cta-size {
+  padding: 0 0.42rem;
+  border-left: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  letter-spacing: 0.04em;
+}
+
+.clothes-rack__cta-size.is-out {
+  opacity: 0.4;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+/* Arrow in a solid disc; it flies out to the right and back in from the left on hover. */
+.clothes-rack__cta-arrow {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.05rem;
+  height: 2.05rem;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--cta-fg);
+  color: var(--cta-bg);
+  transition: background-color 380ms var(--rack-ease), color 380ms var(--rack-ease);
+}
+
+.clothes-rack__cta-arrow svg { width: 0.9rem; height: 0.9rem; }
+
+.clothes-rack__availability:is(:hover, :focus-visible) .clothes-rack__cta-arrow {
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+}
+
+.clothes-rack__availability:is(:hover, :focus-visible) .clothes-rack__cta-arrow svg {
+  animation: clothes-rack-arrow 520ms var(--rack-ease);
+}
+
+@keyframes clothes-rack-arrow {
+  0% { translate: 0 0; }
+  45% { translate: 160% 0; }
+  46% { translate: -160% 0; }
+  100% { translate: 0 0; }
+}
+
+.clothes-rack__price {
+  margin: -0.4rem 0 0;
+  font-family: var(--nk-font-spec);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--nk-color-text-muted);
+  transition: opacity 180ms ease;
+}
+
+.clothes-rack__price:empty { display: none; }
+.clothes-rack__name.is-swapping + .clothes-rack__price { opacity: 0; }
+
+/* ---- Focused view ---------------------------------------------------------------------- */
+
+/* The rest of the rail fades and parts around the lifted garment. Opacity + translate only:
+   animating a blur on every garment cost 100ms+ frames. */
+[data-focused] .clothes-rack__turn {
+  --rack-gap: calc(var(--rack-w) * 0.62);
+  opacity: 0.13;
+}
+
+[data-focused] .clothes-rack__item { pointer-events: none; }
+[data-focused] .clothes-rack__label { opacity: 0; transition-duration: 120ms; }
+.clothes-rack__turn.is-lifted { opacity: 0; transition: translate 620ms var(--rack-ease); }
+
+.clothes-rack__focus {
+  position: absolute;
+  inset: 0 0 3rem;
+  display: grid;
+  grid-template-columns: 3rem 1fr 3rem;
+  grid-template-rows: auto auto;
+  align-content: start;
+  align-items: center;
+  column-gap: 1rem;
+  max-width: var(--nk-section-page-width, var(--nk-page-width));
+  margin-inline: auto;
+  padding-inline: var(--nk-gutter-mobile);
+}
+
+.clothes-rack__focus[hidden] { display: none; }
+
+.clothes-rack__close {
+  position: absolute;
+  top: 1.5rem;
+  right: var(--nk-gutter-mobile);
+  padding: 0.4rem 0;
+  border: 0;
+  background: none;
+  color: var(--nk-color-text-muted);
+  cursor: pointer;
+}
+
+.clothes-rack__close:hover { color: var(--nk-color-text); }
+
+.clothes-rack__arrow {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--nk-color-line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--nk-color-text);
+  cursor: pointer;
+  transition: border-color 200ms ease, transform 200ms ease;
+}
+
+.clothes-rack__arrow:hover { border-color: currentColor; }
+.clothes-rack__arrow:active { transform: scale(0.94); }
+.clothes-rack__arrow svg { width: 1rem; height: 1rem; }
+.clothes-rack__arrow--next { justify-self: end; }
+
+/* The hero is a scaled copy of a hanging garment (hanger + photo, same proportions), so the
+   lift from the rail is a pure translate/scale. */
+.clothes-rack__hero {
+  position: relative;
+  justify-self: center;
+  width: min(calc(var(--rack-w) * 1.15), 100%);
+}
+
+.clothes-rack__spin {
+  position: relative;
+  transform-origin: 50% 0;
+  will-change: transform, opacity;
+}
+
+.clothes-rack__face {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  margin-top: calc(var(--rack-collar) * -1);
+  object-fit: contain;
+  user-select: none;
+}
+
+.clothes-rack__meta,
+.clothes-rack__arrow,
+.clothes-rack__close,
+.clothes-rack__tags {
+  transition: opacity 320ms var(--rack-ease), translate 420ms var(--rack-ease);
+}
+
+.clothes-rack__focus:not(.is-shown) :is(.clothes-rack__meta, .clothes-rack__arrow, .clothes-rack__close, .clothes-rack__tags) {
+  opacity: 0;
+  translate: 0 0.5rem;
+}
+
+.clothes-rack__name { transition: opacity 180ms ease; }
+.clothes-rack__name.is-swapping { opacity: 0; }
+
+/* Colourway tags hang on strings beside the garment. */
+.clothes-rack__tags {
+  position: absolute;
+  top: 0.35rem;
+  left: calc(100% + 0.5rem);
+  display: flex;
+  gap: 0.35rem;
+}
+
+.clothes-rack__tag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: 50% 0;
+  transition: transform 300ms var(--rack-turn-ease);
+}
+
+.clothes-rack__tag:hover { transform: rotate(-4deg) translateY(2px); }
+
+.clothes-rack__tag-string {
+  width: 1px;
+  height: 1.6rem;
+  background: var(--nk-color-text-muted);
+}
+
+.clothes-rack__tag img {
+  width: 2.4rem;
+  height: auto;
+  border: 1px solid var(--nk-color-line);
+  border-radius: 0.2rem;
+}
+
+.clothes-rack__tag.is-active img { border-color: var(--nk-color-text); }
+
+.clothes-rack__meta {
+  grid-column: 1 / -1;
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding-top: 1rem;
+}
+
+.clothes-rack__name {
+  margin: 0;
+  font-family: var(--nk-font-heading);
+  font-size: clamp(1rem, 1.6vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.clothes-rack__sides {
+  display: inline-flex;
+  padding: 0.2rem;
+  border: 1px solid var(--nk-color-line);
+  border-radius: 999px;
+}
+
+.clothes-rack__sides button {
+  min-width: 4.5rem;
+  min-height: 1.9rem;
+  padding: 0 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--nk-color-text-muted);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  transition: background-color 220ms ease, color 220ms ease;
+}
+
+.clothes-rack__sides button[aria-pressed='true'] {
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+}
+
+.clothes-rack__sides[hidden] { display: none; }
+
+/* ---- Phones: the rail scrolls sideways; a tap opens the focused view. -------------------- */
+@media (max-width: 749px) {
+  .clothes-rack__rail { display: none; }
+
+  .clothes-rack__items {
+    justify-content: flex-start;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    padding-inline: calc(var(--rack-w) * 0.4);
+    /* The rail scrolls with the clothes. */
+    background:
+      linear-gradient(180deg, #ededed, #9a9a9a 55%, #c4c4c4) 0 0.35rem / 100% 0.35rem no-repeat local;
+  }
+
+  .clothes-rack__items::-webkit-scrollbar { display: none; }
+
+  .clothes-rack__item { width: calc(var(--rack-w) * max(var(--rack-slot), 34) / 100); }
+
+  .clothes-rack__focus {
+    grid-template-columns: 2.5rem 1fr 2.5rem;
+    column-gap: 0.25rem;
+  }
+
+
+  .clothes-rack__tags {
+    left: auto;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    flex-direction: column;
+  }
+
+  .clothes-rack__tag-string { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clothes-rack__item,
+  .clothes-rack__turn,
+  .clothes-rack__label,
+  .clothes-rack__meta,
+  .clothes-rack__arrow,
+  .clothes-rack__cta-sizes,
+  .clothes-rack__availability::before,
+  .clothes-rack__cta-label > span,
+  .clothes-rack__cta-label::after {
+    transition-duration: 1ms;
+  }
+
+  .clothes-rack__availability:is(:hover, :focus-visible) .clothes-rack__cta-arrow svg {
+    animation: none;
+  }
+}

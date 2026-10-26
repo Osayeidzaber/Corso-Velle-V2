@@ -1,0 +1,50 @@
+{%- doc -%}
+  Reuse the product page's assigned measurement data for a carousel size preview.
+  @param {object} product - The product
+  @param {object} size_option - The option used by the carousel size selector
+{%- enddoc -%}
+{%- liquid
+  capture assignment
+    render 'size-chart-assignment', product: product
+  endcapture
+  assign assignment = assignment | strip | split: ':'
+  assign assigned_chart = nil
+  assign chart_rule = ''
+  case assignment.first
+    when 'product'
+      assign assigned_chart = product.metafields.custom.size_chart.value
+    when 'collection'
+      assign chart_collection = collections[assignment.last]
+      assign assigned_chart = chart_collection.metafields.custom.size_chart.value
+    when 'default'
+      assign default_chart_handle = settings.size_chart_default_handle | strip
+      assign assigned_chart = metaobjects.size_chart[default_chart_handle]
+    when 'rule'
+      assign chart_rule = assignment.last
+  endcase
+  assign size_table = ''
+  assign size_unit = 'in'
+  assign size_heading = ''
+  if chart_rule != blank
+    assign chart_prefix = 'size_chart_' | append: chart_rule
+    assign handle_key = chart_prefix | append: '_handle'
+    assign rule_handle = settings[handle_key] | strip
+    assign rule_chart = metaobjects.size_chart[rule_handle]
+    capture rule_chart_usable
+      render 'size-chart-usable', chart: rule_chart
+    endcapture
+    if rule_chart_usable == 'true'
+      assign assigned_chart = rule_chart
+    endif
+    assign table_key = chart_prefix | append: '_table'
+    assign unit_key = chart_prefix | append: '_unit'
+    assign basis_key = chart_prefix | append: '_basis'
+    assign size_table = settings[table_key]
+    assign size_unit = settings[unit_key]
+    assign size_heading = settings[basis_key]
+  endif
+-%}
+<template data-carousel-measurements{% if assignment.first == blank or assignment.first == nil %} data-product-page-chart{% endif %}>
+  {% render 'product-measurements', product: product, chart: assigned_chart, size_option: size_option, table_csv: size_table, unit: size_unit, heading: size_heading, verified_chart: chart_rule %}
+  <a class="product-carousel__size-details" data-size-details href="{{ product.url }}">{{ 'product.view_size_details' | t }} ↗</a>
+</template>

@@ -1,0 +1,458 @@
+{%- comment -%}
+  Search results page: search form, filters + sort for
+  product results (snippets/facets.liquid + <nk-facets>), the shared product card grid, simple
+  cards for articles and pages, and real pagination links. Works without JavaScript.
+{%- endcomment -%}
+{%- assign terms = search.terms -%}
+{%- capture results_url -%}{{ routes.search_url }}?q={{ terms | url_encode }}&options%5Bprefix%5D=last{%- endcapture -%}
+
+{%- paginate search.results by section.settings.per_page -%}
+  <div class="section-spacing search-page">
+    <div class="collection-header">
+      {%- assign search_title = 'search.title' | t -%}
+      {% render 'reveal-heading', text: search_title, entrance: section.settings.title_animation, split: section.settings.title_split, class: 'display', tag: 'h1', play_on_load: true %}
+    </div>
+
+    <form class="search-page__form" action="{{ routes.search_url }}" method="get" role="search">
+      <label class="visually-hidden" for="SearchPageInput-{{ section.id }}">{{ 'search.placeholder' | t }}</label>
+      <input
+        id="SearchPageInput-{{ section.id }}"
+        type="search"
+        name="q"
+        value="{{ terms | escape }}"
+        placeholder="{{ 'search.placeholder' | t }}"
+        enterkeyhint="search"
+      >
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="submit" class="button">{{ 'search.submit' | t }}</button>
+    </form>
+
+    {%- if search.performed -%}
+      <nk-facets data-section-id="{{ section.id }}" data-toolbar="{{ section.settings.toolbar_width }}" data-toolbar-sticky="{{ section.settings.toolbar_sticky }}" data-results-gap style="--results-gap:{{ section.settings.grid_gap | default: 8 }}px;" {% if section.settings.show_layout_switch == false %}data-layout-locked{% endif %}>
+        {% render 'facets',
+          results: search,
+          section_id: section.id,
+          results_url: results_url,
+          count: search.results_count,
+          terms: terms,
+          show_filters: section.settings.show_filters,
+          show_sort: section.settings.show_sort,
+          show_layout_switch: section.settings.show_layout_switch,
+          columns_mobile: section.settings.columns_mobile,
+          columns_desktop: section.settings.columns_desktop
+        %}
+
+        <div class="facets__results-grid" data-facets-results>
+          {%- if search.results_count == 0 -%}
+            <div class="cart-empty cart-empty--page">
+              <p class="cart-empty__title">{{ 'search.no_results' | t: terms: terms | escape }}</p>
+              <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'collection.shop_all' | t }}</a>
+            </div>
+          {%- else -%}
+            <nk-stagger>
+            <ul
+              class="product-grid"
+              role="list"
+              style="--nk-cols-mobile: {{ section.settings.columns_mobile }}; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
+            >
+              {%- for item in search.results -%}
+                <li data-stagger-item>
+                  {%- if item.object_type == 'product' -%}
+                    {%- assign eager = false -%}
+                    {%- if forloop.index <= 4 and paginate.current_page == 1 -%}{%- assign eager = true -%}{%- endif -%}
+                    {% render 'product-card', product: item, eager: eager, heading_tag: 'h2', card_options: section.settings %}
+                  {%- else -%}
+                    <article class="card search-card">
+                      {%- assign item_image = item.image | default: item.featured_image -%}
+                      {%- if item_image -%}
+                        <a class="card__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                          {{ item_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300, 450, 600', sizes: '(min-width: 750px) 25vw, 50vw', alt: '' }}
+                        </a>
+                      {%- endif -%}
+                      <p class="spec text-muted">
+                        {%- if item.object_type == 'article' -%}
+                          {{ 'search.type_article' | t }}
+                        {%- else -%}
+                          {{ 'search.type_page' | t }}
+                        {%- endif -%}
+                      </p>
+                      <h2 class="card__heading"><a class="card__title" href="{{ item.url }}">{{ item.title | escape }}</a></h2>
+                      {%- assign excerpt = item.excerpt | default: item.content | strip_html | truncatewords: 20 -%}
+                      {%- if excerpt != blank -%}<p class="text-muted">{{ excerpt }}</p>{%- endif -%}
+                    </article>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+            </nk-stagger>
+          {%- endif -%}
+
+          {% render 'infinite-pagination', paginate: paginate, section_id: section.id, mode: section.settings.pagination_style, auto_pages: section.settings.infinite_auto_pages, total: search.results_count %}
+        </div>
+      </nk-facets>
+    {%- endif -%}
+  </div>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "t:general.search",
+  "settings": [
+    {
+      "type": "select",
+      "id": "pagination_style",
+      "label": "Pagination",
+      "options": [
+        {
+          "value": "infinite",
+          "label": "Infinite scroll"
+        },
+        {
+          "value": "button",
+          "label": "Load more button"
+        },
+        {
+          "value": "numbers",
+          "label": "Page numbers"
+        }
+      ],
+      "default": "infinite"
+    },
+    {
+      "type": "range",
+      "id": "infinite_auto_pages",
+      "label": "Infinite scroll: pages before a button",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3,
+      "info": "After this many pages load automatically, a Load more button appears so the footer stays reachable."
+    },
+    {
+      "type": "range",
+      "id": "per_page",
+      "label": "Results per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "title_animation",
+      "label": "Title animation",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "rise",
+          "label": "Rise from a mask"
+        },
+        {
+          "value": "blur",
+          "label": "Blur in"
+        },
+        {
+          "value": "fold",
+          "label": "Fold up"
+        },
+        {
+          "value": "skew",
+          "label": "Skewed rise"
+        },
+        {
+          "value": "fade",
+          "label": "Fade up"
+        }
+      ],
+      "default": "rise",
+      "info": "Plays once when the page opens. Follows Theme settings > Motion and reduced-motion preferences."
+    },
+    {
+      "type": "select",
+      "id": "title_split",
+      "label": "Animate title by",
+      "options": [
+        {
+          "value": "words",
+          "label": "Word"
+        },
+        {
+          "value": "chars",
+          "label": "Letter"
+        },
+        {
+          "value": "lines",
+          "label": "Line"
+        }
+      ],
+      "default": "words"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on phones",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 3,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Show filters",
+      "default": true,
+      "info": "Filters apply to product results."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "Show sort",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "card_appearance",
+      "label": "Card appearance",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        },
+        {
+          "value": "editorial",
+          "label": "Editorial"
+        },
+        {
+          "value": "bordered",
+          "label": "Bordered"
+        },
+        {
+          "value": "image-led",
+          "label": "Image focused"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_ratio",
+      "label": "Image ratio",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (2:3)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "cover",
+          "label": "Fill"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_hover",
+      "label": "Alternate media",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "auto",
+          "label": "Video with image fallback"
+        },
+        {
+          "value": "image",
+          "label": "Second image only"
+        },
+        {
+          "value": "off",
+          "label": "Off"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_vendor",
+      "label": "Show vendor",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_price",
+      "label": "Show price",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_badges",
+      "label": "Show badges",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "card_sizes",
+      "label": "Show sizes",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme default"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_layout_switch",
+      "label": "Allow shoppers to change grid columns",
+      "default": true,
+      "info": "Off uses merchant columns and ignores previous shopper grid preferences."
+    },
+    {
+      "type": "select",
+      "id": "toolbar_width",
+      "label": "Filter toolbar width",
+      "options": [
+        {
+          "value": "full",
+          "label": "Full bleed"
+        },
+        {
+          "value": "contained",
+          "label": "Within content"
+        }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "checkbox",
+      "id": "toolbar_sticky",
+      "label": "Sticky filter toolbar",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Product column gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    }
+  ],
+  "enabled_on": {
+    "templates": [
+      "search"
+    ]
+  },
+  "limit": 1
+}
+{% endschema %}

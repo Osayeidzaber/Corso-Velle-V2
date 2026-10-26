@@ -1,0 +1,1700 @@
+/* Product page: layout, gallery, horizontal size picker & measurement panel, buy area, sticky buy bar. */
+.product-section {
+  width: 100%;
+  min-width: 0;
+  margin-inline: auto;
+}
+
+.product {
+  display: grid;
+  gap: 28px;
+}
+
+@media (min-width: 990px) {
+  .product {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4.5fr);
+    gap: clamp(40px, 5vw, 88px);
+    align-items: start;
+  }
+
+  .product__info {
+    position: sticky;
+    top: calc(var(--nk-header-h) + 24px);
+    padding-top: 8px;
+  }
+}
+
+.product__info {
+  display: grid;
+  gap: var(--product-info-gap, 20px);
+  align-content: start;
+}
+
+.product-section[data-sticky-info='false'] .product__info { position: static; }
+.product__media[data-ratio='portrait'] .gallery__slide { aspect-ratio: 4/5; }
+.product__media[data-ratio='landscape'] .gallery__slide { aspect-ratio: 4/3; }
+.product__media[data-fit='cover'] .gallery__slide :is(img, video) { object-fit: cover; }
+.product__media[data-backdrop='scheme'] :is(.gallery__slide, .gallery__slide img, .gallery__slide video) { background: var(--nk-color-surface); }
+@media (min-width: 990px) {
+  .product-section[data-proportions='balanced'] .product { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .product-section[data-proportions='content'] .product { grid-template-columns: minmax(0, 4.5fr) minmax(0, 7fr); }
+  .product-section[data-media-right='true'] .product__media { grid-column: 2; grid-row: 1; }
+  .product-section[data-media-right='true'] .product__info { grid-column: 1; grid-row: 1; }
+  .product-section[data-media-right='true'][data-proportions='media'] .product { grid-template-columns: minmax(0, 4.5fr) minmax(0, 7fr); }
+  .product-section[data-media-right='true'][data-proportions='content'] .product { grid-template-columns: minmax(0, 7fr) minmax(0, 4.5fr); }
+  .product__media:is([data-layout='stack'], [data-layout='grid']) .gallery__track { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: minmax(0, 1fr); overflow: visible; gap: 12px; }
+  .product__media[data-layout='grid'] .gallery__track { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .product__media[data-layout='grid'] .gallery__slide:first-child { grid-column: 1/-1; }
+}
+@media (max-width: 989px) { .product-section[data-text-first='true'] .product__info { order: -1; } }
+
+/* Breadcrumb & Header */
+.product__breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--nk-color-text-muted);
+  font-size: 0.6875rem;
+}
+
+.product__breadcrumb a {
+  color: var(--nk-color-text-muted);
+  text-decoration: none;
+  transition: color var(--nk-dur-instant);
+}
+
+@media (hover: hover) {
+  .product__breadcrumb a:hover {
+    color: var(--nk-color-text);
+  }
+}
+
+.product__breadcrumb [aria-current='page'] {
+  color: var(--nk-color-text);
+}
+
+.product__eyebrow-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.product__eyebrow {
+  margin: 0;
+}
+
+.product__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.product__title {
+  margin: 0;
+  font-size: calc(clamp(2rem, 4.2vw, 3.35rem) * var(--product-title-scale, 1));
+  line-height: 1.02;
+  text-wrap: balance;
+}
+h2.product__details-heading { font-size: 1.125rem; line-height: 1.3; margin-bottom: 8px; }
+
+
+.product__price-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--nk-color-line);
+}
+
+.product__price {
+  font-size: 1.25rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.price {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.price__saving {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+}
+
+/* Gallery & Thumbnails */
+nk-gallery {
+  display: block;
+  position: relative;
+}
+
+.gallery__stage {
+  display: grid;
+  gap: 12px;
+}
+
+.gallery__main {
+  min-width: 0;
+}
+
+.gallery__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gallery__track::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery__slide {
+  position: relative;
+  scroll-snap-align: start;
+  aspect-ratio: 1;
+  background: var(--nk-color-surface);
+  overflow: hidden;
+}
+
+.gallery__slide[data-zoom-src] > img {
+  cursor: zoom-in;
+}
+
+.gallery__slide img,
+.gallery__slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+}
+
+.gallery__zoom-trigger {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  background: color-mix(in oklab, var(--nk-color-bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in oklab, var(--nk-color-text) 16%, transparent);
+  color: var(--nk-color-text);
+  opacity: 0.85;
+  transition:
+    opacity var(--nk-dur-instant),
+    transform var(--nk-dur-instant);
+}
+
+@media (hover: hover) {
+  .gallery__zoom-trigger:hover {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+.gallery__thumbs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  order: 2;
+  padding-bottom: 2px;
+}
+
+.gallery__thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery__thumb {
+  position: relative;
+  flex: 0 0 60px;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  border: 1px solid var(--nk-color-line);
+  background: var(--nk-color-surface);
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0.62;
+  transition:
+    opacity var(--nk-dur-instant),
+    border-color var(--nk-dur-instant);
+}
+
+.gallery__thumb.is-active {
+  opacity: 1;
+  border-color: var(--nk-color-text);
+}
+
+@media (hover: hover) {
+  .gallery__thumb:hover {
+    opacity: 1;
+    border-color: var(--nk-color-text);
+  }
+}
+
+.gallery__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 10px;
+}
+
+.gallery__controls .icon-button {
+  border: 1px solid var(--nk-color-line);
+}
+
+.gallery__controls .icon-button:disabled {
+  opacity: 0.35;
+}
+
+/* A single large, uncropped image at every breakpoint; thumbnails remain a compact rail. */
+@media (min-width: 990px) {
+  .gallery__stage { grid-template-columns: minmax(0, 1fr); }
+  .gallery__thumbs { order: 2; flex-direction: row; position: static; overflow-x: auto; }
+  .gallery__thumb { flex: 0 0 64px; }
+}
+
+/* Lightbox Zoom Modal */
+.gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgba(16, 15, 14, 0.96);
+  color: #f5f2eb;
+  z-index: 100;
+}
+
+.gallery-lightbox[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.gallery-lightbox::backdrop {
+  background: rgba(16, 15, 14, 0.92);
+}
+
+.gallery-lightbox__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(245, 242, 235, 0.12);
+}
+
+.gallery-lightbox__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gallery-lightbox__actions .icon-button {
+  color: #f5f2eb;
+  border: 1px solid rgba(245, 242, 235, 0.22);
+}
+
+.gallery-lightbox__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+}
+
+.gallery-lightbox__img {
+  max-width: min(92vw, 1100px);
+  max-height: calc(100dvh - 120px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  cursor: zoom-in;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* zoom-pan.ts owns every gesture on the stage (pinch, pan, swipe), so the browser must not. */
+.gallery-lightbox__stage {
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+
+.gallery-lightbox__stage[data-zoomed] .gallery-lightbox__img {
+  cursor: grab;
+}
+
+.gallery-lightbox__stage[data-zoomed] .gallery-lightbox__img:active {
+  cursor: grabbing;
+}
+
+/* Color Sibling Swatches */
+.product__siblings {
+  display: grid;
+  gap: 10px;
+}
+
+.product__siblings-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.product__sibling {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 60px;
+  border: 1px solid var(--nk-color-line);
+  background: var(--nk-color-surface);
+  overflow: hidden;
+  text-decoration: none;
+  opacity: 0.72;
+  transition:
+    opacity var(--nk-dur-instant),
+    border-color var(--nk-dur-instant),
+    transform var(--nk-dur-instant);
+}
+
+.product__sibling.is-active {
+  opacity: 1;
+  border-color: var(--nk-color-text);
+}
+
+@media (hover: hover) {
+  .product__sibling:hover {
+    opacity: 1;
+    border-color: var(--nk-color-text);
+  }
+}
+
+.product__sibling.is-active {
+  box-shadow: 0 0 0 1px var(--nk-color-text);
+}
+
+.product__sibling img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Variant Picker & Horizontal Size Selector */
+.picker {
+  display: grid;
+  gap: 20px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.option {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.option__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.option__legend {
+  padding: 0;
+}
+
+.option__selected-label {
+  color: var(--nk-color-text);
+  font-weight: 600;
+}
+
+.option[data-incomplete] [data-selected-value] {
+  color: var(--nk-color-text-muted);
+  font-weight: 400;
+}
+
+.option__values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.option__value {
+  position: relative;
+}
+
+.option__value input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.option__value label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--nk-color-line);
+  border-radius: var(--nk-radius);
+  font-family: var(--nk-font-spec);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition:
+    background-color var(--nk-dur-instant),
+    color var(--nk-dur-instant),
+    border-color var(--nk-dur-instant);
+}
+
+.option__value input:checked + label {
+  border-color: var(--nk-color-text);
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+}
+
+.option__value input:focus-visible + label {
+  outline: 2px solid var(--nk-focus);
+  outline-offset: 2px;
+}
+
+.option__value--sold-out label,
+.option__value--missing label {
+  color: var(--nk-color-disabled);
+  text-decoration: line-through;
+}
+
+/* Horizontal Size Selector with Underline Indicator */
+.option__values--size {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0;
+  border: 1px solid var(--nk-color-line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.option__values--size::-webkit-scrollbar {
+  display: none;
+}
+
+.option__values--size .option__value {
+  flex: 1 0 0;
+  min-width: 52px;
+}
+
+.option__values--size .option__value label {
+  width: 100%;
+  min-width: 0;
+  min-height: 64px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--nk-color-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  transition:
+    color 200ms var(--nk-ease-out),
+    background-color 200ms var(--nk-ease-out);
+}
+
+@media (hover: hover) {
+  .option__values--size .option__value:hover input:enabled + label {
+    color: var(--nk-color-text);
+    background: color-mix(in oklab, var(--nk-color-surface) 60%, transparent);
+  }
+}
+
+/* The selected size turns semibold. A hidden semibold copy reserves that width up front, so
+   selecting never widens the pill, shifts its neighbours or makes the underline jump. */
+.option__values--size .option__label-text {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.option__values--size .option__label-text::after {
+  content: attr(data-text);
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: 600;
+  pointer-events: none;
+  user-select: none;
+}
+
+.option__values--size .option__value input:checked + label {
+  background: transparent;
+  color: var(--nk-color-accent);
+  font-weight: 600;
+}
+
+/* Keyboard focus sits inside the pill: the row scrolls sideways and would clip an outer ring. */
+.option__values--size .option__value input:focus-visible + label {
+  outline: 2px solid var(--nk-focus);
+  outline-offset: -4px;
+}
+
+/* Sold out / missing combinations: disabled radios (not selectable), muted, struck diagonally. */
+.option__values--size .option__value input:disabled {
+  cursor: not-allowed;
+}
+
+.option__values--size .option__value--sold-out label,
+.option__values--size .option__value--missing label {
+  position: relative;
+  color: var(--nk-color-disabled);
+  text-decoration: none;
+  background: transparent;
+  cursor: not-allowed;
+}
+
+.option__values--size .option__value--sold-out label::before,
+.option__values--size .option__value--missing label::before {
+  content: '';
+  position: absolute;
+  inset: 50% 18% auto;
+  height: 1px;
+  background: currentColor;
+  transform: rotate(-24deg);
+  pointer-events: none;
+}
+
+.option__values--size .option__value--missing label {
+  opacity: 0.6;
+}
+
+/* A sold-out size that is still the current selection (e.g. after a colour change) stays legible. */
+.option__values--size .option__value input:checked:disabled + label {
+  color: var(--nk-color-text-muted);
+  font-weight: 600;
+}
+
+/* Marks the selected size only; moved by JS when the selection changes, never on hover. */
+.option__underline {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  height: 2px;
+  width: var(--indicator-w, 0px);
+  background: var(--nk-color-accent);
+  transform: translate3d(var(--indicator-x, 0px), 0, 0);
+  transform-origin: left center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.option__underline[data-active] {
+  opacity: 1;
+}
+
+.option__underline[data-instant] {
+  transition: none;
+}
+
+.option__value--swatch label {
+  gap: 8px;
+}
+
+.option__swatch {
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--nk-color-line);
+  border-radius: 50%;
+  background: var(--swatch);
+  background-size: cover;
+}
+
+.size-guide-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--nk-color-text-muted);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  transition: color var(--nk-dur-instant);
+}
+
+@media (hover: hover) {
+  .size-guide-link:hover {
+    color: var(--nk-color-text);
+  }
+}
+
+/* Inventory Status */
+.inventory-note {
+  min-height: 0;
+}
+
+.inventory-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+}
+
+.inventory-status__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.inventory-status--in-stock {
+  color: var(--nk-color-text);
+}
+
+.inventory-status--in-stock .inventory-status__dot {
+  background: #2f7d4e;
+}
+
+.inventory-status--low {
+  color: #9e5a1b;
+}
+
+.inventory-status--low .inventory-status__dot {
+  background: #d97706;
+}
+
+.inventory-status--sold-out {
+  color: var(--nk-color-text-muted);
+}
+
+/* Buy Area */
+.product__info nk-product-form {
+  display: grid;
+  gap: 12px;
+}
+
+.product__quantity-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.buy {
+  display: grid;
+  gap: 10px;
+}
+
+.product__info .buy .button {
+  min-height: max(56px, var(--nk-button-height, 54px));
+}
+
+.buy__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.buy__submit-sep {
+  opacity: 0.5;
+}
+
+[data-product-section][data-picker-state='resolving'] .buy .button {
+  opacity: 0.75;
+  cursor: progress;
+}
+
+/* Product Specs & Accordions */
+.product__specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  background: var(--nk-color-surface);
+  border: 1px solid var(--nk-color-line);
+}
+
+.product__spec-item {
+  display: grid;
+  gap: 2px;
+}
+
+.product__spec-item dd {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.disclosure__content p {
+  max-width: 65ch;
+  text-wrap: pretty;
+}
+
+/* Size guide: right drawer on desktop, bottom sheet on phones */
+.drawer.size-guide-dialog {
+  width: min(100vw, 560px);
+}
+
+.size-guide-dialog__header {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 12px 18px 24px;
+  border-bottom: 1px solid var(--nk-color-line);
+}
+
+.size-guide-dialog__grip {
+  display: none;
+}
+
+.size-guide-dialog__titles {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.size-guide-dialog__eyebrow {
+  margin: 0;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--nk-color-text-muted);
+}
+
+.size-guide-dialog__title {
+  margin: 0;
+  font-family: var(--nk-font-heading);
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+  font-weight: 400;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.size-guide-dialog__title:focus {
+  outline: none;
+}
+
+.size-guide-dialog__close {
+  flex: none;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.size-guide__body {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  padding: 24px 24px calc(28px + env(safe-area-inset-bottom));
+}
+
+@media (max-width: 749px) {
+  .drawer.size-guide-dialog {
+    inset: auto 0 0 0;
+    width: 100%;
+    height: auto;
+    max-height: min(88dvh, 760px);
+    border-radius: 16px 16px 0 0;
+    translate: 0 100%;
+  }
+
+  .drawer.size-guide-dialog[open] {
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .drawer.size-guide-dialog[open] {
+      translate: 0 100%;
+    }
+  }
+
+  .size-guide-dialog__header {
+    padding: 26px 8px 14px 20px;
+    touch-action: none;
+    cursor: grab;
+  }
+
+  .size-guide-dialog__grip {
+    display: block;
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    width: 40px;
+    height: 4px;
+    margin-left: -20px;
+    border-radius: 2px;
+    background: var(--nk-color-line);
+  }
+
+  .size-guide__body {
+    padding: 18px 16px calc(24px + env(safe-area-inset-bottom));
+  }
+}
+
+nk-size-guide {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.size-chart__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+}
+
+.size-chart__basis {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--nk-color-text-muted);
+}
+
+.size-guide__units {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--nk-color-line);
+  border-radius: 999px;
+}
+
+.size-guide__unit {
+  min-width: 52px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--nk-color-text-muted);
+  font-family: var(--nk-font-spec);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 180ms var(--nk-ease-out),
+    color 180ms var(--nk-ease-out);
+}
+
+.size-guide__unit[aria-pressed='true'] {
+  background: var(--nk-color-accent);
+  color: var(--nk-color-accent-text);
+}
+
+.size-guide__unit:focus-visible {
+  outline: 2px solid var(--nk-focus);
+  outline-offset: 2px;
+}
+
+.size-table-wrap {
+  overflow: auto;
+  max-width: 100%;
+  border: 1px solid var(--nk-color-line);
+  overscroll-behavior-x: contain;
+}
+
+.size-table-wrap:focus-visible {
+  outline: 2px solid var(--nk-focus);
+  outline-offset: 2px;
+}
+
+.size-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--nk-font-spec);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.size-table th,
+.size-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--nk-color-line);
+  text-align: center;
+  white-space: nowrap;
+  background: var(--nk-color-bg);
+}
+
+.size-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.size-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--nk-color-surface);
+  color: var(--nk-color-text-muted);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.size-table__unit {
+  margin-inline-start: 4px;
+  text-transform: lowercase;
+  opacity: 0.7;
+}
+
+/* Size column stays pinned while measurements scroll sideways on narrow screens. */
+.size-table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  text-align: start;
+  border-right: 1px solid var(--nk-color-line);
+}
+
+.size-table thead th:first-child {
+  z-index: 2;
+}
+
+.size-table tbody th {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.size-table__tag {
+  display: none;
+  margin-inline-start: 8px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--nk-color-accent);
+  color: var(--nk-color-accent-text);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+
+.size-table tbody tr > * {
+  transition: background-color 160ms var(--nk-ease-out);
+}
+
+@media (hover: hover) {
+  .size-table tbody tr:hover > * {
+    background: color-mix(in oklab, var(--nk-color-surface) 70%, var(--nk-color-bg));
+  }
+}
+
+.size-table tr[data-current] > * {
+  background: var(--nk-color-surface);
+  color: var(--nk-color-text);
+}
+
+.size-table tr[data-current] th {
+  box-shadow: inset 3px 0 0 var(--nk-color-accent);
+}
+
+.size-table tr[data-current] .size-table__tag {
+  display: inline-block;
+}
+
+.size-chart__notes,
+.size-chart__fallback {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--nk-color-text-muted);
+}
+
+.size-chart__notes {
+  padding-top: 16px;
+  border-top: 1px solid var(--nk-color-line);
+}
+
+/* Mobile & Compact Sticky Add-to-Cart Bar */
+.sticky-buy {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 40;
+  background: color-mix(in oklab, var(--nk-color-bg) 94%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--nk-color-line);
+  padding: 10px var(--nk-gutter, 20px) calc(10px + env(safe-area-inset-bottom, 0px));
+  translate: 0 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    translate 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 240ms var(--nk-ease-out);
+}
+
+.sticky-buy[data-visible] {
+  translate: 0 0;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The bar leaves `hidden` and slides up in the same frame. */
+@starting-style {
+  .sticky-buy[data-visible] {
+    translate: 0 100%;
+    opacity: 0;
+  }
+}
+
+/* Theme setting "Phones and tablets": the desktop two-column layout keeps the button in view. */
+@media (min-width: 990px) {
+  .sticky-buy[data-scope='mobile'] {
+    display: none;
+  }
+}
+
+html[data-overlay-open] .sticky-buy {
+  translate: 0 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sticky-buy__inner {
+  width: var(--content-width);
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.sticky-buy__product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.sticky-buy__thumb {
+  width: 40px;
+  height: 50px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--nk-color-surface);
+}
+
+.sticky-buy__info {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.sticky-buy__title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sticky-buy__meta {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sticky-buy__cta {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option__underline,
+  .size-guide__unit,
+  .size-table tbody tr > *,
+  .sticky-buy,
+  .gallery-lightbox__img {
+    transition: none;
+  }
+}
+
+.product > *, .product__info { min-width: 0; }
+.gallery__slide iframe, .gallery__slide model-viewer { width: 100%; height: 100%; border: 0; }
+.measurement-panel__unit { min-width: 44px; min-height: 40px; }
+.size-guide-link { min-height: 44px; }
+.inventory-status { flex-wrap: wrap; }
+html.nk-locked .sticky-buy { display: none; }
+body { padding-bottom: var(--nk-bottom-offset, 0px); }
+html { scroll-padding-bottom: calc(var(--nk-bottom-offset, 0px) + 16px); }
+.quick-add { width: min(100%, 560px); }
+.quick-add .product { display: block; }
+.quick-add .product__info { position: static; }
+.quick-add .product-section { padding: 0; width: 100%; }
+.quick-add .product__breadcrumb { display: none; }
+.quick-add .product__title { font-size: clamp(1.7rem, 4vw, 2.4rem); }
+.quick-add .drawer__body { padding: 24px; }
+.quick-add [data-autofocus] { scroll-margin-top: 20px; }
+html.no-js nk-variant-picker { display: none; }
+@media (max-width: 480px) {
+  .sticky-buy__thumb { display: none; }
+  .sticky-buy__meta { flex-wrap: wrap; }
+  .sticky-buy__cta { padding-inline: 12px; max-width: 50%; }
+  .product__title { font-size: 2rem; }
+}
+
+.inventory-note:not(:has(.inventory-status)) { display: none; }
+
+/* One moving surface rather than separate flashing backgrounds on every size. */
+.option__values--size[data-glide-ready] { isolation: isolate; }
+.option__hover-glide {
+  position: absolute; left: 0; top: 0; bottom: 0; pointer-events: none; z-index: -1;
+  background: var(--nk-accent-subtle, var(--nk-color-surface));
+  opacity: 0;
+  transition: transform 300ms cubic-bezier(.22,1,.36,1), width 300ms cubic-bezier(.22,1,.36,1), opacity 140ms ease;
+}
+.option__hover-glide[data-active] { opacity: 1; }
+@media (hover: hover) {
+  .option__values--size[data-glide-ready] .option__value:hover input:enabled + label { background: transparent; }
+}
+@media (prefers-reduced-motion: reduce) { .option__hover-glide { transition: none; } }
+
+/* Promotion code note under the price (snippets/promotion). Never shows a computed price. */
+.promo-note {
+  flex-basis: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--nk-color-text-muted);
+}
+
+.promo-note__code {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  color: var(--nk-color-accent);
+  box-shadow: inset 0 0 0 1px currentColor;
+  letter-spacing: 0.08em;
+  user-select: all;
+}
+
+/* Variant price transition (components/product/price-transition.ts). The clip keeps the rolling
+   amounts inside the price line; the compare-at strike is a background line so it can draw. */
+.product__price {
+  position: relative;
+  clip-path: inset(-6px -40px -6px -6px);
+}
+
+.price-ghost {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.price-ghost .price {
+  width: 100%;
+}
+
+/* Media progress (product-media.liquid, gallery.ts): a hairline under the slider, or a sticky
+   vertical rail beside stacked photos on desktop. Purely positional, so no motion preference. */
+.gallery__main {
+  position: relative;
+}
+
+.gallery__progress {
+  --progress: 0;
+  padding-top: 10px;
+}
+
+.gallery__progress-rail {
+  position: relative;
+  height: 2px;
+  background: var(--nk-color-line);
+}
+
+.gallery__progress-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--nk-color-accent);
+  transform: scaleX(var(--progress));
+  transform-origin: left center;
+}
+
+.gallery__progress-count {
+  display: none;
+}
+
+@media (min-width: 990px) {
+  .product__media:is([data-layout='stack'], [data-layout='grid']) .gallery__progress[data-axis='y'] {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: -22px;
+    width: 2px;
+    padding: 0;
+  }
+
+  .product-section[data-media-right='true'] .product__media .gallery__progress[data-axis='y'] {
+    inset-inline: auto -22px;
+  }
+
+  .gallery__progress[data-axis='y'] .gallery__progress-rail {
+    position: sticky;
+    top: calc(var(--nk-header-h, 72px) + 32px);
+    width: 2px;
+    height: min(38vh, 320px);
+  }
+
+  .gallery__progress[data-axis='y'] .gallery__progress-fill {
+    transform: scaleY(var(--progress));
+    transform-origin: center top;
+  }
+
+  .gallery__progress[data-axis='y'] .gallery__progress-count {
+    display: block;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    translate: -50% 0;
+    writing-mode: vertical-rl;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    color: var(--nk-color-text-muted);
+    white-space: nowrap;
+  }
+}
+
+/* Model info line (snippets/model-info). */
+.product__model-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--nk-color-text-muted);
+}
+
+.product__model-info svg {
+  flex-shrink: 0;
+  color: var(--nk-color-accent);
+}
+
+/* Low stock: the dot breathes softly so the line is noticed without shouting. */
+.inventory-status--low .inventory-status__dot {
+  box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.45);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.nk-anim .inventory-status--low .inventory-status__dot {
+    animation: nk-stock-pulse 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+}
+
+@keyframes nk-stock-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.45); }
+  70% { box-shadow: 0 0 0 7px rgba(217, 119, 6, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
+}
+
+/* ------------------------------------------------------------------ Editorial collage gallery
+   data-layout="collage" (product-media.liquid). Desktop: every photo in a magazine rhythm —
+   one full-width frame, then a pair, repeating — beside the sticky product details. Phones: a
+   swipe slider that peeks the next photo. Frames keep the merchant's fit (contain by default, so
+   packshots on white are never cropped) and backdrop; the character comes from rhythm and motion. */
+
+.product__media[data-layout='collage'] .gallery__index {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  z-index: 2;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  color: color-mix(in oklab, var(--nk-color-text) 55%, transparent);
+  pointer-events: none;
+}
+
+/* Phones and tablets: slider with the next photo peeking in. */
+@media (max-width: 989px) {
+  .product__media[data-layout='collage'] .gallery__track {
+    grid-auto-columns: 88%;
+    gap: 8px;
+    scroll-padding-inline: 0;
+  }
+
+  .product__media[data-layout='collage'][data-media-count='1'] .gallery__track {
+    grid-auto-columns: 100%;
+  }
+
+  .product__media[data-layout='collage'] .gallery__thumbs {
+    display: none;
+  }
+}
+
+@media (min-width: 990px) {
+  .product__media[data-layout='collage'] .gallery__track {
+    grid-auto-flow: row dense;
+    grid-auto-columns: auto;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: clamp(8px, 0.9vw, 14px);
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  /* Rhythm: full · pair · full · pair … */
+  .product__media[data-layout='collage'] .gallery__slide {
+    grid-column: span 3;
+    aspect-ratio: 3 / 4;
+  }
+
+  .product__media[data-layout='collage'] .gallery__slide:nth-child(3n + 1) {
+    grid-column: 1 / -1;
+    aspect-ratio: 1 / 1;
+  }
+
+  .product__media[data-layout='collage'] .gallery__slide:first-child {
+    aspect-ratio: 4 / 5;
+  }
+
+  /* A pair with one photo missing becomes a full frame instead of an orphan half. */
+  .product__media[data-layout='collage'] .gallery__slide:nth-child(3n + 2):last-child {
+    grid-column: 1 / -1;
+    aspect-ratio: 1 / 1;
+  }
+
+  /* Video and 3D always get a full frame. */
+  .product__media[data-layout='collage'] .gallery__slide:is([data-media-type='video'], [data-media-type='external_video'], [data-media-type='model']) {
+    grid-column: 1 / -1;
+    aspect-ratio: 16 / 10;
+  }
+
+  /* Every photo is visible, so slider furniture steps aside (the progress rail stays). */
+  .product__media[data-layout='collage'] :is(.gallery__thumbs, .gallery__controls) {
+    display: none;
+  }
+
+  .product__media[data-layout='collage'] .gallery__progress[data-axis='y'] {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: -22px;
+    width: 2px;
+    padding: 0;
+  }
+
+  /* Quiet hover: the photo leans in, the zoom button wakes up. */
+  .product__media[data-layout='collage'] .gallery__slide > img {
+    transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .product__media[data-layout='collage'] .gallery__zoom-trigger {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  .product__media[data-layout='collage'] .gallery__slide:hover .gallery__zoom-trigger,
+  .product__media[data-layout='collage'] .gallery__zoom-trigger:focus-visible {
+    opacity: 0.9;
+    transform: none;
+  }
+}
+
+@media (min-width: 990px) and (hover: hover) {
+  .product__media[data-layout='collage'] .gallery__slide:hover > img {
+    transform: scale(1.035);
+  }
+}
+
+/* Scroll-linked motion (no JavaScript): each frame unveils as it enters, and photos drift a
+   little inside their frames. Only where supported, with motion allowed, on desktop. */
+@supports (animation-timeline: view()) {
+  @media (min-width: 990px) and (prefers-reduced-motion: no-preference) {
+    html.nk-anim .product__media[data-layout='collage'] .gallery__slide:not(:first-child) {
+      animation: nk-collage-unveil linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+
+    html.nk-anim .product__media[data-layout='collage'] .gallery__slide > img {
+      animation: nk-collage-drift linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+  }
+}
+
+/* First frame opens with a wipe on load, matching the logo's ink reveal. */
+@media (prefers-reduced-motion: no-preference) {
+  html.nk-anim .product__media[data-layout='collage'] .gallery__slide:first-child {
+    animation: nk-collage-open 1.1s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both;
+  }
+}
+
+@keyframes nk-collage-unveil {
+  from { clip-path: inset(14% 0 0 0); opacity: 0.2; }
+  to { clip-path: inset(0); opacity: 1; }
+}
+
+/* Slightly enlarged while drifting so the frame never shows an edge. */
+@keyframes nk-collage-drift {
+  from { translate: 0 -2.5%; scale: 1.06; }
+  to { translate: 0 2.5%; scale: 1.06; }
+}
+
+.product__media[data-layout='collage'][data-backdrop='white'] .gallery__slide {
+  background: #fff;
+}
+
+@keyframes nk-collage-open {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0); }
+}
+
+/* ---------------------------------------------------------------------- Slider gallery
+   data-layout="slider" (default): one large photo, a vertical thumbnail rail on desktop, thin
+   arrows and an index counter over the photo, a soft scale-and-fade between photos and
+   intentional click-to-enlarge. */
+
+/* Arrows + counter sit over the photo instead of in a row below it. */
+.product__media[data-layout='slider'] .gallery__controls {
+  position: absolute;
+  inset: 0 0 auto;
+  aspect-ratio: var(--gallery-ratio, 1 / 1);
+  padding: 0;
+  pointer-events: none;
+}
+
+.product__media[data-layout='slider'][data-ratio='portrait'] { --gallery-ratio: 4 / 5; }
+.product__media[data-layout='slider'][data-ratio='landscape'] { --gallery-ratio: 4 / 3; }
+
+.product__media[data-layout='slider'] .gallery__controls .icon-button {
+  position: absolute;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--nk-color-bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--nk-color-text);
+  box-shadow: 0 6px 20px -10px rgba(40, 25, 15, 0.45);
+  pointer-events: auto;
+  translate: 0 -50%;
+  transition: opacity 240ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1), background-color 240ms ease;
+}
+
+.product__media[data-layout='slider'] .gallery__controls .icon-button svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.4;
+}
+
+.product__media[data-layout='slider'] .gallery__controls [data-gallery-step='-1'] { left: 16px; }
+.product__media[data-layout='slider'] .gallery__controls [data-gallery-step='1'] { right: 16px; }
+
+.product__media[data-layout='slider'] .gallery__controls .icon-button:disabled {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+.product__media[data-layout='slider'] .gallery__controls [data-ref='counter'] {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  padding: 4px 10px;
+  background: color-mix(in oklab, var(--nk-color-bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Desktop: arrows appear on hover / focus; phones swipe, so only the counter shows. */
+@media (hover: hover) and (pointer: fine) {
+  .product__media[data-layout='slider'] .gallery__controls .icon-button {
+    opacity: 0;
+  }
+
+  .product__media[data-layout='slider'] .gallery__controls [data-gallery-step='-1'] { transform: translateX(-6px); }
+  .product__media[data-layout='slider'] .gallery__controls [data-gallery-step='1'] { transform: translateX(6px); }
+
+  .product__media[data-layout='slider'] .gallery__main:hover .gallery__controls .icon-button,
+  .product__media[data-layout='slider'] .gallery__controls .icon-button:focus-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .product__media[data-layout='slider'] .gallery__controls .icon-button:hover {
+    background: var(--nk-color-bg);
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .product__media[data-layout='slider'] .gallery__controls .icon-button {
+    display: none;
+  }
+}
+
+/* Soft scale-and-fade: the photo arriving settles in, the one leaving recedes. */
+.product__media[data-layout='slider'] .gallery__slide > :is(img, video) {
+  transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1), scale 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.nk-anim .product__media[data-layout='slider'][data-media-count]:not([data-media-count='1']) .gallery__slide:not([data-current]) > :is(img, video) {
+  opacity: 0.45;
+  scale: 1.035;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product__media[data-layout='slider'] .gallery__slide > :is(img, video) { transition: none; }
+}
+
+/* Desktop: vertical thumbnail rail beside the photo with a brown marker on the current one. */
+@media (min-width: 990px) {
+  .product__media[data-layout='slider'] .gallery__stage:has(.gallery__thumbs) {
+    grid-template-columns: 68px minmax(0, 1fr);
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .product__media[data-layout='slider'] .gallery__thumbs {
+    order: 0;
+    flex-direction: column;
+    gap: 10px;
+    /* Size containment: the rail never makes the row taller than the photo; it scrolls instead. */
+    contain: size;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding: 0 0 0 6px;
+  }
+
+  .product__media[data-layout='slider'] .gallery__thumb {
+    flex: 0 0 auto;
+    width: 100%;
+    border-color: transparent;
+    opacity: 0.5;
+    transition: opacity 240ms ease;
+  }
+
+  .product__media[data-layout='slider'] .gallery__thumb::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    z-index: 1;
+    width: 2px;
+    background: var(--nk-color-accent);
+    transform: scaleY(0);
+    transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .product__media[data-layout='slider'] .gallery__thumb.is-active {
+    opacity: 1;
+    border-color: transparent;
+  }
+
+  .product__media[data-layout='slider'] .gallery__thumb.is-active::before {
+    transform: scaleY(1);
+  }
+
+  .product__media[data-layout='slider'] .gallery__thumb:hover {
+    opacity: 0.85;
+    border-color: transparent;
+  }
+
+  .product__media[data-layout='slider'] .gallery__thumb.is-active:hover {
+    opacity: 1;
+  }
+}
+
+/* Keep the photograph clear; enlargement is an intentional action. */
+.product__media[data-layout='slider'] .gallery__slide[data-zoom-src] > img {
+  cursor: pointer;
+}
+
+.product__media[data-layout='slider'] .gallery__zoom-trigger {
+  top: 14px;
+  right: 14px;
+  bottom: auto;
+  width: 44px;
+  height: 44px;
+  border-color: var(--nk-color-line);
+  border-radius: 50%;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .product__media[data-layout='slider'] .gallery__zoom-trigger {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  .product__media[data-layout='slider'] .gallery__slide:hover .gallery__zoom-trigger,
+  .product__media[data-layout='slider'] .gallery__slide:focus-within .gallery__zoom-trigger {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product__media[data-layout='slider'] :is(.gallery__zoom-trigger, .gallery__thumb, .gallery__thumb::before),
+  .product__media[data-layout='slider'] .gallery__controls .icon-button {
+    transition: none;
+  }
+}
+
+/* No-JavaScript size/colour links (snippets/product-option-links): finger-sized, wrapping pills. */
+.option-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 0; padding: 0; list-style: none; }
+.option-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--nk-color-line);
+  color: inherit;
+  text-decoration: none;
+}

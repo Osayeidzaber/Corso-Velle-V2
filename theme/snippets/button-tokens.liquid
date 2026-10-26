@@ -1,0 +1,11 @@
+{%- doc -%}
+  CSS declarations for a complete button presentation. Used by global tokens and preview fixtures.
+  @param {string} [size] - compact, regular or large
+  @param {string} [corners] - inherit, square, soft or pill
+  @param {number} [fallback_radius] - Layout corner radius when corners is inherit
+  @example
+  {% render 'button-tokens', size: settings.button_size, corners: settings.button_corners, fallback_radius: settings.corner_radius %}
+{%- enddoc -%}
+--nk-button-radius: {% if corners == 'square' %}0px{% elsif corners == 'soft' %}8px{% elsif corners == 'pill' %}999px{% else %}{{ fallback_radius | default: 2 }}px{% endif %};
+--nk-button-height: {% if size == 'compact' %}44px{% elsif size == 'large' %}64px{% else %}54px{% endif %};
+--nk-button-padding: {% if size == 'compact' %}22px{% elsif size == 'large' %}42px{% else %}30px{% endif %};

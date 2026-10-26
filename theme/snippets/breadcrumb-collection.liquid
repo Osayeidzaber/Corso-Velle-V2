@@ -1,0 +1,27 @@
+{%- doc -%}
+  Outputs the handle of the collection a product breadcrumb should show: the collection in the URL
+  when the product was opened from one, otherwise its most specific collection (fewest products),
+  so catch-all collections such as "All products" lose to "Knit Polo". Ties keep Shopify's order.
+  Shared by the visible breadcrumb (main-product) and its BreadcrumbList (structured-data).
+
+  @param {object} product - The product
+
+  @example
+  {%- capture handle -%}{% render 'breadcrumb-collection', product: product %}{%- endcapture -%}
+{%- enddoc -%}
+{%- liquid
+  if collection != blank and collection.handle != 'all'
+    echo collection.handle
+  else
+    assign best = blank
+    for candidate in product.collections
+      if candidate.handle == 'all' or candidate.handle == 'frontpage'
+        continue
+      endif
+      if best == blank or candidate.all_products_count < best.all_products_count
+        assign best = candidate
+      endif
+    endfor
+    echo best.handle
+  endif
+-%}

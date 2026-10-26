@@ -1,0 +1,33 @@
+{%- doc -%}
+  Renders the <source> elements of a decorative or hover video so it doesn't always stream the
+  largest file. Liquid's `video.sources` lists only the HLS stream and the top MP4 (usually
+  1080p, ~7 Mbps); Shopify's CDN stores the lower MP4 renditions beside it under the same name
+  with another quality token (".HD-720p-4.5Mbps-", ".SD-480p-1.5Mbps-"). The lower rendition is
+  offered first. If it isn't there, the browser moves on to the next <source>, ending with the
+  original file, so a URL from any other host plays exactly as before.
+
+  @param {string} url - MP4 URL
+  @param {string} [hls] - HLS (m3u8) URL, offered first; browsers that stream it adapt the quality
+  @param {string} [rendition] - 'sd' (480p) or 'hd' (720p): the lower rendition to offer
+  @param {string} [media] - Media query that limits the lower rendition (blank: every screen)
+
+  @example
+  {% render 'video-sources', url: section.settings.video_url, rendition: 'hd', media: '(max-width: 749px)' %}
+{%- enddoc -%}
+{%- liquid
+  assign lower = blank
+  if rendition == 'sd'
+    if url contains '.HD-1080p-7.2Mbps-'
+      assign lower = url | replace: '.HD-1080p-7.2Mbps-', '.SD-480p-1.5Mbps-'
+    elsif url contains '.HD-720p-4.5Mbps-'
+      assign lower = url | replace: '.HD-720p-4.5Mbps-', '.SD-480p-1.5Mbps-'
+    endif
+  elsif rendition == 'hd'
+    if url contains '.HD-1080p-7.2Mbps-'
+      assign lower = url | replace: '.HD-1080p-7.2Mbps-', '.HD-720p-4.5Mbps-'
+    endif
+  endif
+-%}
+{%- if hls != blank -%}<source src="{{ hls | escape }}" type="application/x-mpegURL">{%- endif -%}
+{%- if lower != blank -%}<source src="{{ lower | escape }}" type="video/mp4"{% if media != blank %} media="{{ media }}"{% endif %}>{%- endif -%}
+<source src="{{ url | escape }}" type="video/mp4">

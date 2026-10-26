@@ -1,0 +1,260 @@
+{%- comment -%}
+  Page not found (templates/404.json). A full-height, centred empty state: an oversized "404"
+  fading out at the bottom, a short message tucked under it, and Go home / Explore buttons.
+  Search, popular links and a product row are optional extras below, off by default.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/404
+{%- endcomment -%}
+{%- liquid
+  assign numeral_font = settings.type_body_font | font_modify: 'weight', '800'
+  if numeral_font == blank
+    assign numeral_font = settings.type_body_font | font_modify: 'weight', 'bolder'
+  endif
+  assign products_source = section.settings.collection
+  if products_source == blank
+    assign products_source = collections.all
+  endif
+-%}
+{%- if numeral_font != blank -%}
+  <style>
+    {{ numeral_font | font_face: font_display: 'swap' }}
+  </style>
+{%- endif -%}
+
+<div class="not-found color-{{ section.settings.color_scheme }}" style="--not-found-font: {{ numeral_font.family | default: settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }}; --not-found-weight: {{ numeral_font.weight | default: 700 }};">
+  <div class="not-found__stage">
+    <div class="not-found__header">
+      <h1 class="not-found__title">
+        <span aria-hidden="true">404</span>
+        <span class="visually-hidden">{{ '404.title_accessible' | t }}</span>
+      </h1>
+      <p class="not-found__message">
+        {%- if section.settings.message != blank -%}
+          {{ section.settings.message | escape }}
+        {%- else -%}
+          {{ '404.not_found_line_1' | t }}<br>
+          {{ '404.not_found_line_2' | t }}
+        {%- endif -%}
+      </p>
+    </div>
+
+    <div class="not-found__actions">
+      <a class="button" href="{{ section.settings.primary_link | default: routes.root_url }}">
+        {% render 'icon', name: 'home', size: 16 %}
+        {%- if section.settings.primary_label != blank -%}{{ section.settings.primary_label | escape }}{%- else -%}{{ '404.home' | t }}{%- endif -%}
+      </a>
+      <a class="button button--secondary" href="{{ section.settings.secondary_link | default: routes.collections_url }}">
+        {% render 'icon', name: 'compass', size: 16 %}
+        {%- if section.settings.secondary_label != blank -%}{{ section.settings.secondary_label | escape }}{%- else -%}{{ '404.explore' | t }}{%- endif -%}
+      </a>
+    </div>
+
+    {%- if section.settings.show_search -%}
+      <form class="not-found__search search-page__form" action="{{ routes.search_url }}" method="get" role="search">
+        <label class="visually-hidden" for="NotFoundSearch-{{ section.id }}">{{ 'search.placeholder' | t }}</label>
+        <input type="search" id="NotFoundSearch-{{ section.id }}" name="q" placeholder="{{ 'search.placeholder' | t }}" enterkeyhint="search">
+        <input type="hidden" name="options[prefix]" value="last">
+        <button type="submit" class="button button--secondary">{{ 'search.submit' | t }}</button>
+      </form>
+    {%- endif -%}
+
+    {%- assign popular = section.settings.menu -%}
+    {%- if popular.links.size > 0 -%}
+      <nav class="not-found__links" aria-label="{{ popular.title | escape }}">
+        <ul class="collection-pills" role="list">
+          {%- for link in popular.links -%}
+            <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+  </div>
+
+  {%- if section.settings.show_products and products_source.products.size > 0 -%}
+    <div class="not-found__products">
+      <h2 class="not-found__products-heading spec">{{ section.settings.products_heading | escape }}</h2>
+      <ul class="product-grid" role="list" style="--nk-cols-mobile: 2; --nk-cols-desktop: {{ section.settings.products_count }};">
+        {%- for product in products_source.products limit: section.settings.products_count -%}
+          <li>{% render 'product-card', product: product, heading_tag: 'h3' %}</li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .not-found {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding-bottom: clamp(48px, 8vw, 96px);
+  }
+
+  /* Fills the screen below the header and centres the empty state in it. */
+  .not-found__stage {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 24px;
+    min-height: calc(100svh - var(--nk-header-h, 0px));
+    padding-block: 48px;
+    text-align: center;
+  }
+
+  .not-found__header {
+    display: grid;
+    justify-items: center;
+  }
+
+  .not-found__title {
+    margin: 0;
+    font-family: var(--not-found-font);
+    font-weight: var(--not-found-weight);
+    font-size: clamp(6.5rem, 22vw, 8rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    /* The numeral dissolves downwards into the message. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 20%, transparent 80%);
+    mask-image: linear-gradient(to bottom, #000 20%, transparent 80%);
+  }
+
+  .not-found__message {
+    position: relative;
+    max-width: 36ch;
+    margin: -2rem 0 0;
+    color: color-mix(in oklab, currentColor 80%, transparent);
+    text-wrap: balance;
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .not-found__actions .button {
+    min-height: 44px;
+    padding-inline: 18px;
+  }
+
+  .not-found__search {
+    flex-wrap: nowrap;
+    width: min(100%, 440px);
+    margin: 0;
+  }
+
+  /* No intrinsic input width, so the row can't push the page wider than a phone. */
+  .not-found__search input[type='search'] {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+  }
+
+  .not-found__search .button {
+    flex: none;
+  }
+
+  .not-found__links .collection-pills {
+    justify-content: center;
+  }
+
+  .not-found__products-heading {
+    margin: 0 0 16px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.404",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "message",
+      "label": "Message",
+      "info": "Leave empty to use the default translation."
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "First button label",
+      "info": "Defaults to \"Go home\"."
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "First button link",
+      "info": "Defaults to the homepage."
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "Second button label",
+      "info": "Defaults to \"Explore\"."
+    },
+    {
+      "type": "url",
+      "id": "secondary_link",
+      "label": "Second button link",
+      "info": "Defaults to the collections list."
+    },
+    {
+      "type": "header",
+      "content": "Extras"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search",
+      "default": false
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Popular links menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_products",
+      "label": "Show products",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "products_heading",
+      "label": "Products heading",
+      "default": "You might like"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Products collection",
+      "info": "Defaults to all products."
+    },
+    {
+      "type": "range",
+      "id": "products_count",
+      "label": "Number of products",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    }
+  ],
+  "limit": 1,
+  "enabled_on": {
+    "templates": [
+      "404"
+    ]
+  }
+}
+{% endschema %}

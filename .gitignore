@@ -1,0 +1,39 @@
+# Dependencies and build output
+node_modules/
+.build/
+
+# Shopify CLI
+.shopify/
+
+# Release packages (npm run package)
+release/
+*.zip
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Logs and test output
+*.log
+npm-debug.log*
+coverage/
+playwright-report/
+test-results/
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+._*
+Thumbs.db
+ehthumbs.db
+
+# Local tooling and private working notes (keep these outside the repository when possible)
+.claude/
+.codex/
+.local-dev/
+.audit-*/

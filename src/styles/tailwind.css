@@ -1,0 +1,31 @@
+/*
+ * Tailwind v4 — theme tokens + utilities only (no preflight: base.css is the reset).
+ * Tokens map to the theme's CSS variables, so utilities follow the merchant's colour schemes
+ * and fonts (e.g. bg-surface, text-muted, font-serif all change with settings).
+ * Classes are discovered in the Liquid files under theme/.
+ */
+@import 'tailwindcss/theme.css' layer(theme);
+/* important: utilities sit in a cascade layer, which would otherwise lose to every unlayered theme rule. */
+@import 'tailwindcss/utilities.css' layer(utilities) important;
+
+@source '../../theme/**/*.liquid';
+@source '../**/*.ts';
+
+@theme inline {
+  --color-bg: var(--nk-color-bg);
+  --color-surface: var(--nk-color-surface);
+  --color-ink: var(--nk-color-text);
+  --color-muted: var(--nk-color-text-muted);
+  --color-line: var(--nk-color-line);
+  --color-accent: var(--nk-color-accent);
+  --color-on-accent: var(--nk-color-accent-text);
+  --color-accent-hover: var(--nk-accent-hover);
+  --color-accent-active: var(--nk-accent-active);
+  --color-accent-subtle: var(--nk-accent-subtle);
+  --color-accent-selected: var(--nk-accent-selected);
+  --color-accent-border: var(--nk-accent-border);
+  --font-serif: var(--nk-font-heading);
+  --font-sans: var(--nk-font-body);
+  --font-label: var(--nk-font-spec);
+  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+}

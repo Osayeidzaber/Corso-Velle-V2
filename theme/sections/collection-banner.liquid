@@ -1,0 +1,618 @@
+{%- comment -%}
+  Collection banner & editorial header:
+  - When the collection has a banner image (or `use_product_image` is enabled), renders a
+    full-bleed parallax hero banner (<nk-parallax>).
+  - Without a banner image, renders a text header: breadcrumbs, title, item count, optional
+    description and a horizontal collection switcher.
+{%- endcomment -%}
+{%- liquid
+  assign image = section.settings.image | default: collection.image
+  if image == blank and section.settings.use_product_image
+    assign image = collection.featured_image
+  endif
+  if section.settings.layout == 'text' or section.settings.layout == 'minimal'
+    assign image = nil
+  endif
+  assign collection_title = section.settings.heading | default: collection.title | escape
+  assign heading_tag = 'h2'
+  if section.index == 1
+    assign heading_tag = 'h1'
+  endif
+  assign related = section.settings.menu
+  assign image_loading = 'lazy'
+  assign image_priority = 'auto'
+  if section.index == 1
+    assign image_loading = 'eager'
+    assign image_priority = 'high'
+  endif
+-%}
+<div class="collection-banner full-width color-{{ section.settings.color_scheme }}{% if image %} collection-banner--image{% else %} collection-banner--editorial{% endif %}" data-layout="{{ section.settings.layout }}" data-height="{{ section.settings.height }}" data-phone-height="{{ section.settings.height_mobile }}" data-image-colors="{{ section.settings.image_colors }}" style="--banner-tint:{{ section.settings.tint_strength | default: 100 | divided_by: 100.0 }};">
+  {%- if image -%}
+    <nk-parallax class="collection-banner__media" strength="{{ section.settings.parallax | default: 12 }}">
+      <div class="collection-banner__media-inner" data-parallax-media>
+        {%- assign alt = image.alt | default: collection.title | escape -%}
+        {{ image | image_url: width: 2400 | image_tag: loading: image_loading, fetchpriority: image_priority, widths: '750, 1100, 1500, 1920, 2400', sizes: '100vw', alt: alt }}
+      </div>
+    </nk-parallax>
+    <span class="collection-banner__scrim" aria-hidden="true"></span>
+  {%- endif -%}
+
+  <div class="collection-banner__content">
+    {% if section.settings.show_breadcrumbs != false %}<nk-reveal entrance="rise" duration="0.65">
+      <nav class="collection-banner__breadcrumbs spec" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a>
+        <span aria-hidden="true">/</span>
+        <a href="{{ routes.collections_url }}">{{ 'collections.title' | t }}</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ collection.title | escape }}</span>
+      </nav>
+    </nk-reveal>{% render 'breadcrumb-schema', collection: collection %}{% endif %}
+
+    <div class="collection-banner__heading-row">
+      {% render 'reveal-heading',
+        text: collection_title,
+        entrance: section.settings.title_animation,
+        split: section.settings.title_split,
+        class: 'collection-banner__title display',
+        tag: heading_tag,
+        play_on_load: true
+      %}
+      {% if section.settings.show_count != false %}<nk-reveal entrance="rise" delay="0.16" duration="0.7">
+        <span class="collection-banner__count spec">
+          {{- 'collection.product_count' | t: count: collection.all_products_count -}}
+        </span>
+      </nk-reveal>{% endif %}
+    </div>
+
+    {%- if section.settings.show_description and collection.description != blank and section.settings.layout != 'minimal' -%}
+      <nk-reveal entrance="rise" delay="0.22" duration="0.75">
+        <div class="collection-banner__description rte">{{ collection.description }}</div>
+      </nk-reveal>
+    {%- endif -%}
+
+    {% unless section.settings.navigation == 'none' %}
+    {%- if related != blank and related.links.size > 0 -%}
+      <nk-reveal entrance="rise" delay="0.28" duration="0.75">
+        <nk-category-rail><nav class="collection-banner__nav" aria-label="{{ 'collection.categories' | t }}" data-lenis-prevent>
+          <button type="button" class="icon-button" data-category-step="-1" aria-label="{{ 'collection.previous_categories' | t }}" hidden>←</button>
+          <ul role="list">
+            {%- for link in related.links -%}
+              <li>
+                <a class="collection-banner__pill" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>
+                  <span>{{ link.title | escape }}</span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+          <button type="button" class="icon-button" data-category-step="1" aria-label="{{ 'collection.next_categories' | t }}" hidden>→</button>
+        </nav></nk-category-rail>
+      </nk-reveal>
+    {%- elsif collections.size > 1 and section.settings.navigation != 'menu' -%}
+      <nk-reveal entrance="rise" delay="0.28" duration="0.75">
+        <nk-category-rail><nav class="collection-banner__nav" aria-label="{{ 'collection.categories' | t }}" data-lenis-prevent>
+          <button type="button" class="icon-button" data-category-step="-1" aria-label="{{ 'collection.previous_categories' | t }}" hidden>←</button>
+          <ul role="list">
+            <li>
+              <a
+                class="collection-banner__pill"
+                href="{{ routes.all_products_collection_url }}"
+                {% if collection.handle == 'all' %}aria-current="page"{% endif %}
+              >
+                <span>{{ 'collection.view_all' | t }}</span>
+              </a>
+            </li>
+            {%- assign current_key = collection.title | handleize -%}
+            {%- if collection.handle != 'all' and collection.all_products_count > 0 -%}
+              <li><a class="collection-banner__pill" href="{{ collection.url }}" aria-current="page"><span>{{ collection.title | escape }}</span><span class="collection-banner__pill-count">({{ collection.all_products_count }})</span></a></li>
+            {%- endif -%}
+            {%- for item in collections -%}
+              {%- capture item_eligible -%}{%- render 'collection-navigation-eligible', candidate: item -%}{%- endcapture -%}
+              {%- assign item_key = item.title | handleize -%}
+              {%- if item_eligible == 'true' and item_key != current_key -%}
+                <li>
+                  <a
+                    class="collection-banner__pill"
+                    href="{{ item.url }}"
+                    {% if item.handle == collection.handle %}aria-current="page"{% endif %}
+                  >
+                    <span>{{ item.title | escape }}</span>
+                    <span class="collection-banner__pill-count">({{ item.all_products_count }})</span>
+                  </a>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+          <button type="button" class="icon-button" data-category-step="1" aria-label="{{ 'collection.next_categories' | t }}" hidden>→</button>
+        </nav></nk-category-rail>
+      </nk-reveal>
+    {%- endif -%}
+    {% endunless %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .collection-banner--image[data-height='compact'] { min-height: clamp(240px, 36svh, 400px); }
+  .collection-banner--image[data-height='full'] { min-height: 85svh; }
+  .collection-banner--image[data-image-colors='scheme'] { color: var(--nk-color-text); }
+  .collection-banner--image[data-image-colors='scheme'] :is(.collection-banner__breadcrumbs, .collection-banner__description, .collection-banner__breadcrumbs [aria-current='page']) { color: inherit; }
+  .collection-banner--image[data-image-colors='scheme'] .collection-banner__pill { border-color: var(--nk-color-line); }
+  .collection-banner--image[data-image-colors='scheme'] .collection-banner__pill[aria-current='page'] { background: var(--nk-color-text); color: var(--nk-color-bg); }
+  .collection-banner[data-layout='minimal'] .collection-banner__title { font-size: clamp(2rem, 4vw, 3rem); }
+  @media (max-width: 749px) {
+    .collection-banner--image[data-phone-height='compact'] { min-height: 320px; }
+    .collection-banner--image[data-phone-height='full'] { min-height: 80svh; }
+  }
+  .collection-banner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--nk-color-bg);
+    color: var(--nk-color-text);
+  }
+
+  .collection-banner--editorial {
+    min-height: auto;
+  }
+
+  .collection-banner--image {
+    min-height: clamp(360px, 54svh, 640px);
+    color: #faf8f5;
+  }
+
+  .collection-banner__media,
+  .collection-banner__scrim,
+  .collection-banner__content {
+    grid-area: 1 / 1;
+  }
+
+  .collection-banner__media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    z-index: -2;
+  }
+
+  .collection-banner__media-inner {
+    position: absolute;
+    inset: 0;
+  }
+
+  .collection-banner__media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .collection-banner__scrim {
+    z-index: -1;
+    background: linear-gradient(to top, rgb(16 14 12 / calc(.76 * var(--banner-tint, 1))), rgb(16 14 12 / calc(.18 * var(--banner-tint, 1))) 58%, rgb(16 14 12 / calc(.34 * var(--banner-tint, 1))));
+  }
+
+  .collection-banner__content {
+    display: flex;
+    min-width: 0;
+    max-width: calc(100% - var(--nk-gutter) * 2);
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 14px;
+    width: var(--content-width);
+    margin-inline: auto;
+    padding: clamp(28px, 4.5vw, 56px) 0 clamp(24px, 3.5vw, 40px);
+  }
+
+  .collection-banner--image .collection-banner__content {
+    padding: clamp(64px, 9vw, 112px) 0 clamp(32px, 5vw, 56px);
+  }
+
+  .collection-banner__breadcrumbs {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.625rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--nk-color-text-muted);
+  }
+
+  .collection-banner--image .collection-banner__breadcrumbs {
+    color: rgb(250 248 245 / 0.72);
+  }
+
+  .collection-banner__breadcrumbs a {
+    /* 10px text: extend the hit area to ~34px tall without changing the trail's layout. */
+    display: inline-block;
+    padding-block: 12px;
+    margin-block: -12px;
+    color: inherit;
+    text-decoration: none;
+    transition: color 200ms var(--nk-ease-out);
+  }
+
+  @media (hover: hover) {
+    .collection-banner__breadcrumbs a:hover {
+        color: var(--nk-color-text);
+      }
+  }
+
+  @media (hover: hover) {
+    .collection-banner--image .collection-banner__breadcrumbs a:hover {
+        color: #faf8f5;
+      }
+  }
+
+  .collection-banner__breadcrumbs [aria-current='page'] {
+    color: var(--nk-color-text);
+  }
+
+  .collection-banner--image .collection-banner__breadcrumbs [aria-current='page'] {
+    color: #faf8f5;
+  }
+
+  .collection-banner__heading-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px 18px;
+  }
+
+  .collection-banner__title {
+    margin: 0;
+    font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+    overflow-wrap: anywhere;
+  }
+
+  .collection-banner__count {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border: 1px solid color-mix(in oklab, currentColor 18%, transparent);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.78;
+  }
+
+  .collection-banner__description {
+    max-width: 60ch;
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--nk-color-text-muted);
+  }
+
+  .collection-banner--image .collection-banner__description {
+    color: rgb(250 248 245 / 0.86);
+  }
+
+  .collection-banner__description p {
+    margin: 0;
+  }
+
+  .collection-banner__nav {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  nk-category-rail { display: block; min-width: 0; }
+  .collection-banner__nav > button { flex: 0 0 44px; border: 1px solid currentColor; }
+
+  .collection-banner__nav ul {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0 0 4px;
+    list-style: none;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: currentColor transparent;
+  }
+
+  .collection-banner__nav ul::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .collection-banner__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--nk-color-line);
+    background: transparent;
+    color: inherit;
+    font-family: var(--nk-font-spec);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .collection-banner--image .collection-banner__pill {
+    border-color: rgb(250 248 245 / 0.28);
+  }
+
+  @media (hover: hover) {
+    .collection-banner__pill:hover {
+        border-color: currentColor;
+      }
+  }
+
+  .collection-banner__pill[aria-current='page'] {
+    background: var(--nk-color-text);
+    border-color: var(--nk-color-text);
+    color: var(--nk-color-bg);
+  }
+
+  .collection-banner--image .collection-banner__pill[aria-current='page'] {
+    background: #faf8f5;
+    border-color: #faf8f5;
+    color: #14110e;
+  }
+
+  .collection-banner__pill-count {
+    font-size: 0.625rem;
+    opacity: 0.65;
+    font-variant-numeric: tabular-nums;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collection banner",
+  "class": "collection-banner-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show collection description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "use_product_image",
+      "label": "Use the first product image when the collection has no image",
+      "default": false
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Related collections menu",
+      "info": "Optional row of links under the title. Falls back to store collections when blank."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner image override"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading override"
+    },
+    {
+      "type": "select",
+      "id": "title_animation",
+      "label": "Title animation",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "rise",
+          "label": "Rise from a mask"
+        },
+        {
+          "value": "blur",
+          "label": "Blur in"
+        },
+        {
+          "value": "fold",
+          "label": "Fold up"
+        },
+        {
+          "value": "skew",
+          "label": "Skewed rise"
+        },
+        {
+          "value": "fade",
+          "label": "Fade up"
+        }
+      ],
+      "default": "rise",
+      "info": "Plays once when the page opens. Follows Theme settings > Motion and reduced-motion preferences."
+    },
+    {
+      "type": "select",
+      "id": "title_split",
+      "label": "Animate title by",
+      "options": [
+        {
+          "value": "words",
+          "label": "Word"
+        },
+        {
+          "value": "chars",
+          "label": "Letter"
+        },
+        {
+          "value": "lines",
+          "label": "Line"
+        }
+      ],
+      "default": "words"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Banner layout",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Image when available"
+        },
+        {
+          "value": "text",
+          "label": "Text only"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal title"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Image banner height",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Regular"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "full",
+          "label": "Tall"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "select",
+      "id": "height_mobile",
+      "label": "Image height on phones",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use desktop choice"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "full",
+          "label": "Tall"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "image_colors",
+      "label": "Text over image",
+      "options": [
+        {
+          "value": "light",
+          "label": "Original light text"
+        },
+        {
+          "value": "scheme",
+          "label": "Use section scheme"
+        }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "range",
+      "id": "tint_strength",
+      "label": "Image tint strength",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "parallax",
+      "label": "Image drift",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 12,
+      "unit": "%"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "Show breadcrumbs",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Show count",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "navigation",
+      "label": "Collection navigation",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Menu or store collections"
+        },
+        {
+          "value": "menu",
+          "label": "Selected menu only"
+        },
+        {
+          "value": "none",
+          "label": "Hidden"
+        }
+      ],
+      "default": "auto"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection banner"
+    },
+    {
+      "name": "Minimal collection title",
+      "settings": {
+        "layout": "minimal",
+        "navigation": "none",
+        "show_breadcrumbs": false,
+        "show_count": false
+      }
+    }
+  ],
+  "enabled_on": {
+    "templates": [
+      "collection"
+    ]
+  }
+}
+{% endschema %}

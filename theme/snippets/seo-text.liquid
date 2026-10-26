@@ -1,0 +1,7 @@
+{%- doc -%}
+  Plain text for metadata and structured data. Preserve word boundaries from rich text and
+  collapse whitespace. The caller must escape the result for HTML or encode it as JSON.
+
+  @param {string} text - Merchant content, optionally HTML
+{%- enddoc -%}
+{{- text | newline_to_br | replace: '<br', ' <br' | replace: '</p', ' </p' | replace: '</li', ' </li' | replace: '</h', ' </h' | replace: '</div', ' </div' | replace: '</td', ' </td' | strip_html | replace: '&nbsp;', ' ' | replace: '&#160;', ' ' | split: ' ' | join: ' ' | strip -}}

@@ -1,0 +1,328 @@
+{%- doc -%}
+  Product card, shared by collection grids, featured sections, search and
+  recommendations. Media and title are separate links (no interactive content nested in a link).
+  Standard cards show video on hover when present, otherwise a distinct second photograph.
+  Size summary comes from option values; available sizes can be quick-added directly to the cart,
+  and unavailable values are struck through and named.
+
+  @param {object} product - The product
+  @param {boolean} [eager] - Load the first image eagerly (first row only)
+  @param {string} [sizes] - The image sizes attribute
+  @param {string} [heading_tag] - h2/h3 (default h3)
+  @param {boolean} [actions] - Render size and quick-add controls (default true; false for browse-only carousels)
+  @param {object} [card_options] - Section settings with card_appearance/ratio/fit/hover and show/hide/inherit visibility choices
+
+  @example
+  {% render 'product-card', product: product, eager: forloop.index <= 4 %}
+{%- enddoc -%}
+{%- liquid
+  assign heading_tag = heading_tag | default: 'h3'
+  # Explicit rail/editorial sizes win. Otherwise match the configured grid instead of assuming
+  # two mobile columns: a one-column card needs a full-width source to stay sharp.
+  if sizes == blank
+    assign desktop_columns = card_options.columns_desktop | default: 3 | at_least: 1
+    assign mobile_columns = card_options.columns_mobile | default: 1 | at_least: 1
+    assign desktop_width = 100.0 | divided_by: desktop_columns
+    assign mobile_width = 100.0 | divided_by: mobile_columns
+    capture sizes
+      echo '(min-width: 750px) '
+      echo desktop_width
+      echo 'vw, '
+      echo mobile_width
+      echo 'vw'
+    endcapture
+  endif
+  assign loading = 'lazy'
+  assign appearance = card_options.card_appearance | default: 'inherit'
+  if appearance == 'inherit'
+    assign appearance = settings.card_appearance | default: 'minimal'
+  endif
+  assign hover = card_options.card_hover | default: 'inherit'
+  if hover == 'inherit'
+    assign hover = settings.card_hover | default: 'auto'
+  endif
+  assign secondary = settings.card_show_secondary
+  if hover == 'off'
+    assign secondary = false
+  elsif card_options.card_hover != blank and card_options.card_hover != 'inherit'
+    assign secondary = true
+  endif
+  assign show_badges = settings.card_show_badges
+  assign show_sizes = settings.card_show_sizes
+  assign show_vendor = settings.card_show_vendor
+  assign show_price = true
+  if settings.card_show_price == false
+    assign show_price = false
+  endif
+  if card_options.card_badges == 'show'
+    assign show_badges = true
+  elsif card_options.card_badges == 'hide'
+    assign show_badges = false
+  endif
+  if card_options.card_sizes == 'show'
+    assign show_sizes = true
+  elsif card_options.card_sizes == 'hide'
+    assign show_sizes = false
+  endif
+  if card_options.card_vendor == 'show'
+    assign show_vendor = true
+  elsif card_options.card_vendor == 'hide'
+    assign show_vendor = false
+  endif
+  if card_options.card_price == 'show'
+    assign show_price = true
+  elsif card_options.card_price == 'hide'
+    assign show_price = false
+  endif
+  if eager
+    assign loading = 'eager'
+  endif
+  assign first_media = product.featured_media
+  # The image link is aria-hidden (the title link is the accessible one), so this alt is read by
+  # search engines and image search, not screen readers.
+  assign card_image_alt = first_media.alt | default: product.title
+  assign hover_video = product.media | where: 'media_type', 'video' | first
+  assign second_media = nil
+  for m in product.media
+    if m.media_type == 'image' and m.id != first_media.id
+      assign second_media = m
+      break
+    endif
+  endfor
+  assign sold_out = false
+  unless product.available
+    assign sold_out = true
+  endunless
+  assign has_video = false
+  if hover_video != blank and sold_out == false and secondary and hover == 'auto'
+    assign has_video = true
+  endif
+  if has_video
+    assign secondary = false
+  endif
+  assign on_sale = false
+  if product.compare_at_price_min > product.price_max
+    assign on_sale = true
+  endif
+  assign color_option = nil
+  for option in product.options_with_values
+    assign opt_down = option.name | downcase | strip
+    if opt_down contains 'color' or opt_down contains 'colour'
+      if option.values.size > 1
+        assign color_option = option
+      endif
+      break
+    endif
+  endfor
+-%}
+<article
+  class="card{% if sold_out %} card--sold-out{% endif %}{% if has_video %} card--has-video{% endif %}"
+  data-product-card
+  data-hover-animation="{{ card_options.card_hover_animation | default: settings.card_hover_animation | default: 'blur' }}"
+  data-appearance="{{ appearance }}"
+  style="{% render 'card-presentation', options: card_options %}"
+  data-product-url="{{ product.url }}"
+>
+  <div class="card__media-wrap card__figure">
+    <a
+      class="card__media{% if has_video %} card__media--has-video{% endif %}{% if second_media and secondary %} card__media--has-second{% endif %}"
+      href="{{ product.url }}"
+      data-card-link
+      tabindex="-1"
+      aria-hidden="true"
+      {% unless sold_out %}data-cursor="view"{% endunless %}
+    >
+      {%- if first_media -%}
+        {{
+          first_media.preview_image
+          | image_url: width: 900
+          | image_tag:
+            loading: loading,
+            widths: '180, 270, 360, 450, 540, 720, 900',
+            sizes: sizes,
+            alt: card_image_alt,
+            data-card-primary-img: ''
+        }}
+        {%- if has_video -%}
+          {%- liquid
+            # video_tag and video.sources offer only the largest MP4 (1080p, ~7 Mbps), far too
+            # heavy for a card hover: the photo sat there while it buffered. video-sources offers
+            # Shopify's 480p rendition first and falls back to this file.
+            assign hover_source = hover_video.sources | where: 'format', 'mp4' | first
+          -%}
+          {%- if hover_source != blank -%}
+            {%- comment -%}
+              The primary photo stays visible until card-interactions receives a real video frame.
+              A hidden video poster would download immediately, even on phones with no hover.
+            {%- endcomment -%}
+            <video
+              class="card__video"
+              data-card-video              muted
+              loop
+              playsinline
+              disablepictureinpicture
+              preload="none"
+            >
+              {% render 'video-sources', url: hover_source.url, rendition: 'sd' %}
+            </video>
+          {%- else -%}
+            {{
+              hover_video
+              | video_tag:
+                muted: true,
+                loop: true,
+                playsinline: true,
+                controls: false,
+                preload: 'none',
+                image_size: '720x',
+                class: 'card__video',
+                data-card-video: ''
+            }}
+          {%- endif -%}
+        {%- endif -%}
+        {%- if secondary and second_media -%}
+          {{
+            second_media
+            | image_url: width: 900
+            | image_tag: loading: 'lazy', widths: '360, 540, 720, 900', sizes: sizes, alt: '', class: 'card__secondary'
+          }}
+        {%- endif -%}
+      {%- else -%}
+        <span class="card__placeholder spec text-muted">{{ 'product.no_image' | t }}</span>
+      {%- endif -%}
+      {%- if show_badges -%}
+        <span class="card__badges">
+          {%- if sold_out -%}
+            <span class="badge badge--sold-out"><span class="badge__dot" aria-hidden="true"></span>{{ 'product.sold_out' | t }}</span>
+          {%- else -%}
+            {%- if on_sale -%}
+              <span class="badge badge--sale">{{ 'product.sale' | t }}</span>
+            {%- endif -%}
+            {% render 'promotion', product: product, view: 'card' %}
+          {%- endif -%}
+        </span>
+      {%- endif -%}
+      {%- if sold_out -%}
+        <span class="card__sold-out-veil" aria-hidden="true">
+          <span class="card__sold-out-banner">{{ 'product.sold_out' | t }}</span>
+        </span>
+      {%- endif -%}
+    </a>
+
+    {%- capture card_controls -%}
+    {%- comment -%} Size actions live below product information, never over photography. {%- endcomment -%}
+    {%- assign rendered_tray = false -%}
+    {%- if show_sizes and sold_out == false and product.options.size == 1 and product.requires_selling_plan == false -%}
+      {%- for option in product.options_with_values -%}
+        {%- capture tray_size -%}{%- render 'size-option', name: option.name -%}{%- endcapture -%}
+        {%- if tray_size == 'true' -%}
+          {%- assign rendered_tray = true -%}
+          <div class="card__tray" role="group" aria-label="{{ 'product.sizes_label' | t }}">
+            <span class="card__tray-label">{{ 'product.sizes_label' | t }}</span>
+            <div class="card__tray-values">
+              {%- for value in option.values -%}
+                {%- liquid
+                  assign first_avail = value.variant
+                  unless first_avail.available
+                    assign first_avail = nil
+                  endunless
+                  assign is_avail = false
+                  if first_avail != blank or value.available
+                    assign is_avail = true
+                  endif
+                -%}
+                {%- if is_avail and first_avail != blank -%}
+                  <button
+                    type="button"
+                    class="card__tray-pill card__tray-pill--action"
+                    data-quick-add="{{ first_avail.id }}"
+                    data-quick-add-quantity="{{ first_avail.quantity_rule.min | default: 1 }}"
+                    aria-label="{{ 'product.add_to_cart' | t }}: {{ product.title | escape }} ({{ value | escape }})"
+                  >
+                    {{- value | escape -}}
+                    {%- render 'size-stock', value: value, enabled: settings.card_show_low_stock -%}
+                  </button>
+                {%- else -%}
+                  <span class="card__tray-pill{% unless is_avail %} is-out{% endunless %}">{{ value | escape }}</span>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if rendered_tray == false and product.has_only_default_variant and product.selected_or_first_available_variant.available -%}
+        {%- assign rendered_tray = true -%}
+        <div class="card__tray">
+          <button
+            type="button"
+            class="card__tray-pill card__tray-pill--action card__tray-pill--single"
+            data-quick-add="{{ product.selected_or_first_available_variant.id }}"
+            data-quick-add-quantity="{{ product.selected_or_first_available_variant.quantity_rule.min | default: 1 }}"
+            aria-label="{{ 'product.add_to_cart' | t }}: {{ product.title | escape }}"
+          >
+            {{- 'product.quick_add' | t -}}
+          </button>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+    {%- if sold_out == false -%}
+      {%- if rendered_tray == false -%}
+        <div class="card__tray">
+          {%- if show_sizes -%}
+            {%- for option in product.options_with_values -%}
+              {%- capture is_size -%}{%- render 'size-option', name: option.name -%}{%- endcapture -%}
+              {%- if is_size == 'true' -%}
+                <span class="card__tray-label">{{ 'product.sizes_label' | t }}</span>
+                <div class="card__tray-values">
+                  {%- for value in option.values -%}
+                    <span class="card__tray-pill{% unless value.available %} is-out{% endunless %}">{{ value | escape }}</span>
+                  {%- endfor -%}
+                </div>
+                {%- break -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+          <a class="card__tray-pill card__tray-pill--action" href="{{ product.url }}" data-card-choose-options data-close-label="{{ 'general.close' | t }}" aria-label="{{ product.title | escape }} — {{ 'product.choose_options' | t }}">{{ 'product.choose_options' | t }}</a>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+    {%- endcapture -%}
+  </div>
+
+  <div class="card__meta">
+    {% if show_vendor and product.vendor != blank %}<p class="card__vendor spec text-muted">{{ product.vendor | escape }}</p>{% endif %}
+    <{{ heading_tag }} class="card__heading">
+      <a class="card__title" href="{{ product.url }}" data-card-link>{{ product.title | escape }}</a>
+    </{{ heading_tag }}>
+
+    <div class="card__price-row">
+      {% if show_price %}{% render 'price', product: product %}{% endif %}
+      {%- if sold_out -%}
+        <span class="card__sold-out-label spec">{{ 'product.sold_out' | t }}</span>
+      {%- endif -%}
+    </div>
+
+    {%- unless actions == false -%}{{ card_controls }}{%- endunless -%}
+
+    {%- if color_option != blank -%}
+      <div class="card__swatches" role="group" aria-label="{{ color_option.name | escape }}">
+        {%- for value in color_option.values limit: 6 -%}
+          {%- capture swatch_bg -%}{%- render 'swatch-color', value: value, is_color_option: true -%}{%- endcapture -%}
+          {%- assign swatch_bg = swatch_bg | strip -%}
+          {%- if swatch_bg != blank -%}
+            {%- capture swatch_url -%}{{ value.product_url | default: product.url }}?option_values={{ value.id }}{%- endcapture -%}
+            <a
+              class="card__swatch{% if value.selected %} is-active{% endif %}"
+              style="--swatch: {{ swatch_bg }}"
+              href="{{ swatch_url | escape }}"
+              aria-label="{{ value | escape }}"
+              {% if value.selected %}aria-current="true"{% endif %}
+            ></a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</article>

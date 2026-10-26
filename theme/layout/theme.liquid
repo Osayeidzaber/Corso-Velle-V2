@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}" class="no-js" data-button-motion="{{ settings.button_motion | default: 'expressive' }}">
+  <head>
+    {%- # Flag JS support before first paint; motion/reveal styles key off these classes. -%}
+    <script>
+      document.documentElement.classList.replace('no-js', 'js');
+      {%- if settings.motion_level == 'off' %}
+        document.documentElement.classList.add('nk-motion-off');
+      {%- elsif settings.motion_level == 'standard' and request.design_mode == false %}
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches{% if settings.motion_mobile == 'off' %} && !matchMedia('(max-width: 749px)').matches{% endif %}) document.documentElement.classList.add('nk-anim');
+      {%- endif %}
+    </script>
+
+    {% render 'meta-tags' %}
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 96, height: 96 }}">
+      <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {%- endif -%}
+    {% render 'css-variables' %}
+
+    {%- unless settings.type_body_font.system? -%}
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+      {{ settings.type_body_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
+    {%- endunless -%}
+
+    {% render 'nk-config' %}
+    {% render 'nk-assets', entry: 'global' %}
+    {%- if template.name == 'product' -%}
+      {% render 'nk-assets', entry: 'product' %}
+    {%- endif -%}
+
+    {{ content_for_header }}
+  </head>
+
+  <body>
+    <a class="skip-link visually-hidden" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
+
+    {% sections 'header-group' %}
+
+    <main id="MainContent" tabindex="-1" data-focus-fallback>
+      {%- liquid
+        assign theme_support = false
+        if settings.support_replace_policy
+          if settings.support_email != blank or settings.support_phone != blank or settings.support_instagram != blank
+            assign theme_support = true
+          endif
+        endif
+      -%}
+      {%- if request.path contains '/policies/contact-information' and theme_support -%}
+        {% render 'contact-details' %}
+      {%- else -%}
+        {{ content_for_layout }}
+      {%- endif -%}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    {% section 'cart-drawer' %}
+
+    <div class="cart-notification" data-cart-notification hidden>
+      <span>{{ 'cart.added' | t }}</span>
+      <a href="{{ routes.cart_url }}">{{ 'cart.view_cart' | t }}</a>
+      <button type="button" class="icon-button" data-cart-notification-close aria-label="{{ 'general.close' | t }}">
+        {% render 'icon', name: 'close' %}
+      </button>
+    </div>
+
+    <div id="nk-live-polite" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+    <div id="nk-live-assertive" class="visually-hidden" aria-live="assertive" aria-atomic="true"></div>
+  </body>
+</html>

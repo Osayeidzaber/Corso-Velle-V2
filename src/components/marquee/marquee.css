@@ -1,0 +1,109 @@
+nk-marquee {
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+nk-marquee[direction='up'],
+nk-marquee[direction='down'] {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.marquee__track {
+  display: flex;
+  flex: none;
+  width: max-content;
+  will-change: transform;
+}
+
+nk-marquee[direction='up'] .marquee__track,
+nk-marquee[direction='down'] .marquee__track {
+  flex-direction: column;
+  width: auto;
+}
+
+.marquee__list {
+  display: flex;
+  flex: none;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+nk-marquee[direction='up'] .marquee__list,
+nk-marquee[direction='down'] .marquee__list {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.marquee__item {
+  flex: none;
+  padding-inline: var(--nk-marquee-gap, 24px);
+  white-space: nowrap;
+}
+
+nk-marquee[direction='up'] .marquee__item,
+nk-marquee[direction='down'] .marquee__item {
+  padding: calc(var(--nk-marquee-gap, 24px) / 2) 0;
+  white-space: normal;
+}
+
+.marquee__pause {
+  position: absolute;
+  inset-inline-end: 0;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+  cursor: pointer;
+  font-family: var(--nk-font-spec);
+  font-size: 0.75rem;
+}
+
+nk-marquee[direction='up'] .marquee__pause,
+nk-marquee[direction='down'] .marquee__pause {
+  top: auto;
+  bottom: 8px;
+  translate: none;
+}
+
+/* Static (reduced motion / motion off / editor): a scrollable list, nothing moves. */
+nk-marquee[data-static] {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+nk-marquee[data-static][direction='up'],
+nk-marquee[data-static][direction='down'] {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+nk-marquee[data-static] .marquee__item {
+  white-space: normal;
+}
+
+/* Fade edges (optional) */
+nk-marquee[fade-edges] {
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+nk-marquee[fade-edges][direction='up'],
+nk-marquee[fade-edges][direction='down'] {
+  mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+}
+
+/* Scroll Velocity skew (scroll-react): items lean with scroll speed; the variable decays to 0. */
+nk-marquee[scroll-react] .marquee__item {
+  transform: skewX(var(--nk-marquee-skew, 0deg));
+}

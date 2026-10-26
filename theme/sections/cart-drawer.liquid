@@ -1,0 +1,180 @@
+{%- comment -%}
+  Cart drawer. Rendered once from layout as a static section, so its
+  section id is stable ("cart-drawer") for bundled Section Rendering after cart mutations.
+  Only the [data-cart-section] region is replaced; the dialog shell and its focus stay put.
+{%- endcomment -%}
+<nk-cart-drawer id="CartDrawer">
+  <dialog class="drawer drawer--right cart-drawer color-{{ section.settings.color_scheme }}" data-line-density="{{ section.settings.density }}" data-width="{{ section.settings.width }}" aria-labelledby="CartDrawerTitle">
+    <div class="drawer__header">
+      <h2 class="drawer__title spec" id="CartDrawerTitle" tabindex="-1" data-autofocus>{{ 'cart.title' | t }}</h2>
+      <button type="button" class="icon-button" data-nk-close aria-label="{{ 'general.close' | t }}">
+        {% render 'icon', name: 'close' %}
+      </button>
+    </div>
+
+    <nk-cart-items id="CartDrawerItems" class="cart-drawer__items">
+      <p class="message message--error" data-cart-error role="alert" hidden></p>
+      <p class="message message--error" data-cart-render-error role="alert" hidden>
+        {{ 'cart.error' | t }} <a href="{{ routes.cart_url }}">{{ 'cart.view_cart' | t }}</a>
+      </p>
+      <form action="{{ routes.cart_url }}" method="post" class="cart-drawer__form" data-cart-section="{{ section.id }}">
+        {%- if cart.item_count == 0 -%}
+          <div class="cart-empty">
+            <p class="cart-empty__title">{{ 'cart.empty' | t }}</p>
+            {%- assign continue_url = settings.cart_empty_collection.url | default: routes.all_products_collection_url -%}
+            <a class="button" href="{{ continue_url }}">{{ 'cart.continue_shopping' | t }}</a>
+          </div>
+        {%- else -%}
+          {% render 'free-shipping-bar' %}
+          <div class="drawer__body">
+            <p class="visually-hidden">{{ 'cart.item_count' | t: count: cart.item_count }}</p>
+            <ul class="cart-lines" role="list">
+              {%- for item in cart.items -%}
+                {% render 'line-item', item: item, context: 'drawer', show_image: section.settings.show_images %}
+              {%- endfor -%}
+            </ul>
+            {%- if section.settings.show_recommendations -%}
+              {%- liquid
+                # Shopify lists the most recently added line first.
+                assign newest = cart.items.first
+                assign recs_url = routes.product_recommendations_url | append: '?section_id=cart-recommendations&limit=6&product_id=' | append: newest.product_id
+                assign cart_products = cart.items | map: 'product_id' | uniq | join: ','
+              -%}
+              <nk-cart-recommendations class="cart-recs" url="{{ recs_url }}" intent="{{ section.settings.recommendation_intent }}" cart-products="{{ cart_products }}" data-empty>
+                <p class="cart-recs__heading spec">{{ section.settings.recommendations_heading | escape }}</p>
+                <div data-cart-recs-slot></div>
+              </nk-cart-recommendations>
+            {%- endif -%}
+          </div>
+          <div class="drawer__footer cart-summary">
+            {%- for discount in cart.cart_level_discount_applications -%}
+              <div class="cart-summary__row spec">
+                <span>{{ discount.title | escape }}</span><span>−{{ discount.total_allocated_amount | money }}</span>
+              </div>
+            {%- endfor -%}
+            {% render 'cart-discounts', context: 'drawer' %}
+            <div class="cart-summary__row">
+              <span>{{ 'cart.subtotal' | t }}</span>
+              <span class="price">{{ cart.total_price | money_with_currency }}</span>
+            </div>
+            <p class="text-muted">
+              {%- if cart.taxes_included -%}{{ 'cart.taxes_included' | t }}{%- else -%}{{ 'cart.taxes_excluded' | t }}{%- endif -%}
+              {%- if cart.discount_applications.size > 0 %} {{ 'promotions.checkout_confirms' | t }}{%- endif -%}
+            </p>
+            <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
+            {%- if additional_checkout_buttons and section.settings.show_accelerated -%}
+              <div class="cart-summary__accelerated">{{ content_for_additional_checkout_buttons }}</div>
+            {%- endif -%}
+            <a href="{{ routes.cart_url }}" class="cart-drawer__view">{{ 'cart.view_cart' | t }}</a>
+          </div>
+        {%- endif -%}
+      </form>
+    </nk-cart-items>
+  </dialog>
+</nk-cart-drawer>
+
+{% schema %}
+{
+  "name": "Cart drawer",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "density",
+      "label": "Cart line spacing",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Regular"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "airy",
+          "label": "Airy"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_images",
+      "label": "Show product images",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Drawer width",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Regular (420px)"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (360px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (560px)"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "header",
+      "content": "Complete the look"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_recommendations",
+      "label": "Show product suggestions",
+      "default": true,
+      "info": "Suggestions for the most recently added product, with one-tap size add."
+    },
+    {
+      "type": "text",
+      "id": "recommendations_heading",
+      "label": "Heading",
+      "default": "Complete the look"
+    },
+    {
+      "type": "select",
+      "id": "recommendation_intent",
+      "label": "Suggest",
+      "options": [
+        {
+          "value": "complementary",
+          "label": "Complementary products"
+        },
+        {
+          "value": "related",
+          "label": "Related products"
+        }
+      ],
+      "default": "complementary",
+      "info": "Set complementary products in the Search & Discovery app. Without them, related products are shown."
+    },
+    {
+      "type": "header",
+      "content": "Checkout"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accelerated",
+      "label": "Show express checkout buttons",
+      "default": true,
+      "info": "Shop Pay, Apple Pay and other wallets you've enabled in your payment settings."
+    }
+  ],
+  "limit": 1
+}
+{% endschema %}

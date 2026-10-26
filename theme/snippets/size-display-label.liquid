@@ -1,0 +1,18 @@
+{%- doc -%}
+  Display common abbreviated garment sizes with a translated full name; keep other sizes as authored.
+  @param {string} value - Actual product option value (not a measurement)
+{%- enddoc -%}
+{%- liquid
+  assign size_key = value | strip | downcase
+  assign common_sizes = 'xxs,xs,s,m,l,xl,xxl,xxxl' | split: ','
+  if common_sizes contains size_key
+    assign translation_key = 'product.size_names.' | append: size_key
+    assign full_name = translation_key | t
+    echo full_name | escape
+    echo ' ('
+    echo value | escape
+    echo ')'
+  else
+    echo value | escape
+  endif
+-%}

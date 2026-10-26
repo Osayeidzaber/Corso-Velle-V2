@@ -1,0 +1,184 @@
+{%- comment -%}
+  Cart page. A complete cart that works without JavaScript:
+  updates[] inputs + Update button, remove links, note, and a submit named "checkout".
+{%- endcomment -%}
+{%- liquid
+  assign show_note = settings.cart_show_note
+  if section.settings.note == 'show'
+    assign show_note = true
+  elsif section.settings.note == 'hide'
+    assign show_note = false
+  endif
+-%}
+<div class="section-spacing cart-page-shell color-{{ section.settings.color_scheme }}" data-line-density="{{ section.settings.density }}" data-summary="{{ section.settings.summary_style }}" data-summary-sticky="{{ section.settings.sticky_summary }}">
+  <h1>{{ 'cart.title' | t }}</h1>
+
+  <nk-cart-items id="MainCartItems">
+    <p class="message message--error" data-cart-error role="alert" hidden></p>
+    <p class="message message--error" data-cart-render-error role="alert" hidden>
+      {{ 'cart.error' | t }} <a href="{{ routes.cart_url }}">{{ 'cart.view_cart' | t }}</a>
+    </p>
+    <form action="{{ routes.cart_url }}" method="post" data-cart-section="{{ section.id }}">
+      {%- if cart.item_count == 0 -%}
+        <div class="cart-empty cart-empty--page">
+          <p class="cart-empty__title">{{ 'cart.empty' | t }}</p>
+          {%- assign continue_url = settings.cart_empty_collection.url | default: routes.all_products_collection_url -%}
+          <a class="button" href="{{ continue_url }}">{{ 'cart.continue_shopping' | t }}</a>
+          {% if section.settings.show_empty_recommendations %}{% render 'cart-empty-recommendations', collection: section.settings.recommendation_collection, heading: section.settings.recommendation_heading %}{% endif %}
+        </div>
+      {%- else -%}
+        {% render 'free-shipping-bar' %}
+        <div class="cart-page">
+          <ul class="cart-lines" role="list">
+            {%- for item in cart.items -%}
+              {% render 'line-item', item: item, context: 'page', show_image: section.settings.show_images %}
+            {%- endfor -%}
+          </ul>
+
+          <div class="cart-page__summary cart-summary">
+            {%- if show_note -%}
+              <div class="cart-note">
+                <label for="CartNote">{{ 'cart.note' | t }}</label>
+                <textarea id="CartNote" name="note" data-cart-note data-focus-key="cart-note">{{ cart.note | escape }}</textarea>
+              </div>
+            {%- endif -%}
+            {%- for discount in cart.cart_level_discount_applications -%}
+              <div class="cart-summary__row spec">
+                <span>{{ discount.title | escape }}</span><span>−{{ discount.total_allocated_amount | money }}</span>
+              </div>
+            {%- endfor -%}
+            {% render 'cart-discounts', context: 'page' %}
+            <div class="cart-summary__row">
+              <span>{{ 'cart.subtotal' | t }}</span>
+              <span class="price">{{ cart.total_price | money_with_currency }}</span>
+            </div>
+            <p class="text-muted">
+              {%- if cart.taxes_included -%}{{ 'cart.taxes_included' | t }}{%- else -%}{{ 'cart.taxes_excluded' | t }}{%- endif -%}
+              {%- if cart.discount_applications.size > 0 %} {{ 'promotions.checkout_confirms' | t }}{%- endif -%}
+            </p>
+            <button type="submit" name="update" class="button button--secondary button--full no-js-only">{{ 'cart.update' | t }}</button>
+            <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
+            {%- if additional_checkout_buttons and section.settings.show_accelerated != false -%}
+              <div class="cart-summary__accelerated">{{ content_for_additional_checkout_buttons }}</div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    </form>
+  </nk-cart-items>
+</div>
+
+{% schema %}
+{
+  "name": "Cart",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "density",
+      "label": "Cart line spacing",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Regular"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "airy",
+          "label": "Airy"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_images",
+      "label": "Show product images",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "note",
+      "label": "Order note",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme setting"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        },
+        {
+          "value": "hide",
+          "label": "Hide"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "summary_style",
+      "label": "Summary appearance",
+      "options": [
+        {
+          "value": "bordered",
+          "label": "Bordered"
+        },
+        {
+          "value": "plain",
+          "label": "Plain"
+        },
+        {
+          "value": "surface",
+          "label": "Surface"
+        }
+      ],
+      "default": "bordered"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_summary",
+      "label": "Sticky summary (desktop)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accelerated",
+      "label": "Show accelerated checkout buttons",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_empty_recommendations",
+      "label": "Show collection when cart is empty",
+      "default": false
+    },
+    {
+      "type": "collection",
+      "id": "recommendation_collection",
+      "label": "Empty cart collection"
+    },
+    {
+      "type": "text",
+      "id": "recommendation_heading",
+      "label": "Empty cart collection heading",
+      "default": "Explore the collection"
+    }
+  ],
+  "enabled_on": {
+    "templates": [
+      "cart"
+    ]
+  },
+  "limit": 1
+}
+{% endschema %}

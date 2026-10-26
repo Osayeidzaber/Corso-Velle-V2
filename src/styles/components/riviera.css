@@ -1,0 +1,312 @@
+/*
+ * "Riviera" style preset: dark editorial surfaces and copper accents.
+ * Loaded after the component CSS; everything still reads the colour-scheme and font settings.
+ */
+
+/* ---------- Type ---------- */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: var(--nk-font-heading-weight, 400);
+  letter-spacing: var(--nk-heading-tracking, -0.02em);
+  line-height: var(--nk-heading-leading, 1);
+}
+
+em,
+.italic-accent {
+  font-style: italic;
+}
+
+.spec,
+.lbl {
+  font-family: var(--nk-font-spec);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--nk-label-tracking, 0.18em);
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  font-family: var(--nk-font-spec);
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--nk-color-text-muted);
+}
+
+.display {
+  font-family: var(--nk-font-heading);
+  font-weight: var(--nk-font-heading-weight, 400);
+  letter-spacing: var(--nk-display-tracking, -0.035em);
+  line-height: var(--nk-display-leading, 0.92);
+}
+
+/* ---------- Buttons: sliding fill ---------- */
+.button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: var(--nk-button-height, 54px);
+  padding: 10px var(--nk-button-padding, 30px);
+  border-radius: var(--nk-button-radius, var(--nk-radius));
+  font-family: var(--nk-font-spec);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--nk-color-accent);
+  transform: scaleY(0);
+  transform-origin: 50% 100%;
+  transition: transform 450ms var(--nk-ease-out);
+}
+
+/* Label and border travel with the fill, so the text never flips colour before the fill arrives. */
+.button {
+  transition:
+    opacity var(--nk-dur-instant) var(--nk-ease-out),
+    color 450ms var(--nk-ease-out),
+    border-color 450ms var(--nk-ease-out);
+}
+
+.button:not(:disabled, [aria-disabled='true']):focus-visible::before {
+  transform: scaleY(1);
+}
+
+.button:not(:disabled, [aria-disabled='true']):focus-visible {
+  border-color: var(--nk-color-accent);
+  color: var(--nk-color-accent-text);
+}
+
+@media (hover: hover) {
+  .button:not(:disabled, [aria-disabled='true']):hover::before {
+    transform: scaleY(1);
+  }
+
+  .button:not(:disabled, [aria-disabled='true']):hover {
+    border-color: var(--nk-color-accent);
+    color: var(--nk-color-accent-text);
+  }
+}
+
+/* Pressed: one step deeper than the fill (derived from the scheme accent). */
+.button:not(:disabled, [aria-disabled='true']):active::before {
+  background: var(--nk-accent-active, var(--nk-color-accent));
+}
+
+.button:disabled::before,
+.button[aria-disabled='true']::before {
+  display: none;
+}
+
+.link-underline {
+  position: relative;
+  text-decoration: none;
+  padding-bottom: 4px;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform-origin: right;
+  transition: transform 500ms var(--nk-ease-out);
+}
+
+.link-underline:focus-visible::after {
+  transform: scaleX(0);
+}
+
+@media (hover: hover) {
+  .link-underline:hover::after {
+    transform: scaleX(0);
+  }
+}
+
+/* ---------- Header ---------- */
+.header {
+  min-height: 64px;
+}
+
+.nav {
+  font-family: var(--nk-font-spec);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+}
+
+.header__logo {
+  font-family: var(--nk-font-heading);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.75rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.header__label,
+.header__cart-count {
+  font-family: var(--nk-font-spec);
+}
+
+@media (min-width: 990px) {
+  .header {
+    min-height: 76px;
+  }
+}
+
+/* Overlay header on the home hero: light text, no hairline. */
+/* The uploaded logo is a light script on a transparent ground: ink it on solid headers. */
+nk-header .header__logo img {
+  filter: brightness(0);
+  transition: filter var(--nk-dur-small);
+}
+
+nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]):not([data-scrolled]):not(:has(.nav__disclosure[open])):not(:has(nk-search-pill[data-open])) .header__logo img {
+  filter: brightness(0) invert(1);
+}
+
+/* ---------- Product cards ---------- */
+.product-grid {
+  gap: 32px 8px;
+}
+
+@media (min-width: 750px) {
+  .product-grid {
+    gap: 36px 8px;
+  }
+}
+
+.card {
+  gap: 10px;
+}
+
+.card__media {
+  overflow: hidden;
+}
+
+
+
+.card__title {
+  font-family: var(--nk-font-heading);
+  font-size: 1.0625rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+@media (min-width: 990px) {
+  .card__title {
+    font-size: 1.1875rem;
+  }
+}
+
+.card .price {
+  font-family: var(--nk-font-body);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--nk-color-text-muted);
+}
+
+.card__sizes {
+  font-family: var(--nk-font-spec);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+}
+
+.badge {
+  font-family: var(--nk-font-spec);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  padding: 5px 9px;
+}
+
+/* ---------- Section headers ---------- */
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-bottom: 36px;
+}
+
+.section-head h2 {
+  font-size: clamp(2.5rem, 6vw, 4.75rem);
+}
+
+/* ---------- Product page ---------- */
+.product__title {
+  font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+  font-weight: 400;
+  text-transform: none;
+}
+
+.product__price {
+  font-family: var(--nk-font-body);
+  font-size: 1.0625rem;
+}
+
+.option__value label {
+  min-width: 60px;
+  min-height: 52px;
+  border-radius: 0;
+  font-family: var(--nk-font-body);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+}
+
+.disclosure > summary {
+  font-family: var(--nk-font-spec);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  min-height: 60px;
+}
+
+.rte ul {
+  padding-left: 1.1em;
+  line-height: 1.9;
+}
+
+/* ---------- Announcement ---------- */
+.announcement {
+  min-height: 36px;
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+  font-family: var(--nk-font-spec);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+}
+
+.announcement .marquee__pause {
+  width: 32px;
+  height: 32px;
+  background: var(--nk-color-bg);
+  color: inherit;
+  font-size: 0.5625rem;
+  opacity: 0.7;
+}
+
+/* Collection page header. */
+.collection-header--riviera {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+  padding-block: clamp(24px, 6vw, 72px) clamp(20px, 3vw, 40px);
+}
+
+.collection-header--riviera .display {
+  margin: 0;
+  font-size: clamp(3rem, 9vw, 7.5rem);
+  line-height: 0.95;
+}

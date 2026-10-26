@@ -1,0 +1,1002 @@
+/* Campaign hero (theme/sections/hero.liquid): layouts, media entrances and call-to-action styles.
+   Loaded after riviera.css so the call-to-action styles can refine the shared .button. */
+.hero {
+  --hero-heading-size: clamp(3.5rem, 13vw, 11.5rem);
+  --hero-text-size: clamp(1.0625rem, 1.6vw, 1.375rem);
+  position: relative;
+  display: grid;
+  min-height: 60svh;
+  overflow: hidden;
+  color: var(--nk-color-text);
+  isolation: isolate;
+}
+
+.hero--medium {
+  min-height: min(75svh, 760px);
+}
+
+.hero--full {
+  min-height: 100svh;
+}
+
+.hero--adapt {
+  min-height: 0;
+}
+
+.hero__media,
+.hero__content {
+  grid-area: 1 / 1;
+}
+
+.hero__media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  z-index: -2;
+}
+
+.hero__media-inner {
+  position: absolute;
+  inset: 0;
+}
+
+nk-background-video { display: block; width: 100%; height: 100%; }
+.hero:has(nk-background-video) .hero__content { pointer-events: none; }
+.hero:has(nk-background-video) .hero__copy > * { pointer-events: auto; }
+.background-video__toggle { position: absolute; bottom: 18px; right: 18px; z-index: 2; min-width: 44px; min-height: 44px; background: var(--nk-color-bg); color: var(--nk-color-text); border: 1px solid var(--nk-color-line); cursor: pointer; }
+.hero--fit-contain .hero__media :is(img, video) { object-fit: contain; }
+.hero--tint-top .hero__scrim { rotate: 180deg; }
+.hero--tint-uniform .hero__scrim { background: rgb(0 0 0 / var(--nk-scrim, .3)); }
+.hero__copy { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 749px) {
+  .hero.hero--phone-compact:not(.hero--split) { min-height: 55svh; }
+  .hero.hero--phone-full:not(.hero--split) { min-height: 100svh; }
+  .hero--split.hero--phone-compact .hero__media { min-height: 55svh; aspect-ratio: auto; }
+  .hero--split.hero--phone-full .hero__media { min-height: 100svh; max-height: none; aspect-ratio: auto; }
+}
+
+.hero__media img,
+.hero__media video,
+.hero__placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero__scrim,
+.hero .nk-scrim-blur {
+  z-index: -1;
+  pointer-events: none;
+}
+
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / calc(var(--nk-scrim, 0.3) + 0.2)),
+    rgb(0 0 0 / calc(var(--nk-scrim, 0.3) * 0.4)) 55%,
+    rgb(0 0 0 / calc(var(--nk-scrim, 0.3) * 0.6))
+  );
+}
+
+/* Content position: --hero-v places the copy vertically, --hero-h horizontally; the section
+   prints vertical/horizontal position classes (and mobile equivalents) from its settings. */
+.hero--v-top {
+  --hero-v: flex-start;
+}
+
+.hero--v-center {
+  --hero-v: center;
+}
+
+.hero--v-bottom {
+  --hero-v: flex-end;
+}
+
+.hero--h-left {
+  --hero-h: flex-start;
+  --hero-text: start;
+}
+
+.hero--h-center {
+  --hero-h: center;
+  --hero-text: center;
+}
+
+.hero--h-right {
+  --hero-h: flex-end;
+  --hero-text: end;
+}
+
+@media (max-width: 749px) {
+  .hero--mv-top {
+    --hero-v: flex-start;
+  }
+
+  .hero--mv-center {
+    --hero-v: center;
+  }
+
+  .hero--mv-bottom {
+    --hero-v: flex-end;
+  }
+
+  .hero--mh-left {
+    --hero-h: flex-start;
+    --hero-text: start;
+  }
+
+  .hero--mh-center {
+    --hero-h: center;
+    --hero-text: center;
+  }
+}
+
+/* Text alignment override: the copy block stays where the position puts it, its contents align. */
+.hero--text-left {
+  --hero-item-align: flex-start;
+  --hero-text-override: start;
+}
+
+.hero--text-center {
+  --hero-item-align: center;
+  --hero-text-override: center;
+}
+
+.hero--text-right {
+  --hero-item-align: flex-end;
+  --hero-text-override: end;
+}
+
+.hero__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: var(--hero-v, flex-end);
+  align-items: var(--hero-h, flex-start);
+  padding: calc(var(--nk-header-h, 64px) + 24px) var(--nk-gutter) 44px;
+}
+
+.hero__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: var(--hero-item-align, var(--hero-h, flex-start));
+  gap: var(--hero-gap, 22px);
+  width: 100%;
+  max-width: var(--hero-width, 1100px);
+  text-align: var(--hero-text-override, var(--hero-text, start));
+}
+
+.hero__eyebrow {
+  color: color-mix(in oklab, var(--nk-color-text) 80%, transparent);
+  font-size: calc(0.6875rem * var(--hero-eyebrow-scale, 1));
+}
+
+.hero__block--heading {
+  --hero-heading-scale-now: var(--hero-heading-scale, 1);
+}
+
+@media (max-width: 749px) {
+  .hero__block--heading {
+    --hero-heading-scale-now: var(--hero-heading-scale-mobile, 1);
+  }
+}
+
+.hero__heading {
+  font-size: calc(var(--hero-heading-size) * var(--hero-heading-scale-now, 1));
+}
+
+/* Phones held sideways: the width-based scale (13vw ≈ 110px at 852px) filled the 393px-tall
+   screen and pushed the buttons out of view. Cap the type by the visible height instead. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .hero__heading {
+    font-size: min(calc(var(--hero-heading-size) * var(--hero-heading-scale-now, 1)), 15svh);
+  }
+}
+
+.hero__heading em {
+  font-weight: var(--nk-font-heading-weight, 400);
+}
+
+.hero__text {
+  max-width: var(--hero-text-width, 42ch);
+  font-family: var(--nk-font-heading);
+  font-style: italic;
+  font-size: calc(var(--hero-text-size) * var(--hero-text-scale, 1));
+  line-height: 1.45;
+}
+
+/* ---------- Scroll cue ---------- */
+.hero__cue {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  translate: -50% 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--nk-font-spec);
+  font-size: 0.625rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  padding-inline-start: 0.32em;
+  color: color-mix(in oklab, var(--nk-color-text) 75%, transparent);
+  pointer-events: none;
+}
+
+.hero__cue-line {
+  position: relative;
+  width: 1px;
+  height: 44px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--nk-color-text) 25%, transparent);
+}
+
+.hero__cue-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--nk-color-text);
+  translate: 0 -100%;
+  animation: hero-cue 2.2s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+}
+
+@keyframes hero-cue {
+  0% {
+    translate: 0 -100%;
+  }
+  50% {
+    translate: 0 0;
+  }
+  100% {
+    translate: 0 100%;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .hero__cue {
+    animation: hero-cue-out linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 30vh;
+  }
+
+  @keyframes hero-cue-out {
+    to {
+      opacity: 0;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__cue-line::after {
+    animation: none;
+    translate: 0 0;
+  }
+}
+
+html.nk-motion-off .hero__cue-line::after {
+  animation: none;
+  translate: 0 0;
+}
+
+@media (min-width: 990px) {
+  .hero__content {
+    padding-bottom: 64px;
+  }
+
+  .hero__cue {
+    display: flex;
+  }
+}
+
+/* ---------- Layout: editorial cover ----------
+   Eyebrow pinned top left under a short rule; heading anchors the bottom left; text and buttons
+   share a hairline-ruled column on the right from 990px. Content position does not apply, but an
+   explicit text alignment does. */
+.hero.hero--editorial {
+  --hero-v: flex-end;
+  --hero-h: stretch;
+  --hero-text: start;
+  --hero-heading-size: clamp(3.75rem, 14vw, 13rem);
+  --hero-text-size: clamp(1rem, 1.3vw, 1.1875rem);
+}
+
+.hero--editorial .hero__copy {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 1fr;
+  grid-auto-rows: auto;
+  align-items: stretch;
+  gap: var(--hero-gap, 22px);
+  max-width: none;
+}
+
+.hero--editorial .hero__block--eyebrow {
+  grid-row: 1;
+  align-self: start;
+}
+
+.hero--editorial .hero__block--heading {
+  grid-row: 2;
+}
+
+.hero--editorial .hero__block--text {
+  grid-row: 3;
+}
+
+.hero--editorial .hero__block--buttons {
+  grid-row: 4;
+}
+
+.hero--editorial .hero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.hero--editorial .hero__eyebrow::before {
+  content: '';
+  flex: none;
+  width: 40px;
+  height: 1px;
+  background: currentColor;
+}
+
+.hero--editorial .hero__cue {
+  display: none;
+}
+
+@media (min-width: 990px) {
+  .hero--editorial .hero__copy {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+    column-gap: clamp(40px, 5vw, 96px);
+    row-gap: 0;
+  }
+
+  .hero--editorial .hero__block--eyebrow {
+    grid-column: 1 / -1;
+  }
+
+  .hero--editorial .hero__block--heading {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+    align-self: end;
+  }
+
+  .hero--editorial .hero__block--text,
+  .hero--editorial .hero__block--buttons {
+    grid-column: 2;
+    padding-inline-start: 28px;
+    border-inline-start: 1px solid color-mix(in oklab, var(--nk-color-text) 32%, transparent);
+  }
+
+  .hero--editorial .hero__block--text {
+    grid-row: 2;
+    align-self: end;
+    padding-bottom: var(--hero-gap, 22px);
+  }
+
+  .hero--editorial .hero__block--buttons {
+    grid-row: 3;
+    padding-bottom: 0.5em;
+  }
+}
+
+/* ---------- Layout: split ----------
+   Media and a solid panel in the colour scheme; stacked on phones (media first). The header is
+   not laid over this layout, so the panel needs no header allowance. */
+.hero.hero--split {
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+  background: var(--nk-color-bg);
+}
+
+.hero--split .hero__media {
+  grid-area: 1 / 1;
+  aspect-ratio: 4 / 5;
+  max-height: 72svh;
+  width: 100%;
+}
+
+.hero--split .hero__content {
+  grid-area: 2 / 1;
+  padding: 44px var(--nk-gutter) 52px;
+}
+
+.hero--split .hero__scrim,
+.hero--split .nk-scrim-blur,
+.hero--split .hero__cue {
+  display: none;
+}
+
+.hero.hero--split {
+  --hero-heading-size: clamp(3rem, 13vw, 8rem);
+}
+
+@media (min-width: 990px) {
+  .hero.hero--split {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    min-height: min(85svh, 820px);
+  }
+
+  .hero.hero--split.hero--medium {
+    min-height: min(75svh, 760px);
+  }
+
+  .hero.hero--split.hero--full {
+    min-height: calc(100svh - var(--nk-header-h, 64px));
+  }
+
+  .hero--split .hero__media {
+    grid-area: 1 / 1;
+    aspect-ratio: auto;
+    max-height: none;
+  }
+
+  .hero--split .hero__content {
+    grid-area: 1 / 2;
+    padding: 64px clamp(32px, 5vw, 96px);
+  }
+
+  .hero--split.hero--media-right {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  }
+
+  .hero--split.hero--media-right .hero__media {
+    grid-area: 1 / 2;
+  }
+
+  .hero--split.hero--media-right .hero__content {
+    grid-area: 1 / 1;
+  }
+
+  .hero.hero--split {
+    --hero-heading-size: clamp(3.5rem, 7vw, 8.5rem);
+  }
+}
+
+/* ---------- Media entrances ----------
+   html.nk-anim is set only while decorative motion is allowed (Motion "standard", no reduced-motion
+   preference, not the theme editor), and src/core/motion.ts clears it if the OS setting changes.
+   Animations use `scale`/`clip-path` so they never fight the parallax transform. */
+@media (prefers-reduced-motion: no-preference) {
+  html.nk-anim .hero--enter-fade-up .hero__media,
+  html.nk-anim .hero--enter-text .hero__media {
+    animation: hero-fade 1.4s var(--nk-ease-out) both;
+  }
+
+  html.nk-anim .hero--enter-zoom :is(.hero__media img, .hero__media video, .hero__placeholder) {
+    animation: hero-zoom-out 2.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  html.nk-anim .hero--enter-zoom .hero__media {
+    animation: hero-fade 0.9s var(--nk-ease-out) both;
+  }
+
+  html.nk-anim .hero--enter-curtain .hero__media {
+    animation: hero-curtain 1.35s cubic-bezier(0.76, 0, 0.24, 1) both;
+  }
+
+  html.nk-anim .hero--enter-curtain :is(.hero__media img, .hero__media video, .hero__placeholder) {
+    --hero-zoom-from: 1.12;
+    animation: hero-zoom-out 2.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  html.nk-anim .hero--enter-curtain :is(.hero__scrim, .nk-scrim-blur) {
+    animation: hero-fade 0.9s var(--nk-ease-out) 0.6s both;
+  }
+}
+
+/* Split media wipes in from the panel side instead of rising. */
+.hero--split {
+  --hero-curtain-from: inset(0 100% 0 0);
+}
+
+.hero--split.hero--media-right {
+  --hero-curtain-from: inset(0 0 0 100%);
+}
+
+@keyframes hero-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes hero-zoom-out {
+  from {
+    scale: var(--hero-zoom-from, 1.18);
+  }
+}
+
+@keyframes hero-curtain {
+  from {
+    clip-path: var(--hero-curtain-from, inset(100% 0 0 0));
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* ---------- Calls to action ---------- */
+/* The buttons block spans the copy width so its own alignment can differ from the text. */
+.hero__block--buttons {
+  align-self: stretch;
+  margin-top: var(--hero-buttons-offset, 0px);
+}
+
+.hero__buttons {
+  --hero-buttons-justify: var(--hero-btn-justify, var(--hero-item-align, var(--hero-h, flex-start)));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: var(--hero-buttons-justify);
+  gap: var(--hero-buttons-gap, 14px);
+}
+
+.hero__buttons--align-left {
+  --hero-btn-justify: flex-start;
+}
+
+.hero__buttons--align-center {
+  --hero-btn-justify: center;
+}
+
+.hero__buttons--align-right {
+  --hero-btn-justify: flex-end;
+}
+
+.hero__buttons--stack {
+  flex-direction: column;
+  align-items: var(--hero-buttons-justify);
+}
+
+@media (max-width: 749px) {
+  /* Box buttons that wrap onto their own row fill it, so a pair never ends up ragged. */
+  .hero__buttons--row .hero-cta.button {
+    flex: 1 1 auto;
+  }
+
+  .hero__buttons--fill-mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero__buttons--fill-mobile .hero-cta.button {
+    width: 100%;
+  }
+
+  .hero__buttons--fill-mobile .hero-cta--link {
+    align-self: var(--hero-buttons-justify);
+  }
+}
+
+/* Sizes; medium is the shared .button size. */
+.hero-cta--small.button {
+  min-height: 44px;
+  padding: 0 22px;
+  font-size: 0.625rem;
+}
+
+.hero-cta--large.button {
+  min-height: 64px;
+  padding: 0 42px;
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+}
+
+.hero-cta--link.hero-cta--small {
+  font-size: 0.625rem;
+}
+
+.hero-cta--link.hero-cta--large {
+  gap: 14px;
+  font-size: 0.8125rem;
+}
+
+.hero-cta {
+  --hero-cta-ease: cubic-bezier(0.65, 0, 0.35, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hero-cta.button {
+  gap: 12px;
+  transition:
+    color 450ms var(--nk-ease-out),
+    background-color 450ms var(--nk-ease-out),
+    border-color 450ms var(--nk-ease-out),
+    box-shadow 450ms var(--nk-ease-out),
+    scale 220ms var(--nk-ease-out);
+}
+
+.hero-cta:focus-visible {
+  outline: 1px solid var(--nk-color-text);
+  outline-offset: 4px;
+}
+
+.hero-cta:not([aria-disabled='true']):active {
+  scale: 0.97;
+  transition-duration: 450ms, 450ms, 450ms, 450ms, 90ms;
+}
+
+.hero-cta[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Label roll: the visible label slides up and out while its copy rises in from below. */
+.hero-cta__roll {
+  display: inline-grid;
+  overflow: hidden;
+  line-height: 1.4;
+}
+
+.hero-cta__text {
+  grid-area: 1 / 1;
+  transition: translate 560ms var(--hero-cta-ease);
+}
+
+.hero-cta__text + .hero-cta__text {
+  translate: 0 110%;
+}
+
+.hero-cta__arrow {
+  display: inline-flex;
+  overflow: hidden;
+}
+
+.hero-cta__arrow svg {
+  transition: translate 560ms var(--hero-cta-ease);
+}
+
+/* Solid: filled in the scheme's text colour; the shared accent fill rises on hover. */
+.hero-cta--solid {
+  border-color: var(--nk-color-text);
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+}
+
+/* Outline: hairline frame; a text-colour fill sweeps in from the left and leaves to the right. */
+.hero-cta--outline {
+  border-color: color-mix(in oklab, var(--nk-color-text) 55%, transparent);
+  background: transparent;
+  color: var(--nk-color-text);
+}
+
+.hero-cta--outline::before {
+  background: var(--nk-color-text);
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform 600ms var(--hero-cta-ease);
+}
+
+/* Glass: frosted panel for video and photography; a light sheen crosses it on hover. */
+.hero-cta--glass {
+  border-color: color-mix(in oklab, var(--nk-color-text) 32%, transparent);
+  background: color-mix(in oklab, var(--nk-color-text) 12%, transparent);
+  color: var(--nk-color-text);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+}
+
+.hero-cta--glass::before {
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    color-mix(in oklab, var(--nk-color-text) 32%, transparent) 50%,
+    transparent 70%
+  );
+  transform: translateX(-110%);
+  transition: transform 900ms var(--hero-cta-ease);
+  pointer-events: none;
+}
+
+/* Link: spec-type label over a hairline; the line redraws and the arrow loops through on hover. */
+.hero-cta--link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 2px;
+  color: var(--nk-color-text);
+  font-family: var(--nk-font-spec);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    opacity 300ms var(--nk-ease-out),
+    scale 220ms var(--nk-ease-out);
+}
+
+.hero-cta--link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  height: 1px;
+  background: currentColor;
+  transform-origin: 0 50%;
+}
+
+.hero-cta--link:focus-visible {
+  outline-offset: 2px;
+}
+
+/* Hover and keyboard focus share the look; hover only where a real pointer can hover, so the
+   state never sticks after a tap. */
+.hero .hero-cta--outline:not([aria-disabled='true']):focus-visible,
+.hero .hero-cta--glass:not([aria-disabled='true']):focus-visible {
+  border-color: var(--nk-color-text);
+}
+
+.hero .hero-cta--outline:not([aria-disabled='true']):focus-visible {
+  color: var(--nk-color-bg);
+}
+
+.hero .hero-cta--glass:not([aria-disabled='true']):focus-visible {
+  background: color-mix(in oklab, var(--nk-color-text) 22%, transparent);
+  color: var(--nk-color-text);
+}
+
+.hero .hero-cta--outline:not([aria-disabled='true']):focus-visible::before {
+  transform: scaleX(1);
+  transform-origin: 0 50%;
+}
+
+.hero .hero-cta--glass:not([aria-disabled='true']):focus-visible::before {
+  transform: translateX(110%);
+}
+
+@media (hover: hover) {
+  .hero .hero-cta--solid:not([aria-disabled='true']):hover {
+    box-shadow: 0 18px 40px -20px rgb(0 0 0 / 0.6);
+  }
+
+  .hero .hero-cta--outline:not([aria-disabled='true']):hover {
+    border-color: var(--nk-color-text);
+    color: var(--nk-color-bg);
+  }
+
+  .hero .hero-cta--outline:not([aria-disabled='true']):hover::before {
+    transform: scaleX(1);
+    transform-origin: 0 50%;
+  }
+
+  .hero .hero-cta--glass:not([aria-disabled='true']):hover {
+    border-color: color-mix(in oklab, var(--nk-color-text) 70%, transparent);
+    background: color-mix(in oklab, var(--nk-color-text) 22%, transparent);
+    color: var(--nk-color-text);
+  }
+
+  .hero .hero-cta--glass:not([aria-disabled='true']):hover::before {
+    transform: translateX(110%);
+  }
+
+  .hero .hero-cta--link:not([aria-disabled='true']):hover {
+    opacity: 0.85;
+  }
+}
+
+/* Travel (label roll, arrow, line redraw) only when transitions are allowed. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.nk-motion-off) .hero-cta.button:not([aria-disabled='true']):focus-visible .hero-cta__text {
+    translate: 0 -110%;
+  }
+
+  html:not(.nk-motion-off) .hero-cta.button:not([aria-disabled='true']):focus-visible .hero-cta__text + .hero-cta__text {
+    translate: 0 0;
+  }
+
+  html:not(.nk-motion-off) .hero-cta.button:not([aria-disabled='true']):focus-visible .hero-cta__arrow svg {
+    translate: 4px 0;
+  }
+
+  html:not(.nk-motion-off) .hero-cta--link:not([aria-disabled='true']):focus-visible::after {
+    animation: hero-line-redraw 760ms var(--hero-cta-ease);
+  }
+
+  html:not(.nk-motion-off) .hero-cta--link:not([aria-disabled='true']):focus-visible .hero-cta__arrow svg {
+    animation: hero-arrow-loop 700ms var(--hero-cta-ease);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  html:not(.nk-motion-off) .hero-cta.button:not([aria-disabled='true']):hover .hero-cta__text {
+    translate: 0 -110%;
+  }
+
+  html:not(.nk-motion-off) .hero-cta.button:not([aria-disabled='true']):hover .hero-cta__text + .hero-cta__text {
+    translate: 0 0;
+  }
+
+  html:not(.nk-motion-off) .hero-cta.button:not([aria-disabled='true']):hover .hero-cta__arrow svg {
+    translate: 4px 0;
+  }
+
+  html:not(.nk-motion-off) .hero-cta--link:not([aria-disabled='true']):hover::after {
+    animation: hero-line-redraw 760ms var(--hero-cta-ease);
+  }
+
+  html:not(.nk-motion-off) .hero-cta--link:not([aria-disabled='true']):hover .hero-cta__arrow svg {
+    animation: hero-arrow-loop 700ms var(--hero-cta-ease);
+  }
+}
+
+@keyframes hero-line-redraw {
+  0% {
+    transform: scaleX(1);
+    transform-origin: 100% 50%;
+  }
+  45% {
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+  }
+  46% {
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: 0 50%;
+  }
+}
+
+@keyframes hero-arrow-loop {
+  0% {
+    translate: 0 0;
+  }
+  45% {
+    translate: 140% 0;
+  }
+  46% {
+    translate: -140% 0;
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+
+/* No travel at all under reduced motion or Motion off: colours change, nothing slides. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-cta,
+  .hero-cta::before,
+  .hero-cta__text,
+  .hero-cta__arrow svg {
+    transition-duration: 0s !important;
+  }
+
+  .hero-cta:not([aria-disabled='true']):active {
+    scale: 1;
+  }
+}
+
+html.nk-motion-off .hero-cta,
+html.nk-motion-off .hero-cta::before,
+html.nk-motion-off .hero-cta__text,
+html.nk-motion-off .hero-cta__arrow svg {
+  transition-duration: 0s !important;
+}
+
+html.nk-motion-off .hero-cta:not([aria-disabled='true']):active {
+  scale: 1;
+}
+
+/* ---------- Type styles (Typography > Type style, hero--type-*) ----------
+   Each restyles the copy only. .hero.hero--type-* outranks the layout rules that set
+   --hero-heading-size, so a type style keeps its scale in every layout. */
+.hero.hero--type-quiet { --hero-heading-size: clamp(1.75rem, 3.4vw, 3rem); --hero-text-size: 0.9375rem; }
+.hero--type-quiet .hero__heading { font-family: var(--nk-font-body); font-weight: 400; letter-spacing: -0.015em; line-height: 1.12; }
+.hero--type-quiet .hero__heading em { font-family: var(--nk-font-heading); font-weight: 400; opacity: 0.8; }
+.hero--type-quiet .hero__text { font-family: var(--nk-font-body); font-style: normal; line-height: 1.6; opacity: 0.85; }
+.hero--type-quiet .hero__eyebrow { letter-spacing: 0.14em; }
+
+.hero.hero--type-lowercase { --hero-heading-size: clamp(2.5rem, 6vw, 5.5rem); --hero-text-size: 1rem; }
+.hero--type-lowercase .hero__heading { font-family: var(--nk-font-body); font-weight: 400; text-transform: lowercase; letter-spacing: -0.05em; line-height: 0.95; }
+.hero--type-lowercase .hero__heading em { font-family: var(--nk-font-heading); font-weight: 400; letter-spacing: -0.03em; }
+.hero--type-lowercase .hero__text { font-family: var(--nk-font-body); font-style: normal; text-transform: lowercase; line-height: 1.5; }
+.hero--type-lowercase .hero__eyebrow { text-transform: lowercase; letter-spacing: 0.02em; font-family: var(--nk-font-body); font-size: calc(0.875rem * var(--hero-eyebrow-scale, 1)); }
+
+.hero.hero--type-caption { --hero-heading-size: clamp(0.875rem, 1.1vw, 1.0625rem); --hero-text-size: 0.75rem; }
+.hero--type-caption .hero__heading { font-family: var(--nk-font-spec); font-weight: 500; text-transform: uppercase; letter-spacing: 0.26em; line-height: 1.7; }
+.hero--type-caption .hero__heading em { font-style: normal; font-weight: 400; opacity: 0.7; }
+.hero--type-caption .hero__text { font-family: var(--nk-font-spec); font-style: normal; text-transform: uppercase; letter-spacing: 0.14em; line-height: 1.8; }
+
+.hero.hero--type-poster { --hero-heading-size: clamp(3.5rem, 12.5vw, 11rem); --hero-text-size: 1rem; }
+.hero--type-poster .hero__heading { font-family: var(--nk-font-body); font-weight: 800; text-transform: uppercase; letter-spacing: -0.045em; line-height: 0.84; }
+.hero--type-poster .hero__heading em { font-style: normal; font-weight: 800; -webkit-text-fill-color: transparent; -webkit-text-stroke: max(1px, 0.012em) currentColor; }
+.hero--type-poster .hero__text { font-family: var(--nk-font-body); font-style: normal; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1.5; }
+
+.hero.hero--type-romantic { --hero-heading-size: clamp(3rem, 9vw, 8.5rem); --hero-text-size: clamp(1.125rem, 1.6vw, 1.5rem); }
+.hero--type-romantic .hero__heading { font-style: italic; font-weight: 300; letter-spacing: -0.025em; line-height: 0.98; }
+.hero--type-romantic .hero__heading em { font-weight: 300; opacity: 0.78; }
+.hero--type-romantic .hero__eyebrow { font-family: var(--nk-font-heading); font-style: italic; text-transform: none; letter-spacing: 0.01em; font-size: calc(1rem * var(--hero-eyebrow-scale, 1)); }
+
+.hero--type-typewriter { --hero-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', 'Courier New', monospace; }
+.hero.hero--type-typewriter { --hero-heading-size: clamp(1.625rem, 3.6vw, 3.25rem); --hero-text-size: 0.875rem; }
+.hero--type-typewriter .hero__heading { font-family: var(--hero-mono); font-weight: 400; letter-spacing: -0.03em; line-height: 1.12; }
+.hero--type-typewriter .hero__heading em { font-style: normal; font-weight: 400; opacity: 0.65; }
+.hero--type-typewriter .hero__text { font-family: var(--hero-mono); font-style: normal; line-height: 1.65; }
+.hero--type-typewriter .hero__eyebrow { font-family: var(--hero-mono); letter-spacing: 0.04em; text-transform: none; }
+.hero--type-typewriter .hero__eyebrow > span::before { content: '— '; }
+
+.hero.hero--type-classic { --hero-heading-size: clamp(2.25rem, 6vw, 5.75rem); --hero-text-size: 1rem; }
+.hero--type-classic .hero__heading { text-transform: uppercase; letter-spacing: 0.08em; line-height: 1.02; font-weight: 400; }
+.hero--type-classic .hero__heading em { letter-spacing: 0.04em; text-transform: none; }
+.hero--type-classic .hero__text { font-style: normal; letter-spacing: 0.02em; }
+
+.hero.hero--type-mixed { --hero-heading-size: clamp(1rem, 1.5vw, 1.375rem); --hero-text-size: 1rem; }
+.hero--type-mixed .hero__heading { font-family: var(--nk-font-body); font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; line-height: 1.2; }
+.hero--type-mixed .hero__heading em { display: block; margin-top: 0.15em; font-family: var(--nk-font-heading); font-size: 5.2em; font-weight: 400; text-transform: none; letter-spacing: -0.035em; line-height: 0.9; }
+.hero--type-mixed .hero__text { font-family: var(--nk-font-body); font-style: normal; }
+
+/* Custom fonts (Typography > Use a custom heading/text font) win over any type style. */
+.hero.hero--custom-heading .hero__heading,
+.hero.hero--custom-heading .hero__heading em { font-family: var(--hero-custom-heading); }
+.hero.hero--custom-heading:is(.hero--type-signature, .hero--type-classic, .hero--type-romantic) .hero__heading { font-weight: var(--hero-custom-heading-weight, 400); }
+.hero.hero--custom-text .hero__text { font-family: var(--hero-custom-text); }
+
+/* ---------- Phone media (Phone media settings, snippets/hero-media.liquid) ---------- */
+.hero__media-layer { position: absolute; inset: 0; }
+.hero__media-layer--phone { display: none; }
+@media (max-width: 749px) {
+  .hero__media-layer--desktop { display: none; }
+  .hero__media-layer--phone { display: block; }
+}
+
+/* ---------- Slideshow (Slide blocks, <nk-hero-slides>) ----------
+   Slides stack; [data-active] is shown. data-transition picks fade, zoom or slide. Before the
+   script runs only the first slide shows, so the hero is never empty. */
+nk-hero-slides { position: absolute; inset: 0; display: block; }
+.hero__slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; }
+.hero__slide[data-active] { opacity: 1; visibility: visible; z-index: 1; }
+.hero__slide .background-video__toggle { display: none; }
+nk-hero-slides[data-ready] .hero__slide { transition: opacity 1200ms cubic-bezier(.65, 0, .35, 1), visibility 0s linear 1200ms, transform 1200ms cubic-bezier(.65, 0, .35, 1); }
+nk-hero-slides[data-ready] .hero__slide[data-active] { transition: opacity 1200ms cubic-bezier(.65, 0, .35, 1), visibility 0s, transform 1200ms cubic-bezier(.65, 0, .35, 1); }
+nk-hero-slides[data-transition='zoom'] .hero__slide :is(img, video) { transform: scale(1.08); transition: transform 1600ms cubic-bezier(.22, .61, .36, 1); }
+nk-hero-slides[data-transition='zoom'] .hero__slide[data-active] :is(img, video) { transform: scale(1); transition-duration: calc(var(--slide-interval, 6000ms) + 1200ms); }
+nk-hero-slides[data-transition='slide'] .hero__slide { opacity: 1; transform: translateX(100%); }
+nk-hero-slides[data-transition='slide'] .hero__slide[data-active] { transform: translateX(0); }
+nk-hero-slides[data-transition='slide'] .hero__slide[data-active] ~ .hero__slide:not([data-active]) { transform: translateX(100%); }
+nk-hero-slides[data-transition='slide'] .hero__slide:not([data-active]):has(~ .hero__slide[data-active]) { transform: translateX(-100%); }
+
+.hero__slide-controls {
+  position: absolute; z-index: 3;
+  right: max(var(--nk-gutter), env(safe-area-inset-right, 0px));
+  /* --hero-controls-lift (set by <nk-hero-slides>) is how far the hero runs below the first
+     screen, e.g. a full-screen hero under the announcement bar, so the controls stay in view. */
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px) + var(--hero-controls-lift, 0px));
+  display: flex; align-items: center; gap: 6px;
+  color: var(--nk-color-text);
+}
+.hero__slide-arrow, .hero__slide-pause, .hero__slide-dot { display: grid; place-items: center; min-width: 36px; min-height: 36px; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
+.hero__slide-arrow, .hero__slide-pause { border: 1px solid color-mix(in oklab, currentColor 40%, transparent); border-radius: 50%; font-size: 14px; transition: background 250ms, color 250ms; }
+.hero__slide-pause { font-size: 10px; margin-inline-start: 6px; }
+.hero__slide-dots { display: flex; align-items: center; }
+.hero__slide-controls[data-no-dots] .hero__slide-dots { display: none; }
+.hero__slide-dot { min-width: 28px; }
+.hero__slide-dot > span { position: relative; display: block; width: 18px; height: 2px; overflow: hidden; background: color-mix(in oklab, currentColor 35%, transparent); }
+.hero__slide-dot > span::after { content: ''; position: absolute; inset: 0; background: currentColor; transform: scaleX(0); transform-origin: left; }
+.hero__slide-dot[aria-current] > span::after { transform: scaleX(1); }
+/* The active dot fills over the slide's time while the slideshow runs. */
+.hero:has(nk-hero-slides[data-running]) .hero__slide-dot[aria-current] > span::after { animation: hero-slide-progress var(--hero-slide-interval, 6s) linear; }
+@keyframes hero-slide-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+:is(.hero__slide-arrow, .hero__slide-pause, .hero__slide-dot):focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  :is(.hero__slide-arrow, .hero__slide-pause):hover { background: var(--nk-color-text); color: var(--nk-color-bg); }
+}
+@media (max-width: 749px) {
+  .hero__slide-controls { bottom: calc(14px + env(safe-area-inset-bottom, 0px) + var(--hero-controls-lift, 0px)); gap: 2px; }
+  .hero__slide-arrow { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  nk-hero-slides .hero__slide, nk-hero-slides .hero__slide :is(img, video) { transition: none !important; transform: none !important; }
+  .hero__slide-dot > span::after { animation: none !important; }
+}
