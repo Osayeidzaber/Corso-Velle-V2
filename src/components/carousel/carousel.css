@@ -180,6 +180,9 @@
 .product-carousel__measurements { width: 100%; min-width: 0; }
 .product-carousel__measurements .measurement-panel { margin-top: 0; }
 .product-carousel__measurements[hidden], .product-carousel__measurements [hidden] { display: none !important; }
+/* The chart fades in while the engine eases the space open beneath it. */
+.product-carousel__measurements:not([hidden]) { animation: product-carousel-details 320ms var(--nk-ease-out) both; }
+@keyframes product-carousel-details { from { opacity: 0; transform: translateY(-8px); } }
 .product-carousel__size-details { display: inline-flex; align-items: center; min-height: 44px; font-size: .8125rem; text-underline-offset: 4px; }
 
 @media (max-width: 599px) {
@@ -198,5 +201,6 @@
   .product-carousel[data-effect-ready] .card__meta,
   .product-carousel[data-effect-ready] .product-carousel__purchase,
   .product-carousel[data-revealed] .product-carousel__caption,
+  .product-carousel__measurements,
   .product-carousel__size { animation: none; }
 }

@@ -170,7 +170,7 @@ export function createFlexCarousel(root: HTMLElement, parentSignal: AbortSignal,
   let activeIndex = -1; let interactedAt = -Infinity; let autoplayAt = performance.now();
   let hasFocus = false; let held = false; let userPaused = false;
   let layout: Metrics | null = null; let resnap = true; let hover = ''; let lift = 1;
-  let energy = 0; let lastPos = 0; let captionSpace = 0; let detailsSpace = 0; let homeY = 0; let captionTop = -1;
+  let energy = 0; let lastPos = 0; let captionSpace = 0; let detailsSpace = 0; let detailsTarget = 0; let homeY = 0; let captionTop = -1;
   let hoverIndex = -1;
   let flowVelocity = 0;
   const reveal = slides.map(() => 0);
@@ -369,15 +369,20 @@ export function createFlexCarousel(root: HTMLElement, parentSignal: AbortSignal,
     }
   };
 
+  /** Grow the stage and the renderer together, so the same frame's layout sees the new height. */
+  const applyDetails = (space: number) => {
+    height = Math.max(1, height - detailsSpace + space);
+    detailsSpace = space;
+    stage.style.setProperty('--carousel-details-height', `${space}px`);
+    renderer.setSize(width, height);
+    lens?.resize(width, height);
+  };
   const measureCaption = () => {
-    // Grow space below the scene for measurements instead of shrinking cards/moving size buttons
-    // when the pointer previews a size. Include the purchase grid's extra gap for the visible row.
+    // Measurements open below the scene: the stage grows by their height (eased in frame()) while
+    // the scene keeps its height, so cards and caption stay put. Setting the space here and letting
+    // ResizeObserver report the new height later made the caption jump up and back for a frame.
     const details = measurements && !measurements.hidden ? measurements.offsetHeight + 12 : 0;
-    if (details !== detailsSpace) {
-      detailsSpace = details;
-      stage.style.setProperty('--carousel-details-height', `${details}px`);
-      dirty = true; start();
-    }
+    if (details !== detailsTarget) { detailsTarget = details; dirty = true; start(); }
     // Reserve the tallest caption seen, so the cards don't resize from product to product.
     const next = Math.max(captionSpace, Math.ceil(caption.offsetHeight - details));
     if (next !== captionSpace) { captionSpace = next; dirty = true; start(); }
@@ -407,9 +412,16 @@ export function createFlexCarousel(root: HTMLElement, parentSignal: AbortSignal,
     if (!alive) return;
     const dt = Math.min(.05, Math.max(.001, (now - last) / 1000));
     last = now;
+    let animating = false;
+    if (detailsSpace !== detailsTarget) {
+      // Whole pixels: ResizeObserver reports integer heights, and a fractional space made the
+      // caption alternate by a pixel against them.
+      const eased = Math.round(detailsSpace + (detailsTarget - detailsSpace) * (1 - Math.exp(-dt / .07)));
+      applyDetails(eased === detailsSpace ? detailsTarget : eased);
+      animating = true;
+    }
     const m = metrics();
     const n = slots.length;
-    let animating = false;
 
     if (resnap) {
       goal = snapPoint(m, m.centers[initialIndex] ?? 0); pos = goal; vel = 0; resnap = false;

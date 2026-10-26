@@ -223,13 +223,22 @@ describe('editorial carousel responsiveness', () => {
     details.hidden = false;
     resizeObservers.find(observer => observer.target?.classList.contains('product-carousel__caption'))!.callback();
     resizeObservers.find(observer => observer.target === stage)!.callback();
+    // The space eases open; the cards (and so the marker) must not move at any point, including
+    // mid-animation, where they used to jump up and back.
     advance(50);
+    const opening = parseFloat(stage.style.getPropertyValue('--carousel-details-height'));
+    expect(opening).toBeGreaterThan(0);
+    expect(opening).toBeLessThan(212);
+    expect(marker.style.transform).toBe(baseline);
+    advance(600);
     expect(stage.style.getPropertyValue('--carousel-details-height')).toBe('212px');
     expect(marker.style.transform).toBe(baseline);
     details.hidden = true;
     resizeObservers.find(observer => observer.target?.classList.contains('product-carousel__caption'))!.callback();
     resizeObservers.find(observer => observer.target === stage)!.callback();
     advance(50);
+    expect(marker.style.transform).toBe(baseline);
+    advance(600);
     expect(stage.style.getPropertyValue('--carousel-details-height')).toBe('0px');
     expect(marker.style.transform).toBe(baseline);
   });
