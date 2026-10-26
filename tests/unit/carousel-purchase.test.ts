@@ -116,8 +116,12 @@ describe('carousel shop mode', () => {
     await mount([product(1), product(2)]);
     hooks.onActive(1);
     addButton().click();
+    sizes()[0]!.click();
     sizes()[2]!.click();
-    sizes()[2]!.click();
+    expect(add).not.toHaveBeenCalled();
+    expect(sizes().map((button) => button.getAttribute('aria-pressed'))).toEqual(['false', null, 'true']);
+    expect(addButton().getAttribute('aria-label')).toBe('product.add_to_cart: Product 2 (L)');
+    addButton().click();
     addButton().click();
     expect(add).toHaveBeenCalledOnce();
     expect(add.mock.calls[0]![0]).toEqual([{ id: 23, quantity: 2 }]);
@@ -138,6 +142,7 @@ describe('carousel shop mode', () => {
     await mount([product(1), product(2)]);
     addButton().click();
     sizes()[0]!.click();
+    addButton().click();
     hooks.onActive(1);
     expect(addButton().getAttribute('aria-label')).toBe('product.adding: Product 1');
     finish(ok);
@@ -170,9 +175,28 @@ describe('carousel shop mode', () => {
     await mount([product(1), product(2)]);
     addButton().click();
     sizes()[0]!.click();
+    addButton().click();
     await vi.waitFor(() => expect(status()).toBe('Only 1 left'));
     expect(sizeList().hasAttribute('data-open')).toBe(true);
+    expect(sizes()[0]!.getAttribute('aria-pressed')).toBe('true');
     expect(addButton().disabled).toBe(false);
+  });
+
+  it('selects a size without adding, toggles it off, and closes when none is chosen', async () => {
+    const add = vi.spyOn(cart, 'add');
+    await mount([product(1), product(2)]);
+    addButton().click();
+    sizes()[0]!.click();
+    expect(add).not.toHaveBeenCalled();
+    expect(addButton().getAttribute('aria-label')).toBe('product.add_to_cart: Product 1 (S)');
+    sizes()[0]!.click();
+    expect(sizes()[0]!.getAttribute('aria-pressed')).toBe('false');
+    expect(addButton().getAttribute('aria-label')).toBe('Select a size: Product 1');
+    sizes()[1]!.click();
+    expect(sizes()[1]!.hasAttribute('aria-pressed')).toBe(false);
+    addButton().click();
+    expect(sizeList().hasAttribute('data-open')).toBe(false);
+    expect(add).not.toHaveBeenCalled();
   });
 
   it('sends subscription-only products to their product page', async () => {

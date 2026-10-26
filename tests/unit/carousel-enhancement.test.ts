@@ -117,10 +117,11 @@ async function mountShop(products: CarouselProduct[], charts = false): Promise<{
         <div data-measurement-footer><button data-measure-unit="in">in</button><button data-measure-unit="cm">cm</button></div>
       </div><a data-size-details href="${data.url}">Full details</a></template>` : ''}</li>`).join('')}
   </ul></div>
+  <div class="product-carousel__purchase" data-ref="purchase">
+  <button type="button" data-ref="add" disabled><span data-add-label></span><span data-add-product></span></button>
   <div data-ref="sizes" hidden><span data-ref="sizes-label"></span><div data-size-options></div><span data-ref="sizes-context" hidden></span></div>
   <div data-ref="measurements" hidden></div>
-  <button type="button" data-ref="add" disabled><span data-add-label></span><span data-add-product></span></button>
-  <p data-ref="purchase-status"></p></nk-carousel>`;
+  <p data-ref="purchase-status"></p></div></nk-carousel>`;
   const root = document.querySelector<NkElement>('nk-carousel')!;
   root.disconnectedCallback(); root.connectedCallback();
   for (const observer of [...observers]) {
@@ -157,6 +158,8 @@ describe('carousel size selector measurements', () => {
     expect(setHeld).toHaveBeenLastCalledWith(true);
     hooks.onActive(1);
     expect(region.hidden).toBe(true);
+    // Focus returns to Add to cart, which holds like any keyboard focus on the purchase controls.
+    addButton().blur();
     expect(setHeld).toHaveBeenLastCalledWith(false);
   });
 
@@ -169,6 +172,24 @@ describe('carousel size selector measurements', () => {
     expect(document.activeElement).toBe(sizeButtons()[2]);
     expect(sizeButtons().map(button => button.tabIndex)).toEqual([-1, -1, 0]);
     expect(root.querySelector('[data-measurement-active-size]')!.textContent).toBe('L');
+  });
+
+  it('keeps the chart open on the way to it and falls back to the chosen size on leaving', async () => {
+    const { root } = await mountShop([product(1), product(2)], true);
+    const region = root.querySelector<HTMLElement>('[data-ref="measurements"]')!;
+    const active = () => region.querySelector('[data-measurement-active-size]')!.textContent;
+    addButton().click();
+    sizeButtons()[0]!.click();
+    hover(sizeButtons()[2]!);
+    expect(active()).toBe('L');
+    root.querySelector('[data-ref="sizes"]')!.dispatchEvent(new PointerEvent('pointerleave', { pointerType: 'mouse' }));
+    expect(region.hidden).toBe(false);
+    expect(active()).toBe('L');
+    root.querySelector('[data-ref="purchase"]')!.dispatchEvent(new PointerEvent('pointerleave', { pointerType: 'mouse' }));
+    expect(active()).toBe('Small (S)');
+    sizeButtons()[0]!.click();
+    root.querySelector('[data-ref="purchase"]')!.dispatchEvent(new PointerEvent('pointerleave', { pointerType: 'mouse' }));
+    expect(region.hidden).toBe(true);
   });
 
   it('never previews on a touch hover event', async () => {

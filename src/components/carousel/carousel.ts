@@ -306,6 +306,8 @@ export class NkCarousel extends NkElement {
   #adding: CarouselProduct | null = null;
   /** Size whose measurements are being previewed (pointer or keyboard focus). */
   #preview: string | null = null;
+  /** Size the shopper picked; Add to cart adds it. Hovering other sizes only previews them. */
+  #selected: string | null = null;
   #purchaseHover = false;
   #purchaseFocus = false;
   #measureUnit: MeasureUnit | null = null;
@@ -346,6 +348,7 @@ export class NkCarousel extends NkElement {
       if (template) measurements.append(template.content.cloneNode(true));
     }
     this.#preview = null;
+    this.#selected = null;
     const status = this.ref('purchase-status');
     if (status && !this.#adding) status.textContent = '';
     const list = this.ref('sizes');
@@ -359,7 +362,6 @@ export class NkCarousel extends NkElement {
       const legend = this.ref('sizes-label');
       if (legend) legend.textContent = product?.optionName ?? '';
       const soldOut = this.dataset.soldOutLabel ?? t('product.sold_out');
-      const addLabel = t('product.add_to_cart');
       list.querySelector('[data-size-options]')?.replaceChildren(...(choices?.choices ?? []).map(({ value, variant }, index) => {
         const button = document.createElement('button');
         button.type = 'button';
@@ -369,7 +371,7 @@ export class NkCarousel extends NkElement {
         button.dataset.sizeValue = value;
         if (variant) {
           button.dataset.variantId = String(variant.id);
-          button.setAttribute('aria-label', `${addLabel}: ${product!.title} (${value})`);
+          button.setAttribute('aria-pressed', 'false');
         } else {
           button.disabled = true;
           const hint = document.createElement('span');
@@ -412,7 +414,7 @@ export class NkCarousel extends NkElement {
     const hadFocus = Boolean(list?.contains(document.activeElement));
     this.#open = null;
     list?.removeAttribute('data-open');
-    this.#showMeasurements(null);
+    this.#select(null);
     this.#updateHold();
     this.#updateButton();
     if (restoreFocus || hadFocus) this.ref<HTMLButtonElement>('add')?.focus({ preventScroll: true });
@@ -442,6 +444,15 @@ export class NkCarousel extends NkElement {
     region.querySelector('[data-measurement-panel]')?.replaceWith(document.importNode(panel, true));
     region.removeAttribute('data-product-page-chart');
     this.#showMeasurements(this.#preview);
+  }
+
+  #select(size: string | null): void {
+    this.#selected = size;
+    this.#sizeButtons().forEach((button) => {
+      if (!button.disabled) button.setAttribute('aria-pressed', String(button.dataset.sizeValue === size));
+    });
+    this.#showMeasurements(size);
+    this.#updateButton();
   }
 
   #showMeasurements(size: string | null): void {
@@ -478,20 +489,21 @@ export class NkCarousel extends NkElement {
     const external = !product || product.sellingPlan;
     const hasSizes = Boolean(product && !soldOut && !external && product.option >= 0);
     const open = Boolean(this.#open && this.#open === product);
+    const chosen = open && this.#selected ? ` (${this.#selected})` : '';
     const label = this.#adding ? t('product.adding')
       : soldOut ? t('product.sold_out')
       : external ? t('product.choose_options')
-      : open ? this.dataset.selectSizeLabel ?? t('product.select_size_prompt')
+      : open && !chosen ? this.dataset.selectSizeLabel ?? t('product.select_size_prompt')
       : t('product.add_to_cart');
     // One request at a time: the button stays busy until Shopify confirms or rejects the add.
     button.disabled = soldOut || Boolean(this.#adding);
     button.toggleAttribute('aria-busy', Boolean(this.#adding));
     if (hasSizes) button.setAttribute('aria-expanded', String(open)); else button.removeAttribute('aria-expanded');
-    button.setAttribute('aria-label', `${label}: ${title}`);
+    button.setAttribute('aria-label', `${label}: ${title}${chosen}`);
     const labelNode = button.querySelector('[data-add-label]');
     if (labelNode) labelNode.textContent = label;
     const productNode = button.querySelector('[data-add-product]');
-    if (productNode) productNode.textContent = title;
+    if (productNode) productNode.textContent = title + chosen;
     this.ref('sizes')?.setAttribute('aria-busy', String(Boolean(this.#adding)));
     this.toggleAttribute('data-active-sold-out', soldOut);
     this.toggleAttribute('data-sizes-open', open);
@@ -558,21 +570,24 @@ export class NkCarousel extends NkElement {
     if (sizes) {
       const preview = (event: Event) => {
         if (event instanceof PointerEvent && event.pointerType === 'touch') return;
+        // Opening the sizes with a mouse moves focus to the first size; only keyboard focus previews.
+        if (event.type === 'focusin' && !(event.target as Element).matches(':focus-visible')) return;
         const size = (event.target as Element).closest<HTMLElement>('.product-carousel__size');
         if (size && this.#open) this.#showMeasurements(size.dataset.sizeValue ?? null);
       };
       this.on(sizes, 'pointerover', preview);
       this.on(sizes, 'focusin', preview);
-      this.on(sizes, 'pointerleave', () => this.#showMeasurements(null));
+      // The chart sits below the sizes, inside the purchase panel: the preview stays while the
+      // pointer crosses to it (unit toggle, details link) and falls back to the chosen size after.
+      if (purchase) this.on(purchase, 'pointerleave', () => { if (this.#open) this.#showMeasurements(this.#selected); });
       this.on(sizes, 'focusout', (event) => {
-        if (!sizes.contains(event.relatedTarget as Node | null)) this.#showMeasurements(null);
+        if (!purchase?.contains(event.relatedTarget as Node | null)) this.#showMeasurements(this.#selected);
       });
       this.on(sizes, 'click', (event) => {
         const size = (event.target as Element).closest<HTMLButtonElement>('.product-carousel__size');
-        const product = this.#open;
-        if (!size || size.disabled || !product || this.#adding || product !== this.#products[this.#active]) return;
-        const variant = product.variants.find((candidate) => String(candidate.id) === size.dataset.variantId);
-        if (variant) void this.#add(product, variant, size.dataset.sizeValue ?? '');
+        if (!size || size.disabled || !this.#open || this.#adding || this.#open !== this.#products[this.#active]) return;
+        const value = size.dataset.sizeValue ?? null;
+        this.#select(value === this.#selected ? null : value);
       });
       this.on(sizes, 'keydown', (event) => {
         if (!['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
@@ -623,8 +638,10 @@ export class NkCarousel extends NkElement {
         if (only) void this.#add(product, only, '');
         return;
       }
-      if (this.#open === product) this.#closeSizes(true);
-      else this.#openSizes(product);
+      if (this.#open !== product) { this.#openSizes(product); return; }
+      const variant = this.#selected ? sizeChoices(product).choices.find((choice) => choice.value === this.#selected)?.variant : null;
+      if (variant) void this.#add(product, variant, this.#selected!);
+      else this.#closeSizes(true);
     });
   }
 }

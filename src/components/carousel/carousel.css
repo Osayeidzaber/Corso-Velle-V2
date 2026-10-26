@@ -166,6 +166,8 @@
   animation-delay: calc(var(--i, 0) * 30ms);
 }
 .product-carousel__size:not(:disabled):hover { border-color: var(--nk-accent-border); background: var(--nk-accent-subtle); }
+.product-carousel__size[aria-pressed='true'],
+.product-carousel__size[aria-pressed='true']:hover { border-color: var(--nk-color-accent); background: var(--nk-color-accent); color: var(--nk-color-accent-text); }
 .product-carousel__size:focus-visible { border-color: var(--nk-color-accent); outline: 2px solid var(--nk-focus); outline-offset: 2px; }
 .product-carousel__size:disabled { color: var(--nk-color-text-muted); cursor: not-allowed; text-decoration: line-through; opacity: .55; }
 .product-carousel__add { position: relative; min-width: min(100%, 300px); max-width: 100%; overflow: hidden; transition: opacity var(--nk-dur-instant) var(--nk-ease-out), background-color 240ms var(--nk-ease-out), color 240ms var(--nk-ease-out); }
