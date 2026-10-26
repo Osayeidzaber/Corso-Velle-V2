@@ -116,11 +116,12 @@
             </div>
 
           {%- when 'title' -%}
+            {%- capture title_style -%}--product-title-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }};--product-title-chars:{{ product.title.size }};{%- endcapture -%}
             {%- if request.design_mode or block.settings.animate == false -%}
-              <h1 class="product__title" style="--product-title-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }};" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
+              <h1 class="product__title" style="{{ title_style }}" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
             {%- else -%}
               <nk-text effect="cut" split="words" play-on-load {{ block.shopify_attributes }}>
-                <h1 class="product__title" style="--product-title-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }};" data-text-target>{{ product.title | escape }}</h1>
+                <h1 class="product__title" style="{{ title_style }}" data-text-target>{{ product.title | escape }}</h1>
               </nk-text>
             {%- endif -%}
 

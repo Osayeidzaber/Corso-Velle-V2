@@ -28,6 +28,7 @@
   display: grid;
   gap: var(--product-info-gap, 20px);
   align-content: start;
+  container-type: inline-size;
 }
 
 .product-section[data-sticky-info='false'] .product__info { position: static; }
@@ -94,7 +95,12 @@
 
 .product__title {
   margin: 0;
-  font-size: calc(clamp(2rem, 4.2vw, 3.35rem) * var(--product-title-scale, 1));
+  /* Long names ("Azure | Embroidered Shirt") shrink to fit the info column on one line, down to 2rem;
+     .46em is a little over the serif's average glyph width. */
+  font-size: min(
+    calc(clamp(2rem, 4.2vw, 3.35rem) * var(--product-title-scale, 1)),
+    max(2rem, calc(100cqi / (var(--product-title-chars, 1) * .46)))
+  );
   line-height: 1.02;
   text-wrap: balance;
 }
