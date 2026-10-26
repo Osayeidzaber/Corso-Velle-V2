@@ -1,0 +1,41 @@
+{%- doc -%}
+  Renders sibling product links (colorway / edition switcher) on the product page when either
+  `product.metafields.custom.color_siblings` is populated.
+
+  @param {object} product - Current product
+{%- enddoc -%}
+{%- liquid
+  assign color_siblings = product.metafields.custom.color_siblings.value
+-%}
+
+{%- if color_siblings != blank -%}
+  <div class="product__siblings">
+    <span class="option__legend spec">
+      Color: <span class="option__selected-label">{{ product.metafields.custom.color_name.value | default: product.title | escape }}</span>
+    </span>
+    <div class="product__siblings-list">
+      {%- for sibling in color_siblings -%}
+        <a
+          href="{{ sibling.url }}"
+          class="product__sibling{% if sibling.id == product.id %} is-active{% endif %}"
+          aria-label="{{ sibling.title | escape }}"
+          {% if sibling.id == product.id %}aria-current="page"{% endif %}
+        >
+          {%- if sibling.featured_media -%}
+            {{
+              sibling.featured_media
+              | image_url: width: 120
+              | image_tag:
+                width: 44,
+                height: 56,
+                loading: 'lazy',
+                alt: sibling.title
+            }}
+          {%- else -%}
+            <span class="spec">{{ sibling.title | truncate: 12 | escape }}</span>
+          {%- endif -%}
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}

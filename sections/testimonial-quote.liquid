@@ -1,0 +1,444 @@
+{%- comment -%}
+  One large quote with attribution. Adapted from HyperUI marketing/testimonials #1.
+  Source and license: docs/SECTION-SOURCES.md.
+{%- endcomment -%}
+<section class="testimonial-quote kit-section full-width section-spacing section-presentation color-{{ section.settings.color_scheme }}" data-heading="{{ section.settings.heading_size }}" data-corners="{{ section.settings.corner_style }}" data-buttons="{{ section.settings.button_size }}" data-size="{{ section.settings.size }}" data-align="{{ section.settings.alignment }}" data-font="{{ section.settings.quote_font }}" data-card="{{ section.settings.card_style }}" data-mark="{{ section.settings.mark }}" style="{% render 'section-presentation', presentation: section.settings %}--quote-width:{{ section.settings.max_width }}px;">
+  {%- case section.settings.entrance -%}{%- when 'fade' -%}<nk-reveal class="kit-entrance" mode="fade">{%- when 'stagger' -%}<nk-stagger class="kit-entrance">{%- endcase -%}
+  <figure class="testimonial-quote__inner kit-card">
+    {%- if section.settings.mark != 'none' -%}<svg class="testimonial-quote__mark" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor"><path d="M7.17 6.17A5.5 5.5 0 0 0 3 11.5V18a1 1 0 0 0 1 1h6.5a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1H6.06a3.5 3.5 0 0 1 2.35-2.79 1 1 0 1 0-.62-1.9Zm10 0A5.5 5.5 0 0 0 13 11.5V18a1 1 0 0 0 1 1h6.5a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1h-4.44a3.5 3.5 0 0 1 2.35-2.79 1 1 0 1 0-.62-1.9Z"/></svg>{%- endif -%}
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'rating' -%}
+          {%- assign rating_label = 'sections.testimonials.rating' | t: rating: block.settings.rating -%}
+          <p class="testimonial-quote__stars" role="img" aria-label="{{ rating_label | escape }}" {{ block.shopify_attributes }}>{%- for i in (1..5) -%}<span aria-hidden="true"{% if i > block.settings.rating %} class="is-empty"{% endif %}>★</span>{%- endfor -%}</p>
+        {%- when 'quote' -%}<blockquote class="testimonial-quote__text" {{ block.shopify_attributes }}>{{ block.settings.quote }}</blockquote>
+        {%- when 'author' -%}
+          <figcaption class="testimonial-quote__author" {{ block.shopify_attributes }}>
+            {%- if block.settings.image != blank -%}{{ block.settings.image | image_url: width: 120 | image_tag: loading: 'lazy', class: 'testimonial-quote__avatar', alt: '' }}{%- endif -%}
+            <span><strong>{{ block.settings.name | escape }}</strong>{%- if block.settings.role != blank -%}<span class="text-muted">{{ block.settings.role | escape }}</span>{%- endif -%}</span>
+          </figcaption>
+        {%- when 'logo' -%}
+          {%- if block.settings.image != blank -%}<div class="testimonial-quote__logo" style="--logo-height:{{ block.settings.height }}px;" {{ block.shopify_attributes }}>{{ block.settings.image | image_url: width: 400 | image_tag: loading: 'lazy' }}</div>{%- endif -%}
+      {%- endcase -%}
+    {%- endfor -%}
+  </figure>
+  {%- case section.settings.entrance -%}{%- when 'fade' -%}</nk-reveal>{%- when 'stagger' -%}</nk-stagger>{%- endcase -%}
+</section>
+
+{% stylesheet %}
+.testimonial-quote__inner { width: min(var(--content-width), var(--quote-width, 860px)); margin: 0 auto; display: grid; gap: 24px; justify-items: start; }
+.testimonial-quote[data-align='center'] .testimonial-quote__inner { justify-items: center; text-align: center; }
+.testimonial-quote__mark { width: 36px; height: 36px; color: var(--nk-color-accent); }
+.testimonial-quote[data-mark='large'] .testimonial-quote__mark { width: 72px; height: 72px; opacity: 0.35; }
+.testimonial-quote__stars { margin: 0; letter-spacing: 0.15em; color: var(--nk-color-accent); }
+.testimonial-quote__stars .is-empty { opacity: 0.25; }
+.testimonial-quote__text { margin: 0; font-family: var(--nk-font-heading); font-size: clamp(1.4rem, 3vw, 2.25rem); line-height: 1.3; text-wrap: pretty; overflow-wrap: anywhere; }
+.testimonial-quote[data-font='body'] .testimonial-quote__text { font-family: var(--nk-font-body); font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.5; }
+.testimonial-quote[data-size='small'] .testimonial-quote__text { font-size: clamp(1.15rem, 2vw, 1.5rem); }
+.testimonial-quote[data-size='large'] .testimonial-quote__text { font-size: clamp(1.75rem, 4.5vw, 3.25rem); }
+.testimonial-quote__text p { margin: 0; }
+.testimonial-quote__author { display: flex; align-items: center; gap: 12px; text-align: start; }
+.testimonial-quote__author > span { display: grid; gap: 2px; font-size: 0.875rem; }
+.testimonial-quote__avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+.testimonial-quote__logo img { height: var(--logo-height, 32px); width: auto; opacity: 0.8; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Testimonial quote",
+  "settings": [
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Quote size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "regular",
+          "label": "Regular"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "select",
+      "id": "quote_font",
+      "label": "Quote font",
+      "options": [
+        {
+          "value": "heading",
+          "label": "Heading font"
+        },
+        {
+          "value": "body",
+          "label": "Body font"
+        }
+      ],
+      "default": "heading"
+    },
+    {
+      "type": "select",
+      "id": "mark",
+      "label": "Quote mark",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small accent"
+        },
+        {
+          "value": "large",
+          "label": "Large faded"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "small"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 480,
+      "max": 1200,
+      "step": 40,
+      "unit": "px",
+      "default": 880
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Background panel",
+      "options": [
+        {
+          "value": "plain",
+          "label": "Plain"
+        },
+        {
+          "value": "surface",
+          "label": "Surface fill"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        },
+        {
+          "value": "shadow",
+          "label": "Soft shadow"
+        }
+      ],
+      "default": "plain"
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "xlarge",
+          "label": "Extra large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "corner_style",
+      "label": "Corners",
+      "options": [
+        {
+          "value": "theme",
+          "label": "Theme default"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "soft",
+          "label": "Soft"
+        },
+        {
+          "value": "round",
+          "label": "Round"
+        }
+      ],
+      "default": "theme",
+      "info": "Applies to images, cards and buttons in this section."
+    },
+    {
+      "type": "select",
+      "id": "button_size",
+      "label": "Button size",
+      "options": [
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "regular",
+          "label": "Theme default"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "select",
+      "id": "entrance",
+      "label": "Entrance animation",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fade",
+          "label": "Fade in section"
+        },
+        {
+          "value": "stagger",
+          "label": "Items rise one by one"
+        }
+      ],
+      "default": "none",
+      "info": "Skipped when visitors prefer reduced motion or motion is off in Theme settings."
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (1200px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (1440px)"
+        },
+        {
+          "value": "full",
+          "label": "Full width with page gutters"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "rating",
+      "name": "Star rating",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        }
+      ]
+    },
+    {
+      "type": "quote",
+      "name": "Quote",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "quote",
+          "label": "Quote",
+          "default": "<p>Every piece I have bought here has become a favourite. The quality speaks for itself.</p>"
+        }
+      ]
+    },
+    {
+      "type": "author",
+      "name": "Author",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Customer name"
+        },
+        {
+          "type": "text",
+          "id": "role",
+          "label": "Detail",
+          "default": "Customer since 2021"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Avatar"
+        }
+      ]
+    },
+    {
+      "type": "logo",
+      "name": "Logo",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Logo"
+        },
+        {
+          "type": "range",
+          "id": "height",
+          "label": "Logo height",
+          "min": 16,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 32
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonial quote",
+      "blocks": [
+        {
+          "type": "quote"
+        },
+        {
+          "type": "author"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
+}
+{% endschema %}

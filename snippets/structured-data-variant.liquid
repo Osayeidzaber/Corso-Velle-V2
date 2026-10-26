@@ -1,0 +1,22 @@
+{%- doc -%}
+  One nested Product in a ProductGroup, including an exact variant landing URL and Offer.
+
+  @param {object} variant - Shopify variant
+  @param {object} product - Shopify product
+  @param {string} product_url - Canonical absolute product URL
+  @param {string} currency - ISO currency code
+  @param {string[]} option_props - Schema property names in option order; '-' skips an option
+{%- enddoc -%}
+{
+  "@type": "Product",
+  "@id": {{ product_url | append: '?variant=' | append: variant.id | append: '#variant' | json }},
+  "url": {{ product_url | append: '?variant=' | append: variant.id | json }},
+  "name": {{ product.title | append: ' - ' | append: variant.title | json }},
+  {%- for value in variant.options -%}
+    {%- assign prop = option_props[forloop.index0] -%}
+    {%- if prop != '-' and prop != blank %}
+  {{ prop | json }}: {{ value | json }},
+    {%- endif -%}
+  {%- endfor -%}
+  {%- render 'structured-data-offer', variant: variant, product: product, product_url: product_url, currency: currency, image: true %}
+}

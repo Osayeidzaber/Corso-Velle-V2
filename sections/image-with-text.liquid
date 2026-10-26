@@ -1,0 +1,692 @@
+{%- comment -%}
+  Image beside text with caption/heading/text/button blocks. Adapted from Shopify Dawn sections/image-with-text.liquid.
+  Source and license: docs/SECTION-SOURCES.md.
+{%- endcomment -%}
+<section class="image-with-text kit-section full-width section-spacing section-presentation color-{{ section.settings.color_scheme }}" data-heading="{{ section.settings.heading_size }}" data-corners="{{ section.settings.corner_style }}" data-buttons="{{ section.settings.button_size }}" data-layout="{{ section.settings.layout }}" data-width="{{ section.settings.image_width }}" data-valign="{{ section.settings.vertical_alignment }}" data-align="{{ section.settings.alignment }}" data-card="{{ section.settings.card_style }}" data-mobile="{{ section.settings.mobile_order }}" data-overlap="{{ section.settings.overlap }}" style="{% render 'section-presentation', presentation: section.settings %}--iwt-gap:{{ section.settings.gap }}px;">
+  {%- case section.settings.entrance -%}{%- when 'fade' -%}<nk-reveal class="kit-entrance" mode="fade">{%- when 'stagger' -%}<nk-stagger class="kit-entrance">{%- endcase -%}
+  <div class="image-with-text__inner">
+    <div class="image-with-text__media kit-media" data-ratio="{{ section.settings.image_ratio }}" data-fit="{{ section.settings.image_fit }}"{% if section.settings.hover_zoom %} data-zoom{% endif %}>
+      {%- if section.settings.image != blank -%}{{ section.settings.image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '360, 540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 990px) 50vw, 100vw', class: 'image-with-text__image' }}{%- else -%}{{ 'lifestyle-2' | placeholder_svg_tag: 'image-with-text__image kit-placeholder' }}{%- endif -%}
+    </div>
+    <div class="image-with-text__content kit-card">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'caption' -%}<p class="kit-caption" data-style="{{ block.settings.style }}" {{ block.shopify_attributes }}>{{ block.settings.caption | escape }}</p>
+          {%- when 'heading' -%}<h2 class="kit-display kit-display--{{ block.settings.size }}{% if block.settings.italic %} kit-italic{% endif %}" {{ block.shopify_attributes }}>{{ block.settings.heading | escape }}</h2>
+          {%- when 'text' -%}<div class="rte kit-text" data-size="{{ block.settings.size }}" data-color="{{ block.settings.color }}" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+          {%- when 'spacer' -%}<div class="kit-spacer" style="height:{{ block.settings.height }}px;" aria-hidden="true" {{ block.shopify_attributes }}></div>
+          {%- when 'button' -%}<div class="kit-buttons" {{ block.shopify_attributes }}>{% render 'nk-button', label: block.settings.label, link: block.settings.link, style: block.settings.style, new_tab: block.settings.new_tab %}</div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+  {%- case section.settings.entrance -%}{%- when 'fade' -%}</nk-reveal>{%- when 'stagger' -%}</nk-stagger>{%- endcase -%}
+</section>
+
+{% stylesheet %}
+.image-with-text__inner { width: var(--content-width); margin-inline: auto; display: grid; gap: var(--iwt-gap, 48px); }
+.image-with-text__content { display: grid; gap: 18px; align-content: center; min-width: 0; overflow-wrap: anywhere; }
+.image-with-text[data-valign='top'] .image-with-text__content { align-content: start; }
+.image-with-text[data-valign='bottom'] .image-with-text__content { align-content: end; }
+.image-with-text[data-align='center'] .image-with-text__content { text-align: center; justify-items: center; }
+.image-with-text[data-align='center'] .kit-buttons { justify-content: center; }
+.image-with-text[data-mobile='text_first'] .image-with-text__media { order: 2; }
+@media (min-width: 750px) {
+  .image-with-text__inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+  .image-with-text[data-mobile] .image-with-text__media { order: 0; }
+  .image-with-text[data-width='small'] .image-with-text__inner { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  .image-with-text[data-width='large'] .image-with-text__inner { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .image-with-text[data-layout='text_first'] .image-with-text__media { order: 2; }
+  .image-with-text[data-layout='text_first'][data-width='small'] .image-with-text__inner { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .image-with-text[data-layout='text_first'][data-width='large'] .image-with-text__inner { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  .image-with-text[data-overlap='true']:not([data-card='plain']) .image-with-text__content { position: relative; z-index: 1; margin-inline-start: calc(var(--iwt-gap, 48px) * -1 - 64px); }
+  .image-with-text[data-overlap='true'][data-layout='text_first']:not([data-card='plain']) .image-with-text__content { margin-inline: 0 calc(var(--iwt-gap, 48px) * -1 - 64px); }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Image with text",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to image"
+        },
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (2:3)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (3:2)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (16:9)"
+        }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Fill frame (crop)"
+        },
+        {
+          "value": "contain",
+          "label": "Show whole image"
+        }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_zoom",
+      "label": "Zoom images on hover",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "image_width",
+      "label": "Image width (desktop)",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Desktop layout",
+      "options": [
+        {
+          "value": "image_first",
+          "label": "Image first"
+        },
+        {
+          "value": "text_first",
+          "label": "Text first"
+        }
+      ],
+      "default": "image_first"
+    },
+    {
+      "type": "select",
+      "id": "mobile_order",
+      "label": "On phones",
+      "options": [
+        {
+          "value": "image_first",
+          "label": "Image above text"
+        },
+        {
+          "value": "text_first",
+          "label": "Text above image"
+        }
+      ],
+      "default": "image_first"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Content vertical position",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ],
+      "default": "middle"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between image and text",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Content panel",
+      "options": [
+        {
+          "value": "plain",
+          "label": "Plain"
+        },
+        {
+          "value": "surface",
+          "label": "Surface fill"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        },
+        {
+          "value": "shadow",
+          "label": "Soft shadow"
+        }
+      ],
+      "default": "plain"
+    },
+    {
+      "type": "checkbox",
+      "id": "overlap",
+      "label": "Overlap the panel onto the image",
+      "default": false,
+      "info": "Desktop only. Needs a content panel other than Plain."
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "xlarge",
+          "label": "Extra large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "corner_style",
+      "label": "Corners",
+      "options": [
+        {
+          "value": "theme",
+          "label": "Theme default"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "soft",
+          "label": "Soft"
+        },
+        {
+          "value": "round",
+          "label": "Round"
+        }
+      ],
+      "default": "theme",
+      "info": "Applies to images, cards and buttons in this section."
+    },
+    {
+      "type": "select",
+      "id": "button_size",
+      "label": "Button size",
+      "options": [
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "regular",
+          "label": "Theme default"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "select",
+      "id": "entrance",
+      "label": "Entrance animation",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fade",
+          "label": "Fade in section"
+        },
+        {
+          "value": "stagger",
+          "label": "Items rise one by one"
+        }
+      ],
+      "default": "none",
+      "info": "Skipped when visitors prefer reduced motion or motion is off in Theme settings."
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (1200px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (1440px)"
+        },
+        {
+          "value": "full",
+          "label": "Full width with page gutters"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "caption",
+      "name": "Caption",
+      "settings": [
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption",
+          "default": "New season"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            {
+              "value": "spec",
+              "label": "Small caps"
+            },
+            {
+              "value": "badge",
+              "label": "Badge"
+            },
+            {
+              "value": "plain",
+              "label": "Plain text"
+            }
+          ],
+          "default": "spec"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "name": "Heading",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Image with text"
+        },
+        {
+          "type": "select",
+          "id": "size",
+          "label": "Size",
+          "options": [
+            {
+              "value": "small",
+              "label": "Small"
+            },
+            {
+              "value": "medium",
+              "label": "Medium"
+            },
+            {
+              "value": "large",
+              "label": "Large"
+            },
+            {
+              "value": "xlarge",
+              "label": "Extra large"
+            }
+          ],
+          "default": "medium"
+        },
+        {
+          "type": "checkbox",
+          "id": "italic",
+          "label": "Italic",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Pair large imagery with a short story about the collection, the fabric or the fit.</p>"
+        },
+        {
+          "type": "select",
+          "id": "size",
+          "label": "Text size",
+          "options": [
+            {
+              "value": "small",
+              "label": "Small"
+            },
+            {
+              "value": "medium",
+              "label": "Medium"
+            },
+            {
+              "value": "large",
+              "label": "Large"
+            }
+          ],
+          "default": "medium"
+        },
+        {
+          "type": "select",
+          "id": "color",
+          "label": "Text color",
+          "options": [
+            {
+              "value": "default",
+              "label": "Default"
+            },
+            {
+              "value": "muted",
+              "label": "Muted"
+            }
+          ],
+          "default": "default"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "name": "Spacer",
+      "settings": [
+        {
+          "type": "range",
+          "id": "height",
+          "label": "Height",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 16
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "Button",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Shop now"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "default": "/collections/all"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            {
+              "value": "solid",
+              "label": "Solid"
+            },
+            {
+              "value": "outline",
+              "label": "Outline"
+            },
+            {
+              "value": "pill",
+              "label": "Pill"
+            },
+            {
+              "value": "sweep",
+              "label": "Center sweep"
+            },
+            {
+              "value": "offset",
+              "label": "Offset shadow"
+            },
+            {
+              "value": "press",
+              "label": "3D press"
+            },
+            {
+              "value": "link",
+              "label": "Text link"
+            }
+          ],
+          "default": "solid"
+        },
+        {
+          "type": "checkbox",
+          "id": "new_tab",
+          "label": "Open link in a new tab",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with text",
+      "blocks": [
+        {
+          "type": "caption"
+        },
+        {
+          "type": "heading"
+        },
+        {
+          "type": "text"
+        },
+        {
+          "type": "button",
+          "settings": {
+            "style": "outline"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Image with text panel",
+      "settings": {
+        "card_style": "surface",
+        "overlap": true,
+        "image_width": "large"
+      },
+      "blocks": [
+        {
+          "type": "heading"
+        },
+        {
+          "type": "text"
+        },
+        {
+          "type": "button",
+          "settings": {
+            "style": "link",
+            "label": "Read more"
+          }
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
+}
+{% endschema %}

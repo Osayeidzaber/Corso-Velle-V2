@@ -1,0 +1,930 @@
+{%- comment -%}
+  Featured collection: product grid with eyebrow, italic heading accent, item count, optional
+  description and staggered card reveals.
+  In the editor an empty collection shows placeholder cards; on the storefront it renders nothing.
+{%- endcomment -%}
+{%- assign featured = section.settings.collection -%}
+{%- assign card_style = section.blocks | where: 'type', 'card_style' | first -%}
+{%- assign card_options = card_style.settings | default: section.settings -%}
+{%- assign products = section.settings.products | default: featured.products -%}
+{%- if products.size > 0 or request.design_mode -%}
+  {%- liquid
+    assign eyebrow = section.settings.eyebrow
+    if eyebrow == blank and featured != blank
+      assign eyebrow = 'Featured drop'
+    endif
+    assign total_count = featured.all_products_count | default: featured.products_count | default: 0
+    if section.settings.products != blank
+      assign total_count = products.size
+    endif
+    assign shown_count = products.size | at_most: section.settings.limit
+    assign view_all_label = 'collection.view_all' | t
+    if section.settings.link_label != blank
+      assign view_all_label = section.settings.link_label
+    endif
+    assign view_all_url = section.settings.link
+    if view_all_url == blank and section.settings.products == blank
+      assign view_all_url = featured.url
+    endif
+    assign description = section.settings.description
+    if description == blank and section.settings.show_collection_description and featured.description != blank
+      assign description = featured.description | strip_html | truncatewords: 28
+    endif
+  -%}
+  <div class="featured-collection section-spacing section-presentation color-{{ section.settings.color_scheme }} full-width" data-heading-align="{{ section.settings.heading_alignment }}" data-grid-style="{{ section.settings.grid_style }}" style="{% render 'section-presentation', presentation: section.settings %}--grid-gap:{{ section.settings.grid_gap | default: 8 }}px;--grid-gap-mobile:{{ section.settings.grid_gap_mobile | default: 8 }}px;">
+    <div class="featured-collection__inner" {{ card_style.shopify_attributes }}>
+      <div class="featured-collection__header">
+        <div class="featured-collection__title-group">
+          {%- if eyebrow != blank -%}
+            <nk-reveal mode="fade">
+              <span class="eyebrow">{{ eyebrow | escape }}</span>
+            </nk-reveal>
+          {%- endif -%}
+          {%- if section.settings.heading != blank -%}
+            {%- liquid
+              assign heading_html = section.settings.heading | escape
+              assign italic = section.settings.heading_italic | escape
+            -%}
+            <div class="featured-collection__title-row">
+              {% render 'reveal-heading', text: heading_html, italic: italic, entrance: 'cut', class: 'display featured-collection__heading' %}
+              {%- if total_count > 0 and section.settings.show_count != false -%}
+                <span class="featured-collection__count spec">({{ shown_count }})</span>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+          {%- if shown_count < total_count and section.settings.show_count != false -%}
+            <p class="spec text-muted">{{ 'collection.showing_count' | t: shown: shown_count, total: total_count }}</p>
+          {%- endif -%}
+          {%- if description != blank -%}
+            <nk-reveal mode="fade" delay="0.1">
+              <p class="featured-collection__desc text-muted">{{ description | escape }}</p>
+            </nk-reveal>
+          {%- endif -%}
+        </div>
+
+        {%- if view_all_url != blank and section.settings.show_view_all -%}
+          <nk-reveal mode="fade" delay="0.14">
+            <a class="button button--secondary featured-collection__cta" href="{{ view_all_url }}" data-magnetic>
+              {{- view_all_label | escape }}{% if total_count > 0 and section.settings.show_count != false %} ({{ total_count }}){% endif %} →
+            </a>
+          </nk-reveal>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.layout == 'carousel' -%}
+        {%- comment -%}
+          Shop mode (default): one Add to cart for the highlighted product; it opens that product's
+          sizes and a chosen size is added. Browse mode: photography, captions and product links only.
+        {%- endcomment -%}
+        {%- assign shop_carousel = true -%}
+        {%- if section.settings.carousel_purchase == false -%}{%- assign shop_carousel = false -%}{%- endif -%}
+        <nk-carousel
+          id="Carousel-{{ section.id }}"
+          class="product-carousel"
+          {% unless shop_carousel %}data-browse-only{% endunless %}
+          data-center-products="{{ section.settings.carousel_center_products | default: 4 }}"
+          data-effect="{{ section.settings.carousel_effect | default: 'liquid' }}"
+          data-intro="{{ section.settings.carousel_intro | default: 'rise' }}"
+          data-card-width="{{ section.settings.carousel_card_width }}"
+          data-gap="{{ section.settings.carousel_gap }}"
+          {% if section.settings.carousel_emphasis == false %}data-no-emphasis{% endif %}
+          {% if section.settings.carousel_arrows == false %}data-no-arrows{% endif %}
+          data-canvas-label="{{ 'carousel.canvas_label' | t | escape }}"
+          data-sold-out-label="{{ 'product.sold_out' | t | escape }}"
+          {% if shop_carousel %}data-select-size-label="{{ 'product.select_size_prompt' | t | escape }}"{% endif %}
+          {% if section.settings.carousel_autoplay %}data-autoplay{% endif %}
+          data-interval="{{ section.settings.carousel_interval | default: 1.5 }}"
+          speed="{{ section.settings.carousel_speed }}"
+          role="region"
+          aria-roledescription="carousel"
+          aria-label="{{ section.settings.heading | default: featured.title | escape }}"
+        >
+          <div class="product-carousel__viewport" data-ref="viewport">
+            <ul class="product-carousel__track" data-ref="track" role="list">
+              {%- for product in products limit: section.settings.limit -%}
+                <li class="product-carousel__slide">
+                  {%- render 'product-card', product: product, actions: false, card_options: card_options, sizes: '(min-width: 990px) 28vw, (min-width: 600px) 44vw, 82vw' -%}
+                  {%- if shop_carousel -%}{%- render 'carousel-product-data', product: product -%}{%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+          {%- if shop_carousel -%}
+            <div class="product-carousel__purchase" data-ref="purchase">
+              <button type="button" class="button product-carousel__add" data-ref="add" aria-controls="CarouselSizes-{{ section.id }}" aria-expanded="false" disabled>
+                <span class="product-carousel__add-label" data-add-label>{{ 'product.add_to_cart' | t }}</span>
+                <span class="product-carousel__add-product" data-add-product aria-hidden="true"></span>
+              </button>
+              <div class="product-carousel__sizes" id="CarouselSizes-{{ section.id }}" data-ref="sizes" role="group" aria-labelledby="CarouselSizesLabel-{{ section.id }}" hidden>
+                <span class="product-carousel__sizes-label spec" id="CarouselSizesLabel-{{ section.id }}" data-ref="sizes-label">{{ 'product.size' | t }}</span>
+                <div class="product-carousel__size-options" data-size-options></div>
+                <span class="product-carousel__sizes-context spec text-muted" data-ref="sizes-context" hidden></span>
+              </div>
+              <div class="product-carousel__measurements" data-ref="measurements" hidden></div>
+              <p class="product-carousel__purchase-status" data-ref="purchase-status"></p>
+            </div>
+          {%- endif -%}
+          <div class="product-carousel__controls">
+            <div class="product-carousel__buttons">
+              <button type="button" class="icon-button" data-carousel-step="-1" aria-label="{{ 'carousel.previous' | t }}">{% render 'icon', name: 'arrow-left' %}</button>
+              <button type="button" class="product-carousel__pause spec" data-carousel-pause data-play-label="{{ 'carousel.play' | t }}" data-pause-label="{{ 'carousel.pause' | t }}" aria-pressed="false" hidden><span data-carousel-pause-label>{{ 'carousel.pause' | t }}</span></button>
+              <button type="button" class="icon-button" data-carousel-step="1" aria-label="{{ 'carousel.next' | t }}">{% render 'icon', name: 'arrow-right' %}</button>
+            </div>
+          </div>
+        </nk-carousel>
+      {%- else -%}
+      <nk-stagger>
+        <ul
+          class="product-grid"
+          role="list"
+          style="--nk-cols-mobile: {{ section.settings.columns_mobile }}; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
+        >
+          {%- if products.size > 0 -%}
+            {%- for product in products limit: section.settings.limit -%}
+              {%- liquid
+                assign desktop_vw = 100.0 | divided_by: section.settings.columns_desktop
+                if forloop.first and section.settings.grid_style == 'editorial'
+                  assign desktop_vw = desktop_vw | times: 2
+                endif
+                assign phone_vw = 100.0 | divided_by: section.settings.columns_mobile
+                capture card_sizes
+                  echo '(min-width: 750px) '
+                  echo desktop_vw
+                  echo 'vw, '
+                  echo phone_vw
+                  echo 'vw'
+                endcapture
+              -%}
+              <li data-stagger-item>{% render 'product-card', product: product, card_options: card_options, sizes: card_sizes %}</li>
+            {%- endfor -%}
+          {%- else -%}
+            {%- for i in (1..4) -%}
+              <li data-stagger-item>
+                <article class="card">
+                  <span class="card__media">{{ 'product-1' | placeholder_svg_tag }}</span>
+                  <p class="card__title">{{ 'collection.placeholder_product' | t }}</p>
+                </article>
+              </li>
+            {%- endfor -%}
+          {%- endif -%}
+        </ul>
+      </nk-stagger>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .featured-collection .product-grid { column-gap: var(--grid-gap-mobile, 8px); }
+  .featured-collection[data-heading-align='center'] .featured-collection__header { justify-content: center; text-align: center; }
+  .featured-collection[data-heading-align='center'] .featured-collection__title-group { align-items: center; }
+  .featured-collection[data-heading-align='center'] .featured-collection__title-row { justify-content: center; }
+  .featured-collection[data-grid-style='dense'] .product-grid { row-gap: 16px; }
+  @media (min-width: 750px) {
+    .featured-collection .product-grid { column-gap: var(--grid-gap, 8px); }
+    .featured-collection[data-grid-style='editorial'] .product-grid > li:first-child { grid-column: span 2; }
+  }
+  .featured-collection__inner {
+    width: var(--content-width);
+    margin-inline: auto;
+  }
+
+  .featured-collection__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px 32px;
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--nk-color-line);
+  }
+
+  .featured-collection__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 64ch;
+    min-width: 0;
+  }
+
+  .featured-collection__title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .featured-collection__heading {
+    margin: 0;
+    font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  }
+
+  .featured-collection__count {
+    flex-shrink: 0;
+    color: var(--nk-color-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .featured-collection__desc {
+    margin: 4px 0 0;
+    max-width: 54ch;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .featured-collection__cta {
+    min-height: 46px;
+    padding-inline: 24px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Featured collection",
+  "class": "featured-collection-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Featured drop"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "New in"
+    },
+    {
+      "type": "text",
+      "id": "heading_italic",
+      "label": "Heading (italic part)"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_description",
+      "label": "Use collection description when empty",
+      "default": true
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Products to show",
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid"
+        },
+        {
+          "value": "carousel",
+          "label": "Product carousel"
+        }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "select",
+      "id": "carousel_effect",
+      "label": "Carousel style",
+      "options": [
+        {
+          "value": "liquid",
+          "label": "Editorial strip"
+        },
+        {
+          "value": "native",
+          "label": "Classic product rail"
+        },
+        {
+          "value": "snap",
+          "label": "Snap slider (no WebGL)"
+        }
+      ],
+      "default": "liquid",
+      "info": "In browse mode, phones and tablets use a lightweight swipe rail.",
+      "visible_if": "{{ section.settings.layout == 'carousel' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "carousel_purchase",
+      "label": "Shop the highlighted product",
+      "default": true,
+      "info": "Shows one Add to cart button for the centred product. It opens that product's sizes, and the chosen size is added. Autoplay holds while sizes are open. Turn off for a browse-only carousel that links to products.",
+      "visible_if": "{{ section.settings.layout == 'carousel' }}"
+    },
+    {
+      "type": "select",
+      "id": "carousel_intro",
+      "label": "Carousel entrance",
+      "options": [
+        {
+          "value": "rise",
+          "label": "Rise"
+        },
+        {
+          "value": "bloom",
+          "label": "Bloom"
+        },
+        {
+          "value": "deal",
+          "label": "Spread"
+        },
+        {
+          "value": "spin",
+          "label": "Spin"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "rise",
+      "visible_if": "{{ section.settings.layout == 'carousel' and section.settings.carousel_effect == 'liquid' }}"
+    },
+    {
+      "type": "range", "id": "carousel_center_products", "label": "Products before the curve",
+      "min": 3, "max": 6, "step": 1, "default": 4,
+      "info": "Approximate number of products in the flatter desktop center. Original image proportions are preserved; outer products curve away.",
+      "visible_if": "{{ section.settings.layout == 'carousel' and section.settings.carousel_effect == 'liquid' and section.settings.carousel_purchase == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "carousel_autoplay",
+      "label": "Advance products automatically",
+      "default": true,
+      "info": "Browse mode flows continuously; shop mode steps product by product and holds while a shopper hovers the purchase controls or chooses a size. Dragging, keyboard focus and the pause button always pause it.",
+      "visible_if": "{{ section.settings.layout == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "carousel_interval",
+      "label": "Autoplay pace",
+      "min": 1,
+      "max": 8,
+      "step": 0.5,
+      "default": 1.5,
+      "unit": "s",
+      "info": "Liquid browse mode: approximate travel time per product. Liquid shop mode and snap rail: time each product stays highlighted.",
+      "visible_if": "{{ section.settings.layout == 'carousel' and section.settings.carousel_effect != 'native' and section.settings.carousel_autoplay }}"
+    },
+    {
+      "type": "range",
+      "id": "carousel_speed",
+      "label": "Carousel speed",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "default": 35,
+      "info": "Higher values move faster. Controls native rail speed or liquid flow/manual response; autoplay pace sets the base travel time."
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on phones",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View all' button",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Custom product selection",
+      "limit": 24,
+      "info": "Overrides the collection. An empty list uses the collection; there is no all-products fallback."
+    },
+    {
+      "type": "select",
+      "id": "grid_style",
+      "label": "Grid arrangement",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Regular"
+        },
+        {
+          "value": "dense",
+          "label": "Compact rows"
+        },
+        {
+          "value": "editorial",
+          "label": "Large first product"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Column gap (desktop)",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_mobile",
+      "label": "Column gap (phones)",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Show product counts",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "View all destination",
+      "info": "Required for a custom product selection. Otherwise uses the collection."
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "View all label",
+      "default": "View all"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (1200px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (1440px)"
+        },
+        {
+          "value": "full",
+          "label": "Full width with page gutters"
+        }
+      ],
+      "default": "inherit",
+      "info": "Sets the width of the image and text together. Background stays full width. All options keep the theme's responsive page gutters."
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px. Custom values are exact and are not multiplied by the global smaller-screen spacing setting."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "carousel_card_width",
+      "label": "Rail card width",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Regular"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "wide",
+          "label": "Wide"
+        }
+      ],
+      "default": "regular",
+      "visible_if": "{{ section.settings.layout == 'carousel' }}"
+    },
+    {
+      "type": "select",
+      "id": "carousel_gap",
+      "label": "Rail spacing",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Regular"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "airy",
+          "label": "Airy"
+        }
+      ],
+      "default": "regular",
+      "visible_if": "{{ section.settings.layout == 'carousel' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "carousel_emphasis",
+      "label": "Highlight active card",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "carousel_arrows",
+      "label": "Show carousel arrows",
+      "info": "For classic and snap rails. The liquid carousel uses drag and keyboard navigation with a minimal pause control.",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured collection",
+      "blocks": [
+        {
+          "type": "card_style",
+          "settings": {}
+        }
+      ]
+    },
+    {
+      "name": "Editorial product grid",
+      "settings": {
+        "grid_style": "editorial",
+        "columns_desktop": 3
+      },
+      "blocks": [
+        {
+          "type": "card_style",
+          "settings": {
+            "card_appearance": "editorial"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bordered product grid",
+      "settings": {
+        "grid_gap": 24,
+        "heading_alignment": "center"
+      },
+      "blocks": [
+        {
+          "type": "card_style",
+          "settings": {
+            "card_appearance": "bordered"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Snap product slider",
+      "settings": {
+        "layout": "carousel",
+        "carousel_effect": "snap",
+        "carousel_autoplay": false
+      },
+      "blocks": [
+        {
+          "type": "card_style",
+          "settings": {}
+        }
+      ]
+    },
+    {
+      "name": "Classic product rail",
+      "settings": {
+        "layout": "carousel",
+        "carousel_effect": "native"
+      },
+      "blocks": [
+        {
+          "type": "card_style",
+          "settings": {}
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "card_style",
+      "name": "Product card presentation",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "card_appearance",
+          "label": "Card appearance",
+          "options": [
+            {
+              "value": "inherit",
+              "label": "Use theme default"
+            },
+            {
+              "value": "minimal",
+              "label": "Minimal"
+            },
+            {
+              "value": "editorial",
+              "label": "Editorial"
+            },
+            {
+              "value": "bordered",
+              "label": "Bordered"
+            },
+            {
+              "value": "image-led",
+              "label": "Image focused"
+            }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "select",
+          "id": "card_ratio",
+          "label": "Image ratio",
+          "options": [
+            {
+              "value": "inherit",
+              "label": "Use theme default"
+            },
+            {
+              "value": "square",
+              "label": "Square"
+            },
+            {
+              "value": "portrait",
+              "label": "Portrait (4:5)"
+            },
+            {
+              "value": "tall",
+              "label": "Tall (2:3)"
+            },
+            {
+              "value": "landscape",
+              "label": "Landscape (4:3)"
+            }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "select",
+          "id": "card_fit",
+          "label": "Image fit",
+          "options": [
+            {
+              "value": "inherit",
+              "label": "Use theme default"
+            },
+            {
+              "value": "cover",
+              "label": "Fill"
+            },
+            {
+              "value": "contain",
+              "label": "Contain"
+            }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "select",
+          "id": "card_hover",
+          "label": "Alternate media",
+          "options": [
+            {
+              "value": "inherit",
+              "label": "Use theme default"
+            },
+            {
+              "value": "auto",
+              "label": "Video with image fallback"
+            },
+            {
+              "value": "image",
+              "label": "Second image only"
+            },
+            {
+              "value": "off",
+              "label": "Off"
+            }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "select",
+          "id": "card_vendor",
+          "label": "Show vendor",
+          "options": [
+            {
+              "value": "inherit",
+              "label": "Use theme default"
+            },
+            {
+              "value": "show",
+              "label": "Show"
+            },
+            {
+              "value": "hide",
+              "label": "Hide"
+            }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "select",
+          "id": "card_price",
+          "label": "Show price",
+          "options": [
+            {
+              "value": "inherit",
+              "label": "Use theme default"
+            },
+            {
+              "value": "show",
+              "label": "Show"
+            },
+            {
+              "value": "hide",
+              "label": "Hide"
+            }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "select",
+          "id": "card_badges",
+          "label": "Show badges",
+          "options": [
+            {
+              "value": "inherit",
+              "label": "Use theme default"
+            },
+            {
+              "value": "show",
+              "label": "Show"
+            },
+            {
+              "value": "hide",
+              "label": "Hide"
+            }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "select",
+          "id": "card_sizes",
+          "label": "Show sizes",
+          "options": [
+            {
+              "value": "inherit",
+              "label": "Use theme default"
+            },
+            {
+              "value": "show",
+              "label": "Show"
+            },
+            {
+              "value": "hide",
+              "label": "Hide"
+            }
+          ],
+          "default": "inherit"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

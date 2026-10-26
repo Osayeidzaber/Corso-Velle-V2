@@ -1,0 +1,74 @@
+{%- comment -%}
+  Resolve an exact product, collection or tag assignment to an Admin-managed chart or legacy CSV.
+  Within each scope the first usable matching rule wins. Tags are one per line, case-insensitive.
+{%- endcomment -%}
+{%- liquid
+  assign matched_rule = ''
+  assign scopes = 'products,collections,tags' | split: ','
+  if rule_scope != blank
+    assign scopes = rule_scope | split: ','
+  endif
+  for scope in scopes
+    for index in (1..12)
+      assign prefix = 'size_chart_' | append: index
+      assign table_key = prefix | append: '_table'
+      assign image_key = prefix | append: '_image'
+      assign rule_image = settings[image_key] | default: ''
+      assign rule_table = settings[table_key] | default: ''
+      assign scope_key = prefix | append: '_' | append: scope
+      assign handle_key = prefix | append: '_handle'
+      assign chart_handle = settings[handle_key] | strip
+      assign candidate = metaobjects.size_chart[chart_handle]
+      capture chart_usable
+        render 'size-chart-usable', chart: candidate
+      endcapture
+      if chart_usable != 'true' and rule_table == blank
+        if rule_image == blank
+          continue
+        endif
+      endif
+      if scope == 'tags'
+        assign tag_lines = settings[scope_key] | newline_to_br | split: '<br />'
+        for tag_line in tag_lines
+          assign target_tag = tag_line | strip | downcase
+          if target_tag == blank
+            continue
+          endif
+          for product_tag in product.tags
+            assign normalized_tag = product_tag | strip | downcase
+            if normalized_tag == target_tag
+              assign matched_rule = index
+              break
+            endif
+          endfor
+          if matched_rule != ''
+            break
+          endif
+        endfor
+      endif
+      for resource in settings[scope_key]
+        if scope == 'products' and resource.id == product.id
+          assign matched_rule = index
+          break
+        elsif scope == 'collections'
+          for membership in product.collections
+            if membership.id == resource.id
+              assign matched_rule = index
+              break
+            endif
+          endfor
+        endif
+        if matched_rule != ''
+          break
+        endif
+      endfor
+      if matched_rule != ''
+        break
+      endif
+    endfor
+    if matched_rule != ''
+      break
+    endif
+  endfor
+-%}
+{{- matched_rule -}}

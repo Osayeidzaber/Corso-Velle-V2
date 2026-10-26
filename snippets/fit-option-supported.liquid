@@ -1,0 +1,19 @@
+{%- doc -%}
+  Clothing fit estimator supports letter scales only. Shoe/waist numeric sizes remain chart-led.
+  @param {object} option - Shopify product option
+{%- enddoc -%}
+{%- liquid
+  assign supported = false
+  assign scale = '|xxs|xs|s|m|l|xl|xxl|2xl|xxxl|3xl|small|medium|large|x-large|xx-large|'
+  for value in option.values
+    assign label = value.name | default: value | downcase | strip
+    assign token = '|' | append: label | append: '|'
+    if scale contains token
+      assign supported = true
+    else
+      assign supported = false
+      break
+    endif
+  endfor
+  echo supported
+-%}

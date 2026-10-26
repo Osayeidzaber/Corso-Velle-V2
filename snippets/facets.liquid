@@ -1,0 +1,388 @@
+{%- doc -%}
+  Filter drawer, sort, interactive grid layout switcher, and active filter chips for a collection
+  or search grid. It is one plain GET form: without JS the drawer content
+  renders inline and Apply / the sort button submit it. <nk-facets> intercepts submit, sort changes,
+  layout switcher clicks, and chip links, re-renders the section through Section Rendering and keeps
+  the URL (filter.*, sort_by) in history.
+
+  The drawer edits a draft: closing it without applying restores the applied state.
+
+  @param {object} results - The collection or search object
+  @param {string} section_id - The owning section id (unique form and drawer ids)
+  @param {string} results_url - URL of the unfiltered results (collection.url or the search URL)
+  @param {number} count - Number of results for the current filters
+  @param {boolean} [show_filters] - Show the Filter button and drawer (default true)
+  @param {boolean} [show_sort] - Show the sort select (default true)
+  @param {boolean} [show_layout_switch] - Show the 1/2 mobile & 2/3/4 desktop grid switcher (default true)
+  @param {string} [columns_mobile] - Default mobile columns ('1' or '2', default '2')
+  @param {number} [columns_desktop] - Default desktop columns (2, 3, or 4, default 4)
+  @param {string} [terms] - Search terms (search page only; kept as hidden fields)
+
+  @example
+  {% render 'facets', results: collection, section_id: section.id, results_url: collection.url, count: collection.products_count %}
+{%- enddoc -%}
+{%- liquid
+  if show_filters == nil
+    assign show_filters = true
+  endif
+  if show_sort == nil
+    assign show_sort = true
+  endif
+  if show_layout_switch == nil
+    assign show_layout_switch = true
+  endif
+  if results.filters.size == 0
+    assign show_filters = false
+  endif
+
+  assign cols_mobile = columns_mobile | default: '2' | append: ''
+  assign cols_desktop = columns_desktop | default: 4 | plus: 0
+
+  assign sort_by = results.sort_by | default: results.default_sort_by
+  assign active_count = 0
+  for filter in results.filters
+    if filter.type == 'price_range'
+      if filter.min_value.value != nil or filter.max_value.value != nil
+        assign active_count = active_count | plus: 1
+      endif
+    else
+      assign active_count = active_count | plus: filter.active_values.size
+    endif
+  endfor
+
+  assign form_id = 'FacetsForm-' | append: section_id
+  assign drawer_id = 'FacetsDrawer-' | append: section_id
+  if terms != blank
+    assign clear_url = results_url | append: '&sort_by=' | append: sort_by
+  else
+    assign clear_url = results_url | append: '?sort_by=' | append: sort_by
+  endif
+-%}
+<form id="{{ form_id }}" class="facets" action="{{ results_url | split: '?' | first }}" method="get" data-facets-form>
+  {%- if terms != blank -%}
+    <input type="hidden" name="q" value="{{ terms | escape }}">
+    <input type="hidden" name="options[prefix]" value="last">
+  {%- endif -%}
+
+  <div class="facets__toolbar-wrap">
+    <div class="facets__toolbar">
+      <div class="facets__toolbar-start">
+        {%- if show_filters -%}
+          <button
+            type="button"
+            class="facets__open"
+            data-nk-open="{{ drawer_id }}"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            aria-controls="{{ drawer_id }}"
+            data-focus-key="facets-open"
+          >
+            <svg class="facets__open-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M2 4h12M2 8h12M2 12h12"/>
+              <circle cx="5" cy="4" r="1.6" fill="var(--nk-color-bg)"/>
+              <circle cx="11" cy="8" r="1.6" fill="var(--nk-color-bg)"/>
+              <circle cx="7" cy="12" r="1.6" fill="var(--nk-color-bg)"/>
+            </svg>
+            <span>{{- 'facets.filter' | t -}}</span>
+            {%- if active_count > 0 -%}
+              <span class="facets__count">({{ active_count }})</span>
+            {%- endif -%}
+          </button>
+        {%- endif -%}
+
+        {%- if show_sort and results.sort_options.size > 0 -%}
+          <div class="facets__sort">
+            <label class="spec facets__sort-label" for="Sort-{{ section_id }}">{{ 'facets.sort_by' | t }}:</label>
+            <div class="facets__sort-select-wrap">
+              <select id="Sort-{{ section_id }}" name="sort_by" data-facets-sort data-focus-key="facets-sort">
+                {%- for option in results.sort_options -%}
+                  <option value="{{ option.value | escape }}" {% if option.value == sort_by %}selected{% endif %}>
+                    {{- option.name | escape -}}
+                  </option>
+                {%- endfor -%}
+              </select>
+              {% render 'icon', name: 'chevron-down', size: 13 %}
+            </div>
+            <details class="facets__sort-menu" data-sort-menu>
+              <summary data-focus-key="facets-sort-menu">
+                <span class="facets__sort-menu-label">{{ 'facets.sort_by' | t }}</span>
+                <span class="facets__sort-menu-value">
+                  {%- for option in results.sort_options -%}
+                    {%- if option.value == sort_by -%}{{ option.name | escape }}{%- endif -%}
+                  {%- endfor -%}
+                </span>
+                {% render 'icon', name: 'chevron-down', size: 13 %}
+              </summary>
+              <ul class="facets__sort-options" role="list" aria-label="{{ 'facets.sort_by' | t }}">
+                {%- for option in results.sort_options -%}
+                  <li>
+                    <button type="button" data-facets-sort-value="{{ option.value | escape }}" aria-pressed="{% if option.value == sort_by %}true{% else %}false{% endif %}">
+                      <span>{{ option.name | escape }}</span>
+                      <span aria-hidden="true" class="facets__sort-check">✓</span>
+                    </button>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </details>
+            <button type="submit" class="button button--secondary no-js-only">{{ 'facets.apply' | t }}</button>
+          </div>
+        {%- elsif results.sort_by != blank -%}
+          <input type="hidden" name="sort_by" value="{{ results.sort_by | escape }}">
+        {%- endif -%}
+      </div>
+
+      <p class="facets__results spec text-muted" data-results-label>{{ 'collection.product_count' | t: count: count }}</p>
+
+      {%- if show_layout_switch -%}
+        <div class="facets__layout-switch" role="group" aria-label="Grid layout">
+          <button
+            type="button"
+            class="facets__layout-btn facets__layout-btn--mobile"
+            data-grid-cols-mobile="1"
+            aria-pressed="{% if cols_mobile == '1' %}true{% else %}false{% endif %}"
+            aria-label="1 column layout"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect x="2.25" y="2.25" width="11.5" height="11.5" stroke="currentColor" stroke-width="1.3"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="facets__layout-btn facets__layout-btn--mobile"
+            data-grid-cols-mobile="2"
+            aria-pressed="{% if cols_mobile != '1' %}true{% else %}false{% endif %}"
+            aria-label="2 column layout"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <rect x="2" y="2" width="5" height="5"/>
+              <rect x="9" y="2" width="5" height="5"/>
+              <rect x="2" y="9" width="5" height="5"/>
+              <rect x="9" y="9" width="5" height="5"/>
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            class="facets__layout-btn facets__layout-btn--desktop"
+            data-grid-cols-desktop="2"
+            aria-pressed="{% if cols_desktop == 2 %}true{% else %}false{% endif %}"
+            aria-label="2 column grid"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <rect x="2" y="2" width="5" height="5"/>
+              <rect x="9" y="2" width="5" height="5"/>
+              <rect x="2" y="9" width="5" height="5"/>
+              <rect x="9" y="9" width="5" height="5"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="facets__layout-btn facets__layout-btn--desktop"
+            data-grid-cols-desktop="3"
+            aria-pressed="{% if cols_desktop == 3 %}true{% else %}false{% endif %}"
+            aria-label="3 column grid"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <rect x="1.5" y="1.5" width="3.2" height="3.2"/>
+              <rect x="6.4" y="1.5" width="3.2" height="3.2"/>
+              <rect x="11.3" y="1.5" width="3.2" height="3.2"/>
+              <rect x="1.5" y="6.4" width="3.2" height="3.2"/>
+              <rect x="6.4" y="6.4" width="3.2" height="3.2"/>
+              <rect x="11.3" y="6.4" width="3.2" height="3.2"/>
+              <rect x="1.5" y="11.3" width="3.2" height="3.2"/>
+              <rect x="6.4" y="11.3" width="3.2" height="3.2"/>
+              <rect x="11.3" y="11.3" width="3.2" height="3.2"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="facets__layout-btn facets__layout-btn--desktop"
+            data-grid-cols-desktop="4"
+            aria-pressed="{% if cols_desktop >= 4 %}true{% else %}false{% endif %}"
+            aria-label="4 column grid"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <rect x="1.5" y="1.5" width="2.2" height="2.2"/>
+              <rect x="5.1" y="1.5" width="2.2" height="2.2"/>
+              <rect x="8.7" y="1.5" width="2.2" height="2.2"/>
+              <rect x="12.3" y="1.5" width="2.2" height="2.2"/>
+              <rect x="1.5" y="5.1" width="2.2" height="2.2"/>
+              <rect x="5.1" y="5.1" width="2.2" height="2.2"/>
+              <rect x="8.7" y="5.1" width="2.2" height="2.2"/>
+              <rect x="12.3" y="5.1" width="2.2" height="2.2"/>
+              <rect x="1.5" y="8.7" width="2.2" height="2.2"/>
+              <rect x="5.1" y="8.7" width="2.2" height="2.2"/>
+              <rect x="8.7" y="8.7" width="2.2" height="2.2"/>
+              <rect x="12.3" y="8.7" width="2.2" height="2.2"/>
+              <rect x="1.5" y="12.3" width="2.2" height="2.2"/>
+              <rect x="5.1" y="12.3" width="2.2" height="2.2"/>
+              <rect x="8.7" y="12.3" width="2.2" height="2.2"/>
+              <rect x="12.3" y="12.3" width="2.2" height="2.2"/>
+            </svg>
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if show_filters -%}
+    <nk-modal id="{{ drawer_id }}">
+      <dialog class="drawer drawer--right facets__drawer" aria-labelledby="FacetsTitle-{{ section_id }}">
+        <div class="drawer__header">
+          <h2 class="drawer__title spec" id="FacetsTitle-{{ section_id }}" tabindex="-1" data-autofocus>{{ 'facets.filter' | t }}</h2>
+          <button type="button" class="icon-button" data-nk-close aria-label="{{ 'general.close' | t }}">
+            {% render 'icon', name: 'close' %}
+          </button>
+        </div>
+
+        <div class="drawer__body facets__body">
+          {%- for filter in results.filters -%}
+            {%- liquid
+              assign group_active = filter.active_values.size
+              if filter.type == 'price_range'
+                assign group_active = 0
+                if filter.min_value.value != nil or filter.max_value.value != nil
+                  assign group_active = 1
+                endif
+              endif
+            -%}
+            <nk-disclosure>
+              <details class="disclosure facets__group" {% if forloop.index <= 2 or group_active > 0 %}open{% endif %}>
+                <summary>
+                  {{- filter.label | escape -}}
+                  {%- if group_active > 0 %} <span class="facets__count">({{ group_active }})</span>{% endif -%}
+                </summary>
+                <div class="disclosure__content">
+                  {%- case filter.type -%}
+                    {%- when 'price_range' -%}
+                      {%- liquid
+                        assign max_price = filter.range_max | divided_by: 100.0 | ceil
+                        assign min_value = ''
+                        assign max_value = ''
+                        if filter.min_value.value != nil
+                          assign min_value = filter.min_value.value | divided_by: 100.0
+                        endif
+                        if filter.max_value.value != nil
+                          assign max_value = filter.max_value.value | divided_by: 100.0
+                        endif
+                      -%}
+                      <fieldset class="facets__price">
+                        <legend class="visually-hidden">{{ filter.label | escape }}</legend>
+                        <label class="facets__price-field">
+                          <span class="spec text-muted">{{ 'facets.from' | t }} ({{ cart.currency.symbol }})</span>
+                          <input
+                            type="number"
+                            inputmode="decimal"
+                            name="{{ filter.min_value.param_name }}"
+                            value="{{ min_value }}"
+                            min="0"
+                            max="{{ max_price }}"
+                            step="any"
+                            placeholder="0"
+                          >
+                        </label>
+                        <label class="facets__price-field">
+                          <span class="spec text-muted">{{ 'facets.to' | t }} ({{ cart.currency.symbol }})</span>
+                          <input
+                            type="number"
+                            inputmode="decimal"
+                            name="{{ filter.max_value.param_name }}"
+                            value="{{ max_value }}"
+                            min="0"
+                            max="{{ max_price }}"
+                            step="any"
+                            placeholder="{{ max_price }}"
+                          >
+                        </label>
+                      </fieldset>
+
+                    {%- else -%}
+                      <fieldset>
+                        <legend class="visually-hidden">{{ filter.label | escape }}</legend>
+                        <ul class="facets__values{% if filter.presentation == 'swatch' %} facets__values--swatch{% endif %}" role="list">
+                          {%- for value in filter.values -%}
+                            {%- liquid
+                              assign value_id = 'Facet-' | append: section_id | append: '-' | append: filter.param_name | append: '-' | append: forloop.index | handleize
+                              assign disabled = false
+                              if value.count == 0 and value.active == false
+                                assign disabled = true
+                              endif
+                            -%}
+                            <li class="facets__value{% if disabled %} facets__value--disabled{% endif %}">
+                              <input
+                                type="checkbox"
+                                id="{{ value_id }}"
+                                name="{{ value.param_name }}"
+                                value="{{ value.value | escape }}"
+                                {% if value.active %}checked{% endif %}
+                                {% if disabled %}disabled{% endif %}
+                              >
+                              <label for="{{ value_id }}">
+                                {%- if filter.presentation == 'swatch' and value.swatch -%}
+                                  {%- if value.swatch.image -%}
+                                    {%- assign swatch_bg = value.swatch.image | image_url: width: 48 | prepend: 'url(' | append: ')' -%}
+                                  {%- else -%}
+                                    {%- assign swatch_bg = value.swatch.color -%}
+                                  {%- endif -%}
+                                  <span class="option__swatch" style="--swatch: {{ swatch_bg }}" aria-hidden="true"></span>
+                                {%- endif -%}
+                                <span>{{ value.label | escape }}</span>
+                                <span class="text-muted">({{ value.count }})</span>
+                              </label>
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      </fieldset>
+                  {%- endcase -%}
+                </div>
+              </details>
+            </nk-disclosure>
+          {%- endfor -%}
+        </div>
+
+        <div class="drawer__footer facets__footer">
+          <a class="button button--secondary" href="{{ clear_url }}" data-facets-reset>{{ 'facets.clear_all' | t }}</a>
+          <button type="submit" class="button">{{ 'facets.show_results' | t }}</button>
+        </div>
+      </dialog>
+    </nk-modal>
+  {%- endif -%}
+</form>
+
+{%- if active_count > 0 -%}
+  <ul class="facets__active" role="list" aria-label="{{ 'facets.active' | t }}">
+    {%- for filter in results.filters -%}
+      {%- if filter.type == 'price_range' -%}
+        {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+          {%- liquid
+            assign from = filter.min_value.value | default: 0 | money
+            assign to = filter.max_value.value | default: filter.range_max | money
+          -%}
+          <li>
+            <a class="facets__chip" href="{{ filter.url_to_remove }}" data-facets-link>
+              <span>{{ from }}–{{ to }}</span>
+              <span class="visually-hidden">{{ 'facets.remove' | t }}</span>
+              {% render 'icon', name: 'close', size: 14 %}
+            </a>
+          </li>
+        {%- endif -%}
+      {%- else -%}
+        {%- for value in filter.active_values -%}
+          <li>
+            <a class="facets__chip" href="{{ value.url_to_remove }}" data-facets-link>
+              <span>{{ filter.label | escape }}: {{ value.label | escape }}</span>
+              <span class="visually-hidden">{{ 'facets.remove' | t }}</span>
+              {% render 'icon', name: 'close', size: 14 %}
+            </a>
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+    <li><a class="facets__clear" href="{{ clear_url }}" data-facets-link>{{ 'facets.clear_all' | t }}</a></li>
+  </ul>
+{%- endif -%}
+
+<p class="message message--error facets__error" data-facets-error role="alert" hidden>
+  {{ 'facets.update_failed' | t }}
+  <a href="{{ request.path }}">{{ 'facets.reload' | t }}</a>
+</p>

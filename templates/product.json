@@ -1,0 +1,100 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "eyebrow": {
+          "type": "eyebrow",
+          "settings": {
+            "text": ""
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "picker": {
+          "type": "variant_picker",
+          "settings": {
+            "size_guide_option": "Size",
+            "size_heading": "Measured flat, garment in hand",
+            "size_table": "",
+            "size_unit": "in",
+            "size_note": ""
+          }
+        },
+        "inventory": {
+          "type": "inventory",
+          "settings": {}
+        },
+        "buy": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_quantity": false
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {
+            "heading": "Details",
+            "open": true
+          }
+        },
+        "delivery": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Shipping + exchange",
+            "content": "",
+            "policy_source": "shipping_exchange"
+          }
+        },
+        "model_info": {
+          "type": "model_info",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "eyebrow",
+        "title",
+        "price",
+        "picker",
+        "model_info",
+        "inventory",
+        "buy",
+        "description",
+        "delivery"
+      ],
+      "settings": {
+        "sticky_buy": "mobile"
+      }
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "heading": "You might",
+        "heading_italic": "also like",
+        "intent": "related",
+        "limit": 4,
+        "columns_desktop": 3,
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "recommendations"
+  ]
+}

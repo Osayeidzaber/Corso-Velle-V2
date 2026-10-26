@@ -1,0 +1,7 @@
+{% comment %}Shared attributes; each scene owns its own settings and GSAP context.{% endcomment %}
+preset="{{ section.settings.scene_preset | default: 'cinematic' }}"
+direction="{{ section.settings.scene_direction | default: 'up' }}"
+intensity="{{ section.settings.scene_intensity | default: 'soft' }}"
+{% if section.settings.scene_pin %}pin{% endif %}
+{% if section.settings.scene_parallax and section.settings.media_fit != 'contain' %}parallax{% endif %}
+{% if section.settings.scene_background %}background-transition{% endif %}

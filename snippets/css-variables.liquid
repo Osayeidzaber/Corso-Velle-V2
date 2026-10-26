@@ -1,0 +1,82 @@
+{%- doc -%}
+  Design tokens from theme settings. Every visual decision a merchant can
+  make maps to a CSS custom property here; component CSS only reads these variables.
+
+  @example
+  {% render 'css-variables' %}
+{%- enddoc -%}
+{%- liquid
+  assign body_font = settings.type_body_font
+  assign heading_font = settings.type_heading_font
+  assign spec_font = settings.type_spec_font
+  assign body_bold = body_font | font_modify: 'weight', 'bold'
+-%}
+{% style %}
+  {{ body_font | font_face: font_display: 'swap' }}
+  {{ body_bold | font_face: font_display: 'swap' }}
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ spec_font | font_face: font_display: 'swap' }}
+
+  :root {
+    --nk-font-body: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --nk-font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --nk-font-heading-weight: {{ heading_font.weight }};
+    --nk-font-spec: {{ spec_font.family }}, {{ spec_font.fallback_families }};
+    --nk-heading-case: {{ settings.heading_case | default: 'none' }};
+    --nk-text-base: {{ settings.body_size | default: 16 }}px;
+    --nk-heading-tracking: {% if settings.heading_tracking == 'natural' %}0em{% elsif settings.heading_tracking == 'tight' %}-0.04em{% else %}-0.02em{% endif %};
+    --nk-display-tracking: {% if settings.heading_tracking == 'natural' %}0em{% elsif settings.heading_tracking == 'tight' %}-0.05em{% else %}-0.035em{% endif %};
+    --nk-heading-leading: {% if settings.heading_leading == 'comfortable' %}1.15{% else %}1{% endif %};
+    --nk-display-leading: {% if settings.heading_leading == 'comfortable' %}1.05{% else %}0.92{% endif %};
+    --nk-label-tracking: {% if settings.label_tracking == 'natural' %}0.06em{% else %}0.18em{% endif %};
+    --nk-page-width: {{ settings.page_width | default: '1440px' }};
+    --nk-space-section: {{ settings.section_spacing | default: 72 }}px;
+    --nk-gutter-mobile: {{ settings.gutter_mobile | default: 16 }}px;
+    --nk-gutter-tablet: {{ settings.gutter_tablet | default: 24 }}px;
+    --nk-gutter-desktop: {{ settings.gutter_desktop | default: 48 }}px;
+    --nk-section-spacing-mobile-scale: {{ settings.section_spacing_mobile | default: '66' | divided_by: 100.0 }};
+    --nk-corner-radius: {{ settings.corner_radius | default: 2 }}px;
+    {% render 'button-tokens', size: settings.button_size, corners: settings.button_corners, fallback_radius: settings.corner_radius %}
+    --nk-logo-width: {{ settings.logo_width | default: 140 }}px;
+    --nk-logo-width-mobile: {{ settings.logo_width_mobile | default: 110 }}px;
+    --nk-card-ratio: {{ settings.card_image_ratio | default: '4 / 5' }};
+    --nk-card-fit: {{ settings.card_image_fit | default: 'contain' }};
+    --nk-card-surface-padding: {% if settings.card_surface == 'bordered' %}12px{% elsif settings.card_surface == 'raised' %}16px{% else %}0px{% endif %};
+    --nk-card-surface-border: {% if settings.card_surface == 'bordered' or settings.card_surface == 'raised' %}1px{% else %}0px{% endif %};
+    --nk-card-surface-shadow: {% if settings.card_surface == 'raised' %}0 8px 24px rgb(0 0 0 / 0.08){% else %}none{% endif %};
+    --nk-color-error: {{ settings.color_error | default: '#B42318' }};
+    --nk-color-success: {{ settings.color_success | default: '#146C43' }};
+  }
+
+  {% for scheme in settings.color_schemes %}
+    {%- liquid
+      assign s = scheme.settings
+      assign selector = '.color-' | append: scheme.id
+      if forloop.first
+        assign selector = ':root, ' | append: selector
+      endif
+    -%}
+    {{ selector }} {
+      --nk-color-bg: {{ s.background }};
+      --nk-color-surface: {{ s.surface }};
+      --nk-color-text: {{ s.text }};
+      --nk-color-text-muted: {{ s.text_muted }};
+      --nk-color-line: {{ s.line }};
+      --nk-color-accent: {{ s.accent }};
+      --nk-color-accent-text: {{ s.accent_text }};
+      --nk-color-disabled: {{ s.text_muted | color_mix: s.background, 60 }};
+      /* Accent family, derived from this scheme's accent (default: footer brown) so one Theme Editor
+         colour drives every state. Mixing toward the text colour darkens on light schemes and
+         lightens on dark ones; mixing toward the background makes tints. */
+      --nk-accent-hover: color-mix(in oklab, var(--nk-color-accent) 84%, var(--nk-color-text));
+      --nk-accent-active: color-mix(in oklab, var(--nk-color-accent) 70%, var(--nk-color-text));
+      --nk-accent-subtle: color-mix(in oklab, var(--nk-color-accent) 8%, var(--nk-color-bg));
+      --nk-accent-selected: color-mix(in oklab, var(--nk-color-accent) 16%, var(--nk-color-bg));
+      --nk-accent-border: color-mix(in oklab, var(--nk-color-accent) 38%, var(--nk-color-bg));
+      --nk-accent-muted: color-mix(in oklab, var(--nk-color-accent) 55%, var(--nk-color-bg));
+      --nk-focus: var(--nk-color-accent);
+      background-color: var(--nk-color-bg);
+      color: var(--nk-color-text);
+    }
+  {% endfor %}
+{% endstyle %}

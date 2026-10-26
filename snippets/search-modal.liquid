@@ -1,0 +1,83 @@
+{%- doc -%}
+  Search dialog with predictive results. Opened by header links carrying
+  data-nk-open="SearchModal"; those links still go to the search page without JS. The form is a
+  plain GET search form, so Enter always works even if suggestions fail.
+
+  @param {object[]} [suggested_collections] - Collections suggested before anything is typed
+  @param {string} [resources] - Shopify predictive resource types
+  @param {number} [limit] - Results per resource type (default 6)
+  @param {number} [suggestion_limit] - Initial collection chips (default 6)
+
+  @example
+  {% render 'search-modal', suggested_collections: section.settings.search_collections %}
+{%- enddoc -%}
+<nk-modal id="SearchModal">
+  <dialog class="search-modal" aria-labelledby="SearchModalTitle">
+    <nk-predictive-search class="search-modal__inner" data-resources="{{ resources | default: 'query,product,collection,page' }}" data-limit="{{ limit | default: 6 }}">
+      <h2 class="visually-hidden" id="SearchModalTitle">{{ 'header.search' | t }}</h2>
+      <form id="SearchModalForm" class="search-modal__field" action="{{ routes.search_url }}" method="get" role="search">
+        {% render 'icon', name: 'search' %}
+        <label class="visually-hidden" for="PredictiveSearchInput">{{ 'header.search' | t }}</label>
+        <input
+          id="PredictiveSearchInput"
+          type="search"
+          name="q"
+          placeholder="{{ 'header.search_placeholder' | t }}"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          enterkeyhint="search"
+          data-autofocus
+        >
+        <input type="hidden" name="options[prefix]" value="last">
+        <button type="button" class="icon-button" data-ref="clear" aria-label="{{ 'search.clear' | t }}" hidden>
+          {% render 'icon', name: 'close', size: 18 %}
+        </button>
+        <button type="button" class="icon-button" data-nk-close aria-label="{{ 'general.close' | t }}">
+          {% render 'icon', name: 'close' %}
+        </button>
+      </form>
+
+      <div class="search-modal__body">
+        <div data-ref="suggestions">
+          {%- liquid
+            assign chip_collections = suggested_collections
+            if chip_collections == blank or chip_collections.size == 0
+              assign chip_collections = collections
+            endif
+          -%}
+          {%- if chip_collections.size > 0 -%}
+            <p class="spec text-muted">{{ 'search.popular_collections' | t }}</p>
+            <ul class="collection-pills search-modal__chips" role="list">
+              {%- assign chip_limit = suggestion_limit | default: 6 -%}
+              {%- assign chip_seen = '|' -%}
+              {%- assign chip_shown = 0 -%}
+              {%- for collection in chip_collections -%}
+                {%- capture chip_eligible -%}{%- render 'collection-navigation-eligible', candidate: collection -%}{%- endcapture -%}
+                {%- assign chip_key = collection.title | handleize | prepend: '|' | append: '|' -%}
+                {%- if chip_shown < chip_limit and chip_eligible == 'true' -%}
+                  {%- unless chip_seen contains chip_key -%}
+                    <li><a href="{{ collection.url }}">{{ collection.title | escape }}</a></li>
+                    {%- assign chip_seen = chip_seen | append: chip_key -%}
+                    {%- assign chip_shown = chip_shown | plus: 1 -%}
+                  {%- endunless -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </div>
+
+        <div id="PredictiveSearchResults" data-ref="results" hidden></div>
+
+        <div class="message message--error" data-ref="error" role="alert" hidden>
+          <p>{{ 'search.predictive_error' | t }}</p>
+          <p class="search-modal__error-actions">
+            <button type="submit" form="SearchModalForm" class="button button--secondary">{{ 'search.submit' | t }}</button>
+            <button type="button" class="button button--secondary" data-ref="retry">{{ 'search.retry' | t }}</button>
+          </p>
+        </div>
+      </div>
+    </nk-predictive-search>
+  </dialog>
+</nk-modal>

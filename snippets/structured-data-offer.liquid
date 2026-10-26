@@ -1,0 +1,50 @@
+{%- doc -%}
+  Variant-level JSON-LD properties for structured-data: sku, gtin, image and the Offer. Outputs
+  bare properties (no surrounding braces, no leading or trailing comma).
+
+  The Offer uses the Shopify variant price and availability. A compare-at price is added as a
+  strikethrough price only when it is higher than the price, mirroring the storefront sale badge.
+
+  @param {object} variant - The variant
+  @param {object} product - Its product
+  @param {string} product_url - Absolute product URL
+  @param {string} currency - ISO currency code
+  @param {boolean} [image] - Include the variant image (variants of a ProductGroup)
+{%- enddoc -%}
+{%- liquid
+  capture gtin
+    render 'structured-data-gtin', barcode: variant.barcode
+  endcapture
+  assign variant_image = variant.featured_image | default: product.featured_image
+  assign price = variant.price | divided_by: 100.0
+  assign compare_at = variant.compare_at_price | default: 0
+  if variant.available
+    assign availability = 'https://schema.org/InStock'
+  else
+    assign availability = 'https://schema.org/OutOfStock'
+  endif
+-%}
+{%- if variant.sku != blank %}
+"sku": {{ variant.sku | json }},
+{%- endif -%}
+{%- if gtin != blank %}
+"gtin{{ gtin.size }}": {{ gtin | json }},
+{%- endif -%}
+{%- if image and variant_image != blank %}
+"image": {{ variant_image | image_url: width: 1920 | prepend: 'https:' | json }},
+{%- endif %}
+"offers": {
+  "@type": "Offer",
+  "url": {{ product_url | append: '?variant=' | append: variant.id | json }},
+  "price": {{ price }},
+  "priceCurrency": {{ currency | json }},
+  {%- if compare_at > variant.price %}
+  "priceSpecification": {
+    "@type": "UnitPriceSpecification",
+    "priceType": "https://schema.org/StrikethroughPrice",
+    "price": {{ compare_at | divided_by: 100.0 }},
+    "priceCurrency": {{ currency | json }}
+  },
+  {%- endif %}
+  "availability": {{ availability | json }}
+}

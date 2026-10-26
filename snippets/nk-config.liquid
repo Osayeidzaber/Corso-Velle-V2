@@ -1,0 +1,77 @@
+{%- doc -%}
+  Runtime configuration for the theme's JavaScript (src/core/config.ts).
+  Routes always come from the `routes` object so locale/market prefixes are respected.
+
+  @example
+  {% render 'nk-config' %}
+{%- enddoc -%}
+<script type="application/json" id="nk-config">
+  {
+    "routes": {
+      "root": {{ routes.root_url | json }},
+      "cart": {{ routes.cart_url | json }},
+      "cartAdd": {{ routes.cart_add_url | json }},
+      "cartChange": {{ routes.cart_change_url | json }},
+      "cartUpdate": {{ routes.cart_update_url | json }},
+      "predictiveSearch": {{ routes.predictive_search_url | json }},
+      "productRecommendations": {{ routes.product_recommendations_url | json }},
+      "search": {{ routes.search_url | json }}
+    },
+    "motion": {{ settings.motion_level | default: 'standard' | json }},
+    "motionOptions": {
+      "smoothScroll": {% if settings.motion_smooth_scroll == false %}false{% else %}true{% endif %},
+      "smoothStrength": {{ settings.motion_smooth_strength | default: 'balanced' | json }},
+      "tempo": {{ settings.motion_tempo | default: 'balanced' | json }},
+      "stagger": {{ settings.motion_stagger | default: 'medium' | json }},
+      "scrollEffects": {% if settings.motion_scroll_effects == false %}false{% else %}true{% endif %},
+      "mobile": {{ settings.motion_mobile | default: 'simple' | json }}
+    },
+    "cart": {
+      "afterAdd": {{ settings.cart_after_add | default: 'drawer' | json }},
+      "flyAnimation": {% if settings.cart_fly_animation == false %}false{% else %}true{% endif %},
+      "sections": []
+    },
+    "promotions": {
+      "conflictRule": {{ settings.promo_conflict_rule | default: 'keep' | json }}
+    },
+    "strings": {
+      "search.predictive_error": {{ 'search.predictive_error' | t | json }},
+      "search.submit": {{ 'search.submit' | t | json }},
+      "cart.added": {{ 'cart.added' | t | json }},
+      "cart.removed": {{ 'cart.removed' | t | json }},
+      "cart.error": {{ 'cart.error' | t | json }},
+      "cart.add_unconfirmed": {{ 'cart.add_unconfirmed' | t | json }},
+      "cart.add_not_applied": {{ 'cart.add_not_applied' | t | json }},
+      "collection.load_more": {{ 'collection.load_more' | t | json }},
+      "collection.loading_more": {{ 'collection.loading_more' | t | json }},
+      "collection.loaded_more": {{ 'collection.loaded_more' | t | json }},
+      "collection.load_failed": {{ 'collection.load_failed' | t | json }},
+      "promotions.remove_code": {{ 'promotions.remove_code' | t: code: '[code]' | json }},
+      "promotions.applying": {{ 'promotions.applying' | t | json }},
+      "promotions.applied": {{ 'promotions.applied' | t | json }},
+      "promotions.applied_at_checkout": {{ 'promotions.applied_at_checkout' | t | json }},
+      "promotions.already_applied": {{ 'promotions.already_applied' | t | json }},
+      "promotions.replaced_automatic": {{ 'promotions.replaced_automatic' | t | json }},
+      "promotions.not_applicable": {{ 'promotions.not_applicable' | t | json }},
+      "promotions.removed": {{ 'promotions.removed' | t | json }},
+      "promotions.empty": {{ 'promotions.empty' | t | json }},
+      "promotions.error": {{ 'promotions.error' | t | json }},
+      "product.adding": {{ 'product.adding' | t | json }},
+      "product.add_to_cart": {{ 'product.add_to_cart' | t | json }},
+      "product.sold_out": {{ 'product.sold_out' | t | json }},
+      "product.select_size_prompt": {{ 'product.select_size_prompt' | t | json }},
+      "product.choose_options": {{ 'product.choose_options' | t | json }},
+      "product.choose_option": {{ 'product.choose_option' | t | json }},
+      "product.choose_named_option": {{ 'product.choose_named_option' | t: option: '[option]' | json }},
+      "product.selection_failed": {{ 'product.selection_failed' | t | json }},
+      "product.unavailable": {{ 'product.unavailable' | t | json }},
+      "product.updating": {{ 'product.updating' | t | json }},
+      "marquee.pause": {{ 'marquee.pause' | t | json }},
+      "marquee.play": {{ 'marquee.play' | t | json }},
+      "media.play": {{ 'media.play' | t | json }},
+      "media.pause": {{ 'media.pause' | t | json }},
+      "cursor.view": {{ 'cursor.view' | t | json }},
+      "product.media_position": {{ 'product.media_position' | t: index: '[index]', count: '[count]' | json }}
+    }
+  }
+</script>

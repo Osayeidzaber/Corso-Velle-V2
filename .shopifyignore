@@ -1,0 +1,6 @@
+# Excluded from Shopify CLI push, pull and dev. Everything else in theme/ is the deployable theme.
+# `npm run package` writes its ZIP into theme/; never upload it as a theme file.
+*.zip
+.DS_Store
+Thumbs.db
+*.swp

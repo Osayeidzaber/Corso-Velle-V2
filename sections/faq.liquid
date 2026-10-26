@@ -1,0 +1,302 @@
+<section class="faq full-width section-spacing section-presentation color-{{ section.settings.color_scheme }}" data-layout="{{ section.settings.layout }}" data-style="{{ section.settings.appearance }}" data-marker="{{ section.settings.marker }}" style="{% render 'section-presentation', presentation: section.settings %}">
+  <div class="faq__inner">
+    <div class="faq__intro">
+      {% if section.settings.heading != blank %}<h2>{{ section.settings.heading | escape }}</h2>{% endif %}
+      {% if section.settings.text != blank %}<div class="rte">{{ section.settings.text }}</div>{% endif %}
+    </div>
+    <div class="faq__questions">
+      {% assign opened = false %}
+      {% for block in section.blocks %}
+        {% liquid
+          assign answer = block.settings.answer
+          if block.settings.page != blank
+            assign answer = block.settings.page.content
+          endif
+          assign is_open = block.settings.open
+          if forloop.first and section.settings.first_open
+            assign is_open = true
+          endif
+          if section.settings.single_open and opened
+            assign is_open = false
+          endif
+          if is_open
+            assign opened = true
+          endif
+        %}
+        <nk-disclosure {% if section.settings.animate == false %}no-animation{% endif %} {{ block.shopify_attributes }}>
+          <details class="disclosure" {% if section.settings.single_open %}name="FAQ-{{ section.id }}"{% endif %} {% if is_open %}open{% endif %}>
+            <summary>{{ block.settings.question | escape }}</summary>
+            <div class="disclosure__content rte">{{ answer }}</div>
+          </details>
+        </nk-disclosure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .faq__inner { width: var(--content-width); margin-inline: auto; display: grid; gap: 32px; }
+  .faq__intro { display: grid; gap: 20px; align-content: start; }
+  .faq__intro h2 { font-size: clamp(2rem, 4vw, 3.5rem); overflow-wrap: anywhere; }
+  .faq__questions, .faq__questions > *, .faq__intro { min-width: 0; overflow-wrap: anywhere; }
+  .faq .disclosure > summary { gap: 20px; text-transform: none; letter-spacing: normal; }
+  .faq .disclosure__content { line-height: 1.65; }
+  .faq[data-style='cards'] .faq__questions { display: grid; gap: 12px; }
+  .faq[data-style='cards'] nk-disclosure { background: var(--nk-color-surface); padding-inline: 20px; border: 1px solid var(--nk-color-line); }
+  .faq[data-style='cards'] summary { border-top: 0; }
+  .faq[data-marker='chevron'] .disclosure > summary::after { content: '⌄'; }
+  .faq[data-marker='chevron'] .disclosure[open] > summary::after { rotate: 180deg; }
+  .faq[data-marker='none'] .disclosure > summary::after { content: none; }
+  @media (min-width: 990px) { .faq[data-layout='split'] .faq__inner { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 64px; } }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "FAQ",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Frequently asked questions"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Introduction"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "list",
+          "label": "Stacked"
+        },
+        {
+          "value": "split",
+          "label": "Introduction beside questions"
+        }
+      ],
+      "default": "list"
+    },
+    {
+      "type": "select",
+      "id": "appearance",
+      "label": "Appearance",
+      "options": [
+        {
+          "value": "lines",
+          "label": "Ruled list"
+        },
+        {
+          "value": "cards",
+          "label": "Cards"
+        }
+      ],
+      "default": "lines"
+    },
+    {
+      "type": "select",
+      "id": "marker",
+      "label": "Disclosure icon",
+      "options": [
+        {
+          "value": "plus",
+          "label": "Plus / minus"
+        },
+        {
+          "value": "chevron",
+          "label": "Chevron"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "plus"
+    },
+    {
+      "type": "checkbox",
+      "id": "single_open",
+      "label": "Only one answer open at a time",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "first_open",
+      "label": "Open first answer initially",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "animate",
+      "label": "Animate opening and closing",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (1200px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (1440px)"
+        },
+        {
+          "value": "full",
+          "label": "Full width with page gutters"
+        }
+      ],
+      "default": "inherit",
+      "info": "Sets the width of the image and text together. Background stays full width. All options keep the theme's responsive page gutters."
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px. Custom values are exact and are not multiplied by the global smaller-screen spacing setting."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Your question"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Share a helpful answer with your customers.</p>"
+        },
+        {
+          "type": "page",
+          "id": "page",
+          "label": "Answer from a page",
+          "info": "Overrides the answer above."
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open initially",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        {
+          "type": "question"
+        },
+        {
+          "type": "question"
+        },
+        {
+          "type": "question"
+        }
+      ]
+    },
+    {
+      "name": "Split FAQ cards",
+      "settings": {
+        "layout": "split",
+        "appearance": "cards"
+      },
+      "blocks": [
+        {
+          "type": "question"
+        },
+        {
+          "type": "question"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
+}
+{% endschema %}

@@ -1,0 +1,1153 @@
+{%- comment -%}
+  Main product. The info column is merchant-ordered local section blocks (not nested theme
+  blocks), which keeps app blocks and the variant/price regions predictable.
+
+  Re-render contract: the variant picker requests this section with ?option_values= and swaps
+  only [data-region] price / picker / inventory / buy. Everything else — including app blocks —
+  is left untouched.
+
+  Explicit size choice is required on each enhanced page visit, including variant links.
+  The hidden variant ID stays disabled until selection; no-JavaScript option links remain available.
+{%- endcomment -%}
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign required = settings.product_required_options | downcase | split: ','
+  assign needs_choice = false
+  unless product.has_only_default_variant or product.selected_variant
+    for option in product.options_with_values
+      assign option_name = option.name | downcase | strip
+      for required_name in required
+        assign required_clean = required_name | strip
+        if option_name == required_clean
+          assign needs_choice = true
+        elsif required_clean == 'size' and option_name contains 'size'
+          assign needs_choice = true
+        endif
+      endfor
+    endfor
+  endunless
+
+  if variant == blank
+    assign availability = 'unavailable'
+  elsif variant.available
+    assign availability = 'available'
+  else
+    assign availability = 'sold-out'
+  endif
+
+  # Low-stock dots on size buttons follow the Inventory status block's setting (no block = off).
+  assign low_on_sizes = false
+  assign inventory_block = section.blocks | where: 'type', 'inventory' | first
+  if inventory_block and inventory_block.settings.show_on_sizes != false
+    assign low_on_sizes = true
+  endif
+
+  assign eligible_collections = product.collections | reject: 'handle', 'all' | reject: 'handle', 'frontpage'
+  assign primary_collection = collection | default: eligible_collections.first
+-%}
+
+<div class="section-spacing section-presentation product-section color-{{ section.settings.color_scheme }}" data-product-section data-section-id="{{ section.id }}" data-proportions="{{ section.settings.proportions }}" data-sticky-info="{{ section.settings.sticky_info }}" data-media-right="{{ section.settings.media_right }}" data-text-first="{{ section.settings.text_first_mobile }}" style="{% render 'section-presentation', presentation: section.settings %}--product-info-gap:{{ section.settings.info_gap | default: 20 }}px;">
+  <div class="product">
+    {% render 'product-media', product: product, selected_variant: variant, options: section.settings %}
+
+    <div class="product__info">
+      {%- unless section.settings.show_breadcrumb == false -%}
+      {%- capture breadcrumb_handle -%}{% render 'breadcrumb-collection', product: product %}{%- endcapture -%}
+      {%- liquid
+        assign breadcrumb_collection = blank
+        if breadcrumb_handle != blank
+          assign breadcrumb_collection = collections[breadcrumb_handle]
+        endif
+      -%}
+      <nav class="product__breadcrumb spec" aria-label="Breadcrumb">
+        <a href="{{ routes.collections_url }}">{{ 'collections.title' | t }}</a>
+        {%- if breadcrumb_handle != blank -%}
+          <span aria-hidden="true">/</span>
+          <a href="{{ breadcrumb_collection.url }}">{{ breadcrumb_collection.title | escape }}</a>
+        {%- endif -%}
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ product.title | truncate: 36 | escape }}</span>
+      </nav>
+      {% render 'breadcrumb-schema', collection: breadcrumb_collection, product: product %}
+      {%- endunless -%}
+
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when '@app' -%}
+            {% render block %}
+
+          {%- when 'eyebrow' -%}
+            {%- liquid
+              assign eyebrow = block.settings.text
+              if eyebrow == blank
+                assign eyebrow = product.type
+              endif
+              if eyebrow == blank and primary_collection != blank
+                assign eyebrow = primary_collection.title
+              endif
+              if eyebrow == blank
+                assign eyebrow = product.vendor
+              endif
+            -%}
+            <div class="product__eyebrow-row" {{ block.shopify_attributes }}>
+              {%- if eyebrow != blank -%}
+                <p class="product__eyebrow eyebrow">{{ eyebrow | escape }}</p>
+              {%- endif -%}
+              <div class="product__badges" data-region="badges">
+                {%- if product.available == false -%}
+                  <span class="badge badge--sold-out">{{ 'product.sold_out' | t }}</span>
+                {%- elsif variant.compare_at_price > variant.price -%}
+                  <span class="badge badge--sale">{{ 'product.sale' | t }}</span>
+                {%- endif -%}
+                {%- for tag in product.tags -%}
+                  {%- assign tag_down = tag | downcase | strip -%}
+                  {%- if tag_down == 'new' or tag_down == 'new arrival' -%}
+                    <span class="badge">{{ 'product.badge_new' | t }}</span>
+                    {%- break -%}
+                  {%- elsif tag_down == 'bestseller' or tag_down == 'best seller' -%}
+                    <span class="badge">{{ 'product.badge_bestseller' | t }}</span>
+                    {%- break -%}
+                  {%- elsif tag_down == 'limited' or tag_down == 'limited edition' -%}
+                    <span class="badge">{{ 'product.badge_limited' | t }}</span>
+                    {%- break -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </div>
+
+          {%- when 'title' -%}
+            {%- if request.design_mode or block.settings.animate == false -%}
+              <h1 class="product__title" style="--product-title-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }};" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
+            {%- else -%}
+              <nk-text effect="cut" split="words" play-on-load {{ block.shopify_attributes }}>
+                <h1 class="product__title" style="--product-title-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }};" data-text-target>{{ product.title | escape }}</h1>
+              </nk-text>
+            {%- endif -%}
+
+          {%- when 'price' -%}
+            <div class="product__price-row" data-region="price" {{ block.shopify_attributes }}>
+              <div class="product__price">
+                {% render 'price', product: product, variant: variant %}
+              </div>
+              {%- if variant.sku != blank and block.settings.show_sku != false -%}
+                <span class="product__sku spec text-muted" data-product-sku>Ref. {{ variant.sku | escape }}</span>
+              {%- endif -%}
+              {% render 'promotion', product: product, view: 'product', enabled: block.settings.show_promotion %}
+            </div>
+
+          {%- when 'model_info' -%}
+            <div {{ block.shopify_attributes }}>{% render 'model-info', product: product, settings: block.settings %}</div>
+
+          {%- when 'text' -%}
+            {%- if block.settings.text != blank -%}
+              <div class="rte {{ block.settings.style }}" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+            {%- endif -%}
+
+          {%- when 'variant_picker' -%}
+            {%- liquid
+              assign size_modal_id = ''
+              capture chart_assignment
+                render 'size-chart-assignment', product: product
+              endcapture
+              assign chart_assignment = chart_assignment | strip
+              assign assignment_parts = chart_assignment | split: ':'
+              assign chart_rule = ''
+              assign assigned_chart = product.metafields.custom.size_chart.value
+              case assignment_parts.first
+                when 'collection'
+                  assign chart_collection = collections[assignment_parts.last]
+                  assign assigned_chart = chart_collection.metafields.custom.size_chart.value
+                when 'default'
+                  assign default_chart_handle = settings.size_chart_default_handle | strip
+                  assign assigned_chart = metaobjects.size_chart[default_chart_handle]
+                when 'rule'
+                  assign chart_rule = assignment_parts.last
+              endcase
+              assign size_table = block.settings.size_table
+              assign size_image = nil
+              assign size_unit = block.settings.size_unit
+              assign size_heading = block.settings.size_heading
+              assign size_note = block.settings.size_note
+              if chart_rule != blank
+                assign chart_prefix = 'size_chart_' | append: chart_rule
+                assign handle_key = chart_prefix | append: '_handle'
+                assign rule_handle = settings[handle_key] | strip
+                assign rule_chart = metaobjects.size_chart[rule_handle]
+                capture rule_chart_usable
+                  render 'size-chart-usable', chart: rule_chart
+                endcapture
+                if rule_chart_usable == 'true'
+                  assign assigned_chart = rule_chart
+                endif
+                assign table_key = chart_prefix | append: '_table'
+                assign image_key = chart_prefix | append: '_image'
+                assign unit_key = chart_prefix | append: '_unit'
+                assign basis_key = chart_prefix | append: '_basis'
+                assign note_key = chart_prefix | append: '_note'
+                assign size_table = settings[table_key]
+                assign size_image = settings[image_key]
+                assign size_unit = settings[unit_key]
+                assign size_heading = settings[basis_key]
+                assign size_note = settings[note_key]
+              endif
+              capture size_chart_html
+                render 'size-chart', product: product, chart: assigned_chart, image: size_image, page: block.settings.size_guide_page, table_csv: size_table, unit: size_unit, note: size_note, heading: size_heading, option: block.settings.size_guide_option, verified_chart: chart_rule, show_units: block.settings.show_unit_switch, highlight: block.settings.highlight_selected
+              endcapture
+              assign size_chart_html = size_chart_html | strip
+              assign fit_option = nil
+              if block.settings.show_fit_finder != false
+                for fit_candidate in product.options_with_values
+                  capture fit_is_size
+                    render 'size-option', name: fit_candidate.name, extra: block.settings.size_guide_option
+                  endcapture
+                  capture fit_supported
+                    render 'fit-option-supported', option: fit_candidate
+                  endcapture
+                  if fit_is_size == 'true' and fit_supported == 'true'
+                    assign fit_option = fit_candidate
+                    break
+                  endif
+                endfor
+              endif
+              if size_chart_html != blank and block.settings.show_size_guide != false
+                assign size_modal_id = 'SizeGuide-' | append: section.id
+              elsif fit_option
+                assign size_modal_id = 'SizeGuide-' | append: section.id
+              endif
+            -%}
+
+            {% render 'product-siblings', product: product %}
+
+            {%- unless product.has_only_default_variant -%}
+              <nk-variant-picker
+                class="picker"
+                data-region="picker"
+                data-section-id="{{ section.id }}"
+                data-product-url="{{ product.url }}"
+                data-required-options="{{ settings.product_required_options | escape }}"
+                data-explicit-size-choice
+                {% if block.settings.measure_preview == false %}data-measure-preview-disabled{% endif %}
+                {% unless needs_choice %}data-preselected{% endunless %}
+                {{ block.shopify_attributes }}
+              >
+                {%- for option in product.options_with_values -%}
+                  {%- liquid
+                    assign option_index = forloop.index
+                    assign option_name = option.name | downcase | strip
+                    capture size_option_result
+                      render 'size-option', name: option.name, extra: block.settings.size_guide_option
+                    endcapture
+                    assign is_size_option = false
+                    if size_option_result == 'true'
+                      assign is_size_option = true
+                    endif
+                    assign is_color_option = false
+                    if option_name contains 'color' or option_name contains 'colour'
+                      assign is_color_option = true
+                    endif
+                  -%}
+                  <fieldset
+                    class="option{% if is_size_option %} option--size{% endif %}{% if is_color_option %} option--color{% endif %}"
+                    aria-labelledby="OptionLabel-{{ section.id }}-{{ option_index }}"
+                    data-option-position="{{ option_index }}"
+                    data-option-name="{{ option.name | escape }}"
+                    {% if is_size_option %}data-size-fieldset{% endif %}
+                  >
+                    <div class="option__header">
+                      <span class="option__legend" id="OptionLabel-{{ section.id }}-{{ option_index }}">
+                        <span class="spec">
+                          {{- option.name | escape }}:
+                          <span class="option__selected-label" data-selected-value>
+                            {%- if needs_choice and is_size_option -%}
+                              {{ 'product.select_size_prompt' | t }}
+                            {%- else -%}
+                              {{ option.selected_value | escape }}
+                            {%- endif -%}
+                          </span>
+                        </span>
+                      </span>
+                      {%- if is_size_option and size_modal_id != blank -%}
+                        <button type="button" class="size-guide-link spec" data-nk-open="{{ size_modal_id }}" aria-haspopup="dialog">
+                          {{- 'product.size_guide' | t -}}
+                          {%- if fit_option -%}
+                            <span class="fit-hint" data-fit-hint hidden>{{ 'product.fit_finder.hint' | t }} <span data-part="size"></span></span>
+                          {%- endif -%}
+                        </button>
+                      {%- endif -%}
+                    </div>
+
+                    <div class="option__values{% if is_size_option %} option__values--size{% endif %}" {% if is_size_option %}data-size-values{% endif %}>
+                      {%- for value in option.values -%}
+                        {%- liquid
+                          assign state = 'available'
+                          if value.variant == blank
+                            assign state = 'missing'
+                          elsif value.available == false
+                            assign state = 'sold-out'
+                          endif
+                          if settings.product_sold_out_values == 'hide' and state != 'available' and value.selected == false
+                            continue
+                          endif
+                          assign input_id = section.id | append: '-' | append: option_index | append: '-' | append: forloop.index
+                        -%}
+                        {%- capture swatch_bg -%}{%- render 'swatch-color', value: value, is_color_option: is_color_option -%}{%- endcapture -%}
+                        {%- assign swatch_bg = swatch_bg | strip -%}
+                        <div
+                          class="option__value option__value--{{ state }}{% if swatch_bg != blank %} option__value--swatch{% endif %}"
+                          {% if is_size_option %}data-size-pill="{{ value | strip | upcase | escape }}"{% endif %}
+                        >
+                          <input
+                            type="radio"
+                            id="{{ input_id }}"
+                            name="{{ section.id }}-option-{{ option_index }}"
+                            value="{{ value | escape }}"
+                            data-option-value-id="{{ value.id }}"
+                            {% if value.product_url %}data-product-url="{{ value.product_url | escape }}"{% endif %}
+                            data-focus-key="option-{{ value.id }}"
+                            {% if value.selected %}checked{% endif %}
+                            {% if is_size_option and state != 'available' %}disabled{% endif %}
+                          >
+                          <label for="{{ input_id }}">
+                            {%- if swatch_bg != blank -%}
+                              <span class="option__swatch" style="--swatch: {{ swatch_bg }}" aria-hidden="true"></span>
+                            {%- endif -%}
+                            <span class="option__label-text" data-text="{{ value | escape }}">{{- value | escape -}}</span>
+                            {%- render 'size-stock', value: value, enabled: low_on_sizes -%}
+                            {%- if state == 'sold-out' -%}
+                              <span class="visually-hidden">{{ 'product.value_sold_out' | t }}</span>
+                            {%- elsif state == 'missing' -%}
+                              <span class="visually-hidden">{{ 'product.value_unavailable' | t }}</span>
+                            {%- endif -%}
+                          </label>
+                        </div>
+                      {%- endfor -%}
+                      {%- if is_size_option -%}
+                        <span class="option__underline" data-size-indicator aria-hidden="true"></span>
+                      {%- endif -%}
+                    </div>
+
+                    {%- if is_size_option and block.settings.show_measurements != false -%}
+                      {% render 'product-measurements',
+                        product: product,
+                        chart: assigned_chart,
+                        size_option: option,
+                        table_csv: size_table,
+                        unit: size_unit,
+                        heading: size_heading,
+                        verified_chart: chart_rule,
+                        show_units: block.settings.show_unit_switch,
+                        modal_id: size_modal_id
+                      %}
+                    {%- endif -%}
+                  </fieldset>
+                {%- endfor -%}
+                <p class="message message--error" data-picker-error role="alert" hidden>
+                  {{ 'product.selection_failed' | t }}
+                  <a href="{{ product.url }}">{{ 'product.reload_selection' | t }}</a>
+                </p>
+              </nk-variant-picker>
+
+              {%- if size_modal_id != blank -%}
+                <nk-modal id="{{ size_modal_id }}">
+                  <dialog
+                    class="drawer drawer--right size-guide-dialog"
+                    aria-labelledby="SizeGuideTitle-{{ section.id }}"
+                    data-swipe-close
+                  >
+                    <div class="size-guide-dialog__header" data-drag-handle>
+                      <span class="size-guide-dialog__grip" aria-hidden="true"></span>
+                      <div class="size-guide-dialog__titles">
+                        <p class="size-guide-dialog__eyebrow spec">{%- if fit_option -%}{{ 'product.fit_finder.eyebrow' | t }}{%- else -%}{{ 'product.size_guide' | t }}{%- endif -%}</p>
+                        <h2 class="size-guide-dialog__title" id="SizeGuideTitle-{{ section.id }}" tabindex="-1" data-autofocus>
+                          {{- product.title | escape -}}
+                        </h2>
+                      </div>
+                      <button type="button" class="icon-button size-guide-dialog__close" data-nk-close aria-label="{{ 'general.close' | t }}">
+                        {% render 'icon', name: 'close' %}
+                      </button>
+                    </div>
+                    <div class="drawer__body size-guide__body">
+                      {%- if fit_option -%}
+                        {% render 'fit-finder', product: product, size_option: fit_option, id: section.id %}
+                      {%- endif -%}
+                      {%- if size_chart_html != blank and block.settings.show_size_guide != false -%}
+                        {{ size_chart_html }}
+                      {%- endif -%}
+                    </div>
+                  </dialog>
+                </nk-modal>
+              {%- endif -%}
+            {%- endunless -%}
+
+          {%- when 'inventory' -%}
+            <div class="inventory-note" data-region="inventory" {{ block.shopify_attributes }}>
+              {% render 'inventory-status', product: product, variant: variant, availability: availability, needs_choice: needs_choice %}
+            </div>
+
+          {%- when 'buy_buttons' -%}
+            <nk-product-form data-source-id="{{ section.id }}" {{ block.shopify_attributes }}>
+              {%- assign form_id = 'ProductForm-' | append: section.id -%}
+              {%- form 'product', product, id: form_id, novalidate: 'novalidate' -%}
+                {%- if block.settings.show_quantity -%}
+                  <div class="product__quantity-row" data-region="quantity">
+                    <label class="spec" for="Quantity-{{ section.id }}">{{ 'product.quantity' | t }}</label>
+                    <div class="quantity">
+                      <button type="button" class="icon-button" data-qty-step="-1" aria-label="{{ 'product.decrease_quantity' | t }}">
+                        {% render 'icon', name: 'minus', size: 16 %}
+                      </button>
+                      <input
+                        id="Quantity-{{ section.id }}"
+                        type="number"
+                        inputmode="numeric"
+                        name="quantity"
+                        value="{{ variant.quantity_rule.min | default: 1 }}"
+                        min="{{ variant.quantity_rule.min | default: 1 }}"
+                        {% if variant.quantity_rule.max %}max="{{ variant.quantity_rule.max }}"{% endif %}
+                        step="{{ variant.quantity_rule.increment | default: 1 }}"
+                      >
+                      <button type="button" class="icon-button" data-qty-step="1" aria-label="{{ 'product.increase_quantity' | t }}">
+                        {% render 'icon', name: 'plus', size: 16 %}
+                      </button>
+                    </div>
+                  </div>
+                {%- endif -%}
+
+                <div
+                  class="buy"
+                  data-region="buy"
+                  data-availability="{{ availability }}"
+                  data-variant-media-id="{{ variant.featured_media.id }}"
+                  data-variant-title="{{ variant.title | escape }}"
+                  data-variant-price="{{ variant.price | money | escape }}"
+                >
+                  {%- unless block.settings.show_quantity -%}
+                    <input type="hidden" name="quantity" value="{{ variant.quantity_rule.min | default: 1 }}">
+                  {%- endunless -%}
+                  <input type="hidden" name="id" value="{{ variant.id }}" {% if needs_choice %}disabled{% endif %}>
+                  {%- liquid
+                    case availability
+                      when 'available'
+                        assign label = 'product.add_to_cart' | t
+                        if needs_choice
+                          assign label = 'product.select_size_prompt' | t
+                        endif
+                      when 'sold-out'
+                        assign label = 'product.sold_out' | t
+                      else
+                        assign label = 'product.unavailable' | t
+                    endcase
+                  -%}
+                  <button type="submit" name="add" class="button button--full buy__submit" {% if availability != 'available' or needs_choice %}disabled{% endif %}>
+                    <span data-button-label>{{ label }}</span>
+                    {%- if availability == 'available' -%}
+                      <span class="buy__submit-sep" aria-hidden="true">·</span>
+                      <span class="buy__submit-price" data-button-price>{{ variant.price | money }}</span>
+                    {%- endif -%}
+                  </button>
+
+                </div>
+
+                {%- unless product.has_only_default_variant -%}
+                  <noscript>
+                    {% render 'product-option-links', product: product %}
+                  </noscript>
+                {%- endunless -%}
+
+              {%- endform -%}
+              <p class="message message--error" data-form-error role="alert" hidden></p>
+            </nk-product-form>
+
+          {%- when 'description' -%}
+            {% render 'product-description', product: product, block: block %}
+          {% when 'feature' %}
+            {% render 'product-feature', block: block %}
+
+          {%- when 'accordion' -%}
+            {%- liquid
+              assign accordion_content = block.settings.content
+              if block.settings.page != blank
+                assign accordion_content = block.settings.page.content
+              endif
+              if block.settings.policy_source == 'shipping_exchange'
+                capture accordion_content
+                  render 'shipping-exchange'
+                endcapture
+              endif
+            -%}
+            {%- if accordion_content != blank -%}
+              <nk-disclosure {{ block.shopify_attributes }}>
+                <details class="disclosure" {% if block.settings.open %}open{% endif %}>
+                  <summary>{{ block.settings.heading | escape }}</summary>
+                  <div class="disclosure__content rte">{{ accordion_content }}</div>
+                </details>
+              </nk-disclosure>
+            {%- endif -%}
+
+          {%- when 'custom_liquid' -%}
+            <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+
+  {%- comment -%}
+    Opt-in sticky purchase bar (src/components/product/sticky-buy.ts): appears once the main
+    Add to cart button has scrolled above the viewport and mirrors its size, price and state.
+  {%- endcomment -%}
+  {%- assign buy_block = section.blocks | where: 'type', 'buy_buttons' | first -%}
+  {% render 'sticky-buy', product: product, variant: variant, needs_choice: needs_choice, scope: section.settings.sticky_buy, buy_block: buy_block %}
+</div>
+
+{% schema %}
+{
+  "name": "Product information",
+  "class": "main-product-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Show breadcrumbs",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "gallery_layout",
+      "label": "Desktop gallery",
+      "options": [
+        {
+          "value": "collage",
+          "label": "Editorial collage"
+        },
+        {
+          "value": "slider",
+          "label": "Single image slider"
+        },
+        {
+          "value": "stack",
+          "label": "Stacked images"
+        },
+        {
+          "value": "grid",
+          "label": "Two-column grid"
+        }
+      ],
+      "default": "slider",
+      "info": "Single image slider: one large photo with a thumbnail rail, subtle arrows and click-to-enlarge. Editorial collage: all photos in a magazine-style rhythm beside sticky product details."
+    },
+    {
+      "type": "select",
+      "id": "gallery_ratio",
+      "label": "Media shape",
+      "options": [
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape"
+        }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "select",
+      "id": "gallery_fit",
+      "label": "Media fit",
+      "options": [
+        {
+          "value": "contain",
+          "label": "Entire media"
+        },
+        {
+          "value": "cover",
+          "label": "Fill and crop"
+        }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "select",
+      "id": "gallery_background",
+      "label": "Media background",
+      "options": [
+        {
+          "value": "white",
+          "label": "White studio"
+        },
+        {
+          "value": "scheme",
+          "label": "Scheme surface"
+        }
+      ],
+      "default": "white"
+    },
+    {
+      "type": "select",
+      "id": "proportions",
+      "label": "Desktop columns",
+      "options": [
+        {
+          "value": "media",
+          "label": "Larger gallery"
+        },
+        {
+          "value": "balanced",
+          "label": "Balanced"
+        },
+        {
+          "value": "content",
+          "label": "Larger information column"
+        }
+      ],
+      "default": "media"
+    },
+    {
+      "type": "checkbox",
+      "id": "media_right",
+      "label": "Gallery on the right (desktop)",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "text_first_mobile",
+      "label": "Information first on smaller screens",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_info",
+      "label": "Sticky product information",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "sticky_buy",
+      "label": "Sticky Add to cart bar",
+      "options": [
+        {
+          "value": "off",
+          "label": "Off"
+        },
+        {
+          "value": "mobile",
+          "label": "Phones and tablets"
+        },
+        {
+          "value": "always",
+          "label": "All screen sizes"
+        }
+      ],
+      "default": "off",
+      "info": "Appears after the main Add to cart button scrolls out of view."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_thumbnails",
+      "label": "Show media thumbnails",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_gallery_controls",
+      "label": "Show media arrows and counter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_media_progress",
+      "label": "Show media progress bar",
+      "default": true,
+      "info": "A thin bar that follows your position through the product photos: under the slider, or beside stacked photos on desktop."
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_zoom",
+      "label": "Enable image zoom",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px. Custom values are exact and are not multiplied by the global smaller-screen spacing setting."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "info_gap",
+      "label": "Space between information blocks",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "eyebrow",
+      "name": "Eyebrow",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "info": "Leave empty to show the product type, or its first collection."
+        }
+      ]
+    },
+    {
+      "type": "title",
+      "name": "Title",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "animate",
+          "label": "Animate title",
+          "default": true
+        },
+        {
+          "type": "range",
+          "id": "scale",
+          "label": "Title size",
+          "min": 70,
+          "max": 130,
+          "step": 5,
+          "default": 100,
+          "unit": "%"
+        }
+      ]
+    },
+    {
+      "type": "price",
+      "name": "Price",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_sku",
+          "label": "Show SKU when available",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_promotion",
+          "label": "Show promotion code",
+          "default": true,
+          "info": "Shows the discount code connected to this product in Theme settings > Promotions."
+        }
+      ]
+    },
+    {
+      "type": "variant_picker",
+      "name": "Variant picker",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "size_guide_option",
+          "label": "Show size guide next to option",
+          "default": "Size"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_size_guide",
+          "label": "Show full size guide",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_fit_finder",
+          "label": "Show size finder",
+          "info": "Estimates a letter size from height, weight, shape and fit preference. Answers stay on the shopper's device.",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_measurements",
+          "label": "Show inline measurements",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "measure_preview",
+          "label": "Preview measurements on hover or focus",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_unit_switch",
+          "label": "Allow inch and centimetre switching",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "highlight_selected",
+          "label": "Highlight selected size in guide",
+          "default": true
+        },
+        {
+          "type": "page",
+          "id": "size_guide_page",
+          "label": "Size guide page (fallback)",
+          "info": "Used only when no assigned chart or template table is available."
+        },
+        {
+          "type": "text",
+          "id": "size_heading",
+          "label": "Size guide heading",
+          "default": "Measured flat, garment in hand"
+        },
+        {
+          "type": "textarea",
+          "id": "size_table",
+          "label": "Size table",
+          "info": "Optional merchant-verified chart shared by products using this template. Leave empty unless it applies to every such product. Prefer product metafields. First line: headings; subsequent lines: comma-separated measurements."
+        },
+        {
+          "type": "select",
+          "id": "size_unit",
+          "label": "Table is written in",
+          "options": [
+            {
+              "value": "in",
+              "label": "Inches"
+            },
+            {
+              "value": "cm",
+              "label": "Centimetres"
+            }
+          ],
+          "default": "in"
+        },
+        {
+          "type": "text",
+          "id": "size_note",
+          "label": "Note under the table"
+        }
+      ]
+    },
+    {
+      "type": "inventory",
+      "name": "Inventory status",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_on_sizes",
+          "label": "Mark low-stock sizes on size buttons",
+          "default": true,
+          "info": "Uses Theme settings > Product page > \"Show only a few left\" threshold."
+        }
+      ]
+    },
+    {
+      "type": "model_info",
+      "name": "Model info",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Shows a line like \"Model is 183 cm and wears size M\". Set it per product with the metafields custom.model_info, or custom.model_height and custom.model_size (see docs/MODEL-INFO.md)."
+        },
+        {
+          "type": "checkbox",
+          "id": "show",
+          "label": "Show model info",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "use_metafields",
+          "label": "Use product metafields",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "sentence",
+          "label": "Sentence",
+          "default": "Model is [height] and wears size [size]",
+          "info": "Used with the height and size metafields. [height] and [size] are replaced."
+        },
+        {
+          "type": "text",
+          "id": "fallback",
+          "label": "Fallback text",
+          "info": "Shown on products without model metafields. Leave blank to show nothing."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_icon",
+          "label": "Show icon",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Buy buttons",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_quantity",
+          "label": "Show quantity",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            {
+              "value": "",
+              "label": "Body"
+            },
+            {
+              "value": "spec",
+              "label": "Label"
+            }
+          ],
+          "default": ""
+        }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Description",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_care",
+          "label": "Show care metafield when available",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "care_heading",
+          "label": "Care heading",
+          "default": "Fabric & Care"
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open by default",
+          "default": true
+        },
+        {
+          "type": "select",
+          "id": "presentation",
+          "label": "Description presentation",
+          "options": [
+            {
+              "value": "accordion",
+              "label": "Collapsible row"
+            },
+            {
+              "value": "inline",
+              "label": "Always visible"
+            }
+          ],
+          "default": "accordion"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Collapsible row",
+      "settings": [
+        {
+          "type": "select",
+          "id": "policy_source",
+          "label": "Content source",
+          "options": [
+            { "value": "custom", "label": "Custom content or page" },
+            { "value": "shipping_exchange", "label": "Shopify shipping and refund policies" }
+          ],
+          "default": "custom",
+          "info": "Policies stay synchronized with Settings > Policies in Shopify Admin."
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Fabric & care"
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open by default",
+          "default": false
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content"
+        },
+        {
+          "type": "page",
+          "id": "page",
+          "label": "Content from page"
+        }
+      ]
+    },
+    {
+      "type": "custom_liquid",
+      "name": "Custom Liquid",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "custom_liquid",
+          "label": "Custom Liquid"
+        }
+      ]
+    },
+    {
+      "type": "feature",
+      "name": "Product feature",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Decorative icon or image"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Product feature"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "select",
+          "id": "appearance",
+          "label": "Appearance",
+          "options": [
+            {
+              "value": "plain",
+              "label": "Plain"
+            },
+            {
+              "value": "bordered",
+              "label": "Bordered"
+            },
+            {
+              "value": "surface",
+              "label": "Surface"
+            }
+          ],
+          "default": "plain"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Link label"
+        }
+      ]
+    }
+  ],
+  "enabled_on": {
+    "templates": [
+      "product"
+    ]
+  },
+  "limit": 1
+}
+{% endschema %}

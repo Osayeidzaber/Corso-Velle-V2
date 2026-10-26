@@ -1,0 +1,63 @@
+{%- doc -%}
+  Hero media with an optional separate phone version (< 750px). Two images share one <picture>
+  so only one downloads; when either side is a video, each side gets its own layer and CSS shows
+  the right one (a hidden video never plays: background-video only plays while on screen).
+  @param {object} [video] - Desktop Shopify video
+  @param {string} [video_url] - Desktop MP4 URL
+  @param {string} [poster] - Desktop poster URL
+  @param {object} [image] - Desktop image
+  @param {object} [video_mobile] - Phone Shopify video
+  @param {string} [video_url_mobile] - Phone MP4 URL
+  @param {string} [poster_mobile] - Phone poster URL
+  @param {object} [image_mobile] - Phone image
+  @param {string} [sizes] - Desktop image sizes
+  @param {boolean} [first] - Media is in the first screen (eager image)
+  @param {boolean} [autoplay] - Autoplay background videos
+{%- enddoc -%}
+{%- liquid
+  assign loading = 'lazy'
+  assign priority = 'auto'
+  if first
+    assign loading = 'eager'
+    assign priority = 'high'
+  endif
+
+  assign desktop_video = false
+  if video or video_url != blank
+    assign desktop_video = true
+  endif
+  assign phone_video = false
+  if video_mobile or video_url_mobile != blank
+    assign phone_video = true
+  endif
+  assign has_desktop = desktop_video
+  if image
+    assign has_desktop = true
+  endif
+  assign has_phone = phone_video
+  if image_mobile
+    assign has_phone = true
+  endif
+-%}
+{%- if has_desktop == false and has_phone -%}
+  {%- comment -%} Only phone media was given: use it everywhere. {%- endcomment -%}
+  {% render 'hero-media-item', video: video_mobile, video_url: video_url_mobile, poster: poster_mobile, image: image_mobile, sizes: '100vw', loading: loading, priority: priority, autoplay: autoplay %}
+{%- elsif desktop_video == false and phone_video == false -%}
+  {%- if image and image_mobile -%}
+    <picture>
+      <source media="(max-width: 749px)" srcset="{{ image_mobile | image_url: width: 600 }} 600w, {{ image_mobile | image_url: width: 750 }} 750w, {{ image_mobile | image_url: width: 1100 }} 1100w, {{ image_mobile | image_url: width: 1500 }} 1500w" sizes="100vw">
+      {% render 'hero-media-item', image: image, sizes: sizes, loading: loading, priority: priority %}
+    </picture>
+  {%- else -%}
+    {% render 'hero-media-item', image: image, sizes: sizes, loading: loading, priority: priority %}
+  {%- endif -%}
+{%- else -%}
+  <div class="hero__media-layer{% if has_phone %} hero__media-layer--desktop{% endif %}">
+    {% render 'hero-media-item', video: video, video_url: video_url, poster: poster, image: image, sizes: sizes, loading: loading, priority: priority, autoplay: autoplay %}
+  </div>
+  {%- if has_phone -%}
+    <div class="hero__media-layer hero__media-layer--phone">
+      {% render 'hero-media-item', video: video_mobile, video_url: video_url_mobile, poster: poster_mobile, image: image_mobile, phone: true, sizes: '100vw', loading: loading, priority: priority, autoplay: autoplay %}
+    </div>
+  {%- endif -%}
+{%- endif -%}

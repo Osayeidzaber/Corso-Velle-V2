@@ -1,0 +1,365 @@
+{%- comment -%}
+  Expanding media (rewrite of the supplied Scroll Expand example) — see
+  src/components/expand-media. Native scrolling only; static full-bleed block under reduced
+  motion, Motion off and in the theme editor.
+{%- endcomment -%}
+<nk-expand-media
+  data-background-video-owner
+  class="full-width color-{{ section.settings.color_scheme }}"
+  {% if section.settings.animate == false %}data-motion-disabled{% endif %}
+  style="--expand-copy-width:{{ section.settings.copy_width | default: 60 }}ch; --start-w: {{ section.settings.start_width }}; --start-h: {{ section.settings.start_height }}; --nk-scrim: {{ section.settings.scrim | divided_by: 100.0 }};"
+  data-static data-align="{{ section.settings.alignment }}" data-static-height="{{ section.settings.static_height }}"
+>
+  {%- assign video_toggle_id = 'ExpandVideo-' | append: section.id -%}
+  <div class="expand__track expand__track--{{ section.settings.length }}" data-ref="track">
+    <div class="expand__stage">
+      <div class="expand__frame">
+        <div class="expand__media">
+          {%- assign still = section.settings.image | default: section.settings.collection.featured_image -%}
+          {% if section.settings.video or section.settings.video_url != blank %}
+            {% render 'background-video', video: section.settings.video, video_url: section.settings.video_url, poster_url: section.settings.poster_url, autoplay: section.settings.video_autoplay, toggle_id: video_toggle_id %}
+          {%- elsif still -%}
+            {%- assign alt = still.alt | escape -%}
+            {{ still | image_url: width: 2400 | image_tag: loading: 'lazy', widths: '750, 1100, 1500, 1920, 2400', sizes: '100vw', alt: alt }}
+          {%- else -%}
+            {{ 'lifestyle-1' | placeholder_svg_tag }}
+          {%- endif -%}
+        </div>
+        <div class="expand__scrim" aria-hidden="true"></div>
+        <div class="expand__overlay">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'heading' -%}
+                <h2 class="expand__overlay-heading" style="--expand-heading-scale:{{ block.settings.scale | default: 100 | divided_by: 100.0 }};" {{ block.shopify_attributes }}>{{ block.settings.heading | escape }}</h2>
+              {%- when 'text' -%}
+                <div class="rte" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+              {%- when 'button' -%}
+                {%- if block.settings.label != blank and block.settings.link != blank -%}
+                  <div {{ block.shopify_attributes }}>{% render 'hero-button', label: block.settings.label, link: block.settings.link, style: block.settings.style, corners: block.settings.corners, arrow: block.settings.arrow %}</div>
+                {%- endif -%}
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+
+      </div>
+      {% if section.settings.video or section.settings.video_url != blank %}
+        <button id="{{ video_toggle_id }}" type="button" class="background-video__toggle spec" aria-label="{{ 'media.play' | t }}" data-play-label="{{ 'media.play' | t }}" data-pause-label="{{ 'media.pause' | t }}" hidden>▶</button>
+      {% endif %}
+      {%- if section.settings.title != blank -%}
+        <p class="expand__title" aria-hidden="true">{{ section.settings.title | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.hint != blank -%}
+        <p class="expand__hint spec" aria-hidden="true">{{ section.settings.hint | escape }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</nk-expand-media>
+
+{% stylesheet %}
+  .expand__track.expand__track--short { height: 170svh; }
+  .expand__overlay-heading { font-family: var(--nk-font-heading); font-style: italic; font-size: calc(clamp(2.5rem, 8vw, 6.5rem) * var(--expand-heading-scale, 1)); line-height: 0.95; }
+  .expand__title { font-style: italic; font-weight: 400; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Expanding media",
+  "class": "expand-media-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "animate",
+      "label": "Scroll expansion",
+      "default": true,
+      "info": "Desktop sticky storytelling. Phones, reduced motion and the editor show the final frame without a long scroll track."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video",
+      "info": "Plays muted while on screen; visitors can pause it."
+    },
+    {
+      "type": "url",
+      "id": "video_url",
+      "label": "Video file URL",
+      "info": "Optional MP4 address, used when no video is picked above."
+    },
+    {
+      "type": "url",
+      "id": "poster_url",
+      "label": "Video poster image URL"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Use collection image",
+      "info": "Shown when no video or image is set."
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title over the closed frame",
+      "default": "Built to move",
+      "info": "Decorative; repeat important words in the heading block."
+    },
+    {
+      "type": "text",
+      "id": "hint",
+      "label": "Scroll hint",
+      "default": "Scroll"
+    },
+    {
+      "type": "range",
+      "id": "start_width",
+      "label": "Starting width",
+      "min": 30,
+      "max": 90,
+      "step": 2,
+      "unit": "%",
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "start_height",
+      "label": "Starting height",
+      "min": 30,
+      "max": 90,
+      "step": 2,
+      "unit": "%",
+      "default": 58
+    },
+    {
+      "type": "select",
+      "id": "length",
+      "label": "Scroll length",
+      "options": [
+        {
+          "value": "short",
+          "label": "Short"
+        },
+        {
+          "value": "long",
+          "label": "Long"
+        }
+      ],
+      "default": "long"
+    },
+    {
+      "type": "range",
+      "id": "scrim",
+      "label": "Tint when open",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 45
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "checkbox",
+      "id": "video_autoplay",
+      "label": "Autoplay muted video",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Content alignment",
+      "options": [
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "static_height",
+      "label": "Static campaign height",
+      "options": [
+        {
+          "value": "regular",
+          "label": "Full scene"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        }
+      ],
+      "default": "regular",
+      "info": "Minimum height only. Static content grows to fit long copy; applies on phones and when expansion is off."
+    },
+    {
+      "type": "range",
+      "id": "copy_width",
+      "label": "Content width",
+      "min": 28,
+      "max": 72,
+      "step": 2,
+      "default": 60,
+      "unit": "ch"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "Heading",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Every detail, full frame"
+        },
+        {
+          "type": "range",
+          "id": "scale",
+          "label": "Heading size",
+          "min": 50,
+          "max": 150,
+          "step": 5,
+          "default": 100,
+          "unit": "%"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "Button",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Shop the drop"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Button style",
+          "options": [
+            {
+              "value": "solid",
+              "label": "Filled"
+            },
+            {
+              "value": "outline",
+              "label": "Outline"
+            },
+            {
+              "value": "link",
+              "label": "Text"
+            }
+          ],
+          "default": "solid"
+        },
+        {
+          "type": "select",
+          "id": "corners",
+          "label": "Corners",
+          "options": [
+            {
+              "value": "inherit",
+              "label": "Theme default"
+            },
+            {
+              "value": "square",
+              "label": "Square"
+            },
+            {
+              "value": "soft",
+              "label": "Soft"
+            },
+            {
+              "value": "pill",
+              "label": "Pill"
+            }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "checkbox",
+          "id": "arrow",
+          "label": "Show arrow",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Expanding media",
+      "blocks": [
+        {
+          "type": "heading"
+        },
+        {
+          "type": "button"
+        }
+      ]
+    },
+    {
+      "name": "Static campaign",
+      "settings": {
+        "animate": false,
+        "static_height": "compact",
+        "alignment": "left"
+      },
+      "blocks": [
+        {
+          "type": "heading"
+        },
+        {
+          "type": "text"
+        },
+        {
+          "type": "button"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
+}
+{% endschema %}

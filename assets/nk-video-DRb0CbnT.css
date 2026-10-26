@@ -1,0 +1,1 @@
+nk-video .video-feature__play{transition:scale .25s ease-out}nk-video .video-feature__poster:hover .video-feature__play,nk-video .video-feature__poster:focus-visible .video-feature__play{scale:1.08}@media (prefers-reduced-motion:reduce){nk-video .video-feature__play{transition:none}}

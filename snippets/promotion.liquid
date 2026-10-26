@@ -1,0 +1,177 @@
+{%- doc -%}
+  The one promotion association model (docs/PROMOTIONS.md). Resolves which existing Shopify
+  discount code, if any, is connected to a product and renders it for one view.
+
+  An association is a display + "try this code in the cart" hint only. Shopify admin owns the
+  code's eligibility, value, schedule and combinations, so nothing here prices a product or claims
+  a saving; savings appear only in the cart, from Shopify's own discount allocations.
+
+  Sources, highest priority wins (ties keep the earlier source):
+  1. Product metafield custom.discount_code (Theme settings > Promotions > Metafield code priority)
+  2. Promotion slots 1–4 (Theme settings > Promotions), matched by entire store, picked products,
+     product handles, whole-word title phrases, or a tag / custom.promotion metafield value.
+
+  @param {object} product - The product
+  @param {string} view - 'card' (badge), 'product' (product page note), 'json' (cart auto-apply entry)
+  @param {boolean} [enabled] - false hides the view (product page block setting; default shown)
+
+  @example
+  {% render 'promotion', product: product, view: 'card' %}
+{%- enddoc -%}
+{%- liquid
+  assign best = blank
+  assign best_priority = 0
+  assign mf_code = product.metafields.custom.discount_code.value | strip
+  if mf_code != blank
+    assign best = 'mf'
+    assign best_priority = settings.promo_metafield_priority | default: 10
+  endif
+
+  assign promo_keys = product.metafields.custom.promotion.value
+  assign handle = product.handle | downcase
+  # Whole-word title matching: punctuation becomes spaces, whitespace collapses, and both the title
+  # and each phrase are padded with spaces, so "Tee" never matches "Teen" or "Tees".
+  assign title_words = product.title | downcase | replace: '-', ' ' | replace: ',', ' ' | replace: '/', ' ' | replace: '|', ' ' | replace: '(', ' ' | replace: ')', ' ' | replace: '.', ' ' | replace: ':', ' ' | split: ' ' | join: ' '
+  assign title_words = ' ' | append: title_words | append: ' '
+
+  for i in (1..4)
+    assign prefix = 'promo_' | append: i | append: '_'
+    assign key = prefix | append: 'enabled'
+    unless settings[key]
+      continue
+    endunless
+    assign key = prefix | append: 'code'
+    assign slot_code = settings[key] | strip
+    if slot_code == blank
+      continue
+    endif
+    assign key = prefix | append: 'priority'
+    assign slot_priority = settings[key] | default: 5
+    if slot_priority <= best_priority
+      continue
+    endif
+
+    assign matched = false
+    assign key = prefix | append: 'scope'
+    if settings[key] == 'all'
+      assign matched = true
+    endif
+
+    unless matched
+      assign key = prefix | append: 'products'
+      for picked in settings[key]
+        if picked.id == product.id
+          assign matched = true
+          break
+        endif
+      endfor
+    endunless
+
+    unless matched
+      assign key = prefix | append: 'handles'
+      assign entries = settings[key] | newline_to_br | strip_newlines | replace: '<br />', ',' | split: ','
+      for entry in entries
+        assign entry_clean = entry | strip | downcase
+        if entry_clean != blank and entry_clean == handle
+          assign matched = true
+          break
+        endif
+      endfor
+    endunless
+
+    unless matched
+      assign key = prefix | append: 'titles'
+      assign entries = settings[key] | newline_to_br | strip_newlines | replace: '<br />', ',' | split: ','
+      for entry in entries
+        assign phrase = entry | downcase | replace: '-', ' ' | replace: '/', ' ' | replace: '|', ' ' | replace: '(', ' ' | replace: ')', ' ' | replace: '.', ' ' | replace: ':', ' ' | split: ' ' | join: ' '
+        if phrase != blank
+          assign phrase = ' ' | append: phrase | append: ' '
+          if title_words contains phrase
+            assign matched = true
+            break
+          endif
+        endif
+      endfor
+    endunless
+
+    unless matched
+      assign key = prefix | append: 'tag'
+      assign slot_tag = settings[key] | strip | downcase
+      if slot_tag != blank
+        for tag in product.tags
+          assign tag_clean = tag | strip | downcase
+          if tag_clean == slot_tag
+            assign matched = true
+            break
+          endif
+        endfor
+        unless matched
+          # A string loops once and a list metafield loops per value, so both definitions work.
+          for promo_key in promo_keys
+            assign promo_key_clean = promo_key | strip | downcase
+            if promo_key_clean == slot_tag
+              assign matched = true
+              break
+            endif
+          endfor
+        endunless
+      endif
+    endunless
+
+    if matched
+      assign best = i | append: ''
+      assign best_priority = slot_priority
+    endif
+  endfor
+
+  if best == 'mf'
+    assign code = mf_code
+    assign auto = settings.promo_auto_apply
+    assign show_card = settings.promo_metafield_cards
+    assign badge = blank
+    assign message = blank
+  else
+    assign prefix = 'promo_' | append: best | append: '_'
+    assign key = prefix | append: 'code'
+    assign code = settings[key] | strip
+    assign key = prefix | append: 'auto'
+    assign auto = false
+    if settings.promo_auto_apply and settings[key]
+      assign auto = true
+    endif
+    assign key = prefix | append: 'cards'
+    assign show_card = settings[key]
+    assign key = prefix | append: 'badge'
+    assign badge = settings[key] | replace: '[code]', code
+    assign key = prefix | append: 'message'
+    assign message = settings[key] | replace: '[code]', code
+  endif
+  assign code = code | upcase
+-%}
+{%- if best != blank -%}
+{%- case view -%}
+  {%- when 'card' -%}
+    {%- if show_card -%}
+      <span class="badge badge--promo" data-promo-code="{{ code | escape }}">
+        {%- if badge != blank -%}{{ badge | escape }}{%- else -%}{{ 'promotions.badge' | t: code: code }}{%- endif -%}
+      </span>
+    {%- endif -%}
+  {%- when 'product' -%}
+    {%- if enabled != false and product.available -%}
+    <p class="promo-note" data-promo-code="{{ code | escape }}">
+      <span class="promo-note__code spec">{{ code | escape }}</span>
+      <span class="promo-note__text">
+        {%- if message != blank -%}
+          {{ message | escape }}
+        {%- elsif auto -%}
+          {{ 'promotions.product_note_auto' | t: code: code }}
+        {%- else -%}
+          {{ 'promotions.product_note_manual' | t: code: code }}
+        {%- endif -%}
+      </span>
+    </p>
+    {%- endif -%}
+  {%- when 'json' -%}
+    {%- if auto -%}{"code":{{ code | json }},"priority":{{ best_priority }}}{%- endif -%}
+{%- endcase -%}
+{%- endif -%}

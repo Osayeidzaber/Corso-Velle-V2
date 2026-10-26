@@ -1,0 +1,561 @@
+{%- comment -%}
+  Icon + title + text features (shipping, returns, fit). Adapted from HyperUI marketing/feature-grids #1 with Heroicons.
+  Source and license: docs/SECTION-SOURCES.md.
+{%- endcomment -%}
+<section class="feature-list kit-section full-width section-spacing section-presentation color-{{ section.settings.color_scheme }}" data-heading="{{ section.settings.heading_size }}" data-corners="{{ section.settings.corner_style }}" data-buttons="{{ section.settings.button_size }}" data-layout="{{ section.settings.layout }}" data-icon="{{ section.settings.icon_style }}" data-icon-color="{{ section.settings.icon_color }}" data-align="{{ section.settings.alignment }}" data-card="{{ section.settings.card_style }}" data-divider="{{ section.settings.dividers }}" data-title="{{ section.settings.title_size }}" style="{% render 'section-presentation', presentation: section.settings %}--feature-cols:{{ section.settings.columns }};--feature-cols-mobile:{{ section.settings.columns_mobile }};--feature-icon:{{ section.settings.icon_size }}px;--feature-gap:{{ section.settings.gap }}px;">
+  {%- case section.settings.entrance -%}{%- when 'fade' -%}<nk-reveal class="kit-entrance" mode="fade">{%- when 'stagger' -%}<nk-stagger class="kit-entrance">{%- endcase -%}
+  <div class="feature-list__inner">
+    {% render 'section-heading', heading: section.settings.heading, text: section.settings.text, align: section.settings.alignment %}
+    <ul class="feature-list__items" role="list">
+      {%- for block in section.blocks -%}
+        <li class="feature-list__item kit-card"{% if section.settings.entrance == 'stagger' %} data-stagger-item{% endif %} {{ block.shopify_attributes }}>
+          {%- if block.settings.image != blank -%}
+            <span class="feature-list__icon">{{ block.settings.image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}</span>
+          {%- elsif block.settings.icon != 'none' -%}
+            <span class="feature-list__icon">{% render 'section-icon', name: block.settings.icon %}</span>
+          {%- endif -%}
+          <div class="feature-list__copy">
+            <h3 class="feature-list__title">{{ block.settings.title | escape }}</h3>
+            {%- if block.settings.text != blank -%}<div class="rte text-muted">{{ block.settings.text }}</div>{%- endif -%}
+            {%- if block.settings.link != blank and block.settings.link_label != blank -%}<a class="kit-link" href="{{ block.settings.link }}">{{ block.settings.link_label | escape }} <span aria-hidden="true">→</span></a>{%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+  {%- case section.settings.entrance -%}{%- when 'fade' -%}</nk-reveal>{%- when 'stagger' -%}</nk-stagger>{%- endcase -%}
+</section>
+
+{% stylesheet %}
+.feature-list__inner { width: var(--content-width); margin-inline: auto; display: grid; gap: 32px; }
+.feature-list__items { display: grid; grid-template-columns: repeat(var(--feature-cols-mobile, 1), minmax(0, 1fr)); gap: var(--feature-gap, 28px); list-style: none; margin: 0; padding: 0; }
+.feature-list__item { display: grid; gap: 14px; align-content: start; min-width: 0; overflow-wrap: anywhere; }
+.feature-list[data-layout='inline'] .feature-list__item { grid-template-columns: auto minmax(0, 1fr); align-items: start; }
+.feature-list__icon { display: inline-grid; place-items: center; width: calc(var(--feature-icon, 28px) + 20px); height: calc(var(--feature-icon, 28px) + 20px); color: var(--nk-color-accent); }
+.feature-list[data-icon-color='text'] .feature-list__icon { color: var(--nk-color-text); }
+.feature-list[data-icon='plain'] .feature-list__icon { width: auto; height: auto; justify-self: start; }
+.feature-list[data-align='center'][data-icon='plain'] .feature-list__icon { justify-self: center; }
+.feature-list__icon svg, .feature-list__icon img { width: var(--feature-icon, 28px); height: var(--feature-icon, 28px); object-fit: contain; }
+.feature-list[data-icon='circle'] .feature-list__icon { border-radius: 50%; background: var(--nk-color-surface); }
+.feature-list[data-icon='square'] .feature-list__icon { border-radius: var(--kit-radius); background: var(--nk-color-surface); }
+.feature-list[data-icon='outline'] .feature-list__icon { border-radius: 50%; border: 1px solid currentColor; }
+.feature-list[data-card='surface'] .feature-list__icon { background: var(--nk-color-bg); }
+.feature-list__copy { display: grid; gap: 6px; }
+.feature-list__title { font-size: 1.0625rem; }
+.feature-list[data-title='large'] .feature-list__title { font-size: 1.375rem; }
+.feature-list[data-divider='true'] .feature-list__item { border-top: 1px solid var(--nk-color-line); padding-top: 20px; }
+.feature-list[data-align='center'] .feature-list__item { justify-items: center; text-align: center; }
+@media (min-width: 750px) { .feature-list__items { grid-template-columns: repeat(min(2, var(--feature-cols, 3)), minmax(0, 1fr)); } }
+@media (min-width: 990px) { .feature-list__items { grid-template-columns: repeat(var(--feature-cols, 3), minmax(0, 1fr)); } }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Feature list",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Good to know"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns (phones)",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 column"
+        },
+        {
+          "value": "2",
+          "label": "2 columns"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between features",
+      "min": 0,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Icon placement",
+      "options": [
+        {
+          "value": "stacked",
+          "label": "Above text"
+        },
+        {
+          "value": "inline",
+          "label": "Beside text"
+        }
+      ],
+      "default": "stacked"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Card style",
+      "options": [
+        {
+          "value": "plain",
+          "label": "Plain"
+        },
+        {
+          "value": "surface",
+          "label": "Surface fill"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        },
+        {
+          "value": "shadow",
+          "label": "Soft shadow"
+        }
+      ],
+      "default": "plain"
+    },
+    {
+      "type": "checkbox",
+      "id": "dividers",
+      "label": "Divider line above each feature",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "title_size",
+      "label": "Feature title size",
+      "options": [
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "header",
+      "content": "Icons"
+    },
+    {
+      "type": "select",
+      "id": "icon_style",
+      "label": "Icon background",
+      "options": [
+        {
+          "value": "plain",
+          "label": "None"
+        },
+        {
+          "value": "circle",
+          "label": "Circle"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "outline",
+          "label": "Outline circle"
+        }
+      ],
+      "default": "circle"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 16,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "icon_color",
+      "label": "Icon color",
+      "options": [
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "text",
+          "label": "Text"
+        }
+      ],
+      "default": "accent"
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "xlarge",
+          "label": "Extra large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "corner_style",
+      "label": "Corners",
+      "options": [
+        {
+          "value": "theme",
+          "label": "Theme default"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "soft",
+          "label": "Soft"
+        },
+        {
+          "value": "round",
+          "label": "Round"
+        }
+      ],
+      "default": "theme",
+      "info": "Applies to images, cards and buttons in this section."
+    },
+    {
+      "type": "select",
+      "id": "button_size",
+      "label": "Button size",
+      "options": [
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "regular",
+          "label": "Theme default"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "regular"
+    },
+    {
+      "type": "select",
+      "id": "entrance",
+      "label": "Entrance animation",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fade",
+          "label": "Fade in section"
+        },
+        {
+          "value": "stagger",
+          "label": "Items rise one by one"
+        }
+      ],
+      "default": "none",
+      "info": "Skipped when visitors prefer reduced motion or motion is off in Theme settings."
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme page width"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow (1200px)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (1440px)"
+        },
+        {
+          "value": "full",
+          "label": "Full width with page gutters"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Padding",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Use theme section spacing"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens from 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_small",
+      "label": "Padding top (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}",
+      "info": "Screens below 990px."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_small",
+      "label": "Padding bottom (smaller screens)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ section.settings.spacing_mode == 'custom' }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Delivery"
+            },
+            {
+              "value": "arrow-path",
+              "label": "Returns"
+            },
+            {
+              "value": "scissors",
+              "label": "Tailoring"
+            },
+            {
+              "value": "sparkles",
+              "label": "Quality"
+            },
+            {
+              "value": "heart",
+              "label": "Care"
+            },
+            {
+              "value": "globe-alt",
+              "label": "Worldwide"
+            },
+            {
+              "value": "lock-closed",
+              "label": "Secure"
+            },
+            {
+              "value": "shield-check",
+              "label": "Guarantee"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "bolt",
+              "label": "Fast"
+            },
+            {
+              "value": "adjustments-vertical",
+              "label": "Fit"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom icon",
+          "info": "Replaces the icon above. Use a square image or SVG."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Free delivery"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>On orders over a set amount, tracked to your door.</p>"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Link label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Feature list",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "truck",
+            "title": "Free delivery"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "arrow-path",
+            "title": "Easy returns"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "scissors",
+            "title": "Free alterations"
+          }
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  }
+}
+{% endschema %}
