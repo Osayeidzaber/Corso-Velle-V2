@@ -62,6 +62,16 @@ export function motionMode(isPhone = typeof matchMedia === 'function' && matchMe
   return 'full';
 }
 
+/**
+ * Reduce Motion asks for no movement, not for no change: with Motion on, those visitors still get
+ * plain fades (no travel, zoom or crop) for headings, photos and grids (html.nk-fade, effects.css).
+ * Phones set to Off and the editor get none.
+ */
+export function fadeOnlyMotion(isPhone = typeof matchMedia === 'function' && matchMedia(PHONE_QUERY).matches): boolean {
+  if (config().motion !== 'standard' || window.Shopify?.designMode || !prefersReducedMotion()) return false;
+  return !(isPhone && config().motionOptions.mobile === 'off');
+}
+
 /** True when functional transitions (drawer slide) may use travel; otherwise use a short fade. */
 export function transitionsAllowed(): boolean {
   return config().motion !== 'off' && !prefersReducedMotion();
@@ -74,6 +84,7 @@ export function installMotionPolicy(): void {
   installed = true;
   const update = () => {
     document.documentElement.classList.toggle('nk-anim', motionMode() !== 'off');
+    document.documentElement.classList.toggle('nk-fade', fadeOnlyMotion());
     document.dispatchEvent(new CustomEvent('nk:motion:changed'));
     for (const element of document.querySelectorAll<HTMLElement>(
       'nk-scene, nk-reveal, nk-text, nk-stagger, nk-parallax, nk-marquee, nk-carousel, nk-expand-media, nk-elastic-line',

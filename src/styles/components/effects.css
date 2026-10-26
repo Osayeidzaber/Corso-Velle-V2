@@ -312,6 +312,14 @@ nk-header { view-transition-name: nk-header; }
 @keyframes nk-page-out { to { opacity: 0; } }
 @keyframes nk-page-in { from { opacity: 0; transform: translateY(18px); } }
 
+/* Reduce Motion: the pages crossfade without the rise, and the header does not travel. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-new(root) { animation-name: nk-page-fade-in; animation-duration: 360ms; }
+  ::view-transition-group(*) { animation-duration: 0s; }
+}
+
+@keyframes nk-page-fade-in { from { opacity: 0; } }
+
 /* ---- Photos unveil as they come into view --------------------------------------------------
    services/unveil.ts arms photos below the first screen ([data-unveil]) and plays them as they
    enter ([data-unveil='in']): the frame opens from a slight crop while the picture settles from
@@ -330,7 +338,10 @@ html.nk-anim [data-unveil] :is(img, video) {
 html.nk-anim [data-unveil='in'] { clip-path: inset(0 0 0 0); opacity: 1; }
 html.nk-anim [data-unveil='in'] :is(img, video) { scale: 1; }
 
-@media (prefers-reduced-motion: reduce) {
-  html.nk-anim [data-unveil],
-  html.nk-anim [data-unveil] :is(img, video) { clip-path: none; opacity: 1; scale: none; transition: none; }
+/* Reduce Motion (html.nk-fade): no crop or zoom, only a fade. */
+html.nk-fade [data-unveil] {
+  opacity: 0;
+  transition: opacity 0.9s ease;
 }
+
+html.nk-fade [data-unveil='in'] { opacity: 1; }

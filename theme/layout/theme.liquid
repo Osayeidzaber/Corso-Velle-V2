@@ -7,12 +7,12 @@
       {%- if settings.motion_level == 'off' %}
         document.documentElement.classList.add('nk-motion-off');
       {%- elsif settings.motion_level == 'standard' and request.design_mode == false %}
-        if (!matchMedia('(prefers-reduced-motion: reduce)').matches{% if settings.motion_mobile == 'off' %} && !matchMedia('(max-width: 749px)').matches{% endif %}) document.documentElement.classList.add('nk-anim');
+        if ({% if settings.motion_mobile == 'off' %}!matchMedia('(max-width: 749px)').matches{% else %}true{% endif %}) document.documentElement.classList.add(matchMedia('(prefers-reduced-motion: reduce)').matches ? 'nk-fade' : 'nk-anim');
       {%- endif %}
     </script>
     {%- if settings.motion_level == 'standard' and request.design_mode == false -%}
-      {%- # Pages fade into each other instead of cutting (cross-document view transitions; effects.css styles them). -%}
-      <style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
+      {%- # Pages fade into each other instead of cutting (cross-document view transitions; effects.css styles them, as a plain crossfade under Reduce Motion). -%}
+      <style>@view-transition { navigation: auto; }</style>
     {%- endif %}
 
     {% render 'meta-tags' %}

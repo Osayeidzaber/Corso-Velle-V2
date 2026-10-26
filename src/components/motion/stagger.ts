@@ -1,6 +1,6 @@
 import { define } from '../../core/define';
 import { NkElement } from '../../core/element';
-import { motionMode } from '../../core/motion';
+import { fadeOnlyMotion, motionMode } from '../../core/motion';
 
 /**
  * <nk-stagger> — children marked [data-stagger-item] rise in sequence as each row scrolls into
@@ -11,7 +11,8 @@ export class NkStagger extends NkElement {
   #revert: (() => void) | null = null;
 
   protected mount(): void {
-    if (motionMode() === 'off') {
+    // Reduce Motion still gets the row fade, without the rise (fadeOnlyMotion).
+    if (motionMode() === 'off' && !fadeOnlyMotion()) {
       this.setAttribute('data-ready', '');
       return;
     }
@@ -60,7 +61,7 @@ export class NkStagger extends NkElement {
             const elements = batch as HTMLElement[];
             // A row rises and fades in one card after another. It starts at the bottom edge of
             // the screen (start: 'top 92%'), so the brief fade from 0 never hides a card in view.
-            gsap.fromTo(elements, { y: 40, opacity: 0 }, {
+            gsap.fromTo(elements, { y: fadeOnlyMotion() ? 0 : 40, opacity: 0 }, {
               y: 0,
               opacity: 1,
               duration: 0.95 * motionTempo(),
