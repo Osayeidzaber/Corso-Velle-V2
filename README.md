@@ -49,14 +49,14 @@ To publish code changes, first bring the Theme Editor's changes into `main`, the
 
 ```sh
 git checkout main
-git subtree pull --prefix theme origin shopify -m "Merge Theme Editor changes"
-npm run build && npm run check
-git commit -am "Describe the change"
+npm run shopify:pull      # copies Theme Editor commits from origin/shopify into theme/
+npm run check             # rebuilds theme/assets and runs every check
+git add <files> && git commit -m "Describe the change"
 git push origin main
-git subtree push --prefix theme origin shopify
+npm run shopify:deploy    # commits main's theme/ on top of origin/shopify and pushes it
 ```
 
-Never edit files on `shopify` by hand, and never force-push it: that overwrites the store's saved customizations.
+`shopify:deploy` refuses to run while `shopify` has Theme Editor changes that `main` doesn't, so a deploy can't wipe them. It only ever fast-forwards. Never edit files on `shopify` by hand, and never force-push it: that overwrites the store's saved customizations.
 
 ## Repository layout
 
