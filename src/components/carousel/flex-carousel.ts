@@ -695,7 +695,9 @@ export function createFlexCarousel(root: HTMLElement, parentSignal: AbortSignal,
     goal = snapPoint(metrics(), pos); mode = 'spring'; start();
   };
   stage.addEventListener('pointercancel', cancelPointer, { signal });
-  stage.addEventListener('lostpointercapture', () => { if (pointer.down) cancelPointer(); }, { signal });
+  // Touch pointers are implicitly captured by the canvas; taking capture on the stage makes the
+  // canvas report a lost capture that bubbles here. Only the stage losing it ends the drag.
+  stage.addEventListener('lostpointercapture', (event) => { if (event.target === stage && pointer.down) cancelPointer(); }, { signal });
   stage.addEventListener('wheel', (event) => {
     if (event.ctrlKey) return;
     let dx = event.deltaX; let dy = event.deltaY;

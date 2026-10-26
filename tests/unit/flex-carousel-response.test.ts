@@ -157,6 +157,19 @@ describe('editorial carousel responsiveness', () => {
     expect(marker.style.transform).not.toBe(before);
     expect(stage.hasAttribute('data-dragging')).toBe(false);
   });
+  it('keeps a touch drag alive when the canvas gives up its implicit pointer capture', () => {
+    const { root } = mount(); advance(2400);
+    const stage = root.querySelector<HTMLElement>('.product-carousel__stage')!;
+    const canvas = stage.querySelector('canvas')!;
+    canvas.dispatchEvent(new PointerEvent('pointerdown', { clientX: 700, clientY: 360, pointerId: 5, button: 0, pointerType: 'touch', bubbles: true }));
+    canvas.dispatchEvent(new PointerEvent('pointermove', { clientX: 660, clientY: 360, pointerId: 5, pointerType: 'touch', bubbles: true }));
+    expect(stage.hasAttribute('data-dragging')).toBe(true);
+    // Chrome: the stage takes capture from the canvas, which reports the loss; it bubbles to the stage.
+    canvas.dispatchEvent(new PointerEvent('lostpointercapture', { pointerId: 5, pointerType: 'touch', bubbles: true }));
+    expect(stage.hasAttribute('data-dragging')).toBe(true);
+    stage.dispatchEvent(new PointerEvent('lostpointercapture', { pointerId: 5, pointerType: 'touch' }));
+    expect(stage.hasAttribute('data-dragging')).toBe(false);
+  });
   it('releases a keyboard hold when input switches back to a pointer on the same stage', () => {
     const { root, onActive } = mount(35, true); advance(2400);
     const stage = root.querySelector<HTMLElement>('.product-carousel__stage')!;

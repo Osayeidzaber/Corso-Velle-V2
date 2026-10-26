@@ -561,9 +561,13 @@ nk-header[data-dropdown='list'] .nav__panel { grid-template-columns: minmax(0, 1
 }
 
 .menu-card__links a::before {
-  content: '↗';
-  font-size: 0.75rem;
-  color: var(--nk-color-accent);
+  content: '';
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  background: var(--nk-color-accent);
+  /* Drawn arrow, not the ↗ character, which phones may render as an emoji. */
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17L17 7M8.5 7H17v8.5'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .header--swap .nav__link {

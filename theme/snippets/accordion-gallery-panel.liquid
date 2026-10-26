@@ -24,6 +24,6 @@
   <div class="accordion-gallery__details" id="{{ id }}" data-gallery-details>
     <h3 class="accordion-gallery__title">{{ title | escape }}</h3>
     {% if product %}<p class="accordion-gallery__price">{{ product.price | money }}</p>{% endif %}
-    {% if link != blank %}<a class="accordion-gallery__link" href="{{ link }}">{{ link_label | escape }}<span aria-hidden="true">↗</span><span class="visually-hidden">: {{ title | escape }}</span></a>{% endif %}
+    {% if link != blank %}<a class="accordion-gallery__link" href="{{ link }}">{{ link_label | escape }}{% render 'icon', name: 'arrow-up-right', size: 12, class: 'icon--inline' %}<span class="visually-hidden">: {{ title | escape }}</span></a>{% endif %}
   </div>
 </article>

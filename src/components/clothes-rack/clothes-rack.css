@@ -386,6 +386,8 @@ nk-clothes-rack {
 }
 
 .clothes-rack__focus[hidden] { display: none; }
+/* Sideways swipes step between garments (clothes-rack.ts); vertical ones still scroll the page. */
+.clothes-rack__focus { touch-action: pan-y; }
 
 .clothes-rack__close {
   position: absolute;
@@ -555,7 +557,9 @@ nk-clothes-rack {
 
   .clothes-rack__items::-webkit-scrollbar { display: none; }
 
-  .clothes-rack__item { width: calc(var(--rack-w) * max(var(--rack-slot), 34) / 100); }
+  .clothes-rack__item { width: calc(var(--rack-w) * max(var(--rack-slot), 34) / 100); scroll-snap-align: center; }
+  /* A flick settles with one garment in the middle; that one turns to face the visitor. */
+  .clothes-rack__items { scroll-snap-type: x proximity; }
 
   .clothes-rack__focus {
     grid-template-columns: 2.5rem 1fr 2.5rem;

@@ -37,7 +37,7 @@
                     <p class="collections-card__desc text-muted">{{ collection.description | strip_html | truncatewords: 14 }}</p>
                   {%- endif -%}
                 </div>
-                <span class="collections-card__arrow" aria-hidden="true">↗</span>
+                <span class="collections-card__arrow" aria-hidden="true">{% render 'icon', name: 'arrow-up-right', size: 14, class: 'icon--inline' %}</span>
               </div>
             </a>
           </li>

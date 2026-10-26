@@ -160,7 +160,7 @@
         {%- endfor -%}
       </div>
       <button type="button" class="hero__slide-arrow" data-slides-next aria-label="{{ 'media.next_slide' | t }}"><span aria-hidden="true">→</span></button>
-      <button type="button" class="hero__slide-pause" data-slides-pause aria-label="{{ 'media.pause_slideshow' | t }}" data-pause-label="{{ 'media.pause_slideshow' | t }}" data-play-label="{{ 'media.play_slideshow' | t }}"{% unless section.settings.slide_autoplay %} hidden{% endunless %}><span aria-hidden="true">❚❚</span></button>
+      <button type="button" class="hero__slide-pause media-toggle" data-slides-pause aria-label="{{ 'media.pause_slideshow' | t }}" data-pause-label="{{ 'media.pause_slideshow' | t }}" data-play-label="{{ 'media.play_slideshow' | t }}"{% unless section.settings.slide_autoplay %} hidden{% endunless %}>{% render 'icon', name: 'pause', size: 12 %}{% render 'icon', name: 'play', size: 12 %}</button>
     </div>
   {%- endif -%}
 

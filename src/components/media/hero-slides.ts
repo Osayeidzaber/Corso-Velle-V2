@@ -32,8 +32,8 @@ export class NkHeroSlides extends NkElement {
     const labelPause = () => {
       if (!pause) return;
       pause.setAttribute('aria-label', (this.#paused ? pause.dataset.playLabel : pause.dataset.pauseLabel) ?? '');
+      // aria-pressed also switches its play/pause icon (base.css .media-toggle).
       pause.setAttribute('aria-pressed', String(this.#paused));
-      pause.firstElementChild!.textContent = this.#paused ? '▶' : '❚❚';
     };
     const schedule = () => {
       window.clearTimeout(this.#timer);

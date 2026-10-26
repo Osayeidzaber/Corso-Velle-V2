@@ -31,5 +31,5 @@
   {% elsif video %}
     {{ video | video_tag: autoplay: false, muted: true, loop: true, playsinline: true, controls: false, preload: 'metadata', image_size: '1600x', class: video_class }}
   {% endif %}
-  {% if toggle_id == blank %}<button type="button" class="background-video__toggle spec" data-ref="toggle" aria-label="{{ 'media.play' | t }}" data-play-label="{{ 'media.play' | t }}" data-pause-label="{{ 'media.pause' | t }}" hidden>▶</button>{% endif %}
+  {% if toggle_id == blank %}<button type="button" class="background-video__toggle media-toggle spec" data-ref="toggle" aria-label="{{ 'media.play' | t }}" data-play-label="{{ 'media.play' | t }}" data-pause-label="{{ 'media.pause' | t }}" data-paused hidden>{% render 'icon', name: 'pause', size: 16 %}{% render 'icon', name: 'play', size: 16 %}</button>{% endif %}
 </nk-background-video>

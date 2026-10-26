@@ -22,7 +22,7 @@
             {%- endfor -%}
           </ul>
         </div>
-        <button type="button" class="marquee__pause" data-ref="pause" aria-pressed="false" aria-label="{{ 'marquee.pause' | t }}" hidden>❚❚</button>
+        <button type="button" class="marquee__pause media-toggle" data-ref="pause" aria-pressed="false" aria-label="{{ 'marquee.pause' | t }}" hidden>{% render 'icon', name: 'pause', size: 14 %}{% render 'icon', name: 'play', size: 14 %}</button>
       </nk-marquee>
     </div>
   </div>

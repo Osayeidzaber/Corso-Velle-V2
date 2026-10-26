@@ -115,6 +115,14 @@
     opacity: 1; clip-path: inset(0); transform: none; filter: blur(0);
   }
 }
+/* Touch: the second photo plays as the card crosses the middle of the screen (card-interactions.ts).
+   The short delay keeps a fast scroll from flickering every card it passes. */
+@media (hover: none) {
+  .card[data-in-view] .card__media--has-second .card__secondary {
+    opacity: 1; clip-path: inset(0); transform: none; filter: blur(0);
+    transition-delay: 180ms;
+  }
+}
 /* Hold the primary photo while the video buffers, even during keyboard focus. */
 html.nk-anim .card--has-video:not([data-video-failed]) .card__media--has-second .card__secondary {
   opacity: 0; clip-path: inset(100% 0 0 0); transform: none; filter: none;

@@ -11,6 +11,15 @@ export class NkBackgroundVideo extends NkElement {
       ? this.closest('[data-background-video-owner]')?.querySelector<HTMLButtonElement>(`[id="${CSS.escape(externalId)}"]`)
       : this.ref<HTMLButtonElement>('toggle');
     if (!video || !toggle) return;
+    // Inside a parallax layer the button moved and scaled with the picture, drifting off the
+    // section's corner (over its buttons, past the screen edge on phones). Pin it to the section.
+    // Slideshow slides hide theirs (the slideshow's own pause covers them), so they stay put.
+    const parallax = !externalId && !this.closest('[data-slide]') ? toggle.closest('[data-parallax-media]') : null;
+    const host = parallax?.closest<HTMLElement>('.hero') ?? null;
+    if (host) {
+      host.append(toggle);
+      this.dispose(() => this.append(toggle));
+    }
     let requested = this.hasAttribute('autoplay') && motionMode() !== 'off';
     // Wait for the first visibility observation. Assuming true briefly starts offscreen and
     // CSS-hidden mobile/desktop alternatives, which can download and decode unused video.
@@ -20,7 +29,8 @@ export class NkBackgroundVideo extends NkElement {
     toggle.hidden = false;
     const label = () => {
       toggle.setAttribute('aria-label', video.paused ? toggle.dataset.playLabel ?? '' : toggle.dataset.pauseLabel ?? '');
-      toggle.textContent = video.paused ? '▶' : '❚❚';
+      // The button holds a play and a pause icon (snippets/icon.liquid); base.css shows one.
+      toggle.toggleAttribute('data-paused', video.paused);
     };
     // Inside a hero slideshow, only the shown slide plays, and the slideshow's pause stops it too.
     const slide = this.closest<HTMLElement>('[data-slide]');
@@ -30,6 +40,9 @@ export class NkBackgroundVideo extends NkElement {
       if (requested && visible && !document.hidden && onStage()) void video.play().catch(() => { requested = false; label(); });
       else video.pause();
       label();
+      // Moved out of the layer, the button no longer disappears with a CSS-hidden phone/desktop
+      // alternative video, so it follows whether this video is rendered at all.
+      if (host) toggle.hidden = this.getClientRects().length === 0;
     };
     if (slides) this.on(slides, 'nk:slides:change', sync);
     this.on(toggle, 'click', () => { requested = !requested; sync(); });

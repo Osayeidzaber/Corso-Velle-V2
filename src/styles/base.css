@@ -135,6 +135,20 @@ h4 {
   display: none !important;
 }
 
+/* Icons that sit in a line of text (snippets/icon.liquid, class icon--inline) follow its size. */
+.icon--inline {
+  display: inline-block;
+  flex: none;
+  width: 0.85em;
+  height: 0.85em;
+  vertical-align: -0.08em;
+}
+
+/* Play/pause buttons carry both icons; the button's state shows one. Paused = aria-pressed or data-paused. */
+.media-toggle .icon--play,
+.media-toggle:is([aria-pressed='true'], [data-paused]) .icon--pause { display: none; }
+.media-toggle:is([aria-pressed='true'], [data-paused]) .icon--play { display: inline-block; }
+
 .visually-hidden {
   position: absolute !important;
   width: 1px;

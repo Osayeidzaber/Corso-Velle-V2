@@ -43,7 +43,7 @@
 
       </div>
       {% if section.settings.video or section.settings.video_url != blank %}
-        <button id="{{ video_toggle_id }}" type="button" class="background-video__toggle spec" aria-label="{{ 'media.play' | t }}" data-play-label="{{ 'media.play' | t }}" data-pause-label="{{ 'media.pause' | t }}" hidden>▶</button>
+        <button id="{{ video_toggle_id }}" type="button" class="background-video__toggle media-toggle spec" aria-label="{{ 'media.play' | t }}" data-play-label="{{ 'media.play' | t }}" data-pause-label="{{ 'media.pause' | t }}" data-paused hidden>{% render 'icon', name: 'pause', size: 16 %}{% render 'icon', name: 'play', size: 16 %}</button>
       {% endif %}
       {%- if section.settings.title != blank -%}
         <p class="expand__title" aria-hidden="true">{{ section.settings.title | escape }}</p>

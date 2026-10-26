@@ -46,5 +46,5 @@
 -%}
 <template data-carousel-measurements{% if assignment.first == blank or assignment.first == nil %} data-product-page-chart{% endif %}>
   {% render 'product-measurements', product: product, chart: assigned_chart, size_option: size_option, table_csv: size_table, unit: size_unit, heading: size_heading, verified_chart: chart_rule %}
-  <a class="product-carousel__size-details" data-size-details href="{{ product.url }}">{{ 'product.view_size_details' | t }} ↗</a>
+  <a class="product-carousel__size-details" data-size-details href="{{ product.url }}">{{ 'product.view_size_details' | t }} {% render 'icon', name: 'arrow-up-right', size: 12, class: 'icon--inline' %}</a>
 </template>

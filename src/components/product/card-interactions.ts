@@ -165,9 +165,39 @@ export function installCardInteractions(): void {
   document.addEventListener('nk:motion:changed', () => {
     if (!decorativeMotionAllowed() && activeVideoCard) stopCardVideo(activeVideoCard, true);
   });
+  const watchCards = installTouchReveal();
   new MutationObserver(() => {
     if (activeVideoCard && !activeVideoCard.isConnected) stopCardVideo(activeVideoCard, true);
+    watchCards();
   }).observe(document.body, { childList: true, subtree: true });
+}
+
+/**
+ * Phones and tablets have no hover, so the second photo a card shows on hover never appears.
+ * There, a card shows it while it crosses the middle of the screen (data-in-view, card.css)
+ * and returns to the first photo as it scrolls on. Returns the function that picks up new cards.
+ */
+function installTouchReveal(): () => void {
+  const touch = typeof matchMedia === 'function' ? matchMedia('(hover: none)') : null;
+  if (!touch || typeof IntersectionObserver !== 'function') return () => {};
+  const watched = new WeakSet<Element>();
+  const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      const card = entry.target.closest<HTMLElement>('.card');
+      card?.toggleAttribute('data-in-view', entry.isIntersecting && touch.matches && decorativeMotionAllowed());
+    }
+  }, { rootMargin: '-38% 0px -38% 0px' });
+  const watch = () => {
+    for (const media of document.querySelectorAll('.card .card__media--has-second')) {
+      if (watched.has(media)) continue;
+      watched.add(media);
+      observer.observe(media);
+    }
+  };
+  watch();
+  // DOM changes come in bursts (carousels, filters); look for new cards once per frame.
+  let frame = 0;
+  return () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; watch(); }); };
 }
 
 async function handleQuickAdd(button: HTMLButtonElement): Promise<void> {

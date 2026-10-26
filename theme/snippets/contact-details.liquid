@@ -36,7 +36,7 @@
           <span class="support-contact__icon">{% render 'icon', name: 'instagram', size: 20 %}</span>
           <span class="spec support-contact__label">Instagram</span>
           <span class="support-contact__value">{{ settings.support_instagram_label | default: 'Instagram' | escape }}</span>
-          <span class="support-contact__action">{{ 'support.instagram_action' | t }} <span aria-hidden="true">↗</span></span>
+          <span class="support-contact__action">{{ 'support.instagram_action' | t }} {% render 'icon', name: 'arrow-up-right', size: 12, class: 'icon--inline' %}</span>
         </a>
       </li>
     {%- endif -%}

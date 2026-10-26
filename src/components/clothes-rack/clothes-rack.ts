@@ -68,16 +68,19 @@ export class NkClothesRack extends NkElement {
     this.dispose(() => window.clearTimeout(this.#leaveTimer));
     this.on(list, 'focusin', (event) => {
       const index = this.#garments.indexOf(event.target as HTMLAnchorElement);
-      if (index >= 0 && !this.#isOpen) this.#setActive(index);
+      if (index >= 0 && !this.#isOpen && !this.#touch) this.#setActive(index);
     });
     this.on(list, 'click', (event) => {
       const garment = (event.target as Element).closest<HTMLAnchorElement>('[data-ref="garment"]');
       if (!garment || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
       // Open what the visitor sees in front of them, which may not be the slot under the pointer.
-      const index = this.#active >= 0 ? this.#active : this.#garments.indexOf(garment);
+      // A tap has no hover to go by: open the garment drawn where the finger landed.
+      const tapped = this.#garments.indexOf(garment);
+      const index = this.#touch ? (this.#hit(event.clientX) >= 0 ? this.#hit(event.clientX) : tapped) : this.#active >= 0 ? this.#active : tapped;
       void this.#run(() => this.#open(index));
     });
+    this.#bindTouch(list);
 
     const focus = this.ref('focus');
     if (!focus) return;
@@ -103,6 +106,58 @@ export class NkClothesRack extends NkElement {
   get #isOpen(): boolean {
     return this.hasAttribute('data-focused');
   }
+
+  /** Phones and tablets: no hover to turn a garment, so the rail and the focused view follow the finger. */
+  get #touch(): boolean {
+    return matchMedia('(hover: none)').matches;
+  }
+
+  /**
+   * Touch: the garment nearest the middle of the scrolled rail turns to face the visitor (with
+   * its hanger swing) and "See availability" points at it; in the focused view a sideways swipe
+   * steps to the next or previous garment.
+   */
+  #bindTouch(list: HTMLElement): void {
+    let frame = 0;
+    const centre = () => {
+      frame = 0;
+      if (!this.#touch || this.#isOpen || this.#busy) return;
+      const view = list.getBoundingClientRect();
+      if (view.bottom < 0 || view.top > innerHeight) return;
+      const middle = view.left + view.width / 2;
+      let best = -1;
+      let distance = Infinity;
+      this.#items.forEach((item, i) => {
+        const box = item.getBoundingClientRect();
+        const d = Math.abs(box.left + box.width / 2 - middle);
+        if (d < distance) { distance = d; best = i; }
+      });
+      if (best !== this.#active) this.#setActive(best);
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(centre); };
+    this.on(list, 'scroll', schedule, { passive: true });
+    this.observeIntersection(this, (entry) => { if (entry.isIntersecting) schedule(); });
+    this.dispose(() => cancelAnimationFrame(frame));
+    this.#recentre = schedule;
+
+    const focus = this.ref('focus');
+    if (!focus) return;
+    let start: { x: number; y: number; id: number } | null = null;
+    this.on(focus, 'pointerdown', (event) => {
+      if (event.pointerType === 'mouse' || (event.target as Element).closest('button, a')) return;
+      start = { x: event.clientX, y: event.clientY, id: event.pointerId };
+    });
+    this.on(focus, 'pointerup', (event) => {
+      if (!start || event.pointerId !== start.id) return;
+      const dx = event.clientX - start.x;
+      const dy = event.clientY - start.y;
+      start = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) void this.#run(() => this.#step(dx < 0 ? 1 : -1));
+    });
+    this.on(focus, 'pointercancel', () => (start = null));
+  }
+
+  #recentre: () => void = () => {};
 
   /** Runs one transition at a time; the latest request made meanwhile runs next (never dropped). */
   async #run(task: () => Promise<void>): Promise<void> {
@@ -277,6 +332,7 @@ export class NkClothesRack extends NkElement {
     back?.cancel();
     this.#showCta(-1);
     this.#garments[index]?.focus({ preventScroll: true });
+    this.#recentre();
   }
 
   /** Next/previous: the hero slides off turning away, the next garment slides in turning to face. */

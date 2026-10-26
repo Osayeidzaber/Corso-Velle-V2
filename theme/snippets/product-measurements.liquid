@@ -209,7 +209,7 @@
             data-nk-open="{{ modal_id }}"
             aria-haspopup="dialog"
           >
-            {{ 'product.size_guide' | t }} ↗
+            {{ 'product.size_guide' | t }} {% render 'icon', name: 'arrow-up-right', size: 12, class: 'icon--inline' %}
           </button>
         {%- endif -%}
       </div>
