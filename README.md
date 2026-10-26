@@ -30,6 +30,34 @@ npm run dev -- --store your-store.myshopify.com    # terminal 2: Shopify preview
 
 Run `npm run check` before committing, and `npm run package` to build the installable ZIP. See [INSTALLATION.md](INSTALLATION.md) for details and troubleshooting.
 
+## Branches
+
+| Branch | What it holds | Who changes it |
+| --- | --- | --- |
+| `main` | All source code and docs: `src/`, `theme/`, `scripts/`, `tests/`, `docs/`. Work happens here. | You, by committing |
+| `shopify` | Only the contents of `theme/`, moved to the top level. This is the branch connected to Shopify (Online Store → Themes → **Connect from GitHub**). | Generated from `main`, plus Shopify's own commits |
+| `history` | The full development history up to the clean `main`. Kept for reference only. | Nobody; leave it as is |
+
+Shopify can only read a branch whose top level is a theme (`layout/`, `sections/`, `templates/` …). `main` keeps the theme inside `theme/` next to the source code, so it can't be connected directly; `shopify` exists for that reason.
+
+Shopify also writes back to `shopify`: every save in the Theme Editor or code editor becomes a commit there (mostly `config/settings_data.json` and `templates/*.json`). So:
+
+- **Code changes go `main` → `shopify`.**
+- **Theme Editor changes go `shopify` → `main`.**
+
+To publish code changes, first bring the Theme Editor's changes into `main`, then rebuild and update `shopify`:
+
+```sh
+git checkout main
+git subtree pull --prefix theme origin shopify -m "Merge Theme Editor changes"
+npm run build && npm run check
+git commit -am "Describe the change"
+git push origin main
+git subtree push --prefix theme origin shopify
+```
+
+Never edit files on `shopify` by hand, and never force-push it: that overwrites the store's saved customizations.
+
 ## Repository layout
 
 ```text
