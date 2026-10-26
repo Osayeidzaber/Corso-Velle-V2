@@ -58,11 +58,14 @@ export class NkStagger extends NkElement {
         onEnter: (batch) => {
           self.add(() => {
             const elements = batch as HTMLElement[];
-            gsap.fromTo(elements, { y: 12 }, {
+            // A row rises and fades in one card after another. It starts at the bottom edge of
+            // the screen (start: 'top 92%'), so the brief fade from 0 never hides a card in view.
+            gsap.fromTo(elements, { y: 40, opacity: 0 }, {
               y: 0,
-              duration: 0.45 * motionTempo(),
+              opacity: 1,
+              duration: 0.95 * motionTempo(),
               ease: 'expo.out',
-              stagger: { each: Math.min(0.05, motionStagger()), amount: Math.min(0.18, Math.max(0, elements.length - 1) * motionStagger()) },
+              stagger: { each: Math.max(0.07, motionStagger()), amount: Math.min(0.42, Math.max(0, elements.length - 1) * Math.max(0.07, motionStagger())) },
               overwrite: true,
               clearProps: 'transform,opacity',
             });

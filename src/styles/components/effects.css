@@ -300,3 +300,37 @@ html.nk-motion-off .nk-text-wave {
     opacity: 1;
   }
 }
+
+/* ---- Page transitions ---------------------------------------------------------------------
+   theme.liquid opts in with @view-transition when motion is on. The leaving page fades out
+   quickly; the arriving one rises in. The header keeps its own group, so it holds still. */
+::view-transition-old(root) { animation: nk-page-out 220ms cubic-bezier(0.4, 0, 1, 1) both; }
+::view-transition-new(root) { animation: nk-page-in 560ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both; }
+nk-header { view-transition-name: nk-header; }
+::view-transition-group(nk-header) { animation-duration: 360ms; }
+
+@keyframes nk-page-out { to { opacity: 0; } }
+@keyframes nk-page-in { from { opacity: 0; transform: translateY(18px); } }
+
+/* ---- Photos unveil as they come into view --------------------------------------------------
+   services/unveil.ts arms photos below the first screen ([data-unveil]) and plays them as they
+   enter ([data-unveil='in']): the frame opens from a slight crop while the picture settles from
+   a zoom. The attribute is removed afterwards, so section hover transitions are untouched. */
+html.nk-anim [data-unveil] {
+  clip-path: inset(9% 5% 9% 5%);
+  opacity: 0.35;
+  transition: clip-path 1.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.9s ease;
+}
+
+html.nk-anim [data-unveil] :is(img, video) {
+  scale: 1.16;
+  transition: scale 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.nk-anim [data-unveil='in'] { clip-path: inset(0 0 0 0); opacity: 1; }
+html.nk-anim [data-unveil='in'] :is(img, video) { scale: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.nk-anim [data-unveil],
+  html.nk-anim [data-unveil] :is(img, video) { clip-path: none; opacity: 1; scale: none; transition: none; }
+}

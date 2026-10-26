@@ -19,6 +19,7 @@ import { installCartRenderer } from '../services/cart-render';
 import { installPromotions } from '../services/discounts';
 import { installFlyToCart } from '../services/fly-to-cart';
 import { installEditorAdapter } from '../services/editor';
+import { installUnveil } from '../services/unveil';
 
 installEditorAdapter();
 installMotionPolicy();
@@ -28,6 +29,7 @@ installPromotions();
 installFlyToCart();
 installModalTriggers();
 installCardInteractions();
+installUnveil();
 
 define('nk-header', NkHeader);
 define('nk-modal', NkModal);
