@@ -61,9 +61,9 @@
         "newsletter_heading": "Good things, first.",
         "show_wordmark": true,
         "invert_logo": true,
-        "background": "#432d23",
-        "ink": "#f5ecdf",
-        "accent": "#d7ae83",
+        "background": "#3f4434",
+        "ink": "#f4f1e8",
+        "accent": "#cbcdb9",
         "animate_beam": true
       }
     }
