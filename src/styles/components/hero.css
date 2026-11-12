@@ -1034,9 +1034,9 @@ nk-hero-slides[data-transition='slide'] .hero__slide:not([data-active]):has(~ .h
 .hero .hero__text.hero__text--plain {
   font-family: var(--nk-font-body);
   font-style: normal;
-  font-weight: 400;
+  font-weight: 300;
   font-size: 0.8125rem;
-  line-height: 1.65;
+  line-height: 1.7;
   letter-spacing: 0;
   text-transform: none;
 }
