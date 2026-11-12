@@ -2,24 +2,44 @@
 
 ![Corso Velle wordmark](docs/readme-cover.svg)
 
-A Shopify Online Store 2.0 theme built for [Corsovelle](https://corsovelle.com). Liquid renders every page; TypeScript custom elements, GSAP and Vite add interaction on top. It uses Shopify's own catalog, cart, checkout, filters and SEO objects. There is no separate storefront app and no React.
+The Shopify theme behind [corsovelle.com](https://corsovelle.com). Liquid renders every page; TypeScript custom elements, GSAP and Vite add the motion on top. Catalog, cart, checkout, filters and SEO are Shopify's own. No separate storefront app, no React.
 
-> This repository holds Corsovelle's configured theme. It is not yet packaged as a neutral commercial release, and no license is granted (see [LICENSE](LICENSE)).
+> Corso Velle's configured theme, not a packaged commercial release. No license is granted; see [LICENSE](LICENSE).
 
-## Features
+## Contents
+
+- [Highlights](#highlights)
+- [Quick start](#quick-start)
+- [Branches and deploying](#branches-and-deploying)
+- [Repository layout](#repository-layout)
+- [Documentation](#documentation)
+- [License](#license)
+
+## Highlights
+
+**Homepage**
+
+| Section | What it does |
+| --- | --- |
+| Runway | Cut-out models walk a looping line-up; the centre look opens a shop-the-look panel with its products. Looks, names and products are editable. |
+| On the rail | Garments hang edge-on and turn to face you; swipe or drag the rail, open one for front and model photos, sizes and price. |
+| 9 TO 5 | Split section: portrait video beside the text, kept side by side on phones. |
+| New arrivals | Any collection, optionally newest first. |
+
+**Across the store**
 
 | Area | What's included |
 | --- | --- |
-| Content | Image, video and slideshow heroes; media with text; expanding media; category cards; lookbook hotspots; FAQ; testimonials and reviews; feature, timeline, pricing and newsletter sections |
-| Discovery | Featured collections as a grid or a WebGL carousel (native fallback), collection tabs, clothes rack, predictive search, Search & Discovery filters, sorting, infinite or numbered pagination |
-| Product page | Gallery layouts with zoom, explicit size selection, size charts with cm/in switching, model information, sibling colourways, sticky add-to-cart bar |
-| Cart | AJAX drawer and cart page, quantity changes, notes, recommendations, free-shipping progress, Shopify discount codes (manual and automatic) |
-| Design | Colour schemes, three font roles, spacing, buttons, card styles, per-section options, Riviera / Minimal / Quiet theme styles |
-| Motion | GSAP entrances and scroll scenes, optional desktop wheel smoothing (Lenis), simplified phone motion, full reduced-motion support |
+| Product page | Gallery with zoom, explicit size choice, size charts with cm/in, model info, sibling colourways, sticky add to cart |
+| Size charts | Fourteen rules matched by product, collection, tag or words in the product name |
+| Discovery | Collection tabs, category cards, predictive search, Search & Discovery filters and sorting |
+| Cart | AJAX drawer and page, notes, recommendations, free-shipping progress, discount codes |
+| Design | Colour schemes, three font roles, spacing, buttons, card styles, per-section options |
+| Motion | GSAP entrances, Lenis smoothing on desktop, lighter phone motion, full reduced-motion support |
 
 ## Quick start
 
-Install a built theme ZIP from Shopify Admin → **Online Store → Themes**. To work from source (Node.js 22.12+, 24 or 26+):
+Requires Node.js 22.12+, 24 or 26+.
 
 ```sh
 npm ci
@@ -28,62 +48,66 @@ npm run watch                                      # terminal 1: rebuild assets 
 npm run dev -- --store your-store.myshopify.com    # terminal 2: Shopify preview
 ```
 
-Run `npm run check` before committing, and `npm run package` to build the installable ZIP. See [INSTALLATION.md](INSTALLATION.md) for details and troubleshooting.
+| Command | Does |
+| --- | --- |
+| `npm run check` | Typecheck, tests, build, JSON and schema checks, Theme Check. Run before committing. |
+| `npm run package` | Builds the installable theme ZIP |
+| `npm run shopify:pull` | Brings Theme Editor saves from `shopify` into `theme/` |
+| `npm run shopify:deploy` | Publishes `main`'s `theme/` to the `shopify` branch |
 
-## Branches
+Details and troubleshooting: [INSTALLATION.md](INSTALLATION.md).
 
-| Branch | What it holds | Who changes it |
+## Branches and deploying
+
+| Branch | Holds | Changed by |
 | --- | --- | --- |
-| `main` | All source code and docs: `src/`, `theme/`, `scripts/`, `tests/`, `docs/`. Work happens here. | You, by committing |
-| `shopify` | Only the contents of `theme/`, moved to the top level. This is the branch connected to Shopify (Online Store → Themes → **Connect from GitHub**). | Generated from `main`, plus Shopify's own commits |
-| `history` | The full development history up to the clean `main`. Kept for reference only. | Nobody; leave it as is |
+| `main` | Source, theme and docs. Work happens here. | You |
+| `shopify` | Only `theme/`, at the top level. Connected to the store (Online Store → Themes → **Connect from GitHub**). | `shopify:deploy`, plus Shopify's own saves |
+| `history` | Development history before the clean `main`. Reference only. | Nobody |
 
-Shopify can only read a branch whose top level is a theme (`layout/`, `sections/`, `templates/` …). `main` keeps the theme inside `theme/` next to the source code, so it can't be connected directly; `shopify` exists for that reason.
-
-Shopify also writes back to `shopify`: every save in the Theme Editor or code editor becomes a commit there (mostly `config/settings_data.json` and `templates/*.json`). So:
-
-- **Code changes go `main` → `shopify`.**
-- **Theme Editor changes go `shopify` → `main`.**
-
-To publish code changes, first bring the Theme Editor's changes into `main`, then rebuild and update `shopify`:
+Code flows `main` → `shopify`; Theme Editor saves flow `shopify` → `main`. To publish:
 
 ```sh
 git checkout main
-npm run shopify:pull      # copies Theme Editor commits from origin/shopify into theme/
-npm run check             # rebuilds theme/assets and runs every check
+npm run shopify:pull      # take in Theme Editor saves first
+npm run check
 git add <files> && git commit -m "Describe the change"
 git push origin main
-npm run shopify:deploy    # commits main's theme/ on top of origin/shopify and pushes it
+npm run shopify:deploy    # fast-forwards shopify with main's theme/
 ```
 
-`shopify:deploy` refuses to run while `shopify` has Theme Editor changes that `main` doesn't, so a deploy can't wipe them. It only ever fast-forwards. Never edit files on `shopify` by hand, and never force-push it: that overwrites the store's saved customizations.
+`shopify:deploy` refuses to run while `shopify` has saves `main` doesn't, so it can't wipe customizations. Never edit or force-push `shopify` by hand.
 
 ## Repository layout
 
 ```text
-src/       TypeScript and CSS sources (built by Vite)
+src/       TypeScript and CSS sources, built by Vite
 theme/     The Shopify theme that gets uploaded (Liquid, JSON, built assets)
-scripts/   Asset sync, watcher, JSON/schema checks, settings-reference generator
+scripts/   Asset sync, watcher, checks, settings-reference generator
 tests/     Vitest unit tests
-docs/      Setup guides, settings reference, licenses
+docs/      Guides, settings reference, licenses
 ```
 
-Edit `src/` and `theme/`. Never edit `theme/assets/nk-*` or `theme/snippets/nk-assets.liquid` by hand; the build generates them.
+Edit `src/` and `theme/`. `theme/assets/nk-*` and `theme/snippets/nk-assets.liquid` are generated by the build; don't edit them by hand.
 
 ## Documentation
 
 | Guide | Covers |
 | --- | --- |
-| [INSTALLATION.md](INSTALLATION.md) | Installing a ZIP, developing from source, commands, packaging, troubleshooting |
+| [INSTALLATION.md](INSTALLATION.md) | Installing, developing from source, commands, packaging |
 | [CUSTOMIZATION.md](CUSTOMIZATION.md) | Every Theme Editor area, what it controls and its limits |
-| [DEVELOPMENT.md](DEVELOPMENT.md) | Architecture, adding sections and components, animation, commerce code |
-| [docs/SETTINGS-REFERENCE.md](docs/SETTINGS-REFERENCE.md) | Every setting, default and block (generated from the schemas) |
-| [docs/SIZE-CHART-SETTINGS.md](docs/SIZE-CHART-SETTINGS.md) · [docs/SIZE-CHART-ADMIN.md](docs/SIZE-CHART-ADMIN.md) | Size charts from theme settings, or shared metaobject charts |
-| [docs/PROMOTIONS.md](docs/PROMOTIONS.md) | Connecting Shopify discount codes to products |
-| [docs/MODEL-INFO.md](docs/MODEL-INFO.md) | Model height and size text on product pages |
-| [docs/DISTRIBUTION.md](docs/DISTRIBUTION.md) | Preparing a release for another store, and updates |
-| [docs/SECTION-SOURCES.md](docs/SECTION-SOURCES.md) · [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) | Where adapted sections and components came from, and their licenses |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Architecture, sections and components, animation, commerce code |
+| [Settings reference](docs/SETTINGS-REFERENCE.md) | Every setting, default and block, generated from the schemas |
+| [Size chart settings](docs/SIZE-CHART-SETTINGS.md) · [Reusable charts](docs/SIZE-CHART-ADMIN.md) | Size charts from theme settings or shared metaobjects |
+| [Promotions](docs/PROMOTIONS.md) | Connecting discount codes to products |
+| [Model information](docs/MODEL-INFO.md) | Model height and size text on product pages |
+| [Distribution](docs/DISTRIBUTION.md) | Preparing a release for another store |
+| [Section sources](docs/SECTION-SOURCES.md) · [Third-party notices](THIRD_PARTY_NOTICES.md) | Where adapted parts came from, and their licenses |
 
 ## License
 
-No license is granted; all rights are reserved by the owner. Third-party parts keep their own licenses, listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The project started from [Shopify Skeleton](https://github.com/Shopify/skeleton-theme).
+All rights reserved by the owner; no license is granted. Third-party parts keep their own licenses, listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The project started from [Shopify Skeleton](https://github.com/Shopify/skeleton-theme).
+
+---
+
+<sub>Designed and built by [OZ Studios](https://www.zaber.tech/oz-studio) · [Instagram](https://www.instagram.com/oz.studio._/)</sub>

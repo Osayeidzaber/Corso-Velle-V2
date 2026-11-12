@@ -4,7 +4,7 @@
 
 Assign measurement tables or chart pictures from the Theme Editor. For centrally managed charts
 (metaobjects), definitions and the full fallback order, see [Reusable size charts](SIZE-CHART-ADMIN.md).
-There are twelve chart rules.
+There are fourteen chart rules. Each can apply to specific products, collections, tags, or products whose name contains a word you list (for example "Sweatshirt"); they are checked in that order.
 
 Open Online Store → Themes → Customize → Theme settings → Size charts.
 

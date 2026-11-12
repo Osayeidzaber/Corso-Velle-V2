@@ -37,3 +37,9 @@ ehthumbs.db
 .codex/
 .local-dev/
 .audit-*/
+
+# Local design and AI tooling, and source photos (not part of the theme)
+.cutouts/
+.impeccable/
+skills-lock.json
+DESIGN.md

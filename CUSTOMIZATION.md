@@ -146,7 +146,7 @@ Sibling links are separate products, not a substitute for variant selection. Mod
 
 ### Size charts and fit guidance
 
-Start with [Size chart settings](docs/SIZE-CHART-SETTINGS.md) for the twelve global product/collection/tag assignment rules. Each supports a picture, CSV measurements or reusable chart handle. The **Variant picker** block independently controls full guide, inline measurements, hover/focus preview, unit switching and selected-size highlighting.
+Start with [Size chart settings](docs/SIZE-CHART-SETTINGS.md) for the fourteen global assignment rules, matched by product, collection, tag or words in the product name. Each supports a picture, CSV measurements or reusable chart handle. The **Variant picker** block independently controls full guide, inline measurements, hover/focus preview, unit switching and selected-size highlighting.
 
 For centrally edited charts, follow [Reusable size charts](docs/SIZE-CHART-ADMIN.md). Resolution is: product chart/measurement metafield → product rule → collection metaobject chart → collection rule → tag rule → default reusable handle → template CSV/page fallback. Within a rule scope, the first usable rule wins. Picture-only charts cannot generate numeric inline previews or converted image text.
 
