@@ -340,6 +340,8 @@ Color scheme fields for `color_schemes`:
 
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
+| `seo_home_title` — Homepage title | `text` | Not specified | Optional. Replaces the title from Online Store > Preferences on the homepage: browser tab, search results and link previews. |
+| `seo_home_description` — Homepage description | `textarea` | Not specified | Optional. Replaces the meta description from Preferences on the homepage. |
 | `social_instagram` — Instagram | `url` | Not specified |  |
 | `social_tiktok` — TikTok | `url` | Not specified |  |
 | `social_facebook` — Facebook | `url` | Not specified |  |
