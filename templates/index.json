@@ -155,7 +155,7 @@
     "arrivals": {
       "type": "featured-collection",
       "settings": {
-        "eyebrow": "The latest edit",
+        "eyebrow": "",
         "heading": "New arrivals",
         "heading_italic": "",
         "description": "",
@@ -181,7 +181,7 @@
         "heading_alignment": "left",
         "show_count": true,
         "link": "",
-        "link_label": "View all",
+        "link_label": "Show more",
         "content_width": "full",
         "spacing_mode": "inherit",
         "padding_top": 72,
@@ -192,7 +192,10 @@
         "carousel_gap": "regular",
         "carousel_emphasis": false,
         "carousel_arrows": true,
-        "product_order": "newest"
+        "product_order": "collection",
+        "show_header": true,
+        "view_all_position": "bottom",
+        "view_all_action": "load"
       }
     },
     "tabs": {
@@ -272,7 +275,8 @@
         "padding_bottom": 72,
         "padding_top_small": 48,
         "padding_bottom_small": 48
-      }
+      },
+      "disabled": true
     },
     "categories": {
       "type": "category-cards",
@@ -378,7 +382,8 @@
         "padding_bottom": 72,
         "padding_top_small": 48,
         "padding_bottom_small": 48
-      }
+      },
+      "disabled": true
     },
     "divider": {
       "type": "divider",
@@ -428,7 +433,8 @@
         "media_fit": "cover",
         "link_style": "text",
         "overlay_colors": "light"
-      }
+      },
+      "disabled": true
     },
     "expand": {
       "type": "expand-media",
@@ -551,7 +557,8 @@
         "hover_delay": 160,
         "click_through": true,
         "speed": 1200
-      }
+      },
+      "disabled": true
     },
     "try_the_look": {
       "type": "try-the-look",
@@ -1122,7 +1129,7 @@
       "settings": {
         "scroll_exit": false,
         "video_autoplay": true,
-        "video_url": "https://cdn.shopify.com/videos/c/o/v/f6415f5140f5420f9869c19055a2bac7.mov",
+        "video_url": "https://cdn.shopify.com/videos/c/o/v/ad88b933348949639067ef66231a2952.mov",
         "poster_url": "",
         "collection": "nine-to-five-winter-26",
         "video_url_mobile": "",

@@ -14,9 +14,6 @@
 {%- if products.size > 0 or request.design_mode -%}
   {%- liquid
     assign eyebrow = section.settings.eyebrow
-    if eyebrow == blank and featured != blank
-      assign eyebrow = 'Featured drop'
-    endif
     assign total_count = featured.all_products_count | default: featured.products_count | default: 0
     if section.settings.products != blank
       assign total_count = products.size
@@ -40,6 +37,19 @@
   -%}
   <div class="featured-collection section-spacing section-presentation color-{{ section.settings.color_scheme }} full-width" data-heading-align="{{ section.settings.heading_alignment }}" data-grid-style="{{ section.settings.grid_style }}" style="{% render 'section-presentation', presentation: section.settings %}--grid-gap:{{ section.settings.grid_gap | default: 8 }}px;--grid-gap-mobile:{{ section.settings.grid_gap_mobile | default: 8 }}px;">
     <div class="featured-collection__inner" {{ card_style.shopify_attributes }}>
+      {%- liquid
+        assign load_more = false
+        if section.settings.view_all_action == 'load' and section.settings.show_view_all and section.settings.layout != 'carousel'
+          assign load_more = true
+        endif
+        assign render_limit = section.settings.limit
+        if load_more
+          assign render_limit = 50
+        endif
+      -%}
+      {%- assign cta_below = false -%}
+      {%- if section.settings.view_all_position == 'bottom' -%}{%- assign cta_below = true -%}{%- endif -%}
+      {%- if section.settings.show_header != false -%}
       <div class="featured-collection__header">
         <div class="featured-collection__title-group">
           {%- if eyebrow != blank -%}
@@ -69,7 +79,7 @@
           {%- endif -%}
         </div>
 
-        {%- if view_all_url != blank and section.settings.show_view_all -%}
+        {%- if view_all_url != blank and section.settings.show_view_all and cta_below == false -%}
           <nk-reveal mode="fade" delay="0.14">
             <a class="button button--secondary featured-collection__cta" href="{{ view_all_url }}" data-magnetic>
               {{- view_all_label | escape }}{% if total_count > 0 and section.settings.show_count != false %} ({{ total_count }}){% endif %} {% render 'icon', name: 'arrow-right', size: 14, class: 'icon--inline' %}
@@ -77,6 +87,7 @@
           </nk-reveal>
         {%- endif -%}
       </div>
+      {%- endif -%}
 
       {%- if section.settings.layout == 'carousel' -%}
         {%- comment -%}
@@ -147,7 +158,7 @@
           style="--nk-cols-mobile: {{ section.settings.columns_mobile }}; --nk-cols-desktop: {{ section.settings.columns_desktop }};"
         >
           {%- if products.size > 0 -%}
-            {%- for product in products limit: section.settings.limit -%}
+            {%- for product in products limit: render_limit -%}
               {%- liquid
                 assign desktop_vw = 100.0 | divided_by: section.settings.columns_desktop
                 if forloop.first and section.settings.grid_style == 'editorial'
@@ -162,7 +173,11 @@
                   echo 'vw'
                 endcapture
               -%}
-              <li data-stagger-item>{% render 'product-card', product: product, card_options: card_options, sizes: card_sizes %}</li>
+              {%- if forloop.index > section.settings.limit -%}
+                <li data-more hidden>{% render 'product-card', product: product, card_options: card_options, sizes: card_sizes %}</li>
+              {%- else -%}
+                <li data-stagger-item>{% render 'product-card', product: product, card_options: card_options, sizes: card_sizes %}</li>
+              {%- endif -%}
             {%- endfor -%}
           {%- else -%}
             {%- for i in (1..4) -%}
@@ -177,11 +192,44 @@
         </ul>
       </nk-stagger>
       {%- endif -%}
+      {%- if load_more and products.size > section.settings.limit -%}
+        <div class="featured-collection__more">
+          <button type="button" class="button button--secondary featured-collection__cta" data-load-more="{{ section.settings.limit }}">
+            {{- view_all_label | escape }} {% render 'icon', name: 'plus', size: 14, class: 'icon--inline' %}
+          </button>
+        </div>
+        <script>
+          (() => {
+            const button = document.currentScript.previousElementSibling.querySelector('[data-load-more]');
+            const grid = button.closest('.featured-collection__inner').querySelector('.product-grid');
+            button.addEventListener('click', () => {
+              const next = [...grid.querySelectorAll('li[data-more][hidden]')].slice(0, Number(button.dataset.loadMore) || 8);
+              next.forEach((item, i) => {
+                item.hidden = false;
+                item.style.animationDelay = (i * 60) + 'ms';
+                item.classList.add('is-loaded');
+              });
+              if (!grid.querySelector('li[data-more][hidden]')) button.closest('.featured-collection__more').remove();
+              next[0]?.querySelector('a')?.focus({ preventScroll: true });
+            });
+          })();
+        </script>
+      {%- elsif load_more == false and view_all_url != blank and section.settings.show_view_all and cta_below -%}
+        <nk-reveal mode="fade" class="featured-collection__more">
+          <a class="button button--secondary featured-collection__cta" href="{{ view_all_url }}" data-magnetic>
+            {{- view_all_label | escape }} {% render 'icon', name: 'arrow-right', size: 14, class: 'icon--inline' %}
+          </a>
+        </nk-reveal>
+      {%- endif -%}
     </div>
   </div>
 {%- endif -%}
 
 {% stylesheet %}
+  .featured-collection .product-grid > li.is-loaded { animation: featured-more .7s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes featured-more { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .featured-collection .product-grid > li.is-loaded { animation: none; } }
+  .featured-collection__more { display: flex; justify-content: center; margin-top: clamp(32px, 5vw, 56px); }
   .featured-collection .product-grid { column-gap: var(--grid-gap-mobile, 8px); }
   .featured-collection[data-heading-align='center'] .featured-collection__header { justify-content: center; text-align: center; }
   .featured-collection[data-heading-align='center'] .featured-collection__title-group { align-items: center; }
@@ -446,6 +494,34 @@
       "id": "show_view_all",
       "label": "Show 'View all' button",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "view_all_position",
+      "label": "'View all' button position",
+      "options": [
+        { "value": "top", "label": "Beside the heading" },
+        { "value": "bottom", "label": "Below the products" }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "select",
+      "id": "view_all_action",
+      "label": "'View all' button below the products",
+      "options": [
+        { "value": "link", "label": "Opens the collection" },
+        { "value": "load", "label": "Loads more products here" }
+      ],
+      "default": "link",
+      "info": "Load more shows the next batch (the same number as 'Products to show') each press, up to 50."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show heading",
+      "default": true,
+      "info": "Turn off to show only the products, for example with the button below them."
     },
     {
       "type": "color_scheme",
