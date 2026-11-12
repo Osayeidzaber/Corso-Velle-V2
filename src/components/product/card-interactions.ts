@@ -175,30 +175,34 @@ export function installCardInteractions(): void {
 
 /**
  * Phones and tablets have no hover, so the second photo a card shows on hover never appears.
- * There, a card shows it while it crosses the middle of the screen (data-in-view, card.css)
- * and returns to the first photo as it scrolls on. Returns the function that picks up new cards.
+ * There, the first tap on a card's photo shows its second photo (data-in-view, card.css) and the
+ * next tap opens the product. The name and price open it straight away. One card at a time.
+ * Returns a no-op kept for the caller's DOM watcher.
  */
 function installTouchReveal(): () => void {
   const touch = typeof matchMedia === 'function' ? matchMedia('(hover: none)') : null;
-  if (!touch || typeof IntersectionObserver !== 'function') return () => {};
-  const watched = new WeakSet<Element>();
-  const observer = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      const card = entry.target.closest<HTMLElement>('.card');
-      card?.toggleAttribute('data-in-view', entry.isIntersecting && touch.matches && decorativeMotionAllowed());
-    }
-  }, { rootMargin: '-38% 0px -38% 0px' });
-  const watch = () => {
-    for (const media of document.querySelectorAll('.card .card__media--has-second')) {
-      if (watched.has(media)) continue;
-      watched.add(media);
-      observer.observe(media);
-    }
-  };
-  watch();
-  // DOM changes come in bursts (carousels, filters); look for new cards once per frame.
-  let frame = 0;
-  return () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; watch(); }); };
+  if (!touch) return () => {};
+  let shown: HTMLElement | null = null;
+  document.addEventListener(
+    'click',
+    (event) => {
+      if (!touch.matches) return;
+      const media = (event.target as Element).closest<HTMLElement>('.card .card__media--has-second');
+      if (!media) return;
+      const card = media.closest<HTMLElement>('.card');
+      if (!card) return;
+      // Second tap on a card already showing its second photo: let the link open the product.
+      if (card.hasAttribute('data-in-view')) return;
+      // First tap: show the second photo instead of navigating.
+      event.preventDefault();
+      event.stopPropagation();
+      if (shown && shown !== card) shown.removeAttribute('data-in-view');
+      card.setAttribute('data-in-view', '');
+      shown = card;
+    },
+    true,
+  );
+  return () => {};
 }
 
 async function handleQuickAdd(button: HTMLButtonElement): Promise<void> {
