@@ -1093,7 +1093,7 @@
         "buttons": {
           "type": "buttons",
           "settings": {
-            "label_1": "Shop the edit",
+            "label_1": "Explore the Collection",
             "link_1": "shopify://collections/nine-to-five-winter-26",
             "style_1": "solid",
             "arrow": true,
