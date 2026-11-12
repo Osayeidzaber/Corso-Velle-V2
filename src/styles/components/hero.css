@@ -1029,3 +1029,17 @@ nk-hero-slides[data-transition='slide'] .hero__slide:not([data-active]):has(~ .h
   nk-hero-slides .hero__slide, nk-hero-slides .hero__slide :is(img, video) { transition: none !important; transform: none !important; }
   .hero__slide-dot > span::after { animation: none !important; }
 }
+
+/* Plain body text: the store's body font, small and upright, whatever the section's type style. */
+.hero .hero__text.hero__text--plain {
+  font-family: var(--nk-font-body);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  letter-spacing: 0;
+  text-transform: none;
+}
+@media (max-width: 989px) {
+  .hero--phone-split .hero__text.hero__text--plain { font-size: 0.75rem; line-height: 1.55; }
+}

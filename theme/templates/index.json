@@ -1079,7 +1079,7 @@
         "heading": {
           "type": "heading",
           "settings": {
-            "heading": "9 TO 5",
+            "heading": "NINE TO FIVE",
             "heading_italic": "",
             "size": 90,
             "size_mobile": 80,
@@ -1092,9 +1092,10 @@
         "text": {
           "type": "text",
           "settings": {
-            "text": "<p>Tailoring that keeps office hours. Soft-shouldered jackets, pleated trousers and clean ribbed tees, cut to carry you from the first meeting to the last train home.</p>",
+            "text": "<p>Nine to Five by Corso Velle is a winter collection built around the rhythm of the workday, from the morning commute to after hours. Leather and suede jackets, jacquard knits and heavyweight fleece come together in black, cream, brown and burgundy, polished enough for the office and relaxed enough for everything after.</p>",
             "size": 100,
-            "width": 34
+            "width": 34,
+            "plain": true
           }
         },
         "buttons": {
@@ -1115,18 +1116,9 @@
             "gap": 14,
             "offset": 0
           }
-        },
-        "eyebrow": {
-          "type": "eyebrow",
-          "settings": {
-            "text": "Nine to Five · Winter '26",
-            "shine": false,
-            "size": 100
-          }
         }
       },
       "block_order": [
-        "eyebrow",
         "heading",
         "text",
         "buttons"

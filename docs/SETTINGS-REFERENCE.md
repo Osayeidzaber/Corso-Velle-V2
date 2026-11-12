@@ -1789,6 +1789,7 @@ Supported block: **Text** (`text`); type limit 1.
 | `text` — Text | `richtext` | Not specified |  |
 | `size` — Size | `range` | `100` | 80–160%, step 5 |
 | `width` — Line length | `range` | `42` | 20–80ch, step 2 |
+| `plain` — Plain body text | `checkbox` | `false` | Small text in the store's body font instead of the section's display style. |
 
 Supported block: **Buttons** (`buttons`); type limit 1.
 

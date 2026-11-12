@@ -221,7 +221,7 @@
               {% endif %}
               {{ block.shopify_attributes }}
             >
-              <div class="hero__text">{{ block.settings.text }}</div>
+              <div class="hero__text{% if block.settings.plain %} hero__text--plain{% endif %}">{{ block.settings.text }}</div>
             </{{ wrap }}>
           {%- when 'buttons' -%}
             <{{ wrap }}
@@ -514,7 +514,8 @@
       "settings": [
         { "type": "richtext", "id": "text", "label": "Text" },
         { "type": "range", "id": "size", "label": "Size", "min": 80, "max": 160, "step": 5, "unit": "%", "default": 100 },
-        { "type": "range", "id": "width", "label": "Line length", "min": 20, "max": 80, "step": 2, "unit": "ch", "default": 42 }
+        { "type": "range", "id": "width", "label": "Line length", "min": 20, "max": 80, "step": 2, "unit": "ch", "default": 42 },
+        { "type": "checkbox", "id": "plain", "label": "Plain body text", "default": false, "info": "Small text in the store's body font instead of the section's display style." }
       ]
     },
     {
