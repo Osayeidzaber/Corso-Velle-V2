@@ -71,7 +71,29 @@
     {%- endif -%}
 
     {% unless section.settings.navigation == 'none' %}
-    {%- if related != blank and related.links.size > 0 -%}
+    {%- if section.settings.navigation == 'list' -%}
+      {%- if section.settings.nav_collections.size > 0 -%}
+      <nk-reveal entrance="rise" delay="0.28" duration="0.75">
+        <nk-category-rail><nav class="collection-banner__nav" aria-label="{{ 'collection.categories' | t }}" data-lenis-prevent>
+          <button type="button" class="icon-button" data-category-step="-1" aria-label="{{ 'collection.previous_categories' | t }}" hidden>{% render 'icon', name: 'arrow-left', size: 18 %}</button>
+          <ul role="list">
+            <li>
+              <a class="collection-banner__pill" href="{{ routes.all_products_collection_url }}" {% if collection.handle == 'all' %}aria-current="page"{% endif %}><span>{{ 'collection.view_all' | t }}</span></a>
+            </li>
+            {%- for item in section.settings.nav_collections -%}
+              <li>
+                <a class="collection-banner__pill" href="{{ item.url }}" {% if item.handle == collection.handle %}aria-current="page"{% endif %}>
+                  <span>{{ item.title | escape }}</span>
+                  <span class="collection-banner__pill-count">({{ item.all_products_count }})</span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+          <button type="button" class="icon-button" data-category-step="1" aria-label="{{ 'collection.next_categories' | t }}" hidden>{% render 'icon', name: 'arrow-right', size: 18 %}</button>
+        </nav></nk-category-rail>
+      </nk-reveal>
+      {%- endif -%}
+    {%- elsif related != blank and related.links.size > 0 -%}
       <nk-reveal entrance="rise" delay="0.28" duration="0.75">
         <nk-category-rail><nav class="collection-banner__nav" aria-label="{{ 'collection.categories' | t }}" data-lenis-prevent>
           <button type="button" class="icon-button" data-category-step="-1" aria-label="{{ 'collection.previous_categories' | t }}" hidden>{% render 'icon', name: 'arrow-left', size: 18 %}</button>
@@ -419,20 +441,23 @@
   nk-category-rail[data-more-start] .collection-banner__nav ul { --fade-start: 40px; }
   nk-category-rail[data-more-end] .collection-banner__nav ul { --fade-end: 40px; }
 
+  .collection-banner__nav { align-items: center; }
   .collection-banner__nav > button[data-category-step] {
-    flex: 0 0 40px;
-    width: 40px;
-    min-width: 40px;
-    height: 40px;
-    min-height: 40px;
+    flex: 0 0 28px;
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+    min-height: 28px;
+    padding: 0;
     border: 1px solid var(--nk-color-line);
     border-radius: 50%;
     font-size: 1rem;
     line-height: 1;
     transition: border-color 200ms var(--nk-ease-out), opacity 200ms var(--nk-ease-out);
   }
-  .collection-banner__nav > [data-category-step='-1'] { order: 2; margin-inline-start: 8px; }
-  .collection-banner__nav > [data-category-step='1'] { order: 3; }
+  .collection-banner__nav > [data-category-step='-1'] { order: 0; }
+  .collection-banner__nav > [data-category-step='1'] { order: 2; }
+  .collection-banner__nav > button[data-category-step] svg { width: 12px; height: 12px; }
   .collection-banner__nav > button[data-category-step]:disabled { opacity: 0.3; cursor: default; }
   @media (hover: hover) {
     .collection-banner__nav > button[data-category-step]:not(:disabled):hover { border-color: currentColor; }
@@ -448,12 +473,7 @@
 
   /* Phones: swipe the rail edge to edge; the arrows would only crowd it. */
   @media (max-width: 749px) {
-    .collection-banner__nav > button[data-category-step] { display: none; }
-    .collection-banner__nav ul {
-      margin-inline: calc(var(--nk-gutter) * -1);
-      padding-inline: var(--nk-gutter);
-      scroll-padding-inline: var(--nk-gutter);
-    }
+    .collection-banner__nav > button[data-category-step] { flex-basis: 26px; width: 26px; min-width: 26px; height: 26px; min-height: 26px; }
     nk-category-rail[data-more-start] .collection-banner__nav ul { --fade-start: 24px; }
     nk-category-rail[data-more-end] .collection-banner__nav ul { --fade-end: 24px; }
   }
@@ -492,14 +512,14 @@
   /* Categories: plain words, the current one underlined. */
   .collection-banner__nav ul { gap: 0 4px; }
   .collection-banner .collection-banner__pill {
-    min-height: 40px;
+    min-height: 32px;
     padding: 0 9px;
     border: 0;
     border-radius: 0;
     background: none;
     color: var(--nk-color-text);
     font-family: var(--nk-font-body);
-    font-size: 0.9375rem;
+    font-size: 0.8125rem;
     font-weight: 500;
     letter-spacing: 0;
     text-transform: none;
@@ -747,11 +767,23 @@
           "label": "Selected menu only"
         },
         {
+          "value": "list",
+          "label": "Chosen collections"
+        },
+        {
           "value": "none",
           "label": "Hidden"
         }
       ],
       "default": "auto"
+    },
+    {
+      "type": "collection_list",
+      "id": "nav_collections",
+      "label": "Collections in the navigation",
+      "limit": 20,
+      "info": "Used with Chosen collections. Shown in this order, after View all.",
+      "visible_if": "{{ section.settings.navigation == 'list' }}"
     }
   ],
   "presets": [

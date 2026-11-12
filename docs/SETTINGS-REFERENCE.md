@@ -888,7 +888,8 @@ Available contexts: `{"templates":["collection"]}`.
 | `parallax` — Image drift | `range` | `12` | 0–30%, step 2 |
 | `show_breadcrumbs` — Show breadcrumbs | `checkbox` | `true` |  |
 | `show_count` — Show count | `checkbox` | `true` |  |
-| `navigation` — Collection navigation | `select` | `auto` | `auto`: Menu or store collections; `menu`: Selected menu only; `none`: Hidden |
+| `navigation` — Collection navigation | `select` | `auto` | `auto`: Menu or store collections; `menu`: Selected menu only; `list`: Chosen collections; `none`: Hidden |
+| `nav_collections` — Collections in the navigation | `collection_list` | Not specified | Picker limit 20; Used with Chosen collections. Shown in this order, after View all.; Shown when `{{ section.settings.navigation == 'list' }}` |
 
 Add-menu presets:
 

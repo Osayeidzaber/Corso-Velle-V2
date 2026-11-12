@@ -33,8 +33,23 @@
         "color_scheme": "scheme-1",
         "show_breadcrumbs": false,
         "show_count": true,
-        "navigation": "auto",
-        "title_animation": "none"
+        "navigation": "list",
+        "title_animation": "none",
+        "nav_collections": [
+          "nine-to-five-winter-26",
+          "timeless-basics-26",
+          "jackets",
+          "shackets",
+          "shirts",
+          "sweater",
+          "hoodie",
+          "sweatshirts",
+          "t-shirts",
+          "knit-polo",
+          "bottoms-1",
+          "jeans",
+          "footwear"
+        ]
       }
     }
   },

@@ -394,7 +394,8 @@
         "color_scheme": "scheme-1",
         "width": "content",
         "thickness": 1
-      }
+      },
+      "disabled": true
     },
     "story": {
       "type": "media-text",
@@ -477,7 +478,8 @@
         "alignment": "center",
         "static_height": "regular",
         "copy_width": 60
-      }
+      },
+      "disabled": true
     },
     "featured": {
       "type": "featured-collection",
@@ -519,7 +521,8 @@
         "carousel_gap": "regular",
         "carousel_emphasis": true,
         "carousel_arrows": true
-      }
+      },
+      "disabled": true
     },
     "strip": {
       "type": "accordion-gallery",
