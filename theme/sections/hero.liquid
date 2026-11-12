@@ -90,7 +90,7 @@
   {% unless layout == 'split' %}
     data-overlay-eligible
   {% endunless %}
-  style="--nk-scrim: {{ section.settings.scrim | divided_by: 100.0 }}; --hero-width: {{ section.settings.content_width | default: 1100 }}px; --hero-gap: {{ section.settings.block_gap | default: 22 }}px;{% if custom_heading %} --hero-custom-heading: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }}; --hero-custom-heading-weight: {{ section.settings.heading_font.weight }};{% endif %}{% if custom_text %} --hero-custom-text: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};{% endif %}"
+  style="--nk-scrim: {{ section.settings.scrim | divided_by: 100.0 }}; --hero-width: {{ section.settings.content_width | default: 1100 }}px; --hero-gap: {{ section.settings.block_gap | default: 22 }}px;{% if section.settings.space_below > 0 %} margin-block-end: {{ section.settings.space_below }}px;{% endif %}{% if custom_heading %} --hero-custom-heading: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }}; --hero-custom-heading-weight: {{ section.settings.heading_font.weight }};{% endif %}{% if custom_text %} --hero-custom-text: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};{% endif %}"
 >
   {%- liquid
     assign slides = section.blocks | where: 'type', 'slide'
@@ -373,6 +373,7 @@
     },
     { "type": "range", "id": "content_width", "label": "Content width", "min": 360, "max": 1400, "step": 20, "unit": "px", "default": 1100 },
     { "type": "range", "id": "block_gap", "label": "Space between blocks", "min": 8, "max": 56, "step": 2, "unit": "px", "default": 22 },
+    { "type": "range", "id": "space_below", "label": "Space below this section", "min": 0, "max": 160, "step": 8, "unit": "px", "default": 0 },
     { "type": "range", "id": "parallax", "label": "Parallax depth", "min": 0, "max": 30, "step": 2, "unit": "%", "default": 14 },
     { "type": "checkbox", "id": "show_scroll_cue", "label": "Show scroll cue", "default": false },
     {

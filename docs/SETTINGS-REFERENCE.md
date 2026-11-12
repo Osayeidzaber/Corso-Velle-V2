@@ -1737,6 +1737,7 @@ Current section block cap: 16.
 | `text_align` — Text alignment | `select` | `auto` | `auto`: Follow the position; `left`: Left; `center`: Center; `right`: Right |
 | `content_width` — Content width | `range` | `1100` | 360–1400px, step 20 |
 | `block_gap` — Space between blocks | `range` | `22` | 8–56px, step 2 |
+| `space_below` — Space below this section | `range` | `0` | 0–160px, step 8 |
 | `parallax` — Parallax depth | `range` | `14` | 0–30%, step 2 |
 | `show_scroll_cue` — Show scroll cue | `checkbox` | `false` |  |
 | `scrim_style` — Text backdrop | `select` | `solid` | `none`: None; `solid`: Tint; `blur`: Progressive blur |

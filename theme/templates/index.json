@@ -1166,7 +1166,8 @@
         "text_font": "inter_n4",
         "entrance": "text",
         "video_focus": "top",
-        "split_phone": true
+        "split_phone": true,
+        "space_below": 56
       }
     }
   },
