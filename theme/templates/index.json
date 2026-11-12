@@ -181,7 +181,7 @@
         "heading_alignment": "left",
         "show_count": true,
         "link": "",
-        "link_label": "View all",
+        "link_label": "Show more",
         "content_width": "full",
         "spacing_mode": "inherit",
         "padding_top": 72,
@@ -192,7 +192,9 @@
         "carousel_gap": "regular",
         "carousel_emphasis": false,
         "carousel_arrows": true,
-        "product_order": "newest"
+        "product_order": "newest",
+        "show_header": false,
+        "view_all_position": "bottom"
       }
     },
     "tabs": {
@@ -1122,7 +1124,7 @@
       "settings": {
         "scroll_exit": false,
         "video_autoplay": true,
-        "video_url": "https://cdn.shopify.com/videos/c/o/v/f6415f5140f5420f9869c19055a2bac7.mov",
+        "video_url": "https://cdn.shopify.com/videos/c/o/v/ad88b933348949639067ef66231a2952.mov",
         "poster_url": "",
         "collection": "nine-to-five-winter-26",
         "video_url_mobile": "",

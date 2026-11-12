@@ -40,6 +40,9 @@
   -%}
   <div class="featured-collection section-spacing section-presentation color-{{ section.settings.color_scheme }} full-width" data-heading-align="{{ section.settings.heading_alignment }}" data-grid-style="{{ section.settings.grid_style }}" style="{% render 'section-presentation', presentation: section.settings %}--grid-gap:{{ section.settings.grid_gap | default: 8 }}px;--grid-gap-mobile:{{ section.settings.grid_gap_mobile | default: 8 }}px;">
     <div class="featured-collection__inner" {{ card_style.shopify_attributes }}>
+      {%- assign cta_below = false -%}
+      {%- if section.settings.view_all_position == 'bottom' -%}{%- assign cta_below = true -%}{%- endif -%}
+      {%- if section.settings.show_header != false -%}
       <div class="featured-collection__header">
         <div class="featured-collection__title-group">
           {%- if eyebrow != blank -%}
@@ -69,7 +72,7 @@
           {%- endif -%}
         </div>
 
-        {%- if view_all_url != blank and section.settings.show_view_all -%}
+        {%- if view_all_url != blank and section.settings.show_view_all and cta_below == false -%}
           <nk-reveal mode="fade" delay="0.14">
             <a class="button button--secondary featured-collection__cta" href="{{ view_all_url }}" data-magnetic>
               {{- view_all_label | escape }}{% if total_count > 0 and section.settings.show_count != false %} ({{ total_count }}){% endif %} {% render 'icon', name: 'arrow-right', size: 14, class: 'icon--inline' %}
@@ -77,6 +80,7 @@
           </nk-reveal>
         {%- endif -%}
       </div>
+      {%- endif -%}
 
       {%- if section.settings.layout == 'carousel' -%}
         {%- comment -%}
@@ -177,11 +181,19 @@
         </ul>
       </nk-stagger>
       {%- endif -%}
+      {%- if view_all_url != blank and section.settings.show_view_all and cta_below -%}
+        <nk-reveal mode="fade" class="featured-collection__more">
+          <a class="button button--secondary featured-collection__cta" href="{{ view_all_url }}" data-magnetic>
+            {{- view_all_label | escape }} {% render 'icon', name: 'arrow-right', size: 14, class: 'icon--inline' %}
+          </a>
+        </nk-reveal>
+      {%- endif -%}
     </div>
   </div>
 {%- endif -%}
 
 {% stylesheet %}
+  .featured-collection__more { display: flex; justify-content: center; margin-top: clamp(32px, 5vw, 56px); }
   .featured-collection .product-grid { column-gap: var(--grid-gap-mobile, 8px); }
   .featured-collection[data-heading-align='center'] .featured-collection__header { justify-content: center; text-align: center; }
   .featured-collection[data-heading-align='center'] .featured-collection__title-group { align-items: center; }
@@ -446,6 +458,23 @@
       "id": "show_view_all",
       "label": "Show 'View all' button",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "view_all_position",
+      "label": "'View all' button position",
+      "options": [
+        { "value": "top", "label": "Beside the heading" },
+        { "value": "bottom", "label": "Below the products" }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show heading",
+      "default": true,
+      "info": "Turn off to show only the products, for example with the button below them."
     },
     {
       "type": "color_scheme",
