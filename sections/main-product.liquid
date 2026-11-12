@@ -210,6 +210,10 @@
                   endif
                 endfor
               endif
+              assign chart_modal_id = ''
+              if size_chart_html != blank and block.settings.show_size_guide != false
+                assign chart_modal_id = 'SizeChart-' | append: section.id
+              endif
               if size_chart_html != blank and block.settings.show_size_guide != false
                 assign size_modal_id = 'SizeGuide-' | append: section.id
               elsif fit_option
@@ -268,12 +272,19 @@
                         </span>
                       </span>
                       {%- if is_size_option and size_modal_id != blank -%}
-                        <button type="button" class="size-guide-link spec" data-nk-open="{{ size_modal_id }}" aria-haspopup="dialog">
-                          {{- 'product.size_guide' | t -}}
-                          {%- if fit_option -%}
-                            <span class="fit-hint" data-fit-hint hidden>{{ 'product.fit_finder.hint' | t }} <span data-part="size"></span></span>
+                        <span class="option__guides">
+                          {%- if chart_modal_id != blank -%}
+                            <button type="button" class="size-chart-button spec" data-nk-open="{{ chart_modal_id }}" aria-haspopup="dialog">{{ 'product.size_chart' | t }}</button>
                           {%- endif -%}
-                        </button>
+                          {%- if fit_option or chart_modal_id == blank -%}
+                            <button type="button" class="size-guide-link size-guide-link--help spec" data-nk-open="{{ size_modal_id }}" aria-haspopup="dialog">
+                              {%- if fit_option -%}{{ 'product.need_help' | t }}{%- else -%}{{ 'product.size_guide' | t }}{%- endif -%}
+                              {%- if fit_option -%}
+                                <span class="fit-hint" data-fit-hint hidden>{{ 'product.fit_finder.hint' | t }} <span data-part="size"></span></span>
+                              {%- endif -%}
+                            </button>
+                          {%- endif -%}
+                        </span>
                       {%- endif -%}
                     </div>
 
@@ -348,6 +359,23 @@
                 </p>
               </nk-variant-picker>
 
+              {%- if chart_modal_id != blank -%}
+                <nk-modal id="{{ chart_modal_id }}">
+                  <dialog class="drawer drawer--right size-guide-dialog" aria-labelledby="SizeChartTitle-{{ section.id }}" data-swipe-close>
+                    <div class="size-guide-dialog__header" data-drag-handle>
+                      <span class="size-guide-dialog__grip" aria-hidden="true"></span>
+                      <div class="size-guide-dialog__titles">
+                        <p class="size-guide-dialog__eyebrow spec">{{ 'product.size_chart' | t }}</p>
+                        <h2 class="size-guide-dialog__title" id="SizeChartTitle-{{ section.id }}" tabindex="-1" data-autofocus>{{- product.title | escape -}}</h2>
+                      </div>
+                      <button type="button" class="icon-button size-guide-dialog__close" data-nk-close aria-label="{{ 'general.close' | t }}">
+                        {% render 'icon', name: 'close' %}
+                      </button>
+                    </div>
+                    <div class="drawer__body size-guide__body">{{ size_chart_html }}</div>
+                  </dialog>
+                </nk-modal>
+              {%- endif -%}
               {%- if size_modal_id != blank -%}
                 <nk-modal id="{{ size_modal_id }}">
                   <dialog
@@ -473,6 +501,21 @@
                 capture accordion_content
                   render 'shipping-exchange'
                 endcapture
+              elsif block.settings.policy_source == 'policy_links'
+                capture accordion_content
+                  echo '<div class="policy-copy">' | append: block.settings.content | append: '</div>'
+                  echo '<ul class="policy-links">'
+                  if shop.shipping_policy != blank
+                    echo '<li><a href="' | append: shop.shipping_policy.url | append: '">' | append: shop.shipping_policy.title | append: '</a></li>'
+                  endif
+                  if shop.refund_policy != blank
+                    echo '<li><a href="' | append: shop.refund_policy.url | append: '">' | append: shop.refund_policy.title | append: '</a></li>'
+                  endif
+                  echo '</ul>'
+                endcapture
+                if shop.shipping_policy == blank and shop.refund_policy == blank and block.settings.content == blank
+                  assign accordion_content = ''
+                endif
               endif
             -%}
             {%- if accordion_content != blank -%}
@@ -1068,7 +1111,8 @@
           "label": "Content source",
           "options": [
             { "value": "custom", "label": "Custom content or page" },
-            { "value": "shipping_exchange", "label": "Shopify shipping and refund policies" }
+            { "value": "shipping_exchange", "label": "Shopify shipping and refund policies" },
+            { "value": "policy_links", "label": "Links to shipping and refund policies" }
           ],
           "default": "custom",
           "info": "Policies stay synchronized with Settings > Policies in Shopify Admin."
