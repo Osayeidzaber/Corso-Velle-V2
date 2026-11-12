@@ -1701,6 +1701,11 @@ html.nk-anim .product__media[data-layout='slider'][data-media-count]:not([data-m
   .product-section[data-layout='split'] .gallery__controls { padding-inline: 20px; }
 }
 
-/* Shipping + exchange as plain links to the full policies. */
-.policy-links { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+/* Shipping + exchange: plain lines, no bullets, and plain links to the full policies. */
+.policy-copy ul { margin: 6px 0 0; padding: 0; list-style: none; }
+.policy-copy li { margin: 2px 0; }
+.rte .policy-links, .rte .policy-copy ul { padding-inline-start: 0; margin-inline-start: 0; }
+.rte .policy-links li::marker { content: none; }
+.policy-copy li::before, .policy-copy li::marker { content: none; }
+.policy-links { display: grid; gap: 10px; margin: 16px 0 0; padding: 0; list-style: none; }
 .policy-links a { text-decoration: underline; text-underline-offset: 4px; }

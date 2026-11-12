@@ -503,16 +503,17 @@
                 endcapture
               elsif block.settings.policy_source == 'policy_links'
                 capture accordion_content
+                  echo '<div class="policy-copy">' | append: block.settings.content | append: '</div>'
                   echo '<ul class="policy-links">'
                   if shop.shipping_policy != blank
-                    echo '<li><a href="' | append: shop.shipping_policy.url | append: '">' | append: shop.shipping_policy.title | append: ' &rarr;</a></li>'
+                    echo '<li><a href="' | append: shop.shipping_policy.url | append: '">' | append: shop.shipping_policy.title | append: '</a></li>'
                   endif
                   if shop.refund_policy != blank
-                    echo '<li><a href="' | append: shop.refund_policy.url | append: '">' | append: shop.refund_policy.title | append: ' &rarr;</a></li>'
+                    echo '<li><a href="' | append: shop.refund_policy.url | append: '">' | append: shop.refund_policy.title | append: '</a></li>'
                   endif
                   echo '</ul>'
                 endcapture
-                if shop.shipping_policy == blank and shop.refund_policy == blank
+                if shop.shipping_policy == blank and shop.refund_policy == blank and block.settings.content == blank
                   assign accordion_content = ''
                 endif
               endif

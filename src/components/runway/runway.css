@@ -410,14 +410,15 @@ nk-runway[data-panel] .runway__panel[data-active] .runway__piece {
 .runway__thumb {
   position: relative;
   display: block;
-  aspect-ratio: 1;
-  overflow: visible;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--nk-color-surface, #f3f3f3);
   outline: 1px solid transparent;
   outline-offset: 2px;
   transition: outline-color 200ms ease;
 }
 .runway__piece[data-highlight] .runway__thumb { outline-color: var(--nk-color-text); }
-.runway__thumb img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; transition: transform 500ms cubic-bezier(.2,.7,.2,1); }
+.runway__thumb img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; transition: transform 500ms cubic-bezier(.2,.7,.2,1); }
 .runway__thumb:hover img { transform: scale(1.05); }
 .runway__thumb-number {
   position: absolute;

@@ -983,7 +983,9 @@
         "visible_sides": 3,
         "side_scale": 88,
         "start_look": 4,
-        "spacing_phone": 64
+        "spacing_phone": 64,
+        "show_pins": false,
+        "show_look_number": false
       }
     },
     "film": {

@@ -57,7 +57,7 @@
           "type": "accordion",
           "settings": {
             "heading": "Shipping + exchange",
-            "content": "",
+            "content": "<p><strong>Standard Delivery</strong></p><ul><li>Dhaka and Chattogram: BDT 80</li><li>Other locations in Bangladesh: BDT 150</li><li>Estimated delivery time: 3–5 business days</li></ul>",
             "policy_source": "policy_links"
           }
         },

@@ -106,7 +106,7 @@
     {%- if s.custom_cursor -%}<div class="runway__cursor" data-ref="cursor" aria-hidden="true"><div class="runway__cursor-dot"><span class="spec">{{ s.cursor_label | escape }}</span></div></div>{%- endif -%}
     <button type="button" class="runway__close" data-ref="close" aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
     <div class="runway__look-title" aria-live="polite">
-      <span class="spec" data-ref="detail-index"></span>
+      {%- if s.show_look_number != false -%}<span class="spec" data-ref="detail-index"></span>{%- endif -%}
       <span data-ref="detail-name"></span>
     </div>
     {%- if s.swipe_hint != blank -%}<p class="runway__swipe spec" data-ref="swipe" aria-hidden="true">{{ s.swipe_hint | escape }}</p>{%- endif -%}
@@ -140,7 +140,7 @@
             {{ item.shopify_attributes }}
           >
             <a class="runway__thumb" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
-              {%- if thumb -%}{{ thumb | image_url: width: 240 | image_tag: loading: 'lazy', widths: '120, 240', sizes: '6rem', alt: '' }}{%- endif -%}
+              {%- if thumb -%}{{ thumb | image_url: width: 360 | image_tag: loading: 'lazy', widths: '180, 360', sizes: '6rem', alt: '' }}{%- endif -%}
               {%- if s.show_pins -%}<span class="runway__thumb-number">{{ piece_number }}</span>{%- endif -%}
             </a>
             <div class="runway__piece-copy">
@@ -209,7 +209,7 @@
       {%- endcapture -%}
       <aside class="runway__panel" data-ref="panel" data-lenis-prevent aria-label="{{ s.panel_title | escape }}: {{ block.settings.name | escape }}">
         <span class="runway__grip" aria-hidden="true"></span>
-        <p class="runway__sheet-look"><span class="spec">{{ s.look_label | escape }} {% if look_index < 10 %}0{% endif %}{{ look_index }}</span>{{ block.settings.name | escape }}</p>
+        <p class="runway__sheet-look">{%- if s.show_look_number != false -%}<span class="spec">{{ s.look_label | escape }} {% if look_index < 10 %}0{% endif %}{{ look_index }}</span>{%- endif -%}{{ block.settings.name | escape }}</p>
         <button type="button" class="runway__sheet-close" data-sheet-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
         <header class="runway__panel-head" data-ref="sheet-head">
           <h3>{%- if block.settings.tag != blank -%}<span class="runway__tag spec">{{ block.settings.tag | escape }}</span>{%- endif -%}{{ s.panel_title | escape }}</h3>
@@ -432,6 +432,7 @@
     },
     { "type": "range", "id": "panel_width", "label": "Panel width", "min": 300, "max": 560, "step": 10, "unit": "px", "default": 400 },
     { "type": "checkbox", "id": "show_pins", "label": "Show pins on the model", "default": true },
+    { "type": "checkbox", "id": "show_look_number", "label": "Show the look number (Look 01) when a look is open", "default": true },
     {
       "type": "select",
       "id": "pin_style",

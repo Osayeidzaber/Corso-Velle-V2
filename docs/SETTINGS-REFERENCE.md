@@ -3182,6 +3182,7 @@ Current section block cap: 50.
 | `panel_side` — Panel side | `select` | `right` | `right`: Right; `left`: Left |
 | `panel_width` — Panel width | `range` | `400` | 300–560px, step 10 |
 | `show_pins` — Show pins on the model | `checkbox` | `true` |  |
+| `show_look_number` — Show the look number (Look 01) when a look is open | `checkbox` | `true` |  |
 | `pin_style` — Pin style | `select` | `number` | `number`: Numbered; `dot`: Dot |
 | `pin_size` — Pin size | `range` | `26` | 16–44px, step 2 |
 | `show_pin_tips` — Show product name and price when hovering a pin | `checkbox` | `true` |  |
