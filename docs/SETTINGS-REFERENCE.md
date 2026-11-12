@@ -1420,6 +1420,7 @@ Excluded contexts: `{"groups":["header","footer"]}`.
 | `columns_desktop` — Columns on desktop | `range` | `4` | 2–5, step 1 |
 | `show_view_all` — Show 'View all' button | `checkbox` | `true` |  |
 | `view_all_position` — 'View all' button position | `select` | `top` | `top`: Beside the heading; `bottom`: Below the products |
+| `view_all_action` — 'View all' button below the products | `select` | `link` | `link`: Opens the collection; `load`: Loads more products here; Load more shows the next batch (the same number as 'Products to show') each press, up to 50. |
 | `show_header` — Show heading | `checkbox` | `true` | Turn off to show only the products, for example with the button below them. |
 | `color_scheme` — Color scheme | `color_scheme` | `scheme-1` |  |
 | `products` — Custom product selection | `product_list` | Not specified | Picker limit 24; Overrides the collection. An empty list uses the collection; there is no all-products fallback. |

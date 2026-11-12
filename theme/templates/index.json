@@ -155,7 +155,7 @@
     "arrivals": {
       "type": "featured-collection",
       "settings": {
-        "eyebrow": "The latest edit",
+        "eyebrow": "",
         "heading": "New arrivals",
         "heading_italic": "",
         "description": "",
@@ -192,9 +192,10 @@
         "carousel_gap": "regular",
         "carousel_emphasis": false,
         "carousel_arrows": true,
-        "product_order": "newest",
+        "product_order": "collection",
         "show_header": true,
-        "view_all_position": "bottom"
+        "view_all_position": "bottom",
+        "view_all_action": "load"
       }
     },
     "tabs": {
