@@ -660,8 +660,8 @@
         "look_2_piece_1": {
           "type": "piece",
           "settings": {
-            "pin_x": 50,
-            "pin_y": 34,
+            "pin_x": 30,
+            "pin_y": 40,
             "product": "oatmeal-shacket"
           }
         },
@@ -669,15 +669,16 @@
           "type": "piece",
           "settings": {
             "pin_x": 50,
-            "pin_y": 78,
-            "product": "firenze-gurkha-flared-trouser-1"
+            "pin_y": 30,
+            "product": "classic-white-rib-tank"
           }
         },
         "look_2_piece_3": {
           "type": "piece",
           "settings": {
-            "pin_x": 62,
-            "pin_y": 90
+            "pin_x": 50,
+            "pin_y": 78,
+            "product": "firenze-gurkha-flared-trouser-1"
           }
         },
         "look_3_piece_1": {
@@ -784,7 +785,8 @@
           "type": "piece",
           "settings": {
             "pin_x": 50,
-            "pin_y": 74
+            "pin_y": 78,
+            "product": "firenze-gurkha-flared-trouser-1"
           }
         },
         "look_7_piece_3": {
