@@ -994,22 +994,14 @@
         "heading": {
           "type": "heading",
           "settings": {
-            "heading": "Timeless Basics",
-            "heading_italic": "'26",
-            "size": 60,
-            "size_mobile": 80,
+            "heading": "TIMELESS BASICS '26",
+            "heading_italic": "",
+            "size": 50,
+            "size_mobile": 50,
             "italic_style": "none",
             "entrance": "none",
             "hover": "none",
             "text_style": "none"
-          }
-        },
-        "text": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Refined everyday essentials, designed for effortless, modern dressing.</p>",
-            "size": 100,
-            "width": 42
           }
         },
         "buttons": {
@@ -1034,7 +1026,6 @@
       },
       "block_order": [
         "heading",
-        "text",
         "buttons"
       ],
       "settings": {
@@ -1058,7 +1049,7 @@
         "position": "bottom-left",
         "position_mobile": "same",
         "text_align": "auto",
-        "content_width": 1100,
+        "content_width": 1400,
         "block_gap": 22,
         "parallax": 0,
         "show_scroll_cue": false,
@@ -1066,8 +1057,8 @@
         "scrim": 45,
         "color_scheme": "scheme-2",
         "type_style": "signature",
-        "custom_heading_font": false,
-        "heading_font": "newsreader_n4",
+        "custom_heading_font": true,
+        "heading_font": "inter_n5",
         "custom_text_font": false,
         "text_font": "inter_n4",
         "entrance": "fade-up"
@@ -1079,10 +1070,10 @@
         "heading": {
           "type": "heading",
           "settings": {
-            "heading": "9 TO 5",
+            "heading": "NINE TO FIVE",
             "heading_italic": "",
             "size": 90,
-            "size_mobile": 80,
+            "size_mobile": 50,
             "italic_style": "none",
             "entrance": "none",
             "hover": "none",
@@ -1092,15 +1083,17 @@
         "text": {
           "type": "text",
           "settings": {
-            "text": "<p>Tailoring that keeps office hours. Soft-shouldered jackets, pleated trousers and clean ribbed tees, cut to carry you from the first meeting to the last train home.</p>",
+            "text": "<p>Nine to Five by Corso Velle is a winter collection built around the rhythm of the workday, from the morning commute to after hours. Leather and suede jackets, jacquard knits and heavyweight fleece come together in black, cream, brown and burgundy, polished enough for the office and relaxed enough for everything after.</p>",
             "size": 100,
-            "width": 34
+            "width": 68,
+            "plain": true,
+            "text_mobile": "<p>Nine to Five by Corso Velle is a winter collection built around the rhythm of the workday, from the morning commute to after hours.</p>"
           }
         },
         "buttons": {
           "type": "buttons",
           "settings": {
-            "label_1": "Shop the edit",
+            "label_1": "Explore the Collection",
             "link_1": "shopify://collections/nine-to-five-winter-26",
             "style_1": "solid",
             "arrow": true,
@@ -1115,18 +1108,9 @@
             "gap": 14,
             "offset": 0
           }
-        },
-        "eyebrow": {
-          "type": "eyebrow",
-          "settings": {
-            "text": "Nine to Five · Winter '26",
-            "shine": false,
-            "size": 100
-          }
         }
       },
       "block_order": [
-        "eyebrow",
         "heading",
         "text",
         "buttons"
@@ -1152,7 +1136,7 @@
         "position": "center-left",
         "position_mobile": "same",
         "text_align": "auto",
-        "content_width": 560,
+        "content_width": 760,
         "block_gap": 26,
         "parallax": 0,
         "show_scroll_cue": false,
@@ -1160,20 +1144,21 @@
         "scrim": 45,
         "color_scheme": "scheme-2",
         "type_style": "signature",
-        "custom_heading_font": false,
-        "heading_font": "newsreader_n4",
+        "custom_heading_font": true,
+        "heading_font": "inter_n5",
         "custom_text_font": false,
         "text_font": "inter_n4",
         "entrance": "text",
         "video_focus": "top",
-        "split_phone": true
+        "split_phone": true,
+        "space_below": 56
       }
     }
   },
   "order": [
     "try_the_look",
-    "rack",
     "nine_to_five",
+    "rack",
     "film",
     "arrivals",
     "tabs",

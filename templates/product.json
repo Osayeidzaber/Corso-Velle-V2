@@ -78,7 +78,8 @@
         "delivery"
       ],
       "settings": {
-        "sticky_buy": "mobile"
+        "sticky_buy": "mobile",
+        "show_gallery_controls": false
       }
     },
     "recommendations": {

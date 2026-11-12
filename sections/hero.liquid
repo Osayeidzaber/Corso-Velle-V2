@@ -90,7 +90,7 @@
   {% unless layout == 'split' %}
     data-overlay-eligible
   {% endunless %}
-  style="--nk-scrim: {{ section.settings.scrim | divided_by: 100.0 }}; --hero-width: {{ section.settings.content_width | default: 1100 }}px; --hero-gap: {{ section.settings.block_gap | default: 22 }}px;{% if custom_heading %} --hero-custom-heading: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }}; --hero-custom-heading-weight: {{ section.settings.heading_font.weight }};{% endif %}{% if custom_text %} --hero-custom-text: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};{% endif %}"
+  style="--nk-scrim: {{ section.settings.scrim | divided_by: 100.0 }}; --hero-width: {{ section.settings.content_width | default: 1100 }}px; --hero-gap: {{ section.settings.block_gap | default: 22 }}px;{% if section.settings.space_below > 0 %} margin-block-end: {{ section.settings.space_below }}px;{% endif %}{% if custom_heading %} --hero-custom-heading: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }}; --hero-custom-heading-weight: {{ section.settings.heading_font.weight }};{% endif %}{% if custom_text %} --hero-custom-text: {{ section.settings.text_font.family }}, {{ section.settings.text_font.fallback_families }};{% endif %}"
 >
   {%- liquid
     assign slides = section.blocks | where: 'type', 'slide'
@@ -221,7 +221,12 @@
               {% endif %}
               {{ block.shopify_attributes }}
             >
-              <div class="hero__text">{{ block.settings.text }}</div>
+              {%- if block.settings.text_mobile != blank -%}
+                <div class="hero__text hero__text--desktop{% if block.settings.plain %} hero__text--plain{% endif %}">{{ block.settings.text }}</div>
+                <div class="hero__text hero__text--phone{% if block.settings.plain %} hero__text--plain{% endif %}">{{ block.settings.text_mobile }}</div>
+              {%- else -%}
+                <div class="hero__text{% if block.settings.plain %} hero__text--plain{% endif %}">{{ block.settings.text }}</div>
+              {%- endif -%}
             </{{ wrap }}>
           {%- when 'buttons' -%}
             <{{ wrap }}
@@ -373,6 +378,7 @@
     },
     { "type": "range", "id": "content_width", "label": "Content width", "min": 360, "max": 1400, "step": 20, "unit": "px", "default": 1100 },
     { "type": "range", "id": "block_gap", "label": "Space between blocks", "min": 8, "max": 56, "step": 2, "unit": "px", "default": 22 },
+    { "type": "range", "id": "space_below", "label": "Space below this section", "min": 0, "max": 160, "step": 8, "unit": "px", "default": 0 },
     { "type": "range", "id": "parallax", "label": "Parallax depth", "min": 0, "max": 30, "step": 2, "unit": "%", "default": 14 },
     { "type": "checkbox", "id": "show_scroll_cue", "label": "Show scroll cue", "default": false },
     {
@@ -512,8 +518,10 @@
       "limit": 1,
       "settings": [
         { "type": "richtext", "id": "text", "label": "Text" },
+        { "type": "richtext", "id": "text_mobile", "label": "Phone text", "info": "Optional. Shown instead of the text above on phones." },
         { "type": "range", "id": "size", "label": "Size", "min": 80, "max": 160, "step": 5, "unit": "%", "default": 100 },
-        { "type": "range", "id": "width", "label": "Line length", "min": 20, "max": 80, "step": 2, "unit": "ch", "default": 42 }
+        { "type": "range", "id": "width", "label": "Line length", "min": 20, "max": 80, "step": 2, "unit": "ch", "default": 42 },
+        { "type": "checkbox", "id": "plain", "label": "Plain body text", "default": false, "info": "Small text in the store's body font instead of the section's display style." }
       ]
     },
     {
