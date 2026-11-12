@@ -1095,7 +1095,8 @@
             "text": "<p>Nine to Five by Corso Velle is a winter collection built around the rhythm of the workday, from the morning commute to after hours. Leather and suede jackets, jacquard knits and heavyweight fleece come together in black, cream, brown and burgundy, polished enough for the office and relaxed enough for everything after.</p>",
             "size": 100,
             "width": 68,
-            "plain": true
+            "plain": true,
+            "text_mobile": "<p>Nine to Five by Corso Velle is a winter collection built around the rhythm of the workday, from the morning commute to after hours.</p>"
           }
         },
         "buttons": {

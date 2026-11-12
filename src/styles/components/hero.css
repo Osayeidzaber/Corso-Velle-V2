@@ -1043,3 +1043,10 @@ nk-hero-slides[data-transition='slide'] .hero__slide:not([data-active]):has(~ .h
 @media (max-width: 989px) {
   .hero--phone-split .hero__text.hero__text--plain { font-size: 0.75rem; line-height: 1.55; }
 }
+
+/* Separate phone wording, when a text block has one. */
+.hero__text--phone { display: none; }
+@media (max-width: 749px) {
+  .hero__text--desktop { display: none; }
+  .hero__text--phone { display: block; }
+}
