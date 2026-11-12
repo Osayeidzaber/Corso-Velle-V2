@@ -1709,3 +1709,18 @@ html.nk-anim .product__media[data-layout='slider'][data-media-count]:not([data-m
 .policy-copy li::before, .policy-copy li::marker { content: none; }
 .policy-links { display: grid; gap: 10px; margin: 16px 0 0; padding: 0; list-style: none; }
 .policy-links a { text-decoration: underline; text-underline-offset: 4px; }
+
+/* Size picker: no "Size: Choose one" label (kept for screen readers); the chart and help links lead. */
+[data-size-fieldset] .option__legend {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+[data-size-fieldset] .option__guides { margin-inline-start: auto; }
+
+/* Phones: a taller product photo. */
+@media (max-width: 749px) {
+  .product-section[data-layout='split'] .gallery__slide { aspect-ratio: 3 / 4; }
+}
