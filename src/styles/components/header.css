@@ -354,9 +354,9 @@ nk-header[data-dropdown='list'] .nav__panel { grid-template-columns: minmax(0, 1
   border: 0;
   border-top: 1px solid var(--nk-color-line);
   background: transparent;
-  font-family: var(--nk-font-heading);
-  font-weight: 700;
-  font-size: 1.125rem;
+  font-family: var(--nk-font-body);
+  font-weight: 500;
+  font-size: 1.0625rem;
   text-align: start;
   text-decoration: none;
   text-transform: uppercase;
@@ -476,9 +476,9 @@ nk-header[data-dropdown='list'] .nav__panel { grid-template-columns: minmax(0, 1
 .menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row {
   min-height: 64px;
   border-top: 0;
-  font-size: clamp(2rem, 9vw, 3.25rem);
-  line-height: 1;
-  letter-spacing: -0.01em;
+  font-size: clamp(1.375rem, 6vw, 1.75rem);
+  line-height: 1.1;
+  letter-spacing: 0.01em;
 }
 
 .menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row::before {
@@ -678,3 +678,15 @@ body:has(.product-section[data-layout='split']) .header-section:not(:has(> nk-he
 
 /* The header runs the full width of the screen: menu at the far left, icons at the far right. */
 .header { max-width: none; padding-inline: max(14px, calc(var(--nk-gutter) - 4px)); }
+
+/* A group nested inside a submenu: a small heading, its links listed right below. */
+.menu-drawer__group-label {
+  display: block;
+  padding: 18px 20px 6px;
+  border-top: 1px solid var(--nk-color-line);
+  color: var(--nk-color-text-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
