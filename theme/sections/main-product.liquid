@@ -509,7 +509,7 @@
                     echo '<li><a href="' | append: shop.shipping_policy.url | append: '">' | append: shop.shipping_policy.title | append: '</a></li>'
                   endif
                   if shop.refund_policy != blank
-                    echo '<li><a href="' | append: shop.refund_policy.url | append: '">' | append: shop.refund_policy.title | append: '</a></li>'
+                    echo '<li><a href="' | append: shop.refund_policy.url | append: '">' | append: 'Refund & exchange policy' | append: '</a></li>'
                   endif
                   echo '</ul>'
                 endcapture
