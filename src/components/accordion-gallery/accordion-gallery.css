@@ -70,3 +70,14 @@ nk-accordion-gallery[data-motion] [data-active] .accordion-gallery__details { tr
 @media (prefers-reduced-motion: reduce) { nk-accordion-gallery[data-motion] *, nk-accordion-gallery[data-motion] *::before { transition: none !important; } }
 nk-accordion-gallery[data-hide-price] .accordion-gallery__price,
 nk-accordion-gallery[data-hide-link] .accordion-gallery__link { display: none; }
+
+/* Edge to edge, like the product grids: panels run to a slim margin from the screen edges, the
+   heading sits quietly on the left, and the title is set in our body font, not the display face. */
+.accordion-gallery__inner { width: calc(100% - var(--nk-gutter, 20px) * 2); }
+.accordion-gallery__header { margin-bottom: 20px; align-items: baseline; }
+.accordion-gallery__heading {
+  font-family: var(--nk-font-body);
+  font-size: clamp(1.25rem, 1.6vw, 1.75rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}

@@ -178,3 +178,135 @@
 
 /* Disclosure owns clipping only while the chart expands/collapses. */
 .measurement-panel-shell { display: flow-root; overflow: hidden; min-width: 0; }
+
+/* ---------------------------------------------------------------------------------------------
+   Compact strip. The chosen size's measurements sit in one slim, light row right under the sizes:
+   the size on the left, then each measurement, with the basis and the in/cm switch on a small
+   line below. Overrides the dark card above.
+   --------------------------------------------------------------------------------------------- */
+.measurement-panel {
+  --measurement-background: color-mix(in srgb, var(--nk-color-text) 4%, var(--nk-color-bg));
+  --measurement-ink: var(--nk-color-text);
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 8px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: none;
+}
+.measurement-panel__header {
+  justify-content: flex-start;
+  padding: 0 14px 0 0;
+  border: 0;
+  border-inline-end: 1px solid var(--nk-color-line);
+  align-self: stretch;
+}
+.measurement-panel__badge {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+.measurement-panel__empty {
+  grid-column: 2;
+  font-size: 0.75rem;
+  color: var(--nk-color-text-muted);
+  opacity: 1;
+}
+.measurement-panel__rows { grid-column: 2; }
+.measurement-panel__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+}
+.measurement-panel__cell {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  text-align: start;
+}
+.measurement-panel__label {
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  color: var(--nk-color-text-muted);
+}
+.measurement-panel__val { font-size: 0.875rem; font-weight: 600; }
+.measurement-panel__unit-suffix { font-size: 0.6875rem; }
+
+.measurement-panel__footer {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--nk-color-line);
+  text-align: start;
+}
+.measurement-panel__basis { font-size: 0.6875rem; color: var(--nk-color-text-muted); }
+.measurement-panel__actions { gap: 12px; justify-content: flex-end; }
+.measurement-panel__units {
+  padding: 2px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--nk-color-text) 7%, transparent);
+}
+.measurement-panel .measurement-panel__unit {
+  min-width: 34px;
+  min-height: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: var(--nk-color-text-muted);
+}
+.measurement-panel__unit[aria-pressed='true'] {
+  background: var(--nk-color-bg);
+  color: var(--nk-color-text);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
+.measurement-panel__chart-btn { color: var(--nk-color-text-muted); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .measurement-panel__unit { transition: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease; }
+}
+
+/* Open line, no box: the chosen size and its measurements read as one sentence under the sizes,
+   with the basis and in/cm switch on a quiet line below. Nothing wraps into a cramped column. */
+.measurement-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 14px;
+  margin-top: 16px;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+}
+.measurement-panel__header {
+  padding: 0;
+  border: 0;
+  align-self: baseline;
+}
+.measurement-panel__badge { font-size: 0.75rem; letter-spacing: 0.06em; }
+.measurement-panel__rows { flex: 1 1 auto; min-width: 0; }
+.measurement-panel__grid { flex-wrap: nowrap; gap: 14px; white-space: nowrap; }
+.measurement-panel__cell + .measurement-panel__cell::before {
+  content: '·';
+  margin-inline-end: 8px;
+  color: var(--nk-color-text-muted);
+}
+.measurement-panel__empty { flex: 1 1 auto; margin: 0; }
+.measurement-panel__footer {
+  flex: 1 0 100%;
+  padding-top: 0;
+  border: 0;
+}
+
+/* A light box with room to breathe: soft fill, generous padding, clear space above it. */
+.measurement-panel {
+  margin-top: 20px;
+  padding: 18px 20px;
+  gap: 10px 16px;
+  background: color-mix(in srgb, var(--nk-color-text) 4%, var(--nk-color-bg));
+  border-radius: 8px;
+}
+.measurement-panel__footer { margin-top: 4px; padding-top: 12px; border-top: 1px solid color-mix(in srgb, var(--nk-color-text) 8%, transparent); }

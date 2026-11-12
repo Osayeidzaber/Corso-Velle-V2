@@ -58,7 +58,7 @@ Color scheme fields for `color_schemes`:
 | `type_body_font` — Body | `font_picker` | `inter_n4` |  |
 | `type_spec_font` — Labels (sizes, prices, details) | `font_picker` | `inter_n5` | Used for small uppercase labels, sizes and prices. |
 | `heading_case` — Heading case | `select` | `uppercase` | `none`: As typed; `uppercase`: Uppercase |
-| `body_size` — Body text size | `select` | `16` | `15`: Compact; `16`: Regular; `17`: Comfortable; `18`: Large |
+| `body_size` — Body text size | `select` | `16` | `14`: Small; `15`: Compact; `16`: Regular; `17`: Comfortable; `18`: Large |
 | `heading_tracking` — Shared heading letter spacing | `select` | `editorial` | `editorial`: Editorial; `natural`: Natural; `tight`: Tight; Shared headings and display text; specialized product/navigation typography keeps its own treatment. |
 | `heading_leading` — Shared heading line spacing | `select` | `editorial` | `editorial`: Editorial; `comfortable`: Comfortable |
 | `label_tracking` — Shared label letter spacing | `select` | `editorial` | `editorial`: Editorial; `natural`: Natural |
@@ -117,6 +117,7 @@ Color scheme fields for `color_schemes`:
 | `size_chart_1_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_1_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
 | `size_chart_1_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_1_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
 | `size_chart_1_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
 | `size_chart_1_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_1_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
@@ -126,6 +127,7 @@ Color scheme fields for `color_schemes`:
 | `size_chart_2_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_2_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
 | `size_chart_2_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_2_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
 | `size_chart_2_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
 | `size_chart_2_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_2_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
@@ -135,6 +137,7 @@ Color scheme fields for `color_schemes`:
 | `size_chart_3_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_3_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
 | `size_chart_3_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_3_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
 | `size_chart_3_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
 | `size_chart_3_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_3_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
@@ -144,6 +147,7 @@ Color scheme fields for `color_schemes`:
 | `size_chart_4_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_4_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
 | `size_chart_4_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_4_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
 | `size_chart_4_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
 | `size_chart_4_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_4_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
@@ -153,6 +157,7 @@ Color scheme fields for `color_schemes`:
 | `size_chart_5_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_5_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
 | `size_chart_5_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_5_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
 | `size_chart_5_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
 | `size_chart_5_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_5_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
@@ -162,6 +167,7 @@ Color scheme fields for `color_schemes`:
 | `size_chart_6_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_6_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
 | `size_chart_6_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_6_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
 | `size_chart_6_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
 | `size_chart_6_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_6_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
@@ -171,6 +177,7 @@ Color scheme fields for `color_schemes`:
 | `size_chart_7_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_7_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
 | `size_chart_7_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_7_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
 | `size_chart_7_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
 | `size_chart_7_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_7_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
@@ -180,6 +187,7 @@ Color scheme fields for `color_schemes`:
 | `size_chart_8_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_8_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
 | `size_chart_8_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_8_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
 | `size_chart_8_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
 | `size_chart_8_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_8_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
@@ -189,6 +197,7 @@ Color scheme fields for `color_schemes`:
 | `size_chart_9_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_9_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
 | `size_chart_9_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_9_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
 | `size_chart_9_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
 | `size_chart_9_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_9_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
@@ -198,6 +207,7 @@ Color scheme fields for `color_schemes`:
 | `size_chart_10_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_10_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
 | `size_chart_10_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_10_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
 | `size_chart_10_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
 | `size_chart_10_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_10_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
@@ -207,6 +217,7 @@ Color scheme fields for `color_schemes`:
 | `size_chart_11_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_11_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
 | `size_chart_11_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_11_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
 | `size_chart_11_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
 | `size_chart_11_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_11_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
@@ -216,12 +227,33 @@ Color scheme fields for `color_schemes`:
 | `size_chart_12_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
 | `size_chart_12_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
 | `size_chart_12_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_12_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
 | `size_chart_12_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
 | `size_chart_12_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
 | `size_chart_12_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
 | `size_chart_12_unit` — Unit | `select` | `cm` | `cm`: Centimetres; `in`: Inches |
 | `size_chart_12_basis` — Measurement basis | `text` | Not specified | For example: garment measured flat, or body measurements. State the actual method. |
 | `size_chart_12_note` — Size guide note | `text` | Not specified |  |
+| `size_chart_13_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
+| `size_chart_13_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
+| `size_chart_13_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_13_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
+| `size_chart_13_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
+| `size_chart_13_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
+| `size_chart_13_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
+| `size_chart_13_unit` — Unit | `select` | `cm` | `cm`: Centimetres; `in`: Inches |
+| `size_chart_13_basis` — Measurement basis | `text` | Not specified | For example: garment measured flat, or body measurements. State the actual method. |
+| `size_chart_13_note` — Size guide note | `text` | Not specified |  |
+| `size_chart_14_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
+| `size_chart_14_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
+| `size_chart_14_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_14_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
+| `size_chart_14_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
+| `size_chart_14_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
+| `size_chart_14_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
+| `size_chart_14_unit` — Unit | `select` | `cm` | `cm`: Centimetres; `in`: Inches |
+| `size_chart_14_basis` — Measurement basis | `text` | Not specified | For example: garment measured flat, or body measurements. State the actual method. |
+| `size_chart_14_note` — Size guide note | `text` | Not specified |  |
 
 #### Cart
 
@@ -626,17 +658,126 @@ Excluded contexts: `{"groups":["header","footer"]}`.
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
 | `heading` — Heading | `text` | Not specified | Small label above the rail. Leave empty for none. |
+| `heading_size` — Heading style | `select` | `small` | `small`: Small label; `large`: Large heading |
+| `heading_align` — Heading alignment | `select` | `center` | `left`: Left; `center`: Center; `right`: Right |
+| `heading_scale` — Heading size | `range` | `100` | 60–200%, step 5 |
+| `heading_gap` — Space under heading | `range` | `20` | 0–120px, step 2 |
+| `caption` — Caption | `text` | Not specified | Shown under the rail until a piece is chosen. Leave empty for none. |
 | `collection` — Collection | `collection` | Not specified | Used when no "Hang a product" blocks are added. Works best with clean flat-lay photos on white. |
-| `limit` — Pieces on the rail | `range` | `8` | 3–16, step 1 |
+| `limit` — Pieces on the rail | `range` | `8` | 3–16, step 1; Used with a collection. With blocks, every block hangs. |
 | `back_from_second` — Use the second photo as the back view | `checkbox` | `true` | Turn off if your second photo is a lifestyle shot. Blocks can set a back photo per piece. |
 | `knock_out_white` — Blend white photo backgrounds into the section | `checkbox` | `true` | Makes white studio backgrounds disappear on light color schemes. |
-| `garment_size` — Garment size | `range` | `16` | 8–24rem, step 1 |
-| `spacing` — Hanging spacing | `range` | `30` | 14–50%, step 2; How much of each garment shows while it hangs edge-on. |
-| `collar_overlap` — Lift photo to the hanger | `range` | `22` | 0–40%, step 1; Pulls the photo up so the collar meets the hanger when photos have space above the garment. |
-| `cta_label` — Button label | `text` | `See availability` |  |
+| `cut_out` — Cut garments out of their white backgrounds | `checkbox` | `false` | Lets garments overlap each other and cast real shadows. Falls back to the blend if a photo cannot be cut out.; Shown when `{{ section.settings.knock_out_white }}` |
+| `cloth_shading` — Cloth shading | `range` | `60` | 0–100%, step 5; Adds light, folds and volume to flat photos. Needs cut-outs. |
+| `room_style` — Setting | `select` | `plain` | `room`: Wall and floor; `plain`: Plain background |
+| `wall_color` — Wall color | `color` | Not specified | Leave empty to follow the color scheme.; Shown when `{{ section.settings.room_style == 'room' }}` |
+| `floor_color` — Floor color | `color` | Not specified | Leave empty to follow the color scheme.; Shown when `{{ section.settings.room_style == 'room' }}` |
+| `floor_line` — Show the line where wall meets floor | `checkbox` | `true` | Shown when `{{ section.settings.room_style == 'room' }}` |
+| `floor_shadow` — Shadow on the floor | `range` | `50` | 0–100%, step 5; Shown when `{{ section.settings.room_style == 'room' }}` |
+| `backdrop_glow` — Backdrop glow | `range` | `0` | 0–100%, step 5; A soft pool of light behind the rail. |
+| `show_rail` — Show the rail | `checkbox` | `true` |  |
+| `rack_style` — Rack | `select` | `wall` | `freestanding`: Freestanding rack; `wall`: Wall-mounted rail; Phones show just the rail, because it scrolls.; Shown when `{{ section.settings.show_rail }}` |
+| `rail_finish` — Finish | `select` | `steel` | `steel`: Brushed steel; `brass`: Brass; `black`: Matte black; `custom`: Custom color; Shown when `{{ section.settings.show_rail }}` |
+| `rail_color` — Rail color | `color` | `#8a8a8a` | Shown when `{{ section.settings.show_rail and section.settings.rail_finish == 'custom' }}` |
+| `rail_thickness` — Thickness | `range` | `6` | 2–14px, step 1; Shown when `{{ section.settings.show_rail }}` |
+| `rail_top` — Rail height against the hooks | `range` | `6` | 0–30px, step 1; Shown when `{{ section.settings.show_rail }}` |
+| `rail_shadow` — Rail shadow | `range` | `22` | 0–100%, step 2; Shown when `{{ section.settings.show_rail }}` |
+| `rail_ends` — Rail ends | `select` | `posts` | `posts`: Posts; `caps`: Round caps; `none`: None; Shown when `{{ section.settings.show_rail }}` |
+| `rail_end_size` — Rail end size | `range` | `100` | 50–250%, step 10; Shown when `{{ section.settings.show_rail }}` |
+| `rail_span` — Rail length | `select` | `content` | `fit`: Fit the garments; `content`: Content width; `full`: Edge to edge; Shown when `{{ section.settings.show_rail }}` |
+| `frame_thickness` — Frame thickness | `range` | `8` | 2–20px, step 1; Shown when `{{ section.settings.show_rail and section.settings.rack_style == 'freestanding' }}` |
+| `floor_gap` — Space under the garments | `range` | `44` | 0–240px, step 4; Shown when `{{ section.settings.show_rail and section.settings.rack_style == 'freestanding' }}` |
+| `show_base` — Show the base bar | `checkbox` | `true` | Shown when `{{ section.settings.show_rail and section.settings.rack_style == 'freestanding' }}` |
+| `show_casters` — Show wheels | `checkbox` | `true` | Shown when `{{ section.settings.show_rail and section.settings.rack_style == 'freestanding' }}` |
+| `garment_size` — Garment size | `range` | `24` | 8–40rem, step 1; Shrinks automatically when the rail would not fit on screen. |
+| `garment_size_mobile` — Garment size on phones | `range` | `62` | 30–90%, step 2; Share of the screen width. |
+| `spacing` — Hanging spacing | `range` | `34` | 14–50%, step 2; How much of each garment shows while it hangs edge-on. |
+| `collar_overlap` — Lift photo to the hanger | `range` | `22` | 0–50%, step 1; Pulls the photo up so the collar meets the hanger when photos have space above the garment. |
+| `side_angle` — Hanging angle | `range` | `68` | 20–85deg, step 1; How far pieces turn away while they hang. Higher is closer to edge-on. |
+| `angle_vary` — Natural variation | `range` | `4` | 0–12deg, step 1; Small differences between pieces, so the row looks hung by hand. |
+| `face_room` — Room around the piece in front | `range` | `86` | 60–110%, step 2; How far neighbours stand aside. Match it to how much of the photo the garment fills. |
+| `front_scale` — Piece in front grows to | `range` | `100` | 100–140%, step 2 |
+| `depth` — 3D depth | `range` | `1120` | 500–2000px, step 20; Lower exaggerates the perspective. |
+| `depth_fade` — Fade pieces turned away | `range` | `40` | 0–100%, step 5 |
+| `wall_shadow` — Shadow | `range` | `35` | 0–100%, step 5; Needs cut-outs, or photos with a transparent background. |
+| `shadow_blur` — Shadow softness | `range` | `50` | 0–100%, step 5; Shown when `{{ section.settings.knock_out_white and section.settings.cut_out }}` |
+| `shadow_distance` — Shadow distance | `range` | `50` | 0–100%, step 5; Shown when `{{ section.settings.knock_out_white and section.settings.cut_out }}` |
+| `far_side` — Garment thickness | `range` | `40` | 0–100%, step 5; How far the far side of a cut-out shows as it turns.; Shown when `{{ section.settings.knock_out_white and section.settings.cut_out }}` |
+| `far_side_brightness` — Far side brightness | `range` | `60` | 20–100%, step 5; Shown when `{{ section.settings.knock_out_white and section.settings.cut_out }}` |
+| `cut_tolerance` — Cut-out sensitivity | `range` | `4` | 1–20, step 1; Raise it if a grey-white background stays around photos. Lower it if pale garments get holes.; Shown when `{{ section.settings.knock_out_white and section.settings.cut_out }}` |
+| `hanger_style` — Hanger | `select` | `wire` | `wire`: Wire outline; `wood`: Wood; `matte`: Matte; `none`: None (photos include a hanger) |
+| `hanger_color` — Hanger color | `color` | Not specified | Leave empty for a color that suits the hanger.; Shown when `{{ section.settings.hanger_style != 'none' }}` |
+| `hanger_width` — Hanger width | `range` | `46` | 30–80%, step 2; Shown when `{{ section.settings.hanger_style != 'none' }}` |
+| `hanger_line` — Hanger line weight | `range` | `100` | 50–250%, step 10; Shown when `{{ section.settings.hanger_style != 'none' }}` |
+| `hook_color` — Hook color | `color` | Not specified | Wood and matte hangers. Leave empty for a metal hook.; Shown when `{{ section.settings.hanger_style == 'wood' or section.settings.hanger_style == 'matte' }}` |
+| `hang_tag` — Hang tag | `select` | `none` | `none`: None; `price`: Price; `custom`: Text from each block; "Text from each block" falls back to the price. |
+| `tag_size` — Tag size | `range` | `100` | 70–180%, step 5; Shown when `{{ section.settings.hang_tag != 'none' }}` |
+| `tag_color` — Tag color | `color` | Not specified | Shown when `{{ section.settings.hang_tag != 'none' }}` |
+| `tag_text_color` — Tag text color | `color` | Not specified | Shown when `{{ section.settings.hang_tag != 'none' }}` |
+| `feel` — Feel | `select` | `balanced` | `soft`: Soft and slow; `balanced`: Balanced; `snappy`: Quick and springy; `custom`: Custom; Visitors with Reduce Motion on, and the theme editor, see no animation. |
+| `turn_speed` — Turn speed | `range` | `50` | 1–100, step 1; Shown when `{{ section.settings.feel == 'custom' }}` |
+| `turn_bounce` — Turn bounce | `range` | `30` | 0–100%, step 5; Shown when `{{ section.settings.feel == 'custom' }}` |
+| `slide_speed` — Slide speed | `range` | `50` | 1–100, step 1; Shown when `{{ section.settings.feel == 'custom' }}` |
+| `slide_bounce` — Slide bounce | `range` | `15` | 0–100%, step 5; Shown when `{{ section.settings.feel == 'custom' }}` |
+| `swing` — Hanger swing | `range` | `100` | 0–200%, step 10; 0% stops the swinging. |
+| `swing_seconds` — Swing length | `range` | `3` | 1–6s, step 0.5 |
+| `drape` — Cloth drape | `range` | `50` | 0–100%, step 5; How far the cloth trails its hanger as it swings. |
+| `brush` — How hard neighbours get brushed | `range` | `100` | 0–200%, step 10 |
+| `entrance` — Entrance | `select` | `brush` | `brush`: A hand brushes the rail; `slide`: Slide along the rail; `drop`: Drop onto the rail; `none`: None |
+| `entrance_stagger` — Entrance stagger | `range` | `60` | 0–200ms, step 10; Shown when `{{ section.settings.entrance != 'none' }}` |
+| `autoplay` — Turn pieces automatically | `checkbox` | `false` | Pauses under the pointer and stops once a visitor takes hold of the rack. Off on phones, where the rail scrolls. |
+| `autoplay_seconds` — Seconds per piece | `range` | `3` | 1–10s, step 0.5; Shown when `{{ section.settings.autoplay }}` |
+| `editor_motion` — Preview motion in the theme editor | `checkbox` | `true` | So you can feel your settings while editing. The entrance only plays on the live store. |
+| `turn_on` — Turn a piece to the front on | `select` | `hover` | `hover`: Hover; `click`: Click; With Click, the first click turns the piece and the second acts on it. |
+| `leave_delay` — Delay before a piece turns back | `range` | `140` | 0–1000ms, step 20 |
+| `click_action` — Clicking a piece | `select` | `focus` | `focus`: Lifts it into a focused view; `product`: Goes to the product page |
+| `allow_drag` — Let visitors drag hangers along the rail | `checkbox` | `true` |  |
+| `coast_ms` — How long a thrown hanger coasts | `range` | `700` | 100–2000ms, step 50; Shown when `{{ section.settings.allow_drag }}` |
+| `show_label` — Name the piece under the rail | `checkbox` | `true` |  |
+| `label_price` — Add the price to the name | `checkbox` | `false` | Shown when `{{ section.settings.show_label }}` |
+| `label_size` — Name size | `range` | `100` | 70–200%, step 5; Shown when `{{ section.settings.show_label }}` |
+| `label_case` — Name case | `select` | `none` | `none`: As written; `uppercase`: Uppercase; Shown when `{{ section.settings.show_label }}` |
+| `label_color` — Name color | `color` | Not specified | Shown when `{{ section.settings.show_label }}` |
+| `focus_layout` — Layout | `select` | `beside` | `beside`: Details beside the piece; `below`: Details below the piece; Phones always use Below.; Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `details_side` — Details side | `select` | `right` | `right`: Right; `left`: Left; Shown when `{{ section.settings.click_action == 'focus' and section.settings.focus_layout == 'beside' }}` |
+| `details_width` — Details width | `range` | `24` | 14–40rem, step 1; Shown when `{{ section.settings.click_action == 'focus' and section.settings.focus_layout == 'beside' }}` |
+| `name_size` — Product name size | `range` | `100` | 70–220%, step 5; Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `focus_size` — Piece size | `range` | `115` | 90–160%, step 5; Larger sizes reserve more height in the section.; Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `rail_fade` — Rest of the rail stays visible at | `range` | `8` | 0–40%, step 1; Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `lift_ms` — Lift duration | `range` | `760` | 300–1400ms, step 20; Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `lift_arc` — Lift arc height | `range` | `100` | 0–300%, step 10; Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `lift_lean` — Lift lean | `range` | `2` | 0–12deg, step 0.5; Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `spin_drag` — Drag the piece to spin it | `checkbox` | `true` | Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `show_sides` — Show Front / Back buttons | `checkbox` | `true` | Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `show_arrows` — Show previous / next arrows | `checkbox` | `true` | Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `arrow_style` — Arrow style | `select` | `circle` | `circle`: Circle; `plain`: Plain; Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `arrow_size` — Arrow size | `range` | `2.5` | 2–4rem, step 0.5; Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `show_price` — Show price | `checkbox` | `true` | Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `show_description` — Show description | `checkbox` | `true` | The block's description, or the start of the product's.; Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `description_words` — Description length | `range` | `28` | 8–60wd, step 2; Shown when `{{ section.settings.click_action == 'focus' and section.settings.show_description }}` |
+| `show_tags` — Show colorway tags | `checkbox` | `true` | From the custom.color_siblings metafield.; Shown when `{{ section.settings.click_action == 'focus' }}` |
+| `show_cta` — Show the button | `checkbox` | `true` |  |
+| `cta_style` — Button style | `select` | `outline` | `outline`: Outline; `solid`: Solid; `text`: Text only; Shown when `{{ section.settings.show_cta }}` |
+| `cta_align` — Button alignment | `select` | `center` | `flex-start`: Left; `center`: Center; `flex-end`: Right; Shown when `{{ section.settings.show_cta }}` |
+| `cta_gap` — Space above button | `range` | `0` | 0–160px, step 2; Shown when `{{ section.settings.show_cta }}` |
+| `cta_size` — Button text size | `range` | `100` | 80–180%, step 5; Shown when `{{ section.settings.show_cta }}` |
+| `cta_radius` — Button corners | `range` | `60` | 0–60px, step 2; Shown when `{{ section.settings.show_cta }}` |
+| `cta_color` — Button color | `color` | Not specified | Leave empty to follow the color scheme.; Shown when `{{ section.settings.show_cta }}` |
+| `cta_text_color` — Button contrast color | `color` | Not specified | Text on the filled part, and the arrow.; Shown when `{{ section.settings.show_cta }}` |
+| `cta_name` — Name the chosen product in the button | `checkbox` | `true` | Shown when `{{ section.settings.show_cta }}` |
+| `cta_sizes` — Show live sizes in the button | `checkbox` | `true` | Shown when `{{ section.settings.show_cta }}` |
+| `cta_label` — Button label | `text` | `See availability` | Shown when `{{ section.settings.show_cta }}` |
 | `front_label` — Front label | `text` | `Front` |  |
 | `back_label` — Back label | `text` | `Back` |  |
 | `close_label` — Close label | `text` | `Back to rack` |  |
+| `soldout_label` — Sold out label | `text` | `Sold out` |  |
+| `spacing_mobile` — Hanging spacing on phones | `range` | `34` | 20–70%, step 2 |
+| `focus_size_mobile` — Focused piece size on phones | `range` | `115` | 80–140%, step 5 |
+| `description_lines_mobile` — Description lines on phones | `range` | `3` | 0–8, step 1; 0 hides the description. |
+| `swing_mobile` — Hanger swing on phones | `range` | `100` | 0–200%, step 10 |
+| `snap_mobile` — Scrolling the rail | `select` | `mandatory` | `mandatory`: Always stop on a piece; `proximity`: Stop when close to a piece; `none`: Free scrolling |
+| `rail_mobile` — Show the rail on phones | `checkbox` | `true` |  |
+| `arrows_mobile` — Show previous / next arrows on phones | `checkbox` | `true` |  |
 | `color_scheme` — Color scheme | `color_scheme` | `scheme-1` |  |
 | `content_width` — Content width | `select` | `inherit` | `inherit`: Theme default; `narrow`: Narrow; `wide`: Wide; `full`: Full width |
 | `spacing_mode` — Section spacing | `select` | `inherit` | `inherit`: Theme default; `custom`: Custom |
@@ -645,17 +786,27 @@ Excluded contexts: `{"groups":["header","footer"]}`.
 | `padding_top_small` — Top padding on phones | `range` | `48` | 0–200px, step 4; Shown when `{{ section.settings.spacing_mode == 'custom' }}` |
 | `padding_bottom_small` — Bottom padding on phones | `range` | `48` | 0–200px, step 4; Shown when `{{ section.settings.spacing_mode == 'custom' }}` |
 
-Supported block: **Hang a product** (`piece`); type limit 16.
+Supported block: **Hang a product** (`piece`); type limit 20.
 
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
-| `product` — Product | `product` | Not specified |  |
+| `name` — Name | `text` | Not specified | Shown under the rail. Defaults to the product's title. |
+| `product` — Product | `product` | Not specified | Optional. Links the piece to the shop and shows its price and sizes. |
 | `front_image` — Front photo | `image_picker` | Not specified | Optional. Defaults to the product's first photo. Cut-outs on white look best. |
+| `front_asset` — Front photo file in the theme | `text` | Not specified | Used when no front photo is picked above: the name of a file in the theme's assets folder. |
 | `back_image` — Back photo | `image_picker` | Not specified | Optional. Defaults to the product's second photo when that option is on. |
+| `side_image` — Side photo | `image_picker` | Not specified | Optional. A photo taken side-on, shown while the piece hangs. Must share the front photo's framing. |
+| `tag_text` — Hang tag text | `text` | Not specified | Used when the section's Hang tag is set to "Text from each block". |
+| `description` — Description | `textarea` | Not specified | Optional. Replaces the product's description in the focused view. |
+| `details` — Details | `text` | Not specified | Optional. Short facts for the focused view, separated by commas: 240 gsm, Regular fit. |
+| `piece_scale` — Size of this piece | `range` | `100` | 60–140%, step 2; Evens out photos framed differently. |
+| `collar_adjust` — Raise or lower this piece | `range` | `0` | -30–30%, step 1 |
 
 Add-menu presets:
 
 - Clothes rack.
+- Clothes rack: showroom — `{"rack_style":"freestanding","room_style":"room","hanger_style":"wood","cut_out":true,"rail_span":"fit","rail_thickness":8,"garment_size":30,"spacing":32,"face_room":74,"collar_overlap":31}`.
+- Clothes rack: brass boutique — `{"rail_finish":"brass","rail_thickness":8,"rail_ends":"caps","hanger_style":"wood","hang_tag":"price","feel":"soft","backdrop_glow":50}`.
 
 #### Collage (collage)
 
@@ -728,6 +879,7 @@ Available contexts: `{"templates":["collection"]}`.
 | `heading` — Heading override | `text` | Not specified |  |
 | `title_animation` — Title animation | `select` | `rise` | `none`: None; `rise`: Rise from a mask; `blur`: Blur in; `fold`: Fold up; `skew`: Skewed rise; `fade`: Fade up; Plays once when the page opens. Follows Theme settings > Motion and reduced-motion preferences. |
 | `title_split` — Animate title by | `select` | `words` | `words`: Word; `chars`: Letter; `lines`: Line |
+| `page_width` — Page width | `select` | `full` | `full`: Edge to edge; `page`: Page width |
 | `layout` — Banner layout | `select` | `auto` | `auto`: Image when available; `text`: Text only; `minimal`: Minimal title |
 | `height` — Image banner height | `select` | `regular` | `regular`: Regular; `compact`: Compact; `full`: Tall |
 | `height_mobile` — Image height on phones | `select` | `inherit` | `inherit`: Use desktop choice; `compact`: Compact; `full`: Tall |
@@ -1255,6 +1407,7 @@ Excluded contexts: `{"groups":["header","footer"]}`.
 | `show_collection_description` — Use collection description when empty | `checkbox` | `true` |  |
 | `collection` — Collection | `collection` | Not specified |  |
 | `limit` — Products to show | `range` | `8` | 2–16, step 1 |
+| `product_order` — Product order | `select` | `collection` | `collection`: Collection order; `newest`: Newest first; Newest first always leads with the latest products added to the collection. |
 | `layout` — Layout | `select` | `grid` | `grid`: Grid; `carousel`: Product carousel |
 | `carousel_effect` — Carousel style | `select` | `liquid` | `liquid`: Editorial strip; `native`: Classic product rail; `snap`: Snap slider (no WebGL); In browse mode, phones and tablets use a lightweight swipe rail.; Shown when `{{ section.settings.layout == 'carousel' }}` |
 | `carousel_purchase` — Shop the highlighted product | `checkbox` | `true` | Shows one Add to cart button for the centred product. It opens that product's sizes, and the chosen size is added. Autoplay holds while sizes are open. Turn off for a browse-only carousel that links to products.; Shown when `{{ section.settings.layout == 'carousel' }}` |
@@ -1557,6 +1710,7 @@ Current section block cap: 16.
 | `video_autoplay` — Autoplay background video | `checkbox` | `true` | Muted. Pauses offscreen and when hidden. Reduced motion and the editor require pressing Play. Native controls remain available without JavaScript. |
 | `video_url` — Video file URL | `url` | Not specified | Optional MP4 address from Content › Files, used when no video is picked above. |
 | `poster_url` — Video poster image URL | `url` | Not specified |  |
+| `video_focus` — Video focus | `select` | `center` | `top`: Top; `center`: Center; `bottom`: Bottom; Which part of the video stays in view when the frame crops it. |
 | `image` — Image | `image_picker` | Not specified | Also the video poster when no poster URL is set. |
 | `collection` — Use collection image | `collection` | Not specified | Shown when no video or image is set. |
 | `video_mobile` — Phone video | `video` | Not specified |  |
@@ -1572,6 +1726,7 @@ Current section block cap: 16.
 | `tint_direction` — Tint distribution | `select` | `bottom` | `bottom`: Stronger at bottom; `top`: Stronger at top; `uniform`: Even tint |
 | `layout` — Layout | `select` | `overlay` | `overlay`: Full-bleed, text over media; `editorial`: Editorial cover; `split`: Split, media beside text; Editorial puts the heading bottom left with the text and buttons in a ruled column on the right. Split shows the media next to a solid panel in the color scheme. |
 | `media_position` — Media side (split layout) | `select` | `left` | `left`: Left; `right`: Right |
+| `split_phone` — Keep media beside text on phones | `checkbox` | `false` | Split layout only. Phones show the media and the text side by side instead of stacked. |
 | `height` — Height | `select` | `full` | `adapt`: Adapt to image; `medium`: Medium; `full`: Full screen |
 | `position` — Content position | `select` | `bottom-left` | `top-left`: Top left; `top-center`: Top center; `top-right`: Top right; `center-left`: Middle left; `center`: Center; `center-right`: Middle right; `bottom-left`: Bottom left; `bottom-center`: Bottom center; `bottom-right`: Bottom right; Used by the full-bleed and split layouts. Text aligns to the side you pick. |
 | `position_mobile` — Content position on phones | `select` | `same` | `same`: Same as desktop; `top-left`: Top left; `top-center`: Top center; `center-left`: Middle left; `center`: Center; `bottom-left`: Bottom left; `bottom-center`: Bottom center |
@@ -1961,6 +2116,7 @@ Section instance limit: 1.
 | `infinite_auto_pages` — Infinite scroll: pages before a button | `range` | `3` | 1–10, step 1; After this many pages load automatically, a Load more button appears so the footer stays reachable. |
 | `products_per_page` — Products per page | `range` | `24` | 8–48, step 4 |
 | `columns_mobile` — Columns on phones | `select` | `1` | `1`: 1; `2`: 2 |
+| `page_width` — Page width | `select` | `full` | `full`: Edge to edge; `page`: Page width |
 | `columns_desktop` — Columns on desktop | `range` | `3` | 2–5, step 1 |
 | `pills_menu` — Category links menu | `link_list` | Not specified | Optional row of links to related collections. |
 | `show_description` — Show collection description | `checkbox` | `true` |  |
@@ -1992,6 +2148,7 @@ Section instance limit: 1.
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
 | `show_breadcrumb` — Show breadcrumbs | `checkbox` | `false` |  |
+| `page_layout` — Page layout | `select` | `split` | `split`: Split screen; `classic`: Classic; Split screen: photos fill the left half of the screen as a slider; the details sit in a narrow centred column on the right. Classic: the gallery and details follow the settings below. |
 | `gallery_layout` — Desktop gallery | `select` | `slider` | `collage`: Editorial collage; `slider`: Single image slider; `stack`: Stacked images; `grid`: Two-column grid; Single image slider: one large photo with a thumbnail rail, subtle arrows and click-to-enlarge. Editorial collage: all photos in a magazine-style rhythm beside sticky product details. |
 | `gallery_ratio` — Media shape | `select` | `square` | `square`: Square; `portrait`: Portrait; `landscape`: Landscape |
 | `gallery_fit` — Media fit | `select` | `contain` | `contain`: Entire media; `cover`: Fill and crop |
@@ -2507,6 +2664,9 @@ Available contexts: `{"templates":["product"]}`.
 
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
+| `tab_recommended` — Recommended tab label | `text` | `Recommended` |  |
+| `tab_best` — Best sellers tab label | `text` | `Best Sellers` |  |
+| `tab_new` — New arrivals tab label | `text` | `New Arrivals` |  |
 | `heading` — Heading | `text` | `You might` |  |
 | `heading_italic` — Heading (italic part) | `text` | `also like` |  |
 | `fallback_collection` — Fallback collection | `collection` | Not specified | Shown when Shopify has no recommendations, or if recommendations cannot load. |
@@ -2540,6 +2700,14 @@ Add-menu presets:
 
 - Product recommendations.
 - Complementary products — `{"intent":"complementary","heading":"Complete the","heading_italic":"look"}`.
+
+#### Product tab grid (product-tab-grid)
+
+Source: `theme/sections/product-tab-grid.liquid`. Editor: select this section in its template or section group.
+
+No local settings.
+
+No add-menu preset: rendered by an existing template/layout/group or used as a rendering endpoint.
 
 #### Promo banner (promo-banner)
 
@@ -2946,6 +3114,129 @@ Supported block: **Event** (`event`).
 Add-menu presets:
 
 - Timeline; initial blocks `[{"type":"event","settings":{"date":"2019","title":"The first collection"}},{"type":"event","settings":{"date":"2021","title":"Our own atelier"}},{"type":"event","settings":{"date":"2024","title":"Shipping worldwide"}}]`.
+
+#### Try the look (try-the-look)
+
+Source: `theme/sections/try-the-look.liquid`. Editor: select this section in its template or section group.
+
+Excluded contexts: `{"groups":["header","footer"]}`.
+
+Current section block cap: 50.
+
+| Setting ID / label | Type | Schema default | Choices / range / help |
+| --- | --- | --- | --- |
+| `eyebrow` — Small line above the heading | `text` | Not specified |  |
+| `heading` — Heading | `text` | `Try the look.` |  |
+| `text` — Text | `text` | `Styled head to toe. Tap a look to see every piece.` |  |
+| `button_label` — Button label | `text` | Not specified |  |
+| `button_link` — Button link | `url` | Not specified |  |
+| `heading_tag` — Heading level | `select` | `h2` | `h1`: Page heading (use when this is the first section); `h2`: Section heading |
+| `heading_size` — Heading size | `range` | `44` | 20–96px, step 2 |
+| `heading_size_phone` — Heading size on phones | `range` | `30` | 18–64px, step 2 |
+| `intro_align` — Heading alignment | `select` | `left` | `left`: Left; `center`: Centre |
+| `start_look` — Look shown first | `range` | `1` | 1–12, step 1 |
+| `stage_height` — Stage height | `range` | `72` | 50–100%, step 2; Share of the screen height. |
+| `stage_height_phone` — Stage height on phones | `range` | `66` | 40–100%, step 2 |
+| `model_height` — Model height | `range` | `94` | 50–100%, step 1; Share of the stage height. |
+| `spacing` — Spacing between models | `range` | `19` | 8–40%, step 1 |
+| `spacing_phone` — Spacing on phones | `range` | `46` | 20–80%, step 2 |
+| `visible_sides` — Models shown each side | `range` | `3` | 1–4, step 1 |
+| `side_scale` — Size step for side models | `range` | `88` | 60–100%, step 1; Each step away from the centre shrinks by this much. |
+| `side_blur` — Blur step for side models | `range` | `3` | 0–12px, step 1 |
+| `side_fade` — Fade step for side models | `range` | `12` | 0–50%, step 1 |
+| `depth_rise` — Floor depth | `range` | `32` | 0–80, step 2; How much higher models stand as they move back. 0 keeps everyone on one line. |
+| `far_fade` — Haze on the furthest models | `range` | `50` | 0–100%, step 5 |
+| `knock_out_white` — Blend white photo backgrounds into the section | `checkbox` | `false` | Only for photos that aren't transparent. Moves less smoothly. |
+| `stage_glow` — Show a soft studio glow behind the models | `checkbox` | `true` |  |
+| `photo_fade` — Fade the bottom of photos | `range` | `0` | 0–40%, step 2; For photos that stop above the feet: dissolves the cut edge. Leave at 0 for full-length models. |
+| `ground_shadow` — Show a shadow under the models | `checkbox` | `true` |  |
+| `speed` — Transition speed | `range` | `850` | 300–1600ms, step 50 |
+| `trail` — Motion trail strength | `range` | `0` | 0–100%, step 5; The ghost left behind as models move. 0 turns it off. |
+| `mouse_lean` — Line-up follows the mouse | `range` | `25` | 0–60%, step 5; How far the models drift toward the pointer. 0 turns it off. |
+| `show_backdrop` — Show the look's name large behind the models | `checkbox` | `true` |  |
+| `backdrop_strength` — Large name strength | `range` | `7` | 2–40%, step 1; Shown when `{{ section.settings.show_backdrop }}` |
+| `backdrop_size` — Large name size | `range` | `13` | 6–22vw, step 1; Shown when `{{ section.settings.show_backdrop }}` |
+| `shine` — Shine across the model and Add button | `checkbox` | `true` | A soft light that sweeps over the centre model when it arrives. Works best with transparent photos. |
+| `shine_strength` — Shine strength | `range` | `50` | 10–100%, step 5; Shown when `{{ section.settings.shine }}` |
+| `custom_cursor` — Show cursor bubble | `checkbox` | `true` |  |
+| `cursor_label` — Cursor bubble label | `text` | `View` |  |
+| `autoplay` — Move through looks automatically | `checkbox` | `true` | Pauses while the mouse is over the models, while a look is open and when off screen. Off for visitors who reduce motion. |
+| `autoplay_seconds` — Seconds per look | `range` | `5` | 2–15s, step 1 |
+| `show_arrows` — Show arrows | `checkbox` | `true` |  |
+| `show_name` — Show look name between the arrows | `checkbox` | `true` |  |
+| `show_play` — Show play and pause button | `checkbox` | `true` |  |
+| `show_bar_price` — Show the look's price next to its name | `checkbox` | `true` |  |
+| `look_label` — Look label | `text` | `Look` |  |
+| `share_links` — Give each look a shareable link | `checkbox` | `false` | Adds #look-2 to the address as visitors browse. Opening that address goes straight to the look. |
+| `phone_panel` — Product panel on phones | `select` | `sheet` | `sheet`: Slides up from the bottom; `below`: Listed under the model |
+| `swipe_hint` — Swipe hint | `text` | `Swipe to browse` | Shown once per visit with a small nudge. Leave empty to turn it off. |
+| `arrows_phone` — Show arrows on phones | `checkbox` | `true` |  |
+| `backdrop_phone` — Show the large name on phones | `checkbox` | `true` |  |
+| `click_action` — Clicking the centre model | `select` | `detail` | `detail`: Opens the shoppable panel; `link`: Follows the look's link |
+| `detail_scale` — Model size when open | `range` | `112` | 90–140%, step 1 |
+| `panel_open` — Show the product panel | `select` | `look` | `look`: As soon as a look opens; `pin`: After a pin or the model is clicked |
+| `panel_side` — Panel side | `select` | `right` | `right`: Right; `left`: Left |
+| `panel_width` — Panel width | `range` | `400` | 300–560px, step 10 |
+| `show_pins` — Show pins on the model | `checkbox` | `true` |  |
+| `pin_style` — Pin style | `select` | `number` | `number`: Numbered; `dot`: Dot |
+| `pin_size` — Pin size | `range` | `26` | 16–44px, step 2 |
+| `show_pin_tips` — Show product name and price when hovering a pin | `checkbox` | `true` |  |
+| `hint` — Pin hint | `text` | `Tap a pin to view the piece` |  |
+| `panel_title` — Panel title | `text` | `In this look` |  |
+| `show_count` — Show piece count | `checkbox` | `true` |  |
+| `show_size_guide` — Show size guide | `checkbox` | `true` | For products with a size chart in Theme settings or their own data. |
+| `size_guide_label` — Size guide label | `text` | `Size guide` |  |
+| `piece_label` — Label for one piece | `text` | `piece` |  |
+| `pieces_label` — Pieces label | `text` | `pieces` |  |
+| `show_sale` — Show sale prices | `checkbox` | `true` | Was and now prices with a percentage, from each product's compare-at price. |
+| `save_label` — Savings label | `text` | `You save` |  |
+| `show_vendor` — Show vendor | `checkbox` | `true` |  |
+| `choose_label` — Size prompt | `text` | `Select size` |  |
+| `add_label` — Add button label | `text` | `Add to bag` | Read by screen readers. |
+| `added_label` — Added message | `text` | `Added to bag` |  |
+| `choose_message` — Missing size message | `text` | `Choose a size for each piece.` |  |
+| `error_message` — Error message | `text` | `We couldn't add that. Please try again.` |  |
+| `show_bundle` — Show full look button | `checkbox` | `true` |  |
+| `bundle_heading` — Heading | `text` | `Complete the look` |  |
+| `bundle_text` — Text | `text` | Not specified |  |
+| `bundle_button` — Button label | `text` | `Add full look to bag` |  |
+| `bundle_code` — Discount code | `text` | Not specified | Optional. Create this code in Shopify first; it is applied after the look is added and Shopify decides whether it qualifies. |
+| `bundle_percent` — Saving shown with the code | `range` | `0` | 0–60%, step 1; Display only. Match it to the discount set in Shopify.; Shown when `{{ section.settings.bundle_code != blank }}` |
+| `color_scheme` — Color scheme | `color_scheme` | `scheme-1` |  |
+| `content_width` — Content width | `select` | `inherit` | `inherit`: Theme default; `narrow`: Narrow; `wide`: Wide; `full`: Full width |
+| `spacing_mode` — Section spacing | `select` | `custom` | `inherit`: Theme default; `custom`: Custom |
+| `padding_top` — Top padding | `range` | `24` | 0–200px, step 4; Shown when `{{ section.settings.spacing_mode == 'custom' }}` |
+| `padding_bottom` — Bottom padding | `range` | `40` | 0–200px, step 4; Shown when `{{ section.settings.spacing_mode == 'custom' }}` |
+| `padding_top_small` — Top padding on phones | `range` | `48` | 0–200px, step 4; Shown when `{{ section.settings.spacing_mode == 'custom' }}` |
+| `padding_bottom_small` — Bottom padding on phones | `range` | `48` | 0–200px, step 4; Shown when `{{ section.settings.spacing_mode == 'custom' }}` |
+
+Supported block: **Look** (`look`).
+
+| Setting ID / label | Type | Schema default | Choices / range / help |
+| --- | --- | --- | --- |
+| `name` — Look name | `text` | `New look` |  |
+| `image` — Model photo | `image_picker` | Not specified | Full-length model on a transparent background (PNG or WebP), same framing across looks. |
+| `photo_asset` — Photo file in the theme | `text` | Not specified | Used when no photo is picked above: the name of a file in the theme's assets folder. |
+| `background` — Keep in the back | `checkbox` | `false` | The look stands further back between the others and never comes to the centre. |
+| `photo_scale` — Photo size | `range` | `100` | 70–130%, step 1; Evens out models shot at different distances. |
+| `backdrop_text` — Large name | `text` | Not specified | Optional. Defaults to the look name. |
+| `tag` — Tag | `text` | Not specified | Short label in the panel, such as New or Limited. |
+| `description` — Story | `textarea` | Not specified | A line or two about the look, shown in the panel. |
+| `button_label` — Panel link label | `text` | Not specified | Shown under the story when a link is set below. |
+| `link` — Link | `url` | Not specified | For the panel link, and when clicking the centre model is set to follow a link. |
+
+Supported block: **Piece** (`piece`).
+
+| Setting ID / label | Type | Schema default | Choices / range / help |
+| --- | --- | --- | --- |
+| `product` — Product | `product` | Not specified |  |
+| `image` — Thumbnail | `image_picker` | Not specified | Optional. Defaults to the product's first photo. |
+| `pin_x` — Pin across | `range` | `50` | 0–100%, step 1 |
+| `pin_y` — Pin down | `range` | `35` | 0–100%, step 1 |
+
+Add-menu presets:
+
+- Try the look; initial blocks `[{"type":"look","settings":{"name":"The City Edit"}},{"type":"piece"},{"type":"look","settings":{"name":"Gallery Opening"}},{"type":"piece"},{"type":"look","settings":{"name":"Studio Day"}},{"type":"piece"},{"type":"look","settings":{"name":"Weekend Layers"}},{"type":"piece"},{"type":"look","settings":{"name":"After Hours"}},{"type":"piece"}]`.
 
 #### Video (video-feature)
 

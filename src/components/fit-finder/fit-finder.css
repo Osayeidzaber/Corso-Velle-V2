@@ -163,7 +163,7 @@ nk-fit-finder[hidden] {
 /* Figure + sliders */
 .fit-finder__body {
   display: grid;
-  grid-template-columns: 84px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: end;
   gap: 8px 20px;
 }

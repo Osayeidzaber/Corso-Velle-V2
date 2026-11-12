@@ -1,0 +1,22 @@
+{%- doc -%}
+  Hanger drawing for the clothes rack. Inherits its colour from the rack's CSS tokens.
+
+  @param {string} style - wire, wood or matte; anything else draws nothing
+
+  @example
+  {% render 'clothes-rack-hanger', style: 'wood' %}
+{%- enddoc -%}
+{%- case style -%}
+  {%- when 'wire' -%}
+    <span class="clothes-rack__hanger" aria-hidden="true">
+      <svg viewBox="0 0 64 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M32 12V8.5a3.5 3.5 0 1 0-3.5-3.5"/><path d="M32 12 4 27h56L32 12Z"/></svg>
+    </span>
+  {%- when 'wood', 'matte' -%}
+    <span class="clothes-rack__hanger clothes-rack__hanger--{{ style }}" aria-hidden="true">
+      <svg viewBox="0 0 64 30" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path class="clothes-rack__hanger-hook" d="M32 15V8.5a3.5 3.5 0 1 0-3.5-3.5" stroke-width="1.5"/>
+        <path class="clothes-rack__hanger-bar" d="M5 26.5Q18 17 32 14.5 46 17 59 26.5" stroke-width="4.6"/>
+        <path class="clothes-rack__hanger-shine" d="M7 25Q19 16.2 32 13.8 45 16.2 57 25" stroke-width="0.7"/>
+      </svg>
+    </span>
+{%- endcase -%}

@@ -130,7 +130,7 @@
       data-card-link
       tabindex="-1"
       aria-hidden="true"
-      {% unless sold_out %}data-cursor="view"{% endunless %}
+      
     >
       {%- if first_media -%}
         {{
@@ -267,26 +267,22 @@
         </div>
       {%- endif -%}
     {%- endif -%}
-    {%- if sold_out == false -%}
-      {%- if rendered_tray == false -%}
-        <div class="card__tray">
-          {%- if show_sizes -%}
-            {%- for option in product.options_with_values -%}
-              {%- capture is_size -%}{%- render 'size-option', name: option.name -%}{%- endcapture -%}
-              {%- if is_size == 'true' -%}
-                <span class="card__tray-label">{{ 'product.sizes_label' | t }}</span>
-                <div class="card__tray-values">
-                  {%- for value in option.values -%}
-                    <span class="card__tray-pill{% unless value.available %} is-out{% endunless %}">{{ value | escape }}</span>
-                  {%- endfor -%}
-                </div>
-                {%- break -%}
-              {%- endif -%}
-            {%- endfor -%}
-          {%- endif -%}
-          <a class="card__tray-pill card__tray-pill--action" href="{{ product.url }}" data-card-choose-options data-close-label="{{ 'general.close' | t }}" aria-label="{{ product.title | escape }} — {{ 'product.choose_options' | t }}">{{ 'product.choose_options' | t }}</a>
-        </div>
-      {%- endif -%}
+    {%- comment -%} No one-tap add here: list the sizes for information only; the card itself opens the product. {%- endcomment -%}
+    {%- if sold_out == false and rendered_tray == false and show_sizes -%}
+      {%- for option in product.options_with_values -%}
+        {%- capture is_size -%}{%- render 'size-option', name: option.name -%}{%- endcapture -%}
+        {%- if is_size == 'true' -%}
+          <div class="card__tray">
+            <span class="card__tray-label">{{ 'product.sizes_label' | t }}</span>
+            <div class="card__tray-values">
+              {%- for value in option.values -%}
+                <span class="card__tray-pill{% unless value.available %} is-out{% endunless %}">{{ value | escape }}</span>
+              {%- endfor -%}
+            </div>
+          </div>
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
     {%- endif -%}
     {%- endcapture -%}
   </div>

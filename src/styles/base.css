@@ -56,6 +56,23 @@ html.nk-locked {
   scrollbar-gutter: stable;
 }
 
+/* Page scrollbar: a slim brown thumb on a clear track, instead of the system's grey bar.
+   Chrome/Edge/Safari use the ::-webkit pseudo-elements (setting scrollbar-color there would
+   switch them off); Firefox only understands the standard properties. */
+html::-webkit-scrollbar { width: 8px; height: 8px; }
+html::-webkit-scrollbar-track { background: transparent; }
+html::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, #432d23 55%, transparent);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+html::-webkit-scrollbar-thumb:hover { background-color: #432d23; }
+html::-webkit-scrollbar-button { display: none; height: 0; }
+@supports (-moz-appearance: none) {
+  html { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, #432d23 55%, transparent) transparent; }
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -236,6 +253,9 @@ h4 {
 .utility-page { width: 100%; min-width: 0; margin-inline: auto; overflow-wrap: anywhere; }
 .utility-page[data-width='narrow'] { max-width: 60ch; }
 .utility-page[data-width='regular'] { max-width: 80ch; }
+/* A page with only a title (Contact: the form is its own section) hands straight over to what follows. */
+.utility-page[data-empty] { padding-bottom: 0; }
+.utility-page[data-empty] .collection-header { margin-bottom: 0; padding-bottom: 0; }
 .utility-page__signup { margin-top: 40px; }
 .utility-page__signup h2 { margin-bottom: 20px; }
 

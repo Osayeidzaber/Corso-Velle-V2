@@ -36,6 +36,18 @@ export class NkFacets extends NkElement {
     this.observeResize(document.documentElement, measureViewport);
     this.#restoreGridLayout();
 
+    // "Availability", "Price"… each open the filter drawer at their own group.
+    this.on(this, 'click', (event) => {
+      const trigger = (event.target as Element).closest<HTMLElement>('[data-open-group]');
+      if (!trigger) return;
+      const index = Number(trigger.dataset.openGroup);
+      const groups = [...this.querySelectorAll<HTMLDetailsElement>('.facets__group')];
+      const group = groups[index];
+      if (!group) return;
+      groups.forEach((g, i) => { g.open = i === index || g.open; });
+      requestAnimationFrame(() => group.scrollIntoView({ block: 'nearest' }));
+    });
+
     this.on(this, 'submit', (event) => {
       const form = (event.target as Element).closest<HTMLFormElement>('form[data-facets-form]');
       if (!form) return;
@@ -253,7 +265,7 @@ export class NkFacets extends NkElement {
       this.dispatchEvent(new CustomEvent('nk:section:replaced', { bubbles: true, detail: { regions: ['facets'] } }));
       this.removeAttribute('aria-busy');
 
-      const label = this.querySelector('[data-results-label]')?.textContent?.trim();
+      const label = (this.querySelector('[data-results-label] .facets__results-long') ?? this.querySelector('[data-results-label]'))?.textContent?.trim();
       if (label) announce.polite(label);
       // History restoration belongs to the browser; only an explicit filter/sort should move it.
       if (push && this.getBoundingClientRect().top < 0) this.scrollIntoView({ block: 'start' });

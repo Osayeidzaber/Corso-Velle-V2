@@ -1,4 +1,4 @@
-import { parseHTML } from '../../core/dom';
+import { icon, parseHTML } from '../../core/dom';
 import { fetchText, Sequencer } from '../../services/request';
 import { overlay } from '../../services/overlay';
 import { namespaceProductHTML } from './product-dom';
@@ -24,7 +24,7 @@ export async function openQuickAdd(url: string, trigger: HTMLElement): Promise<v
   const close = document.createElement('button');
   close.type = 'button';
   close.className = 'icon-button';
-  close.textContent = '×';
+  close.append(icon('close'));
   close.setAttribute('aria-label', trigger.dataset.closeLabel ?? 'Close');
   header.append(close);
   dialog.setAttribute('aria-labelledby', `${prefix}title`);

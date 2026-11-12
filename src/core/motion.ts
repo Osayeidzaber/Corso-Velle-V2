@@ -87,7 +87,7 @@ export function installMotionPolicy(): void {
     document.documentElement.classList.toggle('nk-fade', fadeOnlyMotion());
     document.dispatchEvent(new CustomEvent('nk:motion:changed'));
     for (const element of document.querySelectorAll<HTMLElement>(
-      'nk-scene, nk-reveal, nk-text, nk-stagger, nk-parallax, nk-marquee, nk-carousel, nk-expand-media, nk-elastic-line',
+      'nk-scene, nk-reveal, nk-text, nk-stagger, nk-parallax, nk-marquee, nk-carousel, nk-expand-media, nk-elastic-line, nk-runway, nk-clothes-rack',
     )) {
       const component = element as HTMLElement & { disconnectedCallback?: () => void; connectedCallback?: () => void };
       component.disconnectedCallback?.();

@@ -5,12 +5,22 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/page
 {% endcomment %}
 
-<div class="section-spacing utility-page color-{{ section.settings.color_scheme }}" data-width="{{ section.settings.width }}">
+{%- liquid
+  assign page_empty = false
+  assign page_text = page.content | strip_html | strip
+  if page_text == blank
+    assign page_empty = true
+    if page.content contains '<img' or page.content contains '<iframe' or page.content contains '<video'
+      assign page_empty = false
+    endif
+  endif
+-%}
+<div class="section-spacing utility-page color-{{ section.settings.color_scheme }}"{% if page_empty %} data-empty{% endif %} data-width="{{ section.settings.width }}">
   {% if section.settings.show_title != false %}<div class="collection-header">
     <h1 class="display">{{ page.title | escape }}</h1>
   </div>{% endif %}
 
-  <div class="rte">{{ page.content }}</div>
+  {% unless page_empty %}<div class="rte">{{ page.content }}</div>{% endunless %}
 </div>
 
 {% schema %}

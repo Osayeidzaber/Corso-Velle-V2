@@ -9,6 +9,7 @@
 @import './components/cart.css';
 @import './components/card.css';
 @import './components/measurement-panel.css';
+@import './components/size-guide.css';
 @import './components/facets.css';
 @import './components/footer.css';
 @import './components/section-kit.css';
@@ -27,4 +28,5 @@
 @import './components/hero.css';
 @import './components/scene.css';
 @import './components/button-policy.css';
+@import './components/atelier.css';
 

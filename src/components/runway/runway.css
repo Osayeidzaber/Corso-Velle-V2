@@ -1,0 +1,716 @@
+/*
+ * Try the look. runway.ts moves each look with transform and opacity only, every frame; nothing
+ * here may animate blur or size. The blur is fixed on a small copy of the photo (.runway__soft)
+ * and only its opacity changes, so the browser never has to repaint during motion.
+ *
+ * Knock-out: multiply reaches the backdrop only if nothing between the look and nk-runway is a
+ * stacking context. It is costly while moving, so transparent cut-outs are the better choice.
+ */
+nk-runway {
+  --runway-ease: cubic-bezier(0.62, 0.05, 0.12, 1);
+  --runway-gap: var(--runway-spacing);
+  --runway-stage: var(--runway-height);
+  --runway-shift: 0px;
+  display: block;
+  overflow-x: clip;
+  position: relative;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.runway__panel,
+nk-runway dialog {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+nk-runway[data-glow] {
+  background-image: radial-gradient(60% 55% at 50% 48%, rgb(255 255 255 / 0.85), transparent 72%);
+}
+
+/* Sits over the stage: a drag that starts on the heading still moves the models. */
+.runway__intro {
+  pointer-events: none;
+  max-width: 34rem;
+  padding-inline: var(--nk-gutter);
+  transition: opacity 300ms ease;
+}
+/* Load-in: the models come out of the haze first (runway.ts), then the words, then the controls. */
+nk-runway[data-ready] .runway__heading,
+nk-runway[data-ready] .runway__text {
+  transition: opacity 700ms ease 250ms, filter 800ms ease 250ms;
+}
+nk-runway[data-ready] .runway__text { transition-delay: 450ms; }
+nk-runway[data-ready]:not([data-seen]) .runway__heading,
+nk-runway[data-ready]:not([data-seen]) .runway__text { opacity: 0; filter: blur(10px); }
+nk-runway[data-ready]:not([data-seen]) .runway__controls { opacity: 0; }
+.runway__heading { margin: 0; font-size: var(--runway-heading, 2.75rem); line-height: 1.1; }
+.runway__eyebrow { margin: 0 0 0.5rem; color: var(--nk-color-text-muted); }
+nk-runway[data-intro-align='center'] .runway__intro { max-width: none; width: 100%; text-align: center; }
+.runway__text { margin: 0.5rem 0 0; color: var(--nk-color-text-muted); font-size: 0.875rem; }
+.runway__cta { pointer-events: auto; margin-top: 1.25rem; }
+nk-runway[data-ready] .runway__cta { transition: opacity 700ms ease 600ms; }
+nk-runway[data-ready]:not([data-seen]) .runway__cta { opacity: 0; }
+h1.runway__heading { letter-spacing: -0.01em; }
+
+/* Without JS: a plain scrolling row, with each look's pieces listed afterwards. */
+.runway__stage { display: flex; gap: 1rem; flex-wrap: wrap; position: relative; padding-inline: var(--nk-gutter); }
+.runway__look { flex: 0 0 auto; height: 60svh; }
+.runway__frame { position: relative; height: 100%; }
+.runway__trigger { display: block; height: 100%; }
+.runway__img { display: block; height: 100%; width: auto; max-width: none; object-fit: contain; }
+.runway__img--placeholder { aspect-ratio: 5 / 12; background: var(--nk-color-surface); fill: var(--nk-color-text-muted); }
+.runway__swipe,
+.runway__scrim,
+.runway__grip,
+.runway__sheet-look,
+.runway__sheet-close,
+.runway__pin,
+.runway__close,
+.runway__look-title,
+.runway__hint,
+.runway__controls,
+.runway__add,
+.runway__sizes,
+.runway__missing,
+.runway__bundle { display: none; }
+
+/* Enhanced: line-up */
+nk-runway[data-ready] .runway__stage {
+  display: block;
+  height: var(--runway-stage);
+  min-height: 24rem;
+  padding: 0;
+  touch-action: pan-y;
+}
+nk-runway[data-ready] .runway__look {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z, 1);
+  display: flex;
+  height: auto;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  will-change: transform, opacity;
+}
+nk-runway[data-knockout] .runway__look { mix-blend-mode: multiply; }
+nk-runway[data-ready] .runway__frame {
+  height: calc(var(--runway-model) * var(--look-scale, 1));
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  transition: transform var(--runway-speed) var(--runway-ease), opacity calc(var(--runway-speed) * 0.5) ease;
+}
+nk-runway[data-ready] .runway__trigger { position: relative; pointer-events: auto; cursor: pointer; user-select: none; -webkit-user-drag: none; }
+/* Keyboard focus: a short line under the model, only while tabbing; never after a click or Esc. */
+nk-runway[data-ready] .runway__trigger:focus-visible { outline: none; }
+nk-runway[data-tabbing] .runway__trigger:focus-visible::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 2.5rem;
+  height: 2px;
+  background: var(--nk-color-text);
+  transform: translateX(-50%);
+}
+nk-runway[data-ready] .runway__img { will-change: opacity; -webkit-user-drag: none; }
+nk-runway[data-dragging] .runway__stage,
+nk-runway[data-dragging] .runway__trigger { cursor: grabbing; }
+@media (hover: hover) and (pointer: fine) and (min-width: 750px) {
+  nk-runway[data-cursor]:not([data-open]) .runway__stage,
+  nk-runway[data-cursor]:not([data-open]) .runway__trigger { cursor: none; }
+}
+.runway__layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.runway__soft { filter: blur(var(--runway-blur)); }
+/* Shine: a beam clipped to the model's outline, and to the bottom fade when there is one. */
+.runway__shine { display: none; }
+/* Scoped to nk-runway so the photo-fade mask on every layer (below) cannot replace the outline. */
+nk-runway[data-shine] .runway__layer.runway__shine[data-sweeping] {
+  display: block;
+  overflow: hidden;
+  opacity: 1;
+  -webkit-mask-image: var(--runway-shine-src, none), linear-gradient(to bottom, #000 calc(100% - var(--runway-photo-fade, 0%)), transparent);
+  mask-image: var(--runway-shine-src, none), linear-gradient(to bottom, #000 calc(100% - var(--runway-photo-fade, 0%)), transparent);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.runway__shine > span {
+  position: absolute;
+  inset-block: -5%;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / var(--runway-shine, 0.5)) 50%, transparent);
+  transform: translateX(-120%) skewX(-16deg);
+  will-change: transform;
+}
+nk-runway[data-photo-fade] .runway__img,
+nk-runway[data-photo-fade] .runway__layer {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--runway-photo-fade)), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--runway-photo-fade)), transparent);
+}
+
+/* Mouse cursor: a dot that swells into a labelled bubble over the centre model. */
+.runway__cursor { display: none; }
+nk-runway[data-cursor][data-ready] .runway__cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 24;
+  display: block;
+  pointer-events: none;
+  will-change: transform;
+}
+.runway__cursor-dot {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin: -2.25rem 0 0 -2.25rem;
+  border-radius: 50%;
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+  font-size: 0.6875rem;
+  transform: scale(0);
+  transition: transform 300ms var(--runway-ease), background 200ms ease, color 200ms ease;
+}
+.runway__cursor-dot span { opacity: 0; transition: opacity 150ms ease; }
+.runway__cursor[data-on] .runway__cursor-dot { transform: scale(0.18); }
+.runway__cursor[data-on][data-side] .runway__cursor-dot { transform: scale(0.34); }
+.runway__cursor[data-on][data-big] .runway__cursor-dot { transform: scale(1); background: rgb(255 255 255 / 0.7); color: var(--nk-color-text); }
+.runway__cursor[data-big] .runway__cursor-dot span { opacity: 1; }
+.runway__cursor[data-on][data-press] .runway__cursor-dot { transform: scale(0.48); background: var(--nk-color-text); color: transparent; }
+nk-runway[data-shadow] .runway__frame::after {
+  content: '';
+  position: absolute;
+  inset: auto -12% -2.5% -12%;
+  height: 6%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgb(0 0 0 / 0.22), transparent);
+}
+
+/* Enhanced: opened look */
+nk-runway[data-panel] { --runway-shift: calc(var(--runway-panel) / -2); }
+nk-runway[data-panel-side='left'][data-panel] { --runway-shift: calc(var(--runway-panel) / 2); }
+nk-runway[data-open] .runway__intro { opacity: 0; pointer-events: none; }
+nk-runway[data-panel] .runway__frame { transform: translateX(var(--runway-shift)); }
+nk-runway[data-open] .runway__look:not([data-center]) .runway__frame { opacity: 0; }
+nk-runway[data-open] .runway__look:not([data-center]) .runway__trigger { pointer-events: none; }
+nk-runway[data-open] .runway__look[data-center] .runway__frame {
+  /* Grows from the feet, so it stops at the stage height: the head must never reach the header. */
+  transform: translateX(var(--runway-shift)) scale(min(var(--runway-detail-scale), calc(100 / (var(--runway-model-n) * var(--look-scale, 1)))));
+}
+nk-runway[data-open] .runway__look[data-center] .runway__trigger { cursor: default; }
+
+.runway__pin {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  z-index: 2;
+  place-items: center;
+  width: var(--runway-pin);
+  height: var(--runway-pin);
+  padding: 0;
+  translate: -50% -50%;
+  border: 1px solid var(--nk-color-bg);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--nk-color-bg) 85%, transparent);
+  color: var(--nk-color-text);
+  font-size: 0.6875rem;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background 200ms ease, color 200ms ease, scale 200ms ease;
+}
+/* The ring that says "click me". Scale and opacity only, so it never repaints the model. */
+.runway__pin::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border: 1px solid var(--nk-color-text);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+nk-runway[data-open]:not([data-panel]) .runway__look[data-center] .runway__pin::after {
+  animation: runway-pin-ring 2.2s ease-out infinite;
+  animation-delay: calc(var(--pin, 0) * 240ms);
+}
+@keyframes runway-pin-ring {
+  0% { opacity: 0.55; transform: scale(1); }
+  70%, 100% { opacity: 0; transform: scale(1.9); }
+}
+nk-runway[data-pin-style='dot'] .runway__pin span { display: none; }
+nk-runway[data-ready] .runway__look[data-center] .runway__pin { display: grid; visibility: hidden; opacity: 0; scale: 0.5; transition: opacity 300ms ease, scale 450ms cubic-bezier(.3,1.5,.5,1), background 200ms ease, color 200ms ease; }
+nk-runway[data-open] .runway__look[data-center] .runway__pin { visibility: visible; opacity: 1; scale: 1; transition-delay: calc(250ms + var(--pin, 1) * 110ms), calc(250ms + var(--pin, 1) * 110ms), 0ms, 0ms; }
+nk-runway[data-open] .runway__look[data-center] .runway__pin:hover,
+nk-runway[data-open] .runway__look[data-center] .runway__pin[data-highlight] { scale: 1.15; transition-delay: 0ms; }
+.runway__pin-tip {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 50%;
+  display: block;
+  padding: 0.4rem 0.6rem;
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+  font-size: 0.75rem;
+  font-style: normal;
+  line-height: 1.3;
+  text-align: start;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.runway__pin-tip small { display: block; opacity: 0.7; font-size: 0.6875rem; }
+nk-runway[data-no-pin-tips] .runway__pin-tip { display: none; }
+.runway__pin:hover .runway__pin-tip,
+.runway__pin:focus-visible .runway__pin-tip { opacity: 1; transform: translate(-50%, 0); }
+.runway__light {
+  display: none;
+}
+nk-runway[data-ready] .runway__light {
+  position: absolute;
+  inset: -10% 15%;
+  z-index: 0;
+  display: block;
+  background: radial-gradient(50% 50% at 50% 50%, rgb(255 255 255 / 0.75), transparent);
+  pointer-events: none;
+  will-change: transform;
+}
+.runway__backdrop { display: none; }
+nk-runway[data-ready] .runway__backdrop {
+  position: absolute;
+  inset: 12% 0 auto;
+  z-index: 0;
+  display: block;
+  color: color-mix(in srgb, var(--nk-color-text) var(--runway-backdrop-strength, 7%), transparent);
+  font-family: var(--nk-font-heading, inherit);
+  font-size: var(--runway-backdrop-size, 13vw);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+  will-change: transform;
+}
+.runway__backdrop span { display: inline-block; }
+nk-runway[data-open] .runway__backdrop,
+nk-runway[data-panel] .runway__backdrop { opacity: 0; }
+nk-runway[data-ready]:not([data-seen]) .runway__backdrop { opacity: 0; }
+.runway__pin:hover,
+.runway__pin[data-highlight] { background: var(--nk-color-text); color: var(--nk-color-bg); scale: 1.15; }
+
+nk-runway[data-ready] .runway__close {
+  position: absolute;
+  top: 0.75rem;
+  z-index: 30;
+  right: var(--nk-gutter);
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--nk-color-line);
+  border-radius: 50%;
+  background: var(--nk-color-bg);
+  color: inherit;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 250ms ease, rotate 300ms ease, translate calc(var(--runway-speed) * 0.8) var(--runway-ease);
+}
+@media (min-width: 750px) {
+  nk-runway[data-panel] .runway__close { translate: calc(var(--runway-panel) * -1 - 1.5rem + var(--nk-gutter)) 0; }
+  nk-runway[data-panel-side='left'][data-panel] .runway__close { translate: none; }
+}
+nk-runway[data-ready] .runway__close:hover { rotate: 90deg; }
+nk-runway[data-ready] .runway__look-title,
+nk-runway[data-ready] .runway__hint {
+  position: absolute;
+  z-index: 30;
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 300ms ease;
+}
+nk-runway[data-ready] .runway__look-title { top: 0.75rem; left: var(--nk-gutter); }
+nk-runway[data-panel-side='left'][data-panel] .runway__look-title { translate: calc(var(--runway-panel) + 1.5rem - var(--nk-gutter)) 0; }
+.runway__look-title > * { display: block; }
+.runway__look-title > :last-child { font-size: 1.25rem; }
+nk-runway[data-ready] .runway__hint { bottom: 0.75rem; left: var(--nk-gutter); max-width: 11rem; margin: 0; color: var(--nk-color-text-muted); }
+nk-runway[data-panel-side='left'] .runway__hint { left: calc(var(--runway-panel) + 1.5rem) !important; }
+nk-runway[data-open] .runway__close,
+nk-runway[data-panel] .runway__close,
+nk-runway[data-open] .runway__look-title,
+nk-runway[data-open]:not([data-panel]) .runway__hint { opacity: 1; visibility: visible; }
+
+/* Panel */
+.runway__panel { flex: 1 0 100%; }
+nk-runway[data-ready] .runway__panel {
+  position: absolute;
+  top: 0;
+  bottom: -3.25rem;
+  right: 0;
+  z-index: 25;
+  border-inline-start: 1px solid var(--nk-color-line);
+  cursor: auto;
+  display: flex;
+  flex-direction: column;
+  width: min(var(--runway-panel), 100%);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--nk-color-bg);
+  translate: 100% 0;
+  visibility: hidden;
+  transition: translate calc(var(--runway-speed) * 0.8) var(--runway-ease), visibility 0s linear calc(var(--runway-speed) * 0.8);
+}
+nk-runway[data-panel-side='left'][data-ready] .runway__panel { right: auto; left: 0; translate: -100% 0; }
+nk-runway[data-panel] .runway__panel[data-active] { translate: 0 0 !important; visibility: visible; transition-delay: 0s; }
+
+/* JS is on its way: hold the space rather than flash the no-JS list of looks and panels. */
+html.js nk-runway:not([data-ready]) .runway__stage { height: var(--runway-stage); overflow: hidden; visibility: hidden; }
+/* Until the line-up has loaded in, panels stay put: they must not be seen sliding off at page load. */
+nk-runway[data-ready]:not([data-seen]) .runway__panel { transition: none; visibility: hidden; }
+.runway__panel-head { display: flex; align-items: baseline; justify-content: space-between; padding: 1.25rem 1.5rem 0.75rem; }
+.runway__panel-head h3 { margin: 0; font-size: 1.125rem; }
+.runway__tag { display: block; margin-bottom: 0.25rem; color: var(--nk-color-text-muted); }
+.runway__story { padding: 0 1.5rem 1rem; font-size: 0.875rem; line-height: 1.5; }
+.runway__story p { margin: 0; color: var(--nk-color-text-muted); }
+.runway__story-link { display: inline-block; margin-top: 0.5rem; color: inherit; text-underline-offset: 4px; }
+.runway__pieces { flex: 1; margin: 0; padding: 0 1.5rem; list-style: none; }
+.runway__piece {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr auto;
+  gap: 1rem;
+  align-items: start;
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--nk-color-line);
+}
+.runway__piece[data-sold-out] { opacity: 0.55; }
+nk-runway[data-panel] .runway__panel[data-active] .runway__piece {
+  /* backwards, not both: a held transform would isolate the row and stop thumbnails blending in. */
+  animation: runway-rise 500ms var(--runway-ease) backwards;
+  animation-delay: calc(var(--i) * 70ms);
+}
+@keyframes runway-rise { from { opacity: 0; transform: translateY(12px); } }
+.runway__thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  overflow: visible;
+  outline: 1px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color 200ms ease;
+}
+.runway__piece[data-highlight] .runway__thumb { outline-color: var(--nk-color-text); }
+.runway__thumb img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; transition: transform 500ms cubic-bezier(.2,.7,.2,1); }
+.runway__thumb:hover img { transform: scale(1.05); }
+.runway__thumb-number {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: block;
+  font-size: 0.625rem;
+  line-height: 1;
+}
+.runway__piece-copy { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+.runway__vendor { color: var(--nk-color-text-muted); }
+.runway__piece-title { color: inherit; line-height: 1.3; text-decoration: none; }
+.runway__piece-title:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+.runway__piece-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.5rem; font-size: 0.875rem; }
+.runway__was { color: var(--nk-color-text-muted); font-size: 0.8125rem; }
+.runway__was[hidden], .runway__sale[hidden] { display: none; }
+.runway__sale {
+  padding: 0.05rem 0.35rem;
+  background: var(--nk-color-text);
+  color: var(--nk-color-bg);
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+}
+nk-runway[data-hide-sale] .runway__was,
+nk-runway[data-hide-sale] .runway__sale,
+nk-runway[data-hide-sale] .runway__save,
+nk-runway[data-hide-sale] .runway__bundle-total s { display: none; }
+
+nk-runway[data-ready] .runway__sizes { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.5rem; }
+.runway__size { position: relative; cursor: pointer; }
+.runway__size input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: inherit; }
+.runway__size span {
+  display: grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding-inline: 0.4rem;
+  border: 1px solid var(--nk-color-line);
+  font-size: 0.75rem;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+.runway__size:hover span { border-color: var(--nk-color-text); }
+.runway__size input:checked + span { border-color: var(--nk-color-text); background: var(--nk-color-text); color: var(--nk-color-bg); }
+.runway__size input:focus-visible + span { outline: 2px solid var(--nk-focus); outline-offset: 2px; }
+.runway__size input:disabled { cursor: not-allowed; }
+.runway__size input:disabled + span {
+  border-color: var(--nk-color-line);
+  background: linear-gradient(to top right, transparent calc(50% - 0.5px), var(--nk-color-line) 50%, transparent calc(50% + 0.5px));
+  color: var(--nk-color-text-muted);
+}
+.runway__guide-link { align-self: flex-start; min-height: 1.75rem; font-size: 0.6875rem; }
+.runway__guide-link { display: none; }
+nk-runway[data-ready] .runway__guide-link { display: inline-flex; }
+nk-runway[data-ready] .runway__piece[data-missing] .runway__missing { display: block; margin: 0.25rem 0 0; color: var(--nk-color-error); font-size: 0.75rem; }
+.runway__piece[data-missing] .runway__size span { border-color: var(--nk-color-error); }
+
+nk-runway[data-ready] .runway__add {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-self: end;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+nk-runway[data-ready] .runway__add:hover,
+nk-runway[data-ready] .runway__add[data-added] { border-color: var(--nk-color-text); background: var(--nk-color-text); color: var(--nk-color-bg); }
+.runway__add-plus { display: grid; place-items: center; }
+.runway__add-check { display: none; }
+.runway__add[data-added] .runway__add-plus,
+.runway__add[aria-busy='true'] .runway__add-plus { display: none; }
+.runway__add[data-added] .runway__add-check { display: block; }
+.runway__add[aria-busy='true']::after {
+  content: '';
+  width: 1rem;
+  height: 1rem;
+  border: 1.5px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: runway-spin 700ms linear infinite;
+}
+@keyframes runway-spin { to { rotate: 360deg; } }
+.runway__bundle-add[aria-busy='true'] { opacity: 0.6; }
+
+nk-runway[data-ready] .runway__bundle {
+  position: sticky;
+  bottom: 0;
+  display: block;
+  padding: 1rem 1.5rem 1.25rem;
+  background: var(--nk-color-bg);
+}
+nk-runway[data-ready] .runway__bundle[hidden] { display: none; }
+.runway__bundle-copy { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
+.runway__bundle-copy strong { display: block; font-weight: 500; }
+.runway__bundle-copy small { display: block; color: var(--nk-color-text-muted); }
+.runway__save[hidden] { display: none; }
+nk-runway[data-ready] .runway__bundle-copy .runway__save { color: var(--nk-color-text); font-size: 0.8125rem; }
+.runway__bundle-total { white-space: nowrap; font-size: 1.125rem; }
+.runway__bundle-total s { color: var(--nk-color-text-muted); font-size: 0.8125rem; }
+nk-runway[data-shine] .runway__bundle-add { position: relative; overflow: hidden; }
+nk-runway[data-shine] .runway__bundle-add::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.28) 50%, transparent);
+  transform: translateX(-130%) skewX(-16deg);
+  pointer-events: none;
+}
+nk-runway[data-shine] .runway__bundle-add:hover::after { transform: translateX(300%) skewX(-16deg); transition: transform 800ms cubic-bezier(.45,.05,.3,1); }
+.runway__bundle-add { display: flex; width: 100%; align-items: center; justify-content: center; gap: 0.75rem; }
+.runway__status:empty { display: none; }
+.runway__status { margin: 0; padding: 0 1.5rem 0.75rem; font-size: 0.8125rem; background: var(--nk-color-bg); position: sticky; bottom: 0; }
+
+/* Controls */
+nk-runway[data-ready] .runway__controls {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-inline: var(--nk-gutter);
+  transition: opacity 400ms ease;
+  contain: layout style;
+}
+nk-runway[data-open] .runway__controls { opacity: 0; pointer-events: none; }
+.runway__arrow,
+.runway__play { flex: none; display: grid; place-items: center; width: 2.25rem; height: 2.25rem; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
+.runway__arrow { transition: translate 200ms ease; }
+.runway__arrow:first-child:hover { translate: -3px 0; }
+.runway__arrow:last-child:hover { translate: 3px 0; }
+.runway__play { position: absolute; inset-inline-end: calc(var(--nk-gutter) + 3rem); color: var(--nk-color-text-muted); transition: color 200ms ease; }
+.runway__play:hover { color: var(--nk-color-text); }
+.runway__play[hidden] { display: none; }
+.runway__play[aria-pressed='true'] .runway__icon-play,
+.runway__play[aria-pressed='false'] .runway__icon-pause { display: none; }
+.runway__now-price { margin-inline-start: 0.75rem; color: var(--nk-color-text-muted); font-size: 0.8125rem; }
+.runway__bar-name { flex: 1; min-width: 0; margin: 0; overflow: hidden; font-size: 0.9375rem; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (min-width: 750px) {
+  nk-runway[data-panel]:not([data-panel-side='left']) .runway__controls { padding-inline-end: calc(var(--runway-panel) + 1rem); }
+  nk-runway[data-panel-side='left'][data-panel] .runway__controls { padding-inline-start: calc(var(--runway-panel) + 1rem); }
+  nk-runway[data-ready] .runway__intro { position: absolute; z-index: 20; }
+  /* Centred words sit where the centre model's head is, so they get their own row above the stage. */
+  nk-runway[data-ready][data-intro-align='center'] .runway__intro { position: relative; margin-bottom: 1rem; }
+}
+
+@media (max-width: 749px) {
+  nk-runway { --runway-gap: var(--runway-spacing-phone); --runway-stage: var(--runway-height-phone); }
+  /* Phone bar: arrows at the edges, name over price in the middle, pause beside the next arrow. */
+  nk-runway[data-ready] .runway__controls { gap: 0.5rem; }
+  .runway__play { position: static; margin-inline-start: auto; }
+  .runway__bar-name { display: flex; flex-direction: column; align-items: center; gap: 0.125rem; font-size: 0.875rem; }
+  .runway__now-price { max-width: 100%; margin-inline-start: 0; font-size: 0.75rem; }
+  nk-runway[data-panel],
+  nk-runway[data-panel-side='left'][data-panel] { --runway-shift: 0px; }
+  nk-runway[data-ready] .runway__stage { min-height: 20rem; }
+  nk-runway[data-phone-panel='below'][data-open] .runway__stage { height: auto; }
+  nk-runway[data-phone-panel='below'][data-open] .runway__look[data-center] { position: relative; inset: auto; height: var(--runway-stage); }
+  nk-runway[data-ready] .runway__intro { margin-bottom: 1rem; }
+  nk-runway[data-phone-panel='below'][data-open] .runway__intro { display: none; }
+  .runway__heading { font-size: var(--runway-heading-phone, 1.875rem); }
+  nk-runway[data-ready] .runway__backdrop { font-size: calc(var(--runway-backdrop-size, 13vw) * 1.7); }
+  nk-runway[data-no-phone-backdrop] .runway__backdrop { display: none !important; }
+  nk-runway[data-no-phone-arrows] .runway__arrow { display: none; }
+  nk-runway[data-ready] .runway__swipe {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    z-index: 22;
+    display: block;
+    margin: 0;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: var(--nk-color-text);
+    color: var(--nk-color-bg);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 6px);
+    transition: opacity 300ms ease, transform 300ms ease;
+  }
+  nk-runway[data-nudge] .runway__swipe { opacity: 1; transform: translate(-50%, 0); }
+
+  /* Sheet: the panel rises over the model; the page behind stays put. */
+  html:has(nk-runway[data-phone-panel='sheet'][data-panel]) { overflow: hidden; }
+  nk-runway[data-phone-panel='sheet'] .runway__scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: block;
+    background: rgb(0 0 0 / 0.18);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms ease;
+  }
+  nk-runway[data-phone-panel='sheet'][data-panel] .runway__scrim { opacity: 1; pointer-events: auto; }
+  nk-runway[data-phone-panel='sheet'][data-ready] .runway__panel {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 201;
+    display: flex;
+    width: 100%;
+    max-height: 60svh;
+    overflow-y: auto;
+    border: 0;
+    border-radius: 1rem 1rem 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    translate: 0 100%;
+    box-shadow: 0 -12px 40px rgb(0 0 0 / 0.14);
+  }
+  nk-runway[data-phone-panel='sheet'][data-panel] .runway__panel[data-active] { translate: 0 0; }
+  nk-runway[data-phone-panel='sheet'] .runway__panel[data-dragging] { transition: none !important; }
+  nk-runway[data-phone-panel='sheet'] .runway__grip {
+    display: block;
+    flex: none;
+    width: 2.5rem;
+    height: 4px;
+    margin: 0.625rem auto 0;
+    border-radius: 2px;
+    background: var(--nk-color-line);
+    touch-action: none;
+  }
+  nk-runway[data-phone-panel='sheet'] .runway__panel-head { touch-action: none; padding-top: 0.25rem; }
+  /* In the sheet, the look's name and close live with the pieces: over the model they crossed its face. */
+  nk-runway[data-phone-panel='sheet'][data-ready] .runway__look-title,
+  nk-runway[data-phone-panel='sheet'][data-ready] .runway__close { display: none; }
+  nk-runway[data-phone-panel='sheet'] .runway__sheet-look {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    margin: 0;
+    padding: 1rem 4rem 0 1.5rem;
+    font-size: 1.125rem;
+    touch-action: none;
+  }
+  nk-runway[data-phone-panel='sheet'] .runway__sheet-look .spec { color: var(--nk-color-text-muted); }
+  nk-runway[data-phone-panel='sheet'] .runway__sheet-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1rem;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 1px solid var(--nk-color-line);
+    border-radius: 50%;
+    background: var(--nk-color-bg);
+    color: inherit;
+  }
+  nk-runway[data-phone-panel='sheet'][data-ready] .runway__bundle { position: sticky; }
+  nk-runway[data-ready] .runway__close { right: var(--nk-gutter) !important; }
+  nk-runway[data-panel-side='left'][data-panel] .runway__look-title { translate: none; }
+  nk-runway[data-ready] .runway__hint { position: static; translate: none; text-align: center; display: none; }
+  nk-runway[data-open] .runway__hint { display: block; margin-top: 0.5rem; }
+  nk-runway[data-phone-panel='below'][data-ready] .runway__panel,
+  nk-runway[data-phone-panel='below'][data-panel-side='left'][data-ready] .runway__panel { position: static; display: none; width: 100%; overflow: visible; translate: none; border: 0; }
+  nk-runway[data-phone-panel='below'][data-panel] .runway__panel[data-active] { display: flex; margin-top: 1rem; }
+  nk-runway[data-phone-panel='below'][data-ready] .runway__bundle { position: static; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  nk-runway *,
+  nk-runway[data-ready] .runway__look { transition-duration: 1ms !important; }
+  nk-runway .runway__piece,
+  nk-runway .runway__pin::after { animation: none !important; }
+  nk-runway .runway__shine { display: none; }
+}
+
+/* First section on the page: the line-up fills exactly what is left below the announcement bar and
+   header, so the models' feet sit on the fold instead of being cut off. */
+nk-runway.runway--hero { --runway-stage: calc(100svh - var(--nk-header-h, 77px) - 4.25rem); }
+@media (max-width: 749px) {
+  nk-runway.runway--hero { --runway-stage: calc(100svh - var(--nk-header-h, 64px) - 7rem); }
+}
+
+/* Hero: the arrows and look name sit over the bottom of the stage so the whole line-up fits one screen. */
+nk-runway.runway--hero[data-ready] .runway__controls {
+  position: absolute;
+  inset-inline: 0;
+  bottom: clamp(0.75rem, 2.5vh, 1.5rem);
+  z-index: 30;
+  margin: 0;
+}
+@media (max-width: 749px) {
+  nk-runway.runway--hero[data-ready] .runway__controls { position: relative; bottom: auto; margin-top: 0.5rem; }
+}

@@ -1,0 +1,28 @@
+{%- comment -%}
+  Product tab grid: nine products from the collection in the request URL, in the URL's sort
+  order. Not placed on a page; the product page's "Best Sellers" and "New Arrivals" tabs fetch it
+  with the Section Rendering API, e.g.
+  /collections/all?sort_by=best-selling&section_id=product-tab-grid
+  The grid markup matches the Recommended tab (sections/product-recommendations.liquid).
+{%- endcomment -%}
+{%- assign shown_titles = '|' -%}
+{%- assign shown_count = 0 -%}
+<ul class="recs-grid" role="list" data-tab-grid>
+  {%- for product in collection.products -%}
+    {%- if shown_count >= 9 -%}{%- break -%}{%- endif -%}
+    {%- unless product.available -%}{%- continue -%}{%- endunless -%}
+    {%- assign title_key = product.title | downcase | strip | prepend: '|' | append: '|' -%}
+    {%- if shown_titles contains title_key -%}{%- continue -%}{%- endif -%}
+    {%- assign shown_titles = shown_titles | append: title_key -%}
+    {%- assign shown_count = shown_count | plus: 1 -%}
+    <li>{% render 'product-card', product: product %}</li>
+  {%- endfor -%}
+</ul>
+
+{% schema %}
+{
+  "name": "Product tab grid",
+  "settings": [],
+  "presets": []
+}
+{% endschema %}

@@ -36,8 +36,16 @@
           {%- # Cards style (cardnav): each top-level item is a card with its links inside. -%}
           <div class="menu-drawer__cards">
             {%- for link in menu.links -%}
+{%- liquid
+  # The store's main menu calls this item Catalog; the storefront shows it as Shop.
+  assign link_label = link.title
+  assign link_key = link.title | downcase | strip
+  if link_key == 'catalog'
+    assign link_label = 'Shop'
+  endif
+-%}
               <div class="menu-card">
-                <a class="menu-card__title" href="{{ link.url }}">{{ link.title | escape }}</a>
+                <a class="menu-card__title" href="{{ link.url }}">{{ link_label | escape }}</a>
                 {%- for block in section.blocks -%}
                   {%- if block.type == 'group_description' and block.settings.menu_item == link.title -%}
                     <p class="menu-card__description" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</p>
@@ -56,14 +64,22 @@
         {%- else -%}
         <ul class="menu-drawer__list" role="list">
           {%- for link in menu.links -%}
+{%- liquid
+  # The store's main menu calls this item Catalog; the storefront shows it as Shop.
+  assign link_label = link.title
+  assign link_key = link.title | downcase | strip
+  if link_key == 'catalog'
+    assign link_label = 'Shop'
+  endif
+-%}
             <li>
               {%- if link.links.size > 0 -%}
-                <button type="button" class="menu-drawer__row" data-level-open="menu-{{ forloop.index }}" aria-label="{{ 'header.show_submenu' | t: title: link.title | escape }}">
-                  <span aria-hidden="true">{{ link.title | escape }}</span>
+                <button type="button" class="menu-drawer__row" data-level-open="menu-{{ forloop.index }}" aria-label="{{ 'header.show_submenu' | t: title: link_label | escape }}">
+                  <span aria-hidden="true">{{ link_label | escape }}</span>
                   {% render 'icon', name: 'arrow-right', size: 18 %}
                 </button>
               {%- else -%}
-                <a class="menu-drawer__row" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+                <a class="menu-drawer__row" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>{{ link_label | escape }}</a>
               {%- endif -%}
             </li>
           {%- endfor -%}
@@ -91,15 +107,23 @@
 
       {%- # Level 2 and 3 panels -%}
       {%- for link in menu.links -%}
+{%- liquid
+  # The store's main menu calls this item Catalog; the storefront shows it as Shop.
+  assign link_label = link.title
+  assign link_key = link.title | downcase | strip
+  if link_key == 'catalog'
+    assign link_label = 'Shop'
+  endif
+-%}
         {%- if link.links.size > 0 -%}
           {%- assign parent_index = forloop.index -%}
           <div class="menu-drawer__panel" data-level-panel="menu-{{ parent_index }}" hidden>
             <button type="button" class="menu-drawer__row menu-drawer__back" data-level-back>
               {% render 'icon', name: 'arrow-left', size: 18 %}
-              <span>{{ 'general.back_to' | t: title: link.title }}</span>
+              <span>{{ 'general.back_to' | t: title: link_label }}</span>
             </button>
             <ul class="menu-drawer__list" role="list">
-              <li><a class="menu-drawer__row menu-drawer__row--child" href="{{ link.url }}">{{ 'general.shop_all' | t: title: link.title }}</a></li>
+              <li><a class="menu-drawer__row menu-drawer__row--child" href="{{ link.url }}">{{ 'general.shop_all' | t: title: link_label }}</a></li>
               {%- for child in link.links -%}
                 <li>
                   {%- if child.links.size > 0 -%}

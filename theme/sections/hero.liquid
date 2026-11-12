@@ -86,7 +86,7 @@
 -%}
 <nk-scene
   preset="{% if section.settings.scroll_exit == false %}none{% else %}hero{% endif %}"
-  class="hero full-width color-{{ section.settings.color_scheme }} hero--{{ layout }} hero--{{ section.settings.height }}{{ position_classes }} hero--media-{{ section.settings.media_position }} hero--enter-{{ entrance }} hero--phone-{{ section.settings.height_mobile }} hero--fit-{{ section.settings.media_fit }} hero--tint-{{ section.settings.tint_direction }} hero--type-{{ type_style }}{% if custom_heading %} hero--custom-heading{% endif %}{% if custom_text %} hero--custom-text{% endif %}"
+  class="hero full-width color-{{ section.settings.color_scheme }} hero--{{ layout }} hero--{{ section.settings.height }}{{ position_classes }} hero--media-{{ section.settings.media_position }} hero--enter-{{ entrance }} hero--phone-{{ section.settings.height_mobile }} hero--fit-{{ section.settings.media_fit }} hero--video-{{ section.settings.video_focus | default: 'center' }}{% if section.settings.split_phone %} hero--phone-split{% endif %} hero--tint-{{ section.settings.tint_direction }} hero--type-{{ type_style }}{% if custom_heading %} hero--custom-heading{% endif %}{% if custom_text %} hero--custom-text{% endif %}"
   {% unless layout == 'split' %}
     data-overlay-eligible
   {% endunless %}
@@ -153,13 +153,13 @@
   {%- endcase -%}
   {%- if slides.size > 1 -%}
     <div class="hero__slide-controls" data-slides-controls{% if section.settings.slide_dots == false %} data-no-dots{% endif %}>
-      <button type="button" class="hero__slide-arrow" data-slides-prev aria-label="{{ 'media.previous_slide' | t }}"><span aria-hidden="true">←</span></button>
+      <button type="button" class="hero__slide-arrow" data-slides-prev aria-label="{{ 'media.previous_slide' | t }}">{% render 'icon', name: 'arrow-left', size: 14 %}</button>
       <div class="hero__slide-dots" role="group" aria-label="{{ 'media.slides' | t }}">
         {%- for block in slides -%}
           <button type="button" class="hero__slide-dot" data-slides-dot="{{ forloop.index0 }}" aria-label="{{ 'media.slide_n' | t: number: forloop.index, count: slides.size }}"{% if forloop.first %} aria-current="true"{% endif %}><span></span></button>
         {%- endfor -%}
       </div>
-      <button type="button" class="hero__slide-arrow" data-slides-next aria-label="{{ 'media.next_slide' | t }}"><span aria-hidden="true">→</span></button>
+      <button type="button" class="hero__slide-arrow" data-slides-next aria-label="{{ 'media.next_slide' | t }}">{% render 'icon', name: 'arrow-right', size: 14 %}</button>
       <button type="button" class="hero__slide-pause media-toggle" data-slides-pause aria-label="{{ 'media.pause_slideshow' | t }}" data-pause-label="{{ 'media.pause_slideshow' | t }}" data-play-label="{{ 'media.play_slideshow' | t }}"{% unless section.settings.slide_autoplay %} hidden{% endunless %}>{% render 'icon', name: 'pause', size: 12 %}{% render 'icon', name: 'play', size: 12 %}</button>
     </div>
   {%- endif -%}
@@ -275,6 +275,7 @@
     { "type": "checkbox", "id": "video_autoplay", "label": "Autoplay background video", "default": true, "info": "Muted. Pauses offscreen and when hidden. Reduced motion and the editor require pressing Play. Native controls remain available without JavaScript." },
     { "type": "url", "id": "video_url", "label": "Video file URL", "info": "Optional MP4 address from Content › Files, used when no video is picked above." },
     { "type": "url", "id": "poster_url", "label": "Video poster image URL" },
+    { "type": "select", "id": "video_focus", "label": "Video focus", "options": [{ "value": "top", "label": "Top" }, { "value": "center", "label": "Center" }, { "value": "bottom", "label": "Bottom" }], "default": "center", "info": "Which part of the video stays in view when the frame crops it." },
     { "type": "image_picker", "id": "image", "label": "Image", "info": "Also the video poster when no poster URL is set." },
     { "type": "collection", "id": "collection", "label": "Use collection image", "info": "Shown when no video or image is set." },
     { "type": "header", "content": "Phone media", "info": "Optional. Shown on screens under 750px instead of the media above, so a tall phone picture or video isn't cropped from a wide one." },
@@ -313,6 +314,7 @@
       ],
       "default": "left"
     },
+    { "type": "checkbox", "id": "split_phone", "label": "Keep media beside text on phones", "default": false, "info": "Split layout only. Phones show the media and the text side by side instead of stacked." },
     {
       "type": "select",
       "id": "height",

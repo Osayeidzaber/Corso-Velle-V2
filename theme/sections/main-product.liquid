@@ -46,7 +46,7 @@
   assign primary_collection = collection | default: eligible_collections.first
 -%}
 
-<div class="section-spacing section-presentation product-section color-{{ section.settings.color_scheme }}" data-product-section data-section-id="{{ section.id }}" data-proportions="{{ section.settings.proportions }}" data-sticky-info="{{ section.settings.sticky_info }}" data-media-right="{{ section.settings.media_right }}" data-text-first="{{ section.settings.text_first_mobile }}" style="{% render 'section-presentation', presentation: section.settings %}--product-info-gap:{{ section.settings.info_gap | default: 20 }}px;">
+<div class="section-spacing section-presentation product-section color-{{ section.settings.color_scheme }}{% if section.settings.page_layout != 'classic' %} full-width{% endif %}" data-product-section data-section-id="{{ section.id }}" data-layout="{{ section.settings.page_layout | default: 'split' }}" data-proportions="{{ section.settings.proportions }}" data-sticky-info="{{ section.settings.sticky_info }}" data-media-right="{{ section.settings.media_right }}" data-text-first="{{ section.settings.text_first_mobile }}" style="{% render 'section-presentation', presentation: section.settings %}--product-info-gap:{{ section.settings.info_gap | default: 20 }}px;">
   <div class="product">
     {% render 'product-media', product: product, selected_variant: variant, options: section.settings %}
 
@@ -509,6 +509,23 @@
       "id": "show_breadcrumb",
       "label": "Show breadcrumbs",
       "default": false
+    },
+    {
+      "type": "select",
+      "id": "page_layout",
+      "label": "Page layout",
+      "options": [
+        {
+          "value": "split",
+          "label": "Split screen"
+        },
+        {
+          "value": "classic",
+          "label": "Classic"
+        }
+      ],
+      "default": "split",
+      "info": "Split screen: photos fill the left half of the screen as a slider; the details sit in a narrow centred column on the right. Classic: the gallery and details follow the settings below."
     },
     {
       "type": "select",

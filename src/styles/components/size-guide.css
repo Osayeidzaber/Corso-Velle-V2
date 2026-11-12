@@ -1,0 +1,306 @@
+/* Size guide link, drawer and table. Global because sections on any page can open one. */
+.size-guide-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--nk-color-text-muted);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  transition: color var(--nk-dur-instant);
+}
+
+@media (hover: hover) {
+  .size-guide-link:hover {
+    color: var(--nk-color-text);
+  }
+}
+
+/* Size guide: right drawer on desktop, bottom sheet on phones */
+.drawer.size-guide-dialog {
+  width: min(100vw, 560px);
+}
+
+.size-guide-dialog__header {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 12px 18px 24px;
+  border-bottom: 1px solid var(--nk-color-line);
+}
+
+.size-guide-dialog__grip {
+  display: none;
+}
+
+.size-guide-dialog__titles {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.size-guide-dialog__eyebrow {
+  margin: 0;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--nk-color-text-muted);
+}
+
+.size-guide-dialog__title {
+  margin: 0;
+  font-family: var(--nk-font-heading);
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+  font-weight: 400;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.size-guide-dialog__title:focus {
+  outline: none;
+}
+
+.size-guide-dialog__close {
+  flex: none;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.size-guide__body {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  padding: 24px 24px calc(28px + env(safe-area-inset-bottom));
+}
+
+@media (max-width: 749px) {
+  .drawer.size-guide-dialog {
+    inset: auto 0 0 0;
+    width: 100%;
+    height: auto;
+    max-height: min(88dvh, 760px);
+    border-radius: 16px 16px 0 0;
+    translate: 0 100%;
+  }
+
+  .drawer.size-guide-dialog[open] {
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .drawer.size-guide-dialog[open] {
+      translate: 0 100%;
+    }
+  }
+
+  .size-guide-dialog__header {
+    padding: 26px 8px 14px 20px;
+    touch-action: none;
+    cursor: grab;
+  }
+
+  .size-guide-dialog__grip {
+    display: block;
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    width: 40px;
+    height: 4px;
+    margin-left: -20px;
+    border-radius: 2px;
+    background: var(--nk-color-line);
+  }
+
+  .size-guide__body {
+    padding: 18px 16px calc(24px + env(safe-area-inset-bottom));
+  }
+}
+
+nk-size-guide {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.size-chart__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+}
+
+.size-chart__basis {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--nk-color-text-muted);
+}
+
+.size-guide__units {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--nk-color-line);
+  border-radius: 999px;
+}
+
+.size-guide__unit {
+  min-width: 52px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--nk-color-text-muted);
+  font-family: var(--nk-font-spec);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 180ms var(--nk-ease-out),
+    color 180ms var(--nk-ease-out);
+}
+
+.size-guide__unit[aria-pressed='true'] {
+  background: var(--nk-color-accent);
+  color: var(--nk-color-accent-text);
+}
+
+.size-guide__unit:focus-visible {
+  outline: 2px solid var(--nk-focus);
+  outline-offset: 2px;
+}
+
+.size-table-wrap {
+  overflow: auto;
+  max-width: 100%;
+  border: 1px solid var(--nk-color-line);
+  overscroll-behavior-x: contain;
+}
+
+.size-table-wrap:focus-visible {
+  outline: 2px solid var(--nk-focus);
+  outline-offset: 2px;
+}
+
+.size-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--nk-font-spec);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.size-table th,
+.size-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--nk-color-line);
+  text-align: center;
+  white-space: nowrap;
+  background: var(--nk-color-bg);
+}
+
+.size-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.size-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--nk-color-surface);
+  color: var(--nk-color-text-muted);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.size-table__unit {
+  margin-inline-start: 4px;
+  text-transform: lowercase;
+  opacity: 0.7;
+}
+
+/* Size column stays pinned while measurements scroll sideways on narrow screens. */
+.size-table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  text-align: start;
+  border-right: 1px solid var(--nk-color-line);
+}
+
+.size-table thead th:first-child {
+  z-index: 2;
+}
+
+.size-table tbody th {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.size-table__tag {
+  display: none;
+  margin-inline-start: 8px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--nk-color-accent);
+  color: var(--nk-color-accent-text);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+
+.size-table tbody tr > * {
+  transition: background-color 160ms var(--nk-ease-out);
+}
+
+@media (hover: hover) {
+  .size-table tbody tr:hover > * {
+    background: color-mix(in oklab, var(--nk-color-surface) 70%, var(--nk-color-bg));
+  }
+}
+
+.size-table tr[data-current] > * {
+  background: var(--nk-color-surface);
+  color: var(--nk-color-text);
+}
+
+.size-table tr[data-current] th {
+  box-shadow: inset 3px 0 0 var(--nk-color-accent);
+}
+
+.size-table tr[data-current] .size-table__tag {
+  display: inline-block;
+}
+
+.size-chart__notes,
+.size-chart__fallback {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--nk-color-text-muted);
+}
+
+.size-chart__notes {
+  padding-top: 16px;
+  border-top: 1px solid var(--nk-color-line);
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .size-guide__unit,
+  .size-table tbody tr > * {
+    transition: none;
+  }
+}

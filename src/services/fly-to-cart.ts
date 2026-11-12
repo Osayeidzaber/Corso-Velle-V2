@@ -1,6 +1,7 @@
 import { config } from '../core/config';
 import { decorativeMotionAllowed, durations } from '../core/motion';
 import type { CartResult } from './cart';
+import { expectLineFlight, lineLanded } from './cart-motion';
 
 /**
  * Add-to-cart "fly" (Theme settings > Cart > Add-to-cart animation): after Shopify confirms an add,
@@ -41,6 +42,7 @@ export function sourceImage(trigger: Element): HTMLImageElement | null {
 
 function landingSpot(): Element | null {
   const drawer = document.querySelector('#CartDrawer dialog[open]');
+  // Shopify lists the newest line first: that is where the photo lands.
   if (drawer) return drawer.querySelector('.cart-line__media') ?? drawer.querySelector('.drawer__title');
   const icon = document.querySelector('.header__cart');
   return icon && icon.getBoundingClientRect().width > 0 ? icon : null;
@@ -48,9 +50,10 @@ function landingSpot(): Element | null {
 
 function fly(src: string, from: DOMRect): void {
   const target = landingSpot();
-  if (!target || document.visibilityState !== 'visible') return;
+  // Whatever happens below, a line waiting to appear gets shown (without fuss if nothing flew).
+  if (!target || document.visibilityState !== 'visible') return lineLanded(false);
   const to = target.getBoundingClientRect();
-  if (!from.width || !to.width) return;
+  if (!from.width || !to.width) return lineLanded(false);
 
   const size = Math.min(from.width, from.height, 220);
   const startX = from.left + from.width / 2 - size / 2;
@@ -89,18 +92,19 @@ function fly(src: string, from: DOMRect): void {
     { duration: FLIGHT, easing: 'cubic-bezier(0.55, 0, 0.75, 0.4)', fill: 'forwards' },
   );
   // Background tabs may never finish the animation: the flyer is always removed on time anyway.
-  const safety = window.setTimeout(() => flyer.remove(), FLIGHT + 400);
+  const safety = window.setTimeout(() => { flyer.remove(); lineLanded(false); }, FLIGHT + 400);
   const done = () => {
     window.clearTimeout(safety);
     flyer.remove();
+    lineLanded(true);
     land(target);
   };
   across.addEventListener('finish', done, { once: true });
-  across.addEventListener('cancel', () => flyer.remove(), { once: true });
+  across.addEventListener('cancel', () => { flyer.remove(); lineLanded(false); }, { once: true });
 }
 
-function land(target: Element): void {
-  target.animate(
+function land(target: Element | null): void {
+  target?.animate(
     [{ transform: 'scale(1)' }, { transform: 'scale(1.14)', offset: 0.4 }, { transform: 'scale(1)' }],
     { duration: 420, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
   );
@@ -134,6 +138,7 @@ export function installFlyToCart(): void {
     if (!config().cart.flyAnimation || config().cart.afterAdd === 'page' || !decorativeMotionAllowed()) return;
     const img = sourceImage(added.trigger);
     if (!img) return;
+    expectLineFlight();
     // Capture the photo and its position now (a quick-add sheet may close, sections re-render),
     // and let the drawer finish opening before measuring where to land.
     const src = img.currentSrc || img.src;

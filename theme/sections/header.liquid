@@ -55,17 +55,25 @@
         <nav class="header__nav" aria-label="{{ 'header.primary_navigation' | t }}">
           <ul class="nav" role="list">
             {%- for link in menu.links -%}
+{%- liquid
+  # The store's main menu calls this item Catalog; the storefront shows it as Shop.
+  assign link_label = link.title
+  assign link_key = link.title | downcase | strip
+  if link_key == 'catalog'
+    assign link_label = 'Shop'
+  endif
+-%}
               <li class="nav__item">
                 <a class="nav__link" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>
                   {%- if section.settings.link_hover == 'swap' -%}
-                    {% render 'letter-swap', text: link.title %}
+                    {% render 'letter-swap', text: link_label %}
                   {%- else -%}
-                    {{- link.title | escape -}}
+                    {{- link_label | escape -}}
                   {%- endif -%}
                 </a>
                 {%- if link.links.size > 0 -%}
                   <details class="nav__disclosure">
-                    <summary aria-label="{{ 'header.show_submenu' | t: title: link.title | escape }}">
+                    <summary aria-label="{{ 'header.show_submenu' | t: title: link_label | escape }}">
                       {% render 'icon', name: 'chevron-down', size: 12 %}
                     </summary>
                     <div class="nav__panel">

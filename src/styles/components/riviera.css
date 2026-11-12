@@ -8,7 +8,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-weight: var(--nk-font-heading-weight, 400);
+  font-weight: var(--nk-font-heading-weight, 700);
   letter-spacing: var(--nk-heading-tracking, -0.02em);
   line-height: var(--nk-heading-leading, 1);
 }
@@ -37,7 +37,7 @@ em,
 
 .display {
   font-family: var(--nk-font-heading);
-  font-weight: var(--nk-font-heading-weight, 400);
+  font-weight: var(--nk-font-heading-weight, 700);
   letter-spacing: var(--nk-display-tracking, -0.035em);
   line-height: var(--nk-display-leading, 0.92);
 }
@@ -125,6 +125,15 @@ em,
 
 .link-underline:focus-visible::after {
   transform: scaleX(0);
+}
+
+/* Touch: the text is one line tall, so the tap area reaches a full finger-width around it. */
+@media (pointer: coarse) {
+  .link-underline::before {
+    content: '';
+    position: absolute;
+    inset: -12px -6px;
+  }
 }
 
 @media (hover: hover) {
@@ -247,7 +256,7 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]):not([da
 /* ---------- Product page ---------- */
 .product__title {
   font-size: clamp(2.25rem, 4.5vw, 3.75rem);
-  font-weight: 400;
+  font-weight: var(--nk-font-heading-weight, 700);
   text-transform: none;
 }
 
@@ -309,4 +318,89 @@ nk-header[data-overlay][data-surface='overlay']:not([data-forced-solid]):not([da
   margin: 0;
   font-size: clamp(3rem, 9vw, 7.5rem);
   line-height: 0.95;
+}
+
+/* ---------- Corso Velle type roles (matched to corsovelle.com) ----------
+   Newsreader is for display only: page and banner titles (regular) and the product title (bold).
+   Everything a shopper reads or taps is Inter: section headings medium, card names bold,
+   prices medium, buttons in sentence case, labels small caps with light tracking.
+   :root raises specificity over product.css and global.css, which load later. */
+:root .product__title {
+  font-size: clamp(1.875rem, 4vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+:root .section-head h2,
+:root .tabs__panel-heading,
+:root .runway__panel-head h3,
+:root .featured-collection__heading,
+:root .collection-tabs__heading {
+  font-family: var(--nk-font-body);
+  font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: 0;
+  line-height: 1.25;
+  text-transform: none;
+}
+:root .section-head h2 em,
+:root .featured-collection__heading em,
+:root .collection-tabs__heading em { font-family: inherit; font-style: normal; }
+
+:root .card__title {
+  font-family: var(--nk-font-body);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+:root .card .price {
+  font-family: var(--nk-font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+:root .product__price {
+  font-family: var(--nk-font-body);
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+:root .button {
+  font-family: var(--nk-font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+:root .spec,
+:root .lbl,
+:root .eyebrow,
+:root .disclosure > summary {
+  font-family: var(--nk-font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+:root .option__values .option__value label {
+  font-family: var(--nk-font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+:root .announcement {
+  font-family: var(--nk-font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
 }

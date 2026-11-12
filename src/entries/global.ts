@@ -18,14 +18,18 @@ import { installCardInteractions } from '../components/product/card-interactions
 import { installCartRenderer } from '../services/cart-render';
 import { installPromotions } from '../services/discounts';
 import { installFlyToCart } from '../services/fly-to-cart';
+import { installCartMotion } from '../services/cart-motion';
 import { installEditorAdapter } from '../services/editor';
 import { installUnveil } from '../services/unveil';
+import { installStudioCredit } from '../services/studio-credit';
 
 installEditorAdapter();
+installStudioCredit();
 installMotionPolicy();
 installSmoothScroll();
 installCartRenderer();
 installPromotions();
+installCartMotion();
 installFlyToCart();
 installModalTriggers();
 installCardInteractions();
@@ -62,6 +66,7 @@ registerLazy('nk-category-rail', () => import('../components/category-rail/categ
 registerLazy('nk-size-guide', () => import('../components/size-guide/size-guide'));
 registerLazy('nk-fit-finder', () => import('../components/fit-finder/fit-finder'));
 registerLazy('nk-recommendations', () => import('../components/recommendations/recommendations'));
+registerLazy('nk-rec-tabs', () => import('../components/product/rec-tabs'));
 registerLazy('nk-cart-recommendations', () => import('../components/cart/cart-recommendations'));
 // Optional section kit (docs/SECTION-SOURCES.md): only the sections that need behaviour.
 registerLazy('nk-countdown', () => import('../components/countdown/countdown'));
@@ -70,6 +75,7 @@ registerLazy('nk-count-up', () => import('../components/count-up/count-up'));
 registerLazy('nk-video', () => import('../components/video/video'));
 registerLazy('nk-image-compare', () => import('../components/image-compare/image-compare'));
 registerLazy('nk-clothes-rack', () => import('../components/clothes-rack/clothes-rack'));
+registerLazy('nk-runway', () => import('../components/runway/runway'));
 for (const tag of ['nk-variant-picker', 'nk-product-form', 'nk-gallery', 'nk-sticky-buy']) {
   registerLazy(tag, () => import('./product'));
 }

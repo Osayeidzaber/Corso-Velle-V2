@@ -5,7 +5,7 @@ import './fit-finder.css';
 export const FIT_STORAGE_KEY = 'nk:fit-profile';
 const CM_PER_INCH = 2.54;
 const LB_PER_KG = 2.20462;
-const STEPS = 3;
+const STEPS = 2;
 
 export type Sex = 'female' | 'male';
 export type Shape = 'narrow' | 'average' | 'broad';

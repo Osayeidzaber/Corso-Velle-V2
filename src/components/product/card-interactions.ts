@@ -1,4 +1,5 @@
 import { t } from '../../core/config';
+import { icon } from '../../core/dom';
 import { announce } from '../../services/announce';
 import { cart, CartError } from '../../services/cart';
 import { decorativeMotionAllowed } from '../../core/motion';
@@ -207,9 +208,9 @@ async function handleQuickAdd(button: HTMLButtonElement): Promise<void> {
 
   if (!quickAddLabels.has(button)) quickAddLabels.set(button, button.textContent ?? '');
   const originalText = quickAddLabels.get(button)!;
-  const settle = (state: 'data-added' | 'data-error', text: string, ms: number) => {
+  const settle = (state: 'data-added' | 'data-error', content: string | Node, ms: number) => {
     button.setAttribute(state, '');
-    button.textContent = text;
+    button.replaceChildren(content);
     quickAddTimers.set(button, window.setTimeout(() => {
       button.removeAttribute(state);
       button.textContent = originalText;
@@ -225,7 +226,7 @@ async function handleQuickAdd(button: HTMLButtonElement): Promise<void> {
   try {
     const quantity = Math.max(1, Number(button.dataset.quickAddQuantity) || 1);
     await cart.add([{ id: variantId, quantity }], 'quick-add');
-    settle('data-added', '✓', 900);
+    settle('data-added', icon('check', 14), 900);
   } catch (error) {
     settle('data-error', '!', 1400);
     const message = error instanceof CartError ? error.message : t('cart.error');

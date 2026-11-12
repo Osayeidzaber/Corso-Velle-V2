@@ -1,6 +1,6 @@
 {%- comment -%}
   Resolve an exact product, collection or tag assignment to an Admin-managed chart or legacy CSV.
-  Within each scope the first usable matching rule wins. Tags are one per line, case-insensitive.
+  Within each scope the first usable matching rule wins. Tags and name words are one per line, case-insensitive.
 {%- endcomment -%}
 {%- liquid
   assign matched_rule = ''
@@ -9,7 +9,7 @@
     assign scopes = rule_scope | split: ','
   endif
   for scope in scopes
-    for index in (1..12)
+    for index in (1..14)
       assign prefix = 'size_chart_' | append: index
       assign table_key = prefix | append: '_table'
       assign image_key = prefix | append: '_image'
@@ -26,6 +26,17 @@
         if rule_image == blank
           continue
         endif
+      endif
+      if scope == 'titles'
+        assign product_title = product.title | downcase
+        assign title_lines = settings[scope_key] | newline_to_br | split: '<br />'
+        for title_line in title_lines
+          assign target_title = title_line | strip | downcase
+          if target_title != blank and product_title contains target_title
+            assign matched_rule = index
+            break
+          endif
+        endfor
       endif
       if scope == 'tags'
         assign tag_lines = settings[scope_key] | newline_to_br | split: '<br />'

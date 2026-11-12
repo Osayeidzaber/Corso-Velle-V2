@@ -6,7 +6,7 @@
   turned off when a Collection banner section sits above.
 {%- endcomment -%}
 {%- paginate collection.products by section.settings.products_per_page -%}
-  <div class="main-collection{% if section.settings.show_header %} section-spacing{% else %} main-collection--flush-top{% endif %}">
+  <div class="main-collection{% if section.settings.page_width != 'page' %} full-width main-collection--edge{% endif %}{% if section.settings.show_header %} section-spacing{% else %} main-collection--flush-top{% endif %}">
     {%- if section.settings.show_header -%}
       <div class="collection-header collection-header--riviera">
         <span class="eyebrow">{{ 'collection.product_count' | t: count: collection.all_products_count }}</span>
@@ -247,6 +247,16 @@
         }
       ],
       "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "page_width",
+      "label": "Page width",
+      "options": [
+        { "value": "full", "label": "Edge to edge" },
+        { "value": "page", "label": "Page width" }
+      ],
+      "default": "full"
     },
     {
       "type": "range",

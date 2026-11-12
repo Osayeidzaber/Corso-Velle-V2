@@ -348,15 +348,9 @@ html.nk-anim .card--has-video:not([data-video-failed]) .card__media--has-second 
    does not hold the second image up after the pointer has left the card. */
 
 
-.card:has(:focus-visible) .card__title {
-  background-size: 100% 1px;
-}
 
 @media (hover: hover) and (pointer: fine) {
 
-  .card:hover .card__title {
-    background-size: 100% 1px;
-  }
 
   /* Video cards reveal one layer: the video. Stacking the second photo's curtain under it played
      photo-then-video on every hover. The photo comes back if the video fails or motion is off

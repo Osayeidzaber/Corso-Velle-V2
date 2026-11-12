@@ -1,0 +1,548 @@
+{%- comment -%}
+  Try the look: a line-up of full-length models. The centre look is sharp, its neighbours recede
+  and blur. Opening a look isolates the model, shows numbered pins and slides in a shoppable
+  panel. See src/components/runway.
+
+  Blocks are flat: every "Piece" belongs to the nearest "Look" above it.
+  Without JS the looks are a plain scrolling row and each look's pieces are product links.
+{%- endcomment -%}
+{%- liquid
+  assign s = section.settings
+  assign look_total = section.blocks | where: 'type', 'look' | size
+-%}
+<nk-runway
+  class="runway{% if section.index == 1 %} runway--hero{% endif %} section-spacing section-presentation color-{{ s.color_scheme }} full-width"
+  style="{% render 'section-presentation', presentation: s %}--runway-height: {{ s.stage_height }}svh; --runway-height-phone: {{ s.stage_height_phone }}svh; --runway-model: {{ s.model_height }}%; --runway-model-n: {{ s.model_height }}; --runway-spacing: {{ s.spacing }}; --runway-spacing-phone: {{ s.spacing_phone }}; --runway-side-scale: {{ s.side_scale | divided_by: 100.0 }}; --runway-blur: {{ s.side_blur }}px; --runway-fade: {{ s.side_fade | divided_by: 100.0 }}; --runway-speed: {{ s.speed }}ms; --runway-interval: {{ s.autoplay_seconds }}s; --runway-detail-scale: {{ s.detail_scale | divided_by: 100.0 }}; --runway-panel: {{ s.panel_width }}px; --runway-pin: {{ s.pin_size }}px; --runway-heading: {{ s.heading_size }}px; --runway-heading-phone: {{ s.heading_size_phone }}px; --runway-rise: {{ s.depth_rise | divided_by: 10.0 }}; --runway-far: {{ s.far_fade | divided_by: 100.0 }}; --runway-backdrop-strength: {{ s.backdrop_strength }}%; --runway-backdrop-size: {{ s.backdrop_size }}vw; --runway-shine: {{ s.shine_strength | divided_by: 100.0 }}; --runway-photo-fade: {{ s.photo_fade }}%; --runway-lean: {{ s.mouse_lean | divided_by: 100.0 }};"
+  data-visible="{{ s.visible_sides }}"
+  data-trail="{{ s.trail | divided_by: 100.0 }}"
+  data-click="{{ s.click_action }}"
+  data-panel-side="{{ s.panel_side }}"
+  data-panel-open="{{ s.panel_open }}"
+  data-look-label="{{ s.look_label | escape }}"
+  data-start="{{ s.start_look }}"
+  data-phone-panel="{{ s.phone_panel }}"
+  data-intro-align="{{ s.intro_align }}"
+  {% if s.show_bar_price %}data-bar-price{% endif %}
+  {% if s.share_links %}data-share{% endif %}
+  {% if s.swipe_hint != blank %}data-swipe-hint{% endif %}
+  {% unless s.show_pin_tips %}data-no-pin-tips{% endunless %}
+  {% unless s.backdrop_phone %}data-no-phone-backdrop{% endunless %}
+  {% unless s.arrows_phone %}data-no-phone-arrows{% endunless %}
+  data-pin-style="{{ s.pin_style }}"
+  data-money-format="{{ shop.money_format | strip_html | escape }}"
+  data-discount-code="{{ s.bundle_code | strip | escape }}"
+  data-discount-percent="{% if s.bundle_code != blank %}{{ s.bundle_percent }}{% else %}0{% endif %}"
+  data-choose-message="{{ s.choose_message | escape }}"
+  data-error-message="{{ s.error_message | escape }}"
+  data-added-label="{{ s.added_label | escape }}"
+  {% if s.autoplay %}data-autoplay{% endif %}
+  {% if s.custom_cursor %}data-cursor{% endif %}
+  {% if s.shine %}data-shine{% endif %}
+  {% unless s.show_sale %}data-hide-sale{% endunless %}
+  {% if s.photo_fade > 0 %}data-photo-fade{% endif %}
+  data-save-label="{{ s.save_label | escape }}"
+  {% if s.knock_out_white %}data-knockout{% endif %}
+  {% if s.stage_glow %}data-glow{% endif %}
+  {% if s.ground_shadow %}data-shadow{% endif %}
+>
+  {%- if s.eyebrow != blank or s.heading != blank or s.text != blank or s.button_label != blank -%}
+  <div class="runway__intro">
+    {%- if s.eyebrow != blank -%}<p class="runway__eyebrow spec">{{ s.eyebrow | escape }}</p>{%- endif -%}
+    {%- assign heading_tag = s.heading_tag | default: 'h2' -%}
+    {%- if s.heading != blank -%}<{{ heading_tag }} class="runway__heading">{{ s.heading | escape }}</{{ heading_tag }}>{%- endif -%}
+    {%- if s.text != blank -%}<p class="runway__text">{{ s.text | escape }}</p>{%- endif -%}
+    {%- if s.button_label != blank and s.button_link != blank -%}<a class="button runway__cta" href="{{ s.button_link }}">{{ s.button_label | escape }}</a>{%- endif -%}
+  </div>
+  {%- endif -%}
+
+  <div class="runway__stage" data-ref="stage">
+    {%- comment -%} A soft light sweeps the empty stage while the line-up loads; it fades out once the models are in. {%- endcomment -%}
+    <div class="runway__skeleton" aria-hidden="true"></div>
+    {%- if s.stage_glow -%}<div class="runway__light" data-ref="light" aria-hidden="true"></div>{%- endif -%}
+    {%- if s.show_backdrop -%}<div class="runway__backdrop" data-ref="backdrop" aria-hidden="true"><span data-ref="backdrop-name"></span></div>{%- endif -%}
+    {%- assign look_index = 0 -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type != 'look' -%}{%- continue -%}{%- endif -%}
+      {%- assign look_index = look_index | plus: 1 -%}
+      {%- comment -%} As the page's first section the line-up is the first thing seen: load it straight away. {%- endcomment -%}
+      {%- assign look_loading = 'lazy' -%}
+      {%- if section.index == 1 -%}{%- assign look_loading = 'eager' -%}{%- endif -%}
+      <div class="runway__look" data-ref="look" data-block="{{ block.id }}" {% if block.settings.background %}data-back {% endif %}data-name="{{ block.settings.name | escape }}" data-backdrop="{{ block.settings.backdrop_text | default: block.settings.name | escape }}" style="--look-scale: {{ block.settings.photo_scale | divided_by: 100.0 }};" {{ block.shopify_attributes }}>
+        <div class="runway__frame">
+          <a
+            class="runway__trigger"
+            data-ref="trigger"
+            href="{{ block.settings.link | default: '#' }}"
+            aria-label="{{ s.look_label | escape }} {{ look_index }}: {{ block.settings.name | escape }}"
+          >
+            {%- if block.settings.image -%}
+              {{ block.settings.image | image_url: width: 1400 | image_tag: loading: look_loading, widths: '500, 800, 1100, 1400', sizes: '(min-width: 750px) 40vw, 80vw', alt: block.settings.image.alt, class: 'runway__img', style: block.settings.image.presentation.focal_point }}
+            {%- elsif block.settings.photo_asset != blank -%}
+              <img class="runway__img" src="{{ block.settings.photo_asset | strip | asset_url }}" alt="{{ block.settings.name | escape }}" width="800" height="1800" loading="{{ look_loading }}"{% if look_index == 1 and section.index == 1 %} fetchpriority="high"{% endif %}>
+            {%- else -%}
+              {{ 'image' | placeholder_svg_tag: 'runway__img runway__img--placeholder' }}
+            {%- endif -%}
+          </a>
+          {%- if s.show_pins -%}
+            {%- assign current = 0 -%}{%- assign pin = 0 -%}
+            {%- for item in section.blocks -%}
+              {%- if item.type == 'look' -%}{%- assign current = current | plus: 1 -%}{%- continue -%}{%- endif -%}
+              {%- if current != look_index or item.settings.product == blank -%}{%- continue -%}{%- endif -%}
+              {%- assign pin = pin | plus: 1 -%}
+              <button
+                type="button"
+                class="runway__pin"
+                data-ref="pin"
+                data-piece="{{ pin }}"
+                style="--x: {{ item.settings.pin_x }}%; --y: {{ item.settings.pin_y }}%; --pin: {{ pin }};"
+                aria-label="{{ item.settings.product.title | escape }}"
+              ><span>{{ pin }}</span><em class="runway__pin-tip">{{ item.settings.product.title | escape }}<small>{{ item.settings.product.price | money }}</small></em></button>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endfor -%}
+
+    {%- if s.custom_cursor -%}<div class="runway__cursor" data-ref="cursor" aria-hidden="true"><div class="runway__cursor-dot"><span class="spec">{{ s.cursor_label | escape }}</span></div></div>{%- endif -%}
+    <button type="button" class="runway__close" data-ref="close" aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
+    <div class="runway__look-title" aria-live="polite">
+      <span class="spec" data-ref="detail-index"></span>
+      <span data-ref="detail-name"></span>
+    </div>
+    {%- if s.swipe_hint != blank -%}<p class="runway__swipe spec" data-ref="swipe" aria-hidden="true">{{ s.swipe_hint | escape }}</p>{%- endif -%}
+    <div class="runway__scrim" data-ref="scrim" aria-hidden="true"></div>
+    {%- if s.hint != blank and s.show_pins -%}<p class="runway__hint spec">{{ s.hint | escape }}</p>{%- endif -%}
+
+    {%- assign look_index = 0 -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type != 'look' -%}{%- continue -%}{%- endif -%}
+      {%- assign look_index = look_index | plus: 1 -%}
+      {%- capture rows -%}
+        {%- assign current = 0 -%}{%- assign piece_number = 0 -%}
+        {%- for item in section.blocks -%}
+          {%- if item.type == 'look' -%}{%- assign current = current | plus: 1 -%}{%- continue -%}{%- endif -%}
+          {%- assign product = item.settings.product -%}
+          {%- if current != look_index or product == blank -%}{%- continue -%}{%- endif -%}
+          {%- assign piece_number = piece_number | plus: 1 -%}
+          {%- assign thumb = item.settings.image | default: product.featured_media.preview_image -%}
+          {%- assign first_variant = product.selected_or_first_available_variant -%}
+          {%- assign on_sale = false -%}
+          {%- if first_variant.compare_at_price > first_variant.price -%}{%- assign on_sale = true -%}{%- endif -%}
+          <li
+            class="runway__piece"
+            data-ref="piece"
+            data-piece="{{ piece_number }}"
+            data-price="{{ first_variant.price }}"
+            data-compare="{{ first_variant.compare_at_price | default: 0 }}"
+            {% unless product.available %}data-sold-out{% endunless %}
+            {% if product.has_only_default_variant and product.available %}data-variant="{{ product.selected_or_first_available_variant.id }}"{% endif %}
+            style="--i: {{ piece_number }};"
+            {{ item.shopify_attributes }}
+          >
+            <a class="runway__thumb" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+              {%- if thumb -%}{{ thumb | image_url: width: 240 | image_tag: loading: 'lazy', widths: '120, 240', sizes: '6rem', alt: '' }}{%- endif -%}
+              {%- if s.show_pins -%}<span class="runway__thumb-number">{{ piece_number }}</span>{%- endif -%}
+            </a>
+            <div class="runway__piece-copy">
+              {%- if s.show_vendor -%}<span class="runway__vendor spec">{{ product.vendor | escape }}</span>{%- endif -%}
+              <a class="runway__piece-title" href="{{ product.url }}">{{ product.title | escape }}</a>
+              <span class="runway__piece-price">
+                {%- if product.available -%}
+                  <span class="runway__now" data-ref="piece-price"{% if on_sale %} data-sale{% endif %}>{{ first_variant.price | money }}</span>
+                  <s class="runway__was" data-ref="piece-was"{% unless on_sale %} hidden{% endunless %}>{{ first_variant.compare_at_price | money }}</s>
+                  <span class="runway__sale" data-ref="piece-sale"{% unless on_sale %} hidden{% endunless %}>{% if on_sale %}-{{ first_variant.compare_at_price | minus: first_variant.price | times: 100 | divided_by: first_variant.compare_at_price }}%{% endif %}</span>
+                {%- else -%}
+                  <span class="runway__now">{{ 'product.sold_out' | t }}</span>
+                {%- endif -%}
+              </span>
+              {%- if product.available and product.has_only_default_variant == false -%}
+                <div class="runway__sizes" data-ref="variant" role="radiogroup" aria-label="{{ s.choose_label | escape }}: {{ product.title | escape }}">
+                  {%- for variant in product.variants -%}
+                    <label class="runway__size">
+                      <input
+                        type="radio"
+                        name="runway-{{ section.id }}-{{ item.id }}"
+                        value="{{ variant.id }}"
+                        data-price="{{ variant.price }}"
+                        data-compare="{{ variant.compare_at_price | default: 0 }}"
+                        data-money="{{ variant.price | money | strip_html | escape }}"
+                        data-compare-money="{{ variant.compare_at_price | money | strip_html | escape }}"
+                        {% unless variant.available %}disabled{% endunless %}
+                      >
+                      <span>{{ variant.title | escape }}</span>
+                    </label>
+                  {%- endfor -%}
+                </div>
+                <p class="runway__missing">{{ s.choose_label | escape }}</p>
+              {%- endif -%}
+              {%- assign piece_guide = '' -%}
+              {%- if s.show_size_guide and product.available -%}
+                {%- capture piece_guide -%}{%- render 'size-chart-for-product', product: product -%}{%- endcapture -%}
+                {%- assign piece_guide = piece_guide | strip -%}
+              {%- endif -%}
+              {%- if piece_guide != blank -%}
+                {%- assign guide_id = 'RunwaySize-' | append: section.id | append: '-' | append: item.id -%}
+                <button type="button" class="size-guide-link runway__guide-link spec" data-nk-open="{{ guide_id }}" aria-haspopup="dialog">{{ s.size_guide_label | escape }}</button>
+                <nk-modal id="{{ guide_id }}">
+                  <dialog class="drawer drawer--right size-guide-dialog" aria-labelledby="{{ guide_id }}-title" data-swipe-close>
+                    <div class="size-guide-dialog__header" data-drag-handle>
+                      <span class="size-guide-dialog__grip" aria-hidden="true"></span>
+                      <div class="size-guide-dialog__titles">
+                        <p class="size-guide-dialog__eyebrow spec">{{ s.size_guide_label | escape }}</p>
+                        <h2 class="size-guide-dialog__title" id="{{ guide_id }}-title" tabindex="-1" data-autofocus>{{ product.title | escape }}</h2>
+                      </div>
+                      <button type="button" class="icon-button size-guide-dialog__close" data-nk-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
+                    </div>
+                    <div class="drawer__body size-guide__body">{{ piece_guide }}</div>
+                  </dialog>
+                </nk-modal>
+              {%- endif -%}
+            </div>
+            {%- if product.available -%}
+              <button type="button" class="runway__add" data-ref="add" aria-label="{{ s.add_label | escape }}: {{ product.title | escape }}">
+                <span class="runway__add-plus">{% render 'icon', name: 'plus' %}</span>
+                <svg class="runway__add-check" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5"/></svg>
+              </button>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      {%- endcapture -%}
+      <aside class="runway__panel" data-ref="panel" data-lenis-prevent aria-label="{{ s.panel_title | escape }}: {{ block.settings.name | escape }}">
+        <span class="runway__grip" aria-hidden="true"></span>
+        <p class="runway__sheet-look"><span class="spec">{{ s.look_label | escape }} {% if look_index < 10 %}0{% endif %}{{ look_index }}</span>{{ block.settings.name | escape }}</p>
+        <button type="button" class="runway__sheet-close" data-sheet-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
+        <header class="runway__panel-head" data-ref="sheet-head">
+          <h3>{%- if block.settings.tag != blank -%}<span class="runway__tag spec">{{ block.settings.tag | escape }}</span>{%- endif -%}{{ s.panel_title | escape }}</h3>
+          {%- if s.show_count -%}<span class="spec">{{ piece_number }} {% if piece_number == 1 %}{{ s.piece_label | escape }}{% else %}{{ s.pieces_label | escape }}{% endif %}</span>{%- endif -%}
+        </header>
+        {%- if block.settings.description != blank or block.settings.button_label != blank -%}
+          <div class="runway__story">
+            {%- if block.settings.description != blank -%}<p>{{ block.settings.description | escape }}</p>{%- endif -%}
+            {%- if block.settings.button_label != blank and block.settings.link != blank -%}<a class="runway__story-link spec" href="{{ block.settings.link }}">{{ block.settings.button_label | escape }}</a>{%- endif -%}
+          </div>
+        {%- endif -%}
+        <ul class="runway__pieces" role="list">{{ rows }}</ul>
+        {%- if s.show_bundle and piece_number > 0 -%}
+          <footer class="runway__bundle" data-ref="bundle">
+            <div class="runway__bundle-copy">
+              <div>
+                <strong>{{ s.bundle_heading | escape }}</strong>
+                {%- if s.bundle_text != blank -%}<small>{{ s.bundle_text | escape }}</small>{%- endif -%}
+                <small class="runway__save" data-ref="save" hidden></small>
+              </div>
+              <div class="runway__bundle-total"><s data-ref="compare" hidden></s> <span data-ref="total"></span></div>
+            </div>
+            <button type="button" class="button runway__bundle-add" data-ref="add-all">
+              <span>{{ s.bundle_button | escape }}</span>{% render 'icon', name: 'arrow-right' %}
+            </button>
+          </footer>
+        {%- endif -%}
+        <p class="runway__status" data-ref="status" role="status"></p>
+      </aside>
+    {%- endfor -%}
+  </div>
+
+  {%- if look_total > 1 -%}
+    <div class="runway__controls">
+      {%- if s.show_arrows -%}<button type="button" class="runway__arrow" data-ref="prev" aria-label="{{ 'carousel.previous' | t }}">{% render 'icon', name: 'arrow-left' %}</button>{%- endif -%}
+      {%- if s.show_name -%}<p class="runway__bar-name" data-ref="now-name" aria-live="polite"></p>{%- endif -%}
+      {%- if s.autoplay and s.show_play -%}
+        <button type="button" class="runway__play" data-ref="play" aria-pressed="true" aria-label="{{ 'media.pause_slideshow' | t }}" data-play-label="{{ 'media.play_slideshow' | t }}" data-pause-label="{{ 'media.pause_slideshow' | t }}">
+          <span class="runway__icon-pause">{% render 'icon', name: 'pause' %}</span>
+          <span class="runway__icon-play">{% render 'icon', name: 'play' %}</span>
+        </button>
+      {%- endif -%}
+      {%- if s.show_arrows -%}<button type="button" class="runway__arrow" data-ref="next" aria-label="{{ 'carousel.next' | t }}">{% render 'icon', name: 'arrow-right' %}</button>{%- endif -%}
+    </div>
+  {%- endif -%}
+</nk-runway>
+
+{% stylesheet %}
+  /* Critical: loads with the page, before the line-up's own script and styles. Without it the
+     cut-out photos would flash at full size. Holds the stage at its final height and shows a
+     skeleton line-up in their place. */
+  html.js nk-runway { display: block; }
+  html.js nk-runway:not([data-ready]) .runway__stage {
+    position: relative;
+    display: block;
+    height: var(--runway-height, 72svh);
+    min-height: 24rem;
+    padding: 0;
+    overflow: hidden;
+  }
+  html.js nk-runway.runway--hero:not([data-ready]) .runway__stage { height: calc(100svh - var(--nk-header-h, 77px) - 4.25rem); }
+  html.js nk-runway:not([data-ready]) .runway__look {
+    position: absolute;
+    inset: 0;
+    visibility: hidden;
+  }
+  html.js nk-runway:not([data-ready]) .runway__stage > :not(.runway__skeleton, .runway__look, .runway__light) { display: none; }
+
+  .runway__skeleton { display: none; }
+  html.js .runway__skeleton {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    overflow: hidden;
+    pointer-events: none;
+    transition: opacity 420ms ease, visibility 0s linear 420ms;
+  }
+  html.js nk-runway[data-ready] .runway__skeleton { opacity: 0; visibility: hidden; }
+
+  /* A soft band of light drifting across the stage, like a studio light warming up. */
+  html.js .runway__skeleton::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 45%;
+    background: linear-gradient(100deg, transparent, color-mix(in srgb, white 70%, transparent) 50%, transparent);
+    translate: -100% 0;
+    opacity: 0.8;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html.js nk-runway:not([data-ready]) .runway__skeleton::before { animation: runway-sheen 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+  }
+  @keyframes runway-sheen {
+    to { translate: 330% 0; }
+  }
+  @media (max-width: 749px) {
+    html.js nk-runway:not([data-ready]) .runway__stage { height: var(--runway-height-phone, 80svh); min-height: 20rem; }
+    html.js nk-runway.runway--hero:not([data-ready]) .runway__stage { height: calc(100svh - var(--nk-header-h, 64px) - 7rem); }
+    html.js .runway__skeleton::before { width: 70%; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Try the look",
+  "class": "runway-section",
+  "max_blocks": 50,
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "eyebrow", "label": "Small line above the heading" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Try the look." },
+    { "type": "text", "id": "text", "label": "Text", "default": "Styled head to toe. Tap a look to see every piece." },
+    { "type": "text", "id": "button_label", "label": "Button label" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading level",
+      "options": [
+        { "value": "h1", "label": "Page heading (use when this is the first section)" },
+        { "value": "h2", "label": "Section heading" }
+      ],
+      "default": "h2"
+    },
+    { "type": "range", "id": "heading_size", "label": "Heading size", "min": 20, "max": 96, "step": 2, "unit": "px", "default": 44 },
+    { "type": "range", "id": "heading_size_phone", "label": "Heading size on phones", "min": 18, "max": 64, "step": 2, "unit": "px", "default": 30 },
+    {
+      "type": "select",
+      "id": "intro_align",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Centre" }
+      ],
+      "default": "left"
+    },
+    { "type": "header", "content": "Line-up" },
+    { "type": "range", "id": "start_look", "label": "Look shown first", "min": 1, "max": 12, "step": 1, "default": 1 },
+    { "type": "range", "id": "stage_height", "label": "Stage height", "min": 50, "max": 100, "step": 2, "unit": "%", "default": 72, "info": "Share of the screen height." },
+    { "type": "range", "id": "stage_height_phone", "label": "Stage height on phones", "min": 40, "max": 100, "step": 2, "unit": "%", "default": 66 },
+    { "type": "range", "id": "model_height", "label": "Model height", "min": 50, "max": 100, "step": 1, "unit": "%", "default": 94, "info": "Share of the stage height." },
+    { "type": "range", "id": "spacing", "label": "Spacing between models", "min": 8, "max": 40, "step": 1, "unit": "%", "default": 19 },
+    { "type": "range", "id": "spacing_phone", "label": "Spacing on phones", "min": 20, "max": 80, "step": 2, "unit": "%", "default": 46 },
+    { "type": "range", "id": "visible_sides", "label": "Models shown each side", "min": 1, "max": 4, "step": 1, "default": 3 },
+    { "type": "range", "id": "side_scale", "label": "Size step for side models", "min": 60, "max": 100, "step": 1, "unit": "%", "default": 88, "info": "Each step away from the centre shrinks by this much." },
+    { "type": "range", "id": "side_blur", "label": "Blur step for side models", "min": 0, "max": 12, "step": 1, "unit": "px", "default": 3 },
+    { "type": "range", "id": "side_fade", "label": "Fade step for side models", "min": 0, "max": 50, "step": 1, "unit": "%", "default": 12 },
+    { "type": "range", "id": "depth_rise", "label": "Floor depth", "min": 0, "max": 80, "step": 2, "default": 32, "info": "How much higher models stand as they move back. 0 keeps everyone on one line." },
+    { "type": "range", "id": "far_fade", "label": "Haze on the furthest models", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 50 },
+    { "type": "checkbox", "id": "knock_out_white", "label": "Blend white photo backgrounds into the section", "default": false, "info": "Only for photos that aren't transparent. Moves less smoothly." },
+    { "type": "checkbox", "id": "stage_glow", "label": "Show a soft studio glow behind the models", "default": true },
+    { "type": "range", "id": "photo_fade", "label": "Fade the bottom of photos", "min": 0, "max": 40, "step": 2, "unit": "%", "default": 0, "info": "For photos that stop above the feet: dissolves the cut edge. Leave at 0 for full-length models." },
+    { "type": "checkbox", "id": "ground_shadow", "label": "Show a shadow under the models", "default": true },
+    { "type": "header", "content": "Motion" },
+    { "type": "range", "id": "speed", "label": "Transition speed", "min": 300, "max": 1600, "step": 50, "unit": "ms", "default": 850 },
+    { "type": "range", "id": "trail", "label": "Motion trail strength", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 0, "info": "The ghost left behind as models move. 0 turns it off." },
+    { "type": "range", "id": "mouse_lean", "label": "Line-up follows the mouse", "min": 0, "max": 60, "step": 5, "unit": "%", "default": 25, "info": "How far the models drift toward the pointer. 0 turns it off." },
+    { "type": "checkbox", "id": "show_backdrop", "label": "Show the look's name large behind the models", "default": true },
+    { "type": "range", "id": "backdrop_strength", "label": "Large name strength", "min": 2, "max": 40, "step": 1, "unit": "%", "default": 7, "visible_if": "{{ section.settings.show_backdrop }}" },
+    { "type": "range", "id": "backdrop_size", "label": "Large name size", "min": 6, "max": 22, "step": 1, "unit": "vw", "default": 13, "visible_if": "{{ section.settings.show_backdrop }}" },
+    { "type": "checkbox", "id": "shine", "label": "Shine across the model and Add button", "default": true, "info": "A soft light that sweeps over the centre model when it arrives. Works best with transparent photos." },
+    { "type": "range", "id": "shine_strength", "label": "Shine strength", "min": 10, "max": 100, "step": 5, "unit": "%", "default": 50, "visible_if": "{{ section.settings.shine }}" },
+    { "type": "checkbox", "id": "custom_cursor", "label": "Show cursor bubble", "default": true },
+    { "type": "text", "id": "cursor_label", "label": "Cursor bubble label", "default": "View" },
+    { "type": "checkbox", "id": "autoplay", "label": "Move through looks automatically", "default": true, "info": "Pauses while the mouse is over the models, while a look is open and when off screen. Off for visitors who reduce motion." },
+    { "type": "range", "id": "autoplay_seconds", "label": "Seconds per look", "min": 2, "max": 15, "step": 1, "unit": "s", "default": 5 },
+    { "type": "header", "content": "Controls" },
+    { "type": "checkbox", "id": "show_arrows", "label": "Show arrows", "default": true },
+    { "type": "checkbox", "id": "show_name", "label": "Show look name between the arrows", "default": true },
+    { "type": "checkbox", "id": "show_play", "label": "Show play and pause button", "default": true },
+    { "type": "checkbox", "id": "show_bar_price", "label": "Show the look's price next to its name", "default": true },
+    { "type": "text", "id": "look_label", "label": "Look label", "default": "Look" },
+    { "type": "checkbox", "id": "share_links", "label": "Give each look a shareable link", "default": false, "info": "Adds #look-2 to the address as visitors browse. Opening that address goes straight to the look." },
+    { "type": "header", "content": "Phones" },
+    {
+      "type": "select",
+      "id": "phone_panel",
+      "label": "Product panel on phones",
+      "options": [
+        { "value": "sheet", "label": "Slides up from the bottom" },
+        { "value": "below", "label": "Listed under the model" }
+      ],
+      "default": "sheet"
+    },
+    { "type": "text", "id": "swipe_hint", "label": "Swipe hint", "default": "Swipe to browse", "info": "Shown once per visit with a small nudge. Leave empty to turn it off." },
+    { "type": "checkbox", "id": "arrows_phone", "label": "Show arrows on phones", "default": true },
+    { "type": "checkbox", "id": "backdrop_phone", "label": "Show the large name on phones", "default": true },
+    { "type": "header", "content": "Opened look" },
+    {
+      "type": "select",
+      "id": "click_action",
+      "label": "Clicking the centre model",
+      "options": [
+        { "value": "detail", "label": "Opens the shoppable panel" },
+        { "value": "link", "label": "Follows the look's link" }
+      ],
+      "default": "detail"
+    },
+    { "type": "range", "id": "detail_scale", "label": "Model size when open", "min": 90, "max": 140, "step": 1, "unit": "%", "default": 112 },
+    {
+      "type": "select",
+      "id": "panel_open",
+      "label": "Show the product panel",
+      "options": [
+        { "value": "look", "label": "As soon as a look opens" },
+        { "value": "pin", "label": "After a pin or the model is clicked" }
+      ],
+      "default": "look"
+    },
+    {
+      "type": "select",
+      "id": "panel_side",
+      "label": "Panel side",
+      "options": [
+        { "value": "right", "label": "Right" },
+        { "value": "left", "label": "Left" }
+      ],
+      "default": "right"
+    },
+    { "type": "range", "id": "panel_width", "label": "Panel width", "min": 300, "max": 560, "step": 10, "unit": "px", "default": 400 },
+    { "type": "checkbox", "id": "show_pins", "label": "Show pins on the model", "default": true },
+    {
+      "type": "select",
+      "id": "pin_style",
+      "label": "Pin style",
+      "options": [
+        { "value": "number", "label": "Numbered" },
+        { "value": "dot", "label": "Dot" }
+      ],
+      "default": "number"
+    },
+    { "type": "range", "id": "pin_size", "label": "Pin size", "min": 16, "max": 44, "step": 2, "unit": "px", "default": 26 },
+    { "type": "checkbox", "id": "show_pin_tips", "label": "Show product name and price when hovering a pin", "default": true },
+    { "type": "text", "id": "hint", "label": "Pin hint", "default": "Tap a pin to view the piece" },
+    { "type": "text", "id": "panel_title", "label": "Panel title", "default": "In this look" },
+    { "type": "checkbox", "id": "show_count", "label": "Show piece count", "default": true },
+    { "type": "checkbox", "id": "show_size_guide", "label": "Show size guide", "default": true, "info": "For products with a size chart in Theme settings or their own data." },
+    { "type": "text", "id": "size_guide_label", "label": "Size guide label", "default": "Size guide" },
+    { "type": "text", "id": "piece_label", "label": "Label for one piece", "default": "piece" },
+    { "type": "text", "id": "pieces_label", "label": "Pieces label", "default": "pieces" },
+    { "type": "checkbox", "id": "show_sale", "label": "Show sale prices", "default": true, "info": "Was and now prices with a percentage, from each product's compare-at price." },
+    { "type": "text", "id": "save_label", "label": "Savings label", "default": "You save" },
+    { "type": "checkbox", "id": "show_vendor", "label": "Show vendor", "default": true },
+    { "type": "text", "id": "choose_label", "label": "Size prompt", "default": "Select size" },
+    { "type": "text", "id": "add_label", "label": "Add button label", "default": "Add to bag", "info": "Read by screen readers." },
+    { "type": "text", "id": "added_label", "label": "Added message", "default": "Added to bag" },
+    { "type": "text", "id": "choose_message", "label": "Missing size message", "default": "Choose a size for each piece." },
+    { "type": "text", "id": "error_message", "label": "Error message", "default": "We couldn't add that. Please try again." },
+    { "type": "header", "content": "Full look" },
+    { "type": "checkbox", "id": "show_bundle", "label": "Show full look button", "default": true },
+    { "type": "text", "id": "bundle_heading", "label": "Heading", "default": "Complete the look" },
+    { "type": "text", "id": "bundle_text", "label": "Text" },
+    { "type": "text", "id": "bundle_button", "label": "Button label", "default": "Add full look to bag" },
+    { "type": "text", "id": "bundle_code", "label": "Discount code", "info": "Optional. Create this code in Shopify first; it is applied after the look is added and Shopify decides whether it qualifies." },
+    { "type": "range", "id": "bundle_percent", "label": "Saving shown with the code", "min": 0, "max": 60, "step": 1, "unit": "%", "default": 0, "info": "Display only. Match it to the discount set in Shopify.", "visible_if": "{{ section.settings.bundle_code != blank }}" },
+    { "type": "header", "content": "Layout" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        { "value": "inherit", "label": "Theme default" },
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "wide", "label": "Wide" },
+        { "value": "full", "label": "Full width" }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "spacing_mode",
+      "label": "Section spacing",
+      "options": [
+        { "value": "inherit", "label": "Theme default" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "custom"
+    },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 24, "visible_if": "{{ section.settings.spacing_mode == 'custom' }}" },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 40, "visible_if": "{{ section.settings.spacing_mode == 'custom' }}" },
+    { "type": "range", "id": "padding_top_small", "label": "Top padding on phones", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 48, "visible_if": "{{ section.settings.spacing_mode == 'custom' }}" },
+    { "type": "range", "id": "padding_bottom_small", "label": "Bottom padding on phones", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 48, "visible_if": "{{ section.settings.spacing_mode == 'custom' }}" }
+  ],
+  "blocks": [
+    {
+      "type": "look",
+      "name": "Look",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Look name", "default": "New look" },
+        { "type": "image_picker", "id": "image", "label": "Model photo", "info": "Full-length model on a transparent background (PNG or WebP), same framing across looks." },
+        { "type": "text", "id": "photo_asset", "label": "Photo file in the theme", "info": "Used when no photo is picked above: the name of a file in the theme's assets folder." },
+        { "type": "checkbox", "id": "background", "label": "Keep in the back", "default": false, "info": "The look stands further back between the others and never comes to the centre." },
+        { "type": "range", "id": "photo_scale", "label": "Photo size", "min": 70, "max": 130, "step": 1, "unit": "%", "default": 100, "info": "Evens out models shot at different distances." },
+        { "type": "text", "id": "backdrop_text", "label": "Large name", "info": "Optional. Defaults to the look name." },
+        { "type": "text", "id": "tag", "label": "Tag", "info": "Short label in the panel, such as New or Limited." },
+        { "type": "textarea", "id": "description", "label": "Story", "info": "A line or two about the look, shown in the panel." },
+        { "type": "text", "id": "button_label", "label": "Panel link label", "info": "Shown under the story when a link is set below." },
+        { "type": "url", "id": "link", "label": "Link", "info": "For the panel link, and when clicking the centre model is set to follow a link." }
+      ]
+    },
+    {
+      "type": "piece",
+      "name": "Piece",
+      "settings": [
+        { "type": "paragraph", "content": "Belongs to the nearest Look above it. Drag to move it." },
+        { "type": "product", "id": "product", "label": "Product" },
+        { "type": "image_picker", "id": "image", "label": "Thumbnail", "info": "Optional. Defaults to the product's first photo." },
+        { "type": "range", "id": "pin_x", "label": "Pin across", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
+        { "type": "range", "id": "pin_y", "label": "Pin down", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 35 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Try the look",
+      "blocks": [
+        { "type": "look", "settings": { "name": "The City Edit" } },
+        { "type": "piece" },
+        { "type": "look", "settings": { "name": "Gallery Opening" } },
+        { "type": "piece" },
+        { "type": "look", "settings": { "name": "Studio Day" } },
+        { "type": "piece" },
+        { "type": "look", "settings": { "name": "Weekend Layers" } },
+        { "type": "piece" },
+        { "type": "look", "settings": { "name": "After Hours" } },
+        { "type": "piece" }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

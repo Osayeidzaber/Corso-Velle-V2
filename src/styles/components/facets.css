@@ -506,3 +506,203 @@ nk-facets[data-enhanced] .facets__sort-select-wrap, nk-facets[data-enhanced] .fa
   .infinite__loader { animation-duration: 2.4s; }
   .infinite__progress > span { transition: none; }
 }
+
+/* ---------------------------------------------------------------------------------------------
+   Smooth toolbar: soft rounded controls on the page colour, no boxed cells or full-width bands.
+   Overrides the boxed rules above. It stays sticky; once stuck it gets a hairline and a blur.
+   --------------------------------------------------------------------------------------------- */
+.facets__toolbar-wrap {
+  margin-inline: 0;
+  padding-inline: 0;
+  border-block: 0;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transition: background-color 240ms var(--nk-ease-out), box-shadow 240ms var(--nk-ease-out);
+}
+nk-facets[data-toolbar='contained'] .facets__toolbar-wrap { padding-inline: 0; }
+.facets__toolbar {
+  align-items: center;
+  gap: 10px;
+  min-height: 0;
+  padding-block: 10px;
+}
+.facets__toolbar-start { align-items: center; gap: 8px; }
+
+/* Filter and Sort: matching rounded pills. */
+.facets__open,
+.facets__sort-menu > summary,
+.facets__sort select {
+  min-height: 40px;
+  padding: 0 16px;
+  margin: 0;
+  border: 1px solid var(--nk-color-line);
+  border-radius: 999px;
+  background: transparent;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  transition: border-color 200ms var(--nk-ease-out), background-color 200ms var(--nk-ease-out);
+}
+.facets__open { gap: 8px; border-inline-end: 1px solid var(--nk-color-line); }
+.facets__sort select { padding-inline-end: 34px; }
+.facets__sort-select-wrap svg { right: 14px; }
+@media (hover: hover) {
+  .facets__open:hover,
+  .facets__sort-menu > summary:hover { opacity: 1; border-color: var(--nk-color-text); }
+}
+.facets__open:focus-visible,
+.facets__sort-menu > summary:focus-visible { outline: 2px solid var(--nk-color-text); outline-offset: 2px; }
+
+.facets__sort { gap: 8px; padding: 0; border: 0; }
+.facets__sort-menu { width: auto; }
+.facets__sort-menu > summary { gap: 8px; }
+.facets__sort-menu[open] > summary { border-color: var(--nk-color-text); }
+.facets__sort-options {
+  inset: calc(100% + 8px) auto auto 0;
+  padding: 6px;
+  border-radius: 14px;
+  box-shadow: 0 18px 40px -12px rgb(0 0 0 / 0.18);
+}
+.facets__sort-options button { border-radius: 9px; }
+
+/* Count and layout switch: quiet, on the right. */
+.facets__results {
+  margin-inline-start: auto;
+  padding-inline: 0;
+  color: var(--nk-color-text-muted);
+  letter-spacing: 0.12em;
+}
+.facets__layout-switch {
+  margin-inline-start: 4px;
+  gap: 2px;
+  padding: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--nk-color-text) 5%, transparent);
+}
+.facets__results:not([style*='display: none']) + .facets__layout-switch { margin-inline-start: 4px; }
+.facets__toolbar > .facets__layout-switch:first-of-type { margin-inline-start: auto; }
+@media (min-width: 900px) { .facets__toolbar > .facets__layout-switch { margin-inline-start: 4px; } }
+.facets__layout-btn {
+  width: 34px;
+  min-height: 34px;
+  border-radius: 999px;
+  opacity: 0.55;
+}
+.facets__layout-btn + .facets__layout-btn { border: 0; }
+.facets__layout-btn[aria-pressed='true'] {
+  background: var(--nk-color-bg);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+@media (max-width: 599px) {
+  .facets__toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
+  .facets__toolbar-start { display: flex; flex: 1; min-width: 0; }
+  .facets__open { border: 1px solid var(--nk-color-line); }
+  .facets__sort { flex: 1; min-width: 0; border: 0; }
+  .facets__sort-menu > summary { min-height: 40px; padding-inline: 14px; }
+  .facets__sort-menu-label { display: none; }
+  .facets__sort-options { inset: calc(100% + 8px) 0 auto auto; width: min(280px, calc(100vw - 32px)); }
+  .facets__layout-switch { margin-inline-start: 0; }
+}
+
+/* Edge-to-edge collection page (main-collection "Page width"): the toolbar and grid run out to a
+   slim margin from the screen edges, so the photos get as large as the screen allows. */
+.main-collection--edge { padding-inline: var(--nk-gutter, 20px); }
+.main-collection--edge nk-facets[data-results-gap] .product-grid { column-gap: max(var(--results-gap, 8px), 12px); row-gap: clamp(28px, 3vw, 44px); }
+/* Photos run to the screen edges; only the card text keeps the gutter. */
+.main-collection--edge .product-grid { margin-inline: calc(-1 * var(--nk-gutter, 20px)); }
+.main-collection--edge nk-facets[data-results-gap] .product-grid,
+.main-collection--edge .product-grid { column-gap: 2px; }
+.main-collection--edge .product-grid .card > :not(.card__media-wrap) { padding-inline: 10px; }
+@media (min-width: 750px) {
+  .main-collection--edge .product-grid .card > :not(.card__media-wrap) { padding-inline: 16px; }
+}
+
+/* Collection toolbar, W&R style: plain words in Inter, normal case, no pills or boxes. Filter and
+   Sort on the left, the count in the middle, the layout switch on the right. */
+.main-collection .facets__toolbar { position: relative; padding-block: 6px; }
+.main-collection :is(.facets__open, .facets__sort-menu > summary, .facets__sort select) {
+  min-height: 40px;
+  padding: 0 14px 0 0;
+  border: 0;
+  border-radius: 0;
+  font-family: var(--nk-font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.main-collection .facets__sort-menu-label { color: var(--nk-color-text-muted); }
+@media (hover: hover) {
+  .main-collection :is(.facets__open, .facets__sort-menu > summary):hover { border-color: transparent; text-decoration: underline; text-underline-offset: 6px; }
+}
+.main-collection .facets__results {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  font-family: var(--nk-font-body);
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--nk-color-text-muted);
+}
+.main-collection .facets__results.spec { text-transform: none; letter-spacing: 0; }
+.main-collection .facets__layout-switch { margin-inline-start: auto; background: none; }
+.main-collection .facets__layout-btn[aria-pressed='true'] { background: none; box-shadow: none; }
+
+/* ---------------------------------------------------------------------------------------------
+   Collection toolbar, as on the old storefront: filter names (Availability, Price) with small
+   chevrons on the left; "38 items", "Sort" and a two-way grid switch on the right. Plain text,
+   normal case, no boxes. Overrides the toolbar rules above for the collection page.
+   --------------------------------------------------------------------------------------------- */
+.main-collection .facets__toolbar { display: flex; align-items: center; gap: 0 24px; padding-block: 8px; }
+.main-collection .facets__toolbar-start { display: contents; }
+.main-collection .facets__open { display: none; }
+.facets__filter-trigger {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--nk-color-text);
+  font-family: var(--nk-font-body);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+.main-collection .facets__filter-trigger { display: inline-flex; order: 1; }
+.facets__filter-trigger svg { opacity: 0.7; }
+@media (hover: hover) { .facets__filter-trigger:hover span { text-decoration: underline; text-underline-offset: 5px; } }
+.main-collection .facets__results {
+  position: static;
+  translate: none;
+  order: 2;
+  margin-inline-start: auto;
+  font-size: 0.9375rem;
+  color: var(--nk-color-text-muted);
+}
+.facets__results-short { display: none; }
+.main-collection .facets__results-long { display: none; }
+.main-collection .facets__results-short { display: inline; }
+.main-collection .facets__sort { order: 3; }
+.facets__sort-menu-short { display: none; }
+.main-collection .facets__sort-menu-label,
+.main-collection .facets__sort-menu-value { display: none; }
+.main-collection .facets__sort-menu-short { display: inline; color: var(--nk-color-text); }
+.main-collection .facets__sort-menu > summary { gap: 6px; padding: 0; font-size: 0.9375rem; }
+.main-collection .facets__sort-options { inset: calc(100% + 8px) 0 auto auto; }
+.main-collection .facets__layout-switch { order: 4; margin-inline-start: 0; gap: 4px; padding: 0; }
+.main-collection .facets__layout-btn--desktop[data-grid-cols-desktop='3'] { display: none; }
+.main-collection .facets__layout-btn { width: 30px; min-height: 30px; border-radius: 4px; opacity: 0.45; }
+.main-collection .facets__layout-btn[aria-pressed='true'] { opacity: 1; background: color-mix(in srgb, var(--nk-color-text) 7%, transparent); }
+
+/* Phones: one Filter word on the left, Sort and the switch on the right. */
+@media (max-width: 749px) {
+  .main-collection .facets__filter-trigger { display: none; }
+  .main-collection .facets__open { display: inline-flex; order: 1; padding: 0; font-family: var(--nk-font-body); font-size: 0.9375rem; text-transform: none; letter-spacing: 0; }
+  .main-collection .facets__open-icon { display: none; }
+  .main-collection .facets__results { display: none; }
+  .main-collection .facets__sort { flex: none; margin-inline-start: auto; }
+}

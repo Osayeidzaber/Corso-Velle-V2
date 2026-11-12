@@ -4,7 +4,7 @@
   recommendations.performed; the first render is an empty shell.
 {%- endcomment -%}
 {%- liquid
-  assign source_url = routes.product_recommendations_url | append: '?section_id=' | append: section.id | append: '&product_id=' | append: product.id | append: '&limit=' | append: section.settings.limit | append: '&intent=' | append: section.settings.intent
+  assign source_url = routes.product_recommendations_url | append: '?section_id=' | append: section.id | append: '&product_id=' | append: product.id | append: '&limit=10' | append: '&intent=' | append: section.settings.intent
   assign suggested_products = recommendations.products
   if recommendations.products_count == 0 or recommendations.performed == false
     assign suggested_products = section.settings.fallback_collection.products
@@ -21,13 +21,41 @@
           -%}
           {% render 'reveal-heading', text: heading_html, italic: italic, entrance: 'cut', class: 'display' %}
         </div>
-        <nk-stagger>
-          <ul class="product-grid" role="list" style="--nk-cols-desktop: {{ section.settings.columns_desktop }};--nk-cols-mobile:{{ section.settings.columns_mobile | default: 1 }};">
-            {%- for product in suggested_products limit: section.settings.limit -%}
-              <li data-stagger-item>{% render 'product-card', product: product, card_options: section.settings %}</li>
-            {%- endfor -%}
-          </ul>
-        </nk-stagger>
+        {%- comment -%} Tabs over rows of three: Recommended (this product's Shopify recommendations),
+          then best sellers and newest pieces across the shop, loaded on first click. {%- endcomment -%}
+        <nk-rec-tabs class="rec-tabs">
+          <div class="rec-tabs__list" role="tablist" aria-label="{{ section.settings.heading | escape }} {{ section.settings.heading_italic | escape }}">
+            <button type="button" class="rec-tabs__tab" role="tab" id="RecTab-{{ section.id }}-1" aria-controls="RecPanel-{{ section.id }}-1" aria-selected="true">{{ section.settings.tab_recommended | escape }}</button>
+            <button type="button" class="rec-tabs__tab" role="tab" id="RecTab-{{ section.id }}-2" aria-controls="RecPanel-{{ section.id }}-2" aria-selected="false" tabindex="-1">{{ section.settings.tab_best | escape }}</button>
+            <button type="button" class="rec-tabs__tab" role="tab" id="RecTab-{{ section.id }}-3" aria-controls="RecPanel-{{ section.id }}-3" aria-selected="false" tabindex="-1">{{ section.settings.tab_new | escape }}</button>
+          </div>
+          <div class="rec-tabs__panel" role="tabpanel" id="RecPanel-{{ section.id }}-1" aria-labelledby="RecTab-{{ section.id }}-1" tabindex="0">
+        {%- comment -%} Rows of three: 3, then 3, then 3. {%- endcomment -%}
+          <nk-stagger>
+            <ul class="recs-grid" role="list">
+                {%- comment -%} One card per name: colourways of the same piece would read as repeats. {%- endcomment -%}
+                {%- assign shown_titles = '|' -%}
+                {%- assign shown_count = 0 -%}
+                {%- for product in suggested_products -%}
+                  {%- if shown_count >= section.settings.limit -%}{%- break -%}{%- endif -%}
+                  {%- assign title_key = product.title | downcase | strip | prepend: '|' | append: '|' -%}
+                  {%- if shown_titles contains title_key -%}{%- continue -%}{%- endif -%}
+                  {%- assign shown_titles = shown_titles | append: title_key -%}
+                  {%- assign shown_count = shown_count | plus: 1 -%}
+                  <li data-stagger-item>{% render 'product-card', product: product, card_options: section.settings %}</li>
+                {%- endfor -%}
+            </ul>
+          </nk-stagger>
+          </div>
+          <div class="rec-tabs__panel" role="tabpanel" id="RecPanel-{{ section.id }}-2" aria-labelledby="RecTab-{{ section.id }}-2" tabindex="0" data-src="{{ routes.all_products_collection_url }}?sort_by=best-selling&section_id=product-tab-grid" hidden>
+            <p class="rec-tabs__status text-muted" data-tab-status hidden>{{ 'cart.error' | t }}</p>
+            <div class="rec-tabs__placeholder" aria-hidden="true"></div>
+          </div>
+          <div class="rec-tabs__panel" role="tabpanel" id="RecPanel-{{ section.id }}-3" aria-labelledby="RecTab-{{ section.id }}-3" tabindex="0" data-src="{{ routes.all_products_collection_url }}?sort_by=created-descending&section_id=product-tab-grid" hidden>
+            <p class="rec-tabs__status text-muted" data-tab-status hidden>{{ 'cart.error' | t }}</p>
+            <div class="rec-tabs__placeholder" aria-hidden="true"></div>
+          </div>
+        </nk-rec-tabs>
         {% if section.settings.link != blank and section.settings.link_label != blank %}<a class="button button--secondary" href="{{ section.settings.link }}">{{ section.settings.link_label | escape }}</a>{% endif %}
       {% elsif section.settings.hide_empty == false %}
         <p class="text-muted">{{ section.settings.empty_text | escape }}</p>
@@ -38,8 +66,27 @@
 
 {% stylesheet %}
   .product-recommendations .product-grid { column-gap: var(--recommendations-gap, 8px); }
+  /* Rows of three on desktop and tablet, two on phones. No arrows, no sideways scroll. */
+  .recs-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(28px, 3vw, 44px) 4px; margin: 0; padding: 0; list-style: none; }
+  .recs-grid > li { min-width: 0; }
+  @media (max-width: 749px) { .recs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .product-recommendations[data-align='center'] .section-head { justify-content: center; text-align: center; }
   .product-recommendations nk-recommendations > .button { margin-top: 24px; }
+  /* Tabs: plain words, the chosen one underlined, like the collection page's categories. */
+  .rec-tabs__list { display: flex; flex-wrap: wrap; gap: 4px 22px; margin: 0 0 24px; }
+  .rec-tabs__tab {
+    min-height: 40px; padding: 0; border: 0; background: none; color: var(--nk-color-text-muted);
+    font: inherit; font-family: var(--nk-font-body); font-size: 0.9375rem; font-weight: 500; cursor: pointer;
+    text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1.5px; text-underline-offset: 9px;
+    transition: color 200ms ease, text-decoration-color 200ms ease;
+  }
+  .rec-tabs__tab[aria-selected='true'] { color: var(--nk-color-text); text-decoration-color: currentColor; }
+  @media (hover: hover) { .rec-tabs__tab:hover { color: var(--nk-color-text); } }
+  .rec-tabs__tab:focus-visible { outline: 2px solid var(--nk-color-text); outline-offset: 4px; }
+  .rec-tabs__panel[hidden] { display: none; }
+  .rec-tabs__panel:focus-visible { outline: none; }
+  /* While a tab loads, hold roughly the grid's height so the page doesn't jump. */
+  .rec-tabs__placeholder { min-height: 60vh; }
 {% endstylesheet %}
 
 {% schema %}
@@ -47,6 +94,9 @@
   "name": "Product recommendations",
   "class": "product-recommendations-section",
   "settings": [
+    { "type": "text", "id": "tab_recommended", "label": "Recommended tab label", "default": "Recommended" },
+    { "type": "text", "id": "tab_best", "label": "Best sellers tab label", "default": "Best Sellers" },
+    { "type": "text", "id": "tab_new", "label": "New arrivals tab label", "default": "New Arrivals" },
     {
       "type": "text",
       "id": "heading",

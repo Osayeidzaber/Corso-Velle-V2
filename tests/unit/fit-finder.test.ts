@@ -53,8 +53,7 @@ it('walks the steps, saves the profile and selects the recommended size', () => 
           <input type="range" data-ref="range" data-field="weight" min="40" max="150">
           <button data-ref="nudge" data-field="weight" value="1"></button>
         </div>
-        <div data-ref="step" data-step="2" hidden></div>
-        <div data-ref="step" data-step="3" hidden><button data-ref="apply"><span data-part="size"></span></button></div>
+        <div data-ref="step" data-step="2" hidden><button data-ref="apply"><span data-part="size"></span></button></div>
         <p data-ref="estimate"></p>
         <button data-ref="back"></button><button data-ref="next"></button>
       </nk-fit-finder>
@@ -62,7 +61,7 @@ it('walks the steps, saves the profile and selects the recommended size', () => 
   document.body.append(wrap);
   const finder = document.querySelector<HTMLElement>('nk-fit-finder')!;
   expect(finder.hidden).toBe(false);
-  expect(finder.querySelector('[data-ref="counter"]')!.textContent).toBe('01 / 03');
+  expect(finder.querySelector('[data-ref="counter"]')!.textContent).toBe('01 / 02');
   expect(document.querySelector('[data-fit-hint]')!.hasAttribute('hidden')).toBe(true);
 
   const weight = finder.querySelector<HTMLInputElement>('[data-field="weight"][type="range"]')!;
@@ -74,8 +73,7 @@ it('walks the steps, saves the profile and selects the recommended size', () => 
 
   const next = finder.querySelector<HTMLButtonElement>('[data-ref="next"]')!;
   next.click();
-  next.click();
-  expect(finder.querySelector<HTMLElement>('[data-step="3"]')!.hidden).toBe(false);
+  expect(finder.querySelector<HTMLElement>('[data-step="2"]')!.hidden).toBe(false);
   expect(next.hidden).toBe(true);
   finder.querySelector<HTMLButtonElement>('[data-ref="apply"]')!.click();
   expect(JSON.parse(localStorage.getItem(FIT_STORAGE_KEY)!).weight).toBe(89);

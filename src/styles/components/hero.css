@@ -65,6 +65,10 @@ nk-background-video { display: block; width: 100%; height: 100%; }
   object-fit: cover;
 }
 
+/* Video focus: which part of a cropped video stays in frame (images use Shopify's focal point). */
+.hero--video-top .hero__media video { object-position: 50% 12%; }
+.hero--video-bottom .hero__media video { object-position: 50% 88%; }
+
 .hero__scrim,
 .hero .nk-scrim-blur {
   z-index: -1;
@@ -458,6 +462,31 @@ html.nk-motion-off .hero__cue-line::after {
   .hero.hero--split {
     --hero-heading-size: clamp(3.5rem, 7vw, 8.5rem);
   }
+}
+
+/* Split kept side by side on phones: a portrait media half and a compact text half. */
+@media (max-width: 989px) {
+  .hero.hero--split.hero--phone-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    --hero-heading-size: clamp(2rem, 10vw, 3.5rem);
+  }
+
+  .hero--split.hero--phone-split .hero__media {
+    grid-area: 1 / 1;
+    aspect-ratio: auto;
+    min-height: min(78svh, 640px);
+    max-height: none;
+  }
+
+  .hero--split.hero--phone-split .hero__content {
+    grid-area: 1 / 2;
+    align-self: center;
+    padding: 28px 16px;
+    font-size: 0.875rem;
+  }
+
+  .hero--split.hero--phone-split.hero--media-right .hero__media { grid-area: 1 / 2; }
+  .hero--split.hero--phone-split.hero--media-right .hero__content { grid-area: 1 / 1; }
 }
 
 /* ---------- Media entrances ----------

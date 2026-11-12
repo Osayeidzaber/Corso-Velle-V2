@@ -216,7 +216,7 @@ describe('product purchase regressions', () => {
     expect(add).toHaveBeenCalledExactlyOnceWith([{ id: 123, quantity: 3 }], 'quick-add');
     expect(button.disabled).toBe(true);
     resolve({} as CartResult);
-    await vi.waitFor(() => expect(button.textContent).toBe('✓'));
+    await vi.waitFor(() => expect(button.querySelector('.icon--check')).not.toBeNull());
   });
   it('restores the size label after a repeat quick add made during the confirmation', async () => {
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
@@ -225,10 +225,10 @@ describe('product purchase regressions', () => {
       vi.spyOn(cart, 'add').mockResolvedValue({} as CartResult);
       const button = document.querySelector<HTMLButtonElement>('button')!;
       button.click();
-      await vi.waitFor(() => expect(button.textContent).toBe('✓'));
+      await vi.waitFor(() => expect(button.querySelector('.icon--check')).not.toBeNull());
       button.click();
       await vi.waitFor(() => expect(button.hasAttribute('data-busy')).toBe(false));
-      expect(button.textContent).toBe('✓');
+      expect(button.querySelector('.icon--check')).not.toBeNull();
       await vi.advanceTimersByTimeAsync(1000);
       expect(button.textContent).toBe('M');
       expect(button.hasAttribute('data-added')).toBe(false);

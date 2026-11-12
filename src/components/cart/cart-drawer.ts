@@ -26,5 +26,6 @@ export class NkCartDrawer extends NkModal {
 
   protected override onOpened(): void {
     this.dialog.querySelector<HTMLElement>('[data-autofocus]')?.focus();
+    document.dispatchEvent(new CustomEvent('nk:cart-drawer:opened'));
   }
 }

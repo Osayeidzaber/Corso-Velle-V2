@@ -648,3 +648,33 @@ nk-header[data-dropdown='list'] .nav__panel { grid-template-columns: minmax(0, 1
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: none; }
 }
+
+/* Transparent header (all pages). Clear over the page at the top; once the page scrolls under it,
+   a light frosted glass so the content shows through softly while links stay readable. Overlay
+   mode (white text over a dark hero) keeps its own rules above. Open menus and search stay solid. */
+nk-header:not([data-overlay]) {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+nk-header:not([data-overlay])[data-scrolled] {
+  background: color-mix(in srgb, var(--nk-color-bg) 72%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  border-bottom-color: color-mix(in srgb, var(--nk-color-line) 60%, transparent);
+}
+nk-header:not([data-overlay]):is(:has(.nav__disclosure[open]), :has(nk-search-pill[data-open])) {
+  background: var(--nk-color-bg);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+@supports not (backdrop-filter: blur(1px)) {
+  nk-header:not([data-overlay])[data-scrolled] { background: color-mix(in srgb, var(--nk-color-bg) 94%, transparent); }
+}
+
+/* Split-screen product page: like the reference, the photos run up under the clear header. */
+body:has(.product-section[data-layout='split']) .header-section:not(:has(> nk-header[data-overlay])) {
+  margin-bottom: calc(-1 * var(--nk-header-h));
+}
+
+/* The header runs the full width of the screen: menu at the far left, icons at the far right. */
+.header { max-width: none; padding-inline: max(14px, calc(var(--nk-gutter) - 4px)); }

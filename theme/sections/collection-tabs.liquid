@@ -91,7 +91,7 @@
                   {{- 'collection.showing_count' | t: shown: shown_count, total: total_count -}}
                 </span>
                 <a class="button button--secondary collection-tabs__cta" href="{{ collection_source.url }}" data-magnetic>
-                  {{- 'collection.view_all' | t }} ({{ total_count }}) →
+                  {{- 'collection.view_all' | t }} ({{ total_count }}) {% render 'icon', name: 'arrow-right', size: 14, class: 'icon--inline' %}
                 </a>
               </div>
             {%- elsif request.design_mode -%}

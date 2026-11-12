@@ -1,6 +1,6 @@
 {%- comment -%}
   Shared assignment identity only; callers resolve the selected Shopify object without JSON copies.
-  Product data > product rule > collection reference/priority > collection rule > tag rule > default.
+  Product data > product rule > collection reference/priority > collection rule > tag rule > name rule > default.
   Collection priorities default to 1000; equal priorities sort by handle. Only valid charts qualify.
 {%- endcomment -%}
 {%- liquid
@@ -74,6 +74,16 @@
     assign tag_rule = tag_rule | strip
     if tag_rule != ''
       assign selected = 'rule:' | append: tag_rule
+    endif
+  endif
+
+  if selected == ''
+    capture title_rule
+      render 'measurement-chart-rule', product: product, rule_scope: 'titles'
+    endcapture
+    assign title_rule = title_rule | strip
+    if title_rule != ''
+      assign selected = 'rule:' | append: title_rule
     endif
   endif
 

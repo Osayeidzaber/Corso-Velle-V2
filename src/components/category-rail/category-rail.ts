@@ -14,6 +14,9 @@ export class NkCategoryRail extends NkElement {
       const left = Math.abs(list.scrollLeft);
       previous.disabled = left <= 2;
       next.disabled = left >= max - 2;
+      // Lets the stylesheet fade only the edge that has more to scroll to.
+      this.toggleAttribute('data-more-start', !previous.disabled && max >= 2);
+      this.toggleAttribute('data-more-end', !next.disabled && max >= 2);
       previous.hidden = next.hidden = max < 2;
     };
     this.on(list, 'scroll', update, { passive: true });
@@ -25,7 +28,14 @@ export class NkCategoryRail extends NkElement {
       list.scrollBy({ left: Number(button.dataset.categoryStep) * list.clientWidth * 0.75 * rtl, behavior: prefersReducedMotion() ? 'instant' : 'smooth' });
     });
     const active = list.querySelector<HTMLElement>('[aria-current="page"]');
-    if (active) list.scrollLeft = active.offsetLeft - list.offsetLeft - 16;
+    // Bring the current collection into view, measured from the first pill so the start stays flush.
+    const first = list.firstElementChild as HTMLElement | null;
+    const li = active?.closest('li');
+    if (li && first) {
+      const start = li.offsetLeft - first.offsetLeft;
+      // Only when it would otherwise sit off the end: a pill already in view stays put.
+      if (start + li.offsetWidth > list.clientWidth - 48) list.scrollLeft = Math.max(0, start - 48);
+    }
     update();
   }
 }

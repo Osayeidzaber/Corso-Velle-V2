@@ -50,7 +50,7 @@
           "type": "description",
           "settings": {
             "heading": "Details",
-            "open": true
+            "open": false
           }
         },
         "delivery": {
@@ -87,8 +87,9 @@
         "heading": "You might",
         "heading_italic": "also like",
         "intent": "related",
-        "limit": 4,
-        "columns_desktop": 3,
+        "limit": 9,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
         "color_scheme": "scheme-1"
       }
     }
