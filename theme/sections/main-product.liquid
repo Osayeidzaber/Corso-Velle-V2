@@ -468,7 +468,7 @@
                   -%}
                   <button type="submit" name="add" class="button button--full buy__submit" {% if availability != 'available' or needs_choice %}disabled{% endif %}>
                     <span data-button-label>{{ label }}</span>
-                    {%- if availability == 'available' -%}
+                    {%- if availability == 'available' and needs_choice == false -%}
                       <span class="buy__submit-sep" aria-hidden="true">·</span>
                       <span class="buy__submit-price" data-button-price>{{ variant.price | money }}</span>
                     {%- endif -%}
