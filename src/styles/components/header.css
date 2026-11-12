@@ -476,9 +476,11 @@ nk-header[data-dropdown='list'] .nav__panel { grid-template-columns: minmax(0, 1
 .menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row {
   min-height: 64px;
   border-top: 0;
-  font-size: clamp(1.375rem, 6vw, 1.75rem);
+  min-height: 52px;
+  font-size: 1.125rem;
+  font-weight: 400;
   line-height: 1.1;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
 }
 
 .menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row::before {
@@ -690,3 +692,6 @@ body:has(.product-section[data-layout='split']) .header-section:not(:has(> nk-he
   text-transform: uppercase;
   text-decoration: none;
 }
+
+/* Menu rows without the 01–05 numbers. */
+.menu-drawer--editorial [data-level-panel='root'] > .menu-drawer__list .menu-drawer__row::before { content: none; display: none; }
