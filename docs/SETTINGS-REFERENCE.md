@@ -3169,7 +3169,7 @@ Current section block cap: 50.
 | `show_arrows` — Show arrows | `checkbox` | `true` |  |
 | `show_name` — Show look name between the arrows | `checkbox` | `true` |  |
 | `show_play` — Show play and pause button | `checkbox` | `true` |  |
-| `show_bar_price` — Show the look's price next to its name | `checkbox` | `true` |  |
+| `show_bar_price` — Show the main piece's price next to the look's name | `checkbox` | `true` | The first product in the look. The full look total shows in its panel. |
 | `look_label` — Look label | `text` | `Look` |  |
 | `share_links` — Give each look a shareable link | `checkbox` | `false` | Adds #look-2 to the address as visitors browse. Opening that address goes straight to the look. |
 | `phone_panel` — Product panel on phones | `select` | `sheet` | `sheet`: Slides up from the bottom; `below`: Listed under the model |

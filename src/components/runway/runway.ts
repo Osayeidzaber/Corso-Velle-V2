@@ -479,7 +479,9 @@ export class NkRunway extends NkElement {
     if (nowName && nowName.dataset.look !== name) {
       const first = !nowName.dataset.look;
       nowName.dataset.look = name;
-      const price = this.#panels[this.#active]?.querySelector('[data-ref="total"]')?.textContent;
+      // The main piece's price (the first one listed); the full look total waits in the panel.
+      const panel = this.#panels[this.#active];
+      const price = (panel?.querySelector('[data-ref="piece-price"]') ?? panel?.querySelector('[data-ref="total"]'))?.textContent?.trim();
       nowName.textContent = name;
       if (price && this.hasAttribute('data-bar-price')) {
         const meta = document.createElement('span');
