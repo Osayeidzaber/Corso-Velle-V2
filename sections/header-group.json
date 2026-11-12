@@ -44,8 +44,9 @@
       "settings": {
         "mode": "ticker",
         "speed": 40,
-        "color_scheme": "scheme-3"
-      }
+        "color_scheme": "scheme-4"
+      },
+      "disabled": true
     },
     "header": {
       "type": "header",
@@ -58,7 +59,7 @@
         "link_hover": "underline",
         "drawer_style": "editorial",
         "search_style": "pill",
-        "overlay_home": true,
+        "overlay_home": false,
         "color_scheme": "scheme-1"
       }
     }

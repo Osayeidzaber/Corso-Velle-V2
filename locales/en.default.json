@@ -88,6 +88,10 @@
     "add": "Add"
   },
   "collection": {
+    "item_count": {
+      "one": "{{ count }} item",
+      "other": "{{ count }} items"
+    },
     "showing_count": "Showing {{ shown }} of {{ total }} products",
     "product_count": {
       "one": "{{ count }} product",
@@ -162,12 +166,12 @@
       "xxxl": "Triple extra large"
     },
     "fit_finder": {
-      "eyebrow": "Find a starting size",
-      "step_1_title": "Let’s find your fit",
+      "eyebrow": "Size help",
+      "step_1_title": "Your height and weight",
       "step_1_lede": "A general clothing-size estimate. Always compare with the garment chart.",
       "step_2_title": "Your shape",
       "step_2_lede": "Compared with most people your height. Skip if unsure.",
-      "step_3_title": "How do you like it to fit?",
+      "step_3_title": "How do you wear it?",
       "step_3_lede": "We size up or down to match.",
       "sizing": "Sizing",
       "female": "Female",
@@ -191,19 +195,19 @@
       "fit_fitted": "Fitted",
       "fit_fitted_note": "Close to the body",
       "fit_regular": "Regular",
-      "fit_regular_note": "As designed",
+      "fit_regular_note": "True to size",
       "fit_relaxed": "Relaxed",
       "fit_relaxed_note": "Room to move",
-      "your_size": "Estimated size",
-      "unmatched": "This piece uses its own sizing. Compare with the chart below.",
+      "your_size": "We suggest",
+      "unmatched": "This piece has its own sizing. Check the chart below.",
       "select": "Select size",
       "restart": "Start over",
       "live_estimate": "Live estimate",
       "refined": "Refined in the next steps",
       "back": "Back",
       "next": "Continue",
-      "hint": "Estimated size",
-      "find_size": "Find my size",
+      "hint": "Suggested",
+      "find_size": "Find your size",
       "privacy": "Select a size to save your preferences privately on this device."
     },
     "size_table_heading": "Garment measurements",
@@ -277,6 +281,7 @@
   "facets": {
     "filter": "Filter",
     "sort_by": "Sort by",
+    "sort": "Sort",
     "apply": "Apply",
     "show_results": "Show results",
     "clear_all": "Clear all",

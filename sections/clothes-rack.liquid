@@ -1,31 +1,102 @@
 {%- comment -%}
-  Clothes rack — products hang edge-on from a rail; hovering one turns it to face the visitor
-  and names it underneath, clicking opens a focused view with a Front/Back spin, prev/next and
-  colourway tags (custom.color_siblings). See src/components/clothes-rack.
+  Clothes rack — products hang edge-on from a rail and move on springs: hovering one turns it to
+  face the visitor, hangers can be dragged along the rail and shove each other aside, and a click
+  lifts one into a focused view with a draggable Front/Back spin, prev/next and colourway tags
+  (custom.color_siblings). See src/components/clothes-rack.
   Pieces come from "Hang" blocks first, otherwise from the collection. Each piece uses its
   first photo as the front and, by default, its second as the back; blocks can override both.
   Without JS the rail is a plain row of product links.
 {%- endcomment -%}
 {%- liquid
-  assign rack_products = section.settings.collection.products
+  assign s = section.settings
+  assign rack_products = s.collection.products
   assign picked = section.blocks | where: 'type', 'piece'
-  assign limit = section.settings.limit
+  assign limit = s.limit
   if picked.size > 0
     assign limit = picked.size
+  elsif s.collection != blank and rack_products.size < limit
+    assign limit = rack_products.size
   endif
-  assign cta_label = section.settings.cta_label | default: 'See availability'
+  assign cta_label = s.cta_label | default: 'See availability'
 -%}
 <nk-clothes-rack
-  class="clothes-rack section-spacing section-presentation color-{{ section.settings.color_scheme }} full-width"
-  style="{% render 'section-presentation', presentation: section.settings %}--rack-garment: {{ section.settings.garment_size }}rem; --rack-slot: {{ section.settings.spacing }}; --rack-collar: {{ section.settings.collar_overlap }}%;"
-  {% if section.settings.knock_out_white %}data-knockout{% endif %}
+  class="clothes-rack section-spacing section-presentation color-{{ s.color_scheme }} full-width"
+  style="{% render 'section-presentation', presentation: s %}--rack-count: {{ limit }}; --rack-garment: {{ s.garment_size }}rem; --rack-garment-phone: {{ s.garment_size_mobile }}vw; --rack-slot: {{ s.spacing }}; --rack-collar: {{ s.collar_overlap }}%; --rack-collar-n: {{ s.collar_overlap }}; --rack-hanger-n: {% if s.hanger_style == 'none' %}0{% else %}{{ s.hanger_width }}{% endif %}; --rack-side: {{ s.side_angle }}deg; --rack-vary: {{ s.angle_vary }}deg; --rack-room: {{ s.face_room | divided_by: 100.0 }}; --rack-depth: {{ s.depth }}px; --rack-hero-scale: {{ s.focus_size | divided_by: 100.0 }}; --rack-rail-h: {{ s.rail_thickness }}px; --rack-hanger-w: {{ s.hanger_width }}%; --rack-shadow: {{ s.wall_shadow | divided_by: 100.0 }}; --rack-glow: {{ s.backdrop_glow }}%; --rack-heading-gap: {{ s.heading_gap }}px; --rack-heading-scale: {{ s.heading_scale | divided_by: 100.0 }}; --rack-rail-top: {{ s.rail_top }}px; --rack-rail-shadow: {{ s.rail_shadow | divided_by: 100.0 }}; --rack-end-scale: {{ s.rail_end_size | divided_by: 100.0 }}; --rack-frame-w: {{ s.frame_thickness }}px; --rack-floor-gap: {{ s.floor_gap }}px; --rack-floor-shadow: {{ s.floor_shadow | divided_by: 100.0 }}; --rack-inner-dark: {{ s.far_side_brightness | divided_by: 100.0 }}; --rack-hanger-line: {{ s.hanger_line | divided_by: 100.0 }}; --rack-tag-scale: {{ s.tag_size | divided_by: 100.0 }}; --rack-label-scale: {{ s.label_size | divided_by: 100.0 }}; --rack-meta-w: {{ s.details_width }}rem; --rack-name-scale: {{ s.name_size | divided_by: 100.0 }}; --rack-cta-gap: {{ s.cta_gap }}px; --rack-cta-radius: {{ s.cta_radius }}px; --rack-cta-scale: {{ s.cta_size | divided_by: 100.0 }}; --rack-arrow-size: {{ s.arrow_size }}rem; --rack-slot-phone: {{ s.spacing_mobile }}; --rack-hero-scale-phone: {{ s.focus_size_mobile | divided_by: 100.0 }}; --rack-phone-lines: {{ s.description_lines_mobile }};{% if s.wall_color != blank %} --rack-wall-color: {{ s.wall_color }};{% endif %}{% if s.floor_color != blank %} --rack-floor-color: {{ s.floor_color }};{% endif %}{% if s.hook_color != blank %} --rack-hook-color: {{ s.hook_color }};{% endif %}{% if s.tag_color != blank %} --rack-tag-bg: {{ s.tag_color }};{% endif %}{% if s.tag_text_color != blank %} --rack-tag-fg: {{ s.tag_text_color }};{% endif %}{% if s.cta_color != blank %} --rack-cta-fg: {{ s.cta_color }};{% endif %}{% if s.cta_text_color != blank %} --rack-cta-bg: {{ s.cta_text_color }};{% endif %}{% if s.label_color != blank %} --rack-label-color: {{ s.label_color }};{% endif %}{% if s.rail_finish == 'custom' %} --rack-rail: {{ s.rail_color }};{% endif %}{% if s.hanger_color != blank %} --rack-hanger-color: {{ s.hanger_color }};{% endif %}"
+  {% if s.knock_out_white %}data-knockout{% endif %}
+  data-front-scale="{{ s.front_scale }}"
+  data-thickness="{{ s.far_side }}"
+  data-brush="{{ s.brush }}"
+  data-leave-ms="{{ s.leave_delay }}"
+  data-coast-ms="{{ s.coast_ms }}"
+  data-arc="{{ s.lift_arc }}"
+  data-lean="{{ s.lift_lean }}"
+  data-phone-swing="{{ s.swing_mobile }}"
+  data-cut-tolerance="{{ s.cut_tolerance }}"
+  data-shadow-blur="{{ s.shadow_blur }}"
+  data-shadow-distance="{{ s.shadow_distance }}"
+  data-editor-motion="{{ s.editor_motion }}"
+  data-cta-style="{{ s.cta_style }}"
+  data-cta-align="{{ s.cta_align }}"
+  data-arrow-style="{{ s.arrow_style }}"
+  data-meta-side="{{ s.details_side }}"
+  data-label-case="{{ s.label_case }}"
+  data-floor-line="{{ s.floor_line }}"
+  data-casters="{{ s.show_casters }}"
+  data-phone-snap="{{ s.snap_mobile }}"
+  data-phone-rail="{{ s.rail_mobile }}"
+  data-phone-arrows="{{ s.arrows_mobile }}"
+  data-rack-style="{{ s.rack_style }}"
+  data-room-style="{{ s.room_style }}"
+  data-cut-out="{% if s.knock_out_white and s.cut_out %}true{% else %}false{% endif %}"
+  data-shading="{{ s.cloth_shading }}"
+  data-shadow="{{ s.wall_shadow }}"
+  data-rail="{% if s.show_rail %}{{ s.rail_finish }}{% else %}none{% endif %}"
+  data-rail-ends="{{ s.rail_ends }}"
+  data-rail-span="{{ s.rail_span }}"
+  data-hanger="{{ s.hanger_style }}"
+  data-layout="{{ s.focus_layout }}"
+  data-side-angle="{{ s.side_angle }}"
+  data-angle-vary="{{ s.angle_vary }}"
+  data-room="{{ s.face_room }}"
+  data-depth="{{ s.depth }}"
+  data-depth-fade="{{ s.depth_fade }}"
+  data-rail-fade="{{ s.rail_fade }}"
+  data-feel="{{ s.feel }}"
+  data-turn-speed="{{ s.turn_speed }}"
+  data-turn-bounce="{{ s.turn_bounce }}"
+  data-slide-speed="{{ s.slide_speed }}"
+  data-slide-bounce="{{ s.slide_bounce }}"
+  data-swing="{{ s.swing }}"
+  data-swing-seconds="{{ s.swing_seconds }}"
+  data-drape="{{ s.drape }}"
+  data-entrance="{{ s.entrance }}"
+  data-stagger="{{ s.entrance_stagger }}"
+  data-autoplay="{{ s.autoplay }}"
+  data-autoplay-seconds="{{ s.autoplay_seconds }}"
+  data-turn-on="{{ s.turn_on }}"
+  data-click-action="{{ s.click_action }}"
+  data-drag="{{ s.allow_drag }}"
+  data-spin-drag="{{ s.spin_drag }}"
+  data-lift-ms="{{ s.lift_ms }}"
 >
-  {%- if section.settings.heading != blank -%}
-    <h2 class="clothes-rack__heading spec">{{ section.settings.heading | escape }}</h2>
+  {%- if s.heading != blank -%}
+    {%- if s.heading_size == 'large' -%}
+      <h2 class="clothes-rack__heading clothes-rack__heading--large" style="text-align: {{ s.heading_align }};">{{ s.heading | escape }}</h2>
+    {%- else -%}
+      <h2 class="clothes-rack__heading spec" style="text-align: {{ s.heading_align }};">{{ s.heading | escape }}</h2>
+    {%- endif -%}
   {%- endif -%}
 
   <div class="clothes-rack__stage" data-ref="stage">
-    <div class="clothes-rack__rail" aria-hidden="true"></div>
+    {%- if s.room_style == 'room' -%}<div class="clothes-rack__floor" aria-hidden="true"></div>{%- endif -%}
+    <div class="clothes-rack__rail" aria-hidden="true" data-ref="rail"></div>
+    {%- if s.show_rail and s.rack_style == 'freestanding' -%}
+      <div class="clothes-rack__frame" aria-hidden="true">
+        <span class="clothes-rack__upright"></span>
+        <span class="clothes-rack__upright"></span>
+        {%- if s.show_base -%}<span class="clothes-rack__base"></span>{%- endif -%}
+      </div>
+    {%- endif -%}
 
     <ul class="clothes-rack__items" data-ref="list" role="list">
       {%- for i in (1..limit) -%}
@@ -38,78 +109,120 @@
           else
             assign piece = rack_products[index0]
           endif
-          if piece == blank and request.design_mode == false
+          assign front_asset = block.settings.front_asset | strip
+          if piece == blank and front_asset == blank and request.design_mode == false
             continue
           endif
 
           assign front = block.settings.front_image | default: piece.featured_media.preview_image
+          comment
+            A photo file in the theme stands in until a photo is picked: the rail can hang before products exist.
+          endcomment
+          assign front_src = blank
+          if block.settings.front_image == blank and front_asset != blank
+            assign front = blank
+            assign front_src = front_asset | asset_url
+          endif
           assign back = block.settings.back_image
-          if back == blank and section.settings.back_from_second
+          assign side_photo = block.settings.side_image
+          if back == blank and s.back_from_second
             for media in piece.media offset: 1 limit: 1
               assign back = media.preview_image
             endfor
           endif
-          assign title = piece.title | default: 'Product title'
+          assign title = block.settings.name | default: piece.title | default: 'Product title'
           assign color_name = piece.metafields.custom.color_name.value
           assign siblings = piece.metafields.custom.color_siblings.value
+          assign price = piece.price | money | strip_html
+
+          assign description = ''
+          if s.show_description
+            assign description = block.settings.description
+            if description == blank
+              assign description = piece.description | strip_html | truncatewords: s.description_words
+            endif
+          endif
+
+          assign hang_tag = ''
+          case s.hang_tag
+            when 'price'
+              assign hang_tag = price
+            when 'custom'
+              assign hang_tag = block.settings.tag_text | default: price
+          endcase
 
           comment
             Size stock for the availability button: "S~1|M~0|L~1" (1 = some variant in that size can be bought).
           endcomment
           assign sizes = ''
-          for option in piece.options_with_values
-            assign option_name = option.name | downcase
-            unless option_name contains 'size'
-              continue
-            endunless
-            assign position = option.position | minus: 1
-            for value in option.values
-              assign in_stock = '0'
-              for variant in piece.variants
-                if variant.options[position] == value and variant.available
-                  assign in_stock = '1'
-                  break
+          if s.cta_sizes
+            for option in piece.options_with_values
+              assign option_name = option.name | downcase
+              unless option_name contains 'size'
+                continue
+              endunless
+              assign position = option.position | minus: 1
+              for value in option.values
+                assign in_stock = '0'
+                for variant in piece.variants
+                  if variant.options[position] == value and variant.available
+                    assign in_stock = '1'
+                    break
+                  endif
+                endfor
+                assign entry = value | replace: '~', '-' | replace: '|', '/' | append: '~' | append: in_stock
+                if sizes == blank
+                  assign sizes = entry
+                else
+                  assign sizes = sizes | append: '|' | append: entry
                 endif
               endfor
-              assign entry = value | replace: '~', '-' | replace: '|', '/' | append: '~' | append: in_stock
-              if sizes == blank
-                assign sizes = entry
-              else
-                assign sizes = sizes | append: '|' | append: entry
-              endif
+              break
             endfor
-            break
-          endfor
+          endif
         -%}
-        <li class="clothes-rack__item" data-ref="item" style="--i: {{ index0 }};" {{ block.shopify_attributes }}>
+        <li class="clothes-rack__item" data-ref="item" style="--i: {{ index0 }};{% if block.settings.piece_scale %} --rack-piece-scale: {{ block.settings.piece_scale | divided_by: 100.0 }}; --rack-collar-adjust: {{ block.settings.collar_adjust }}%;{% endif %}" {{ block.shopify_attributes }}>
           <a
             class="clothes-rack__garment"
             href="{{ piece.url | default: '#' }}"
+            draggable="false"
             data-ref="garment"
             data-title="{{ title | escape }}"
             data-color="{{ color_name | escape }}"
-            data-price="{{ piece.price | money | strip_html | escape }}"
+            data-price="{% if s.show_price %}{{ price | escape }}{% endif %}"
             data-available="{% if piece.available or piece == blank %}1{% else %}0{% endif %}"
             data-sizes="{{ sizes | escape }}"
+            data-description="{{ description | escape }}"
+            data-details="{{ block.settings.details | escape }}"
             {% if back %}data-back="{{ back | image_url: width: 1100 }}"{% endif %}
-            data-front="{{ front | image_url: width: 1100 }}"
+            data-front="{% if front_src != blank %}{{ front_src }}{% else %}{{ front | image_url: width: 1100 }}{% endif %}"
           >
             <span class="clothes-rack__turn">
-              <span class="clothes-rack__hanger" aria-hidden="true">
-                <svg viewBox="0 0 64 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M32 12V8.5a3.5 3.5 0 1 0-3.5-3.5"/><path d="M32 12 4 27h56L32 12Z"/></svg>
+              {%- render 'clothes-rack-hanger', style: s.hanger_style -%}
+              <span class="clothes-rack__photos">
+                {%- if front_src != blank -%}
+                  <img class="clothes-rack__img" src="{{ front_src }}" alt="" width="1100" height="1100" loading="lazy" draggable="false">
+                {%- elsif front -%}
+                  {{ front | image_url: width: 900 | image_tag: loading: 'lazy', widths: '360, 540, 720, 900', sizes: '(min-width: 750px) 30rem, 70vw', alt: '', draggable: 'false', class: 'clothes-rack__img' }}
+                {%- else -%}
+                  {{ 'product-1' | placeholder_svg_tag: 'clothes-rack__img clothes-rack__img--placeholder' }}
+                {%- endif -%}
+                {%- if side_photo -%}
+                  {{ side_photo | image_url: width: 720 | image_tag: loading: 'lazy', widths: '360, 540, 720', sizes: '(min-width: 750px) 30rem, 70vw', alt: '', draggable: 'false', class: 'clothes-rack__img clothes-rack__img--side' }}
+                {%- endif -%}
               </span>
-              {%- if front -%}
-                {{ front | image_url: width: 900 | image_tag: loading: 'lazy', widths: '360, 540, 720, 900', sizes: '(min-width: 750px) 22rem, 60vw', alt: '', class: 'clothes-rack__img' }}
-              {%- else -%}
-                {{ 'product-1' | placeholder_svg_tag: 'clothes-rack__img clothes-rack__img--placeholder' }}
-              {%- endif -%}
             </span>
-            <span class="clothes-rack__label">
+            {%- if hang_tag != blank -%}
+              <span class="clothes-rack__hangtag" aria-hidden="true"><span>{{ hang_tag | escape }}</span></span>
+            {%- endif -%}
+            {%- comment -%} Always rendered: it is the link's accessible name, shown or not. {%- endcomment -%}
+            <span class="clothes-rack__label{% unless s.show_label %} visually-hidden{% endunless %}">
               <span class="clothes-rack__title">{{ title | escape }}</span>
               {%- if color_name != blank %} <span class="clothes-rack__color">— {{ color_name | escape }}</span>{% endif -%}
+              {%- if s.label_price %} <span class="clothes-rack__label-price">· {{ price | escape }}</span>{% endif -%}
             </span>
           </a>
-          {%- if siblings != blank -%}
+          {%- if siblings != blank and s.show_tags -%}
             <template data-ref="siblings">
               {%- for sibling in siblings -%}
                 <a class="clothes-rack__tag{% if sibling.id == piece.id %} is-active{% endif %}" href="{{ sibling.url }}" aria-label="{{ sibling.title | escape }}"{% if sibling.id == piece.id %} aria-current="true"{% endif %}>
@@ -125,37 +238,57 @@
       {%- endfor -%}
     </ul>
 
-    <div class="clothes-rack__focus" data-ref="focus" role="dialog" aria-modal="false" aria-label="{{ section.settings.heading | default: 'Clothes rack' | escape }}" hidden>
-      <button type="button" class="clothes-rack__close spec" data-ref="close">{{ section.settings.close_label | default: 'Back to rack' | escape }}</button>
-      <button type="button" class="clothes-rack__arrow clothes-rack__arrow--prev" data-ref="prev" aria-label="{{ 'carousel.previous' | t }}">{% render 'icon', name: 'arrow-left' %}</button>
-      <div class="clothes-rack__hero" data-ref="hero">
-        <div class="clothes-rack__spin" data-ref="spin">
-          <span class="clothes-rack__hanger" aria-hidden="true">
-            <svg viewBox="0 0 64 30" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M32 12V8.5a3.5 3.5 0 1 0-3.5-3.5"/><path d="M32 12 4 27h56L32 12Z"/></svg>
-          </span>
-          <img class="clothes-rack__face" data-ref="face" alt="" width="1100" height="1100" decoding="async">
-        </div>
-        <div class="clothes-rack__tags" data-ref="tags"></div>
-      </div>
-      <button type="button" class="clothes-rack__arrow clothes-rack__arrow--next" data-ref="next" aria-label="{{ 'carousel.next' | t }}">{% render 'icon', name: 'arrow-right' %}</button>
-      <div class="clothes-rack__meta">
-        <h3 class="clothes-rack__name" data-ref="name" aria-live="polite"></h3>
-        <p class="clothes-rack__price" data-ref="price"></p>
-        <div class="clothes-rack__sides" role="group" data-ref="sides">
-          <button type="button" data-side="front" aria-pressed="true">{{ section.settings.front_label | default: 'Front' | escape }}</button>
-          <button type="button" data-side="back" aria-pressed="false">{{ section.settings.back_label | default: 'Back' | escape }}</button>
-        </div>
-      </div>
-    </div>
+    {%- if s.caption != blank -%}
+      <p class="clothes-rack__caption">{{ s.caption | escape }}</p>
+    {%- endif -%}
 
-    <div class="clothes-rack__cta">
-      <a class="clothes-rack__availability" data-ref="cta" data-state="idle" href="{{ section.settings.collection.url | default: routes.all_products_collection_url }}">
-        <span class="clothes-rack__cta-label" data-text="{{ cta_label | escape }}"><span>{{ cta_label | escape }}</span></span>
-        <span class="clothes-rack__cta-sizes" aria-hidden="true"><span data-ref="sizes"></span></span>
-        <span class="clothes-rack__cta-arrow" aria-hidden="true">{% render 'icon', name: 'arrow-right' %}</span>
-        <span class="visually-hidden" data-ref="cta-context"></span>
-      </a>
-    </div>
+    {%- if s.click_action == 'focus' -%}
+      <div class="clothes-rack__focus" data-ref="focus" role="dialog" aria-modal="false" aria-label="{{ s.heading | default: 'Clothes rack' | escape }}" hidden>
+        {%- if s.show_arrows -%}
+          <button type="button" class="clothes-rack__arrow clothes-rack__arrow--prev" data-ref="prev" aria-label="{{ 'carousel.previous' | t }}">{% render 'icon', name: 'arrow-left' %}</button>
+        {%- endif -%}
+        <div class="clothes-rack__hero{% if s.spin_drag %} is-spinnable{% endif %}" data-ref="hero">
+          <div class="clothes-rack__spin" data-ref="spin">
+            {%- render 'clothes-rack-hanger', style: s.hanger_style -%}
+            <div class="clothes-rack__faces">
+              <img class="clothes-rack__face" data-ref="face" alt="" width="1100" height="1100" decoding="async" draggable="false">
+              <img class="clothes-rack__face" data-ref="face-back" alt="" width="1100" height="1100" decoding="async" draggable="false" style="visibility: hidden;">
+            </div>
+          </div>
+        </div>
+        {%- if s.show_arrows -%}
+          <button type="button" class="clothes-rack__arrow clothes-rack__arrow--next" data-ref="next" aria-label="{{ 'carousel.next' | t }}">{% render 'icon', name: 'arrow-right' %}</button>
+        {%- endif -%}
+        <div class="clothes-rack__meta">
+          <button type="button" class="clothes-rack__close spec" data-ref="close">{{ s.close_label | default: 'Back to rack' | escape }}</button>
+          <h3 class="clothes-rack__name" data-ref="name" aria-live="polite"></h3>
+          {%- if s.show_price -%}<p class="clothes-rack__price" data-ref="price"></p>{%- endif -%}
+          {%- if s.show_description -%}<p class="clothes-rack__description" data-ref="description"></p>{%- endif -%}
+          <ul class="clothes-rack__details" data-ref="details" role="list"></ul>
+          {%- if s.show_sides -%}
+            <div class="clothes-rack__sides" role="group" data-ref="sides">
+              <button type="button" data-side="front" aria-pressed="true">{{ s.front_label | default: 'Front' | escape }}</button>
+              <button type="button" data-side="back" aria-pressed="false">{{ s.back_label | default: 'Back' | escape }}</button>
+            </div>
+          {%- endif -%}
+          {%- if s.show_tags -%}<div class="clothes-rack__tags" data-ref="tags"></div>{%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if s.show_cta -%}
+      <div class="clothes-rack__cta">
+        <a class="clothes-rack__availability" data-ref="cta" data-state="idle" data-soldout="{{ s.soldout_label | default: 'Sold out' | escape }}" href="{{ s.collection.url | default: routes.all_products_collection_url }}">
+          <span class="clothes-rack__cta-text">
+            <span class="clothes-rack__cta-label" data-text="{{ cta_label | escape }}"><span>{{ cta_label | escape }}</span></span>
+            {%- if s.cta_name -%}<span class="clothes-rack__cta-for" data-ref="cta-for" aria-hidden="true"></span>{%- endif -%}
+          </span>
+          {%- if s.cta_sizes -%}<span class="clothes-rack__cta-sizes" aria-hidden="true"><span data-ref="sizes"></span></span>{%- endif -%}
+          <span class="clothes-rack__cta-arrow" aria-hidden="true">{% render 'icon', name: 'arrow-right' %}</span>
+          <span class="visually-hidden" data-ref="cta-context"></span>
+        </a>
+      </div>
+    {%- endif -%}
   </div>
 </nk-clothes-rack>
 
@@ -171,6 +304,68 @@
       "info": "Small label above the rail. Leave empty for none."
     },
     {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading style",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small label"
+        },
+        {
+          "value": "large",
+          "label": "Large heading"
+        }
+      ],
+      "default": "small"
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "heading_scale",
+      "label": "Heading size",
+      "min": 60,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "heading_gap",
+      "label": "Space under heading",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Caption",
+      "info": "Shown under the rail until a piece is chosen. Leave empty for none."
+    },
+    {
       "type": "collection",
       "id": "collection",
       "label": "Collection",
@@ -183,7 +378,8 @@
       "min": 3,
       "max": 16,
       "step": 1,
-      "default": 8
+      "default": 8,
+      "info": "Used with a collection. With blocks, every block hangs."
     },
     {
       "type": "checkbox",
@@ -200,18 +396,290 @@
       "info": "Makes white studio backgrounds disappear on light color schemes."
     },
     {
+      "type": "checkbox",
+      "id": "cut_out",
+      "label": "Cut garments out of their white backgrounds",
+      "default": false,
+      "info": "Lets garments overlap each other and cast real shadows. Falls back to the blend if a photo cannot be cut out.",
+      "visible_if": "{{ section.settings.knock_out_white }}"
+    },
+    {
+      "type": "range",
+      "id": "cloth_shading",
+      "label": "Cloth shading",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 60,
+      "info": "Adds light, folds and volume to flat photos. Needs cut-outs."
+    },
+    {
+      "type": "select",
+      "id": "room_style",
+      "label": "Setting",
+      "options": [
+        {
+          "value": "room",
+          "label": "Wall and floor"
+        },
+        {
+          "value": "plain",
+          "label": "Plain background"
+        }
+      ],
+      "default": "plain"
+    },
+    {
+      "type": "color",
+      "id": "wall_color",
+      "label": "Wall color",
+      "info": "Leave empty to follow the color scheme.",
+      "visible_if": "{{ section.settings.room_style == 'room' }}"
+    },
+    {
+      "type": "color",
+      "id": "floor_color",
+      "label": "Floor color",
+      "info": "Leave empty to follow the color scheme.",
+      "visible_if": "{{ section.settings.room_style == 'room' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "floor_line",
+      "label": "Show the line where wall meets floor",
+      "default": true,
+      "visible_if": "{{ section.settings.room_style == 'room' }}"
+    },
+    {
+      "type": "range",
+      "id": "floor_shadow",
+      "label": "Shadow on the floor",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50,
+      "visible_if": "{{ section.settings.room_style == 'room' }}"
+    },
+    {
+      "type": "range",
+      "id": "backdrop_glow",
+      "label": "Backdrop glow",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 0,
+      "info": "A soft pool of light behind the rail."
+    },
+    {
       "type": "header",
       "content": "Rail"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rail",
+      "label": "Show the rail",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "rack_style",
+      "label": "Rack",
+      "options": [
+        {
+          "value": "freestanding",
+          "label": "Freestanding rack"
+        },
+        {
+          "value": "wall",
+          "label": "Wall-mounted rail"
+        }
+      ],
+      "default": "wall",
+      "info": "Phones show just the rail, because it scrolls.",
+      "visible_if": "{{ section.settings.show_rail }}"
+    },
+    {
+      "type": "select",
+      "id": "rail_finish",
+      "label": "Finish",
+      "options": [
+        {
+          "value": "steel",
+          "label": "Brushed steel"
+        },
+        {
+          "value": "brass",
+          "label": "Brass"
+        },
+        {
+          "value": "black",
+          "label": "Matte black"
+        },
+        {
+          "value": "custom",
+          "label": "Custom color"
+        }
+      ],
+      "default": "steel",
+      "visible_if": "{{ section.settings.show_rail }}"
+    },
+    {
+      "type": "color",
+      "id": "rail_color",
+      "label": "Rail color",
+      "default": "#8a8a8a",
+      "visible_if": "{{ section.settings.show_rail and section.settings.rail_finish == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "rail_thickness",
+      "label": "Thickness",
+      "min": 2,
+      "max": 14,
+      "step": 1,
+      "unit": "px",
+      "default": 6,
+      "visible_if": "{{ section.settings.show_rail }}"
+    },
+    {
+      "type": "range",
+      "id": "rail_top",
+      "label": "Rail height against the hooks",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 6,
+      "visible_if": "{{ section.settings.show_rail }}"
+    },
+    {
+      "type": "range",
+      "id": "rail_shadow",
+      "label": "Rail shadow",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "default": 22,
+      "visible_if": "{{ section.settings.show_rail }}"
+    },
+    {
+      "type": "select",
+      "id": "rail_ends",
+      "label": "Rail ends",
+      "options": [
+        {
+          "value": "posts",
+          "label": "Posts"
+        },
+        {
+          "value": "caps",
+          "label": "Round caps"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "posts",
+      "visible_if": "{{ section.settings.show_rail }}"
+    },
+    {
+      "type": "range",
+      "id": "rail_end_size",
+      "label": "Rail end size",
+      "min": 50,
+      "max": 250,
+      "step": 10,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ section.settings.show_rail }}"
+    },
+    {
+      "type": "select",
+      "id": "rail_span",
+      "label": "Rail length",
+      "options": [
+        {
+          "value": "fit",
+          "label": "Fit the garments"
+        },
+        {
+          "value": "content",
+          "label": "Content width"
+        },
+        {
+          "value": "full",
+          "label": "Edge to edge"
+        }
+      ],
+      "default": "content",
+      "visible_if": "{{ section.settings.show_rail }}"
+    },
+    {
+      "type": "range",
+      "id": "frame_thickness",
+      "label": "Frame thickness",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ section.settings.show_rail and section.settings.rack_style == 'freestanding' }}"
+    },
+    {
+      "type": "range",
+      "id": "floor_gap",
+      "label": "Space under the garments",
+      "min": 0,
+      "max": 240,
+      "step": 4,
+      "unit": "px",
+      "default": 44,
+      "visible_if": "{{ section.settings.show_rail and section.settings.rack_style == 'freestanding' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_base",
+      "label": "Show the base bar",
+      "default": true,
+      "visible_if": "{{ section.settings.show_rail and section.settings.rack_style == 'freestanding' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_casters",
+      "label": "Show wheels",
+      "default": true,
+      "visible_if": "{{ section.settings.show_rail and section.settings.rack_style == 'freestanding' }}"
+    },
+    {
+      "type": "header",
+      "content": "Garments"
     },
     {
       "type": "range",
       "id": "garment_size",
       "label": "Garment size",
       "min": 8,
-      "max": 24,
+      "max": 40,
       "step": 1,
       "unit": "rem",
-      "default": 16
+      "default": 24,
+      "info": "Shrinks automatically when the rail would not fit on screen."
+    },
+    {
+      "type": "range",
+      "id": "garment_size_mobile",
+      "label": "Garment size on phones",
+      "min": 30,
+      "max": 90,
+      "step": 2,
+      "unit": "%",
+      "default": 62,
+      "info": "Share of the screen width."
     },
     {
       "type": "range",
@@ -221,7 +689,7 @@
       "max": 50,
       "step": 2,
       "unit": "%",
-      "default": 30,
+      "default": 34,
       "info": "How much of each garment shows while it hangs edge-on."
     },
     {
@@ -229,21 +697,854 @@
       "id": "collar_overlap",
       "label": "Lift photo to the hanger",
       "min": 0,
-      "max": 40,
+      "max": 50,
       "step": 1,
       "unit": "%",
       "default": 22,
       "info": "Pulls the photo up so the collar meets the hanger when photos have space above the garment."
     },
     {
+      "type": "range",
+      "id": "side_angle",
+      "label": "Hanging angle",
+      "min": 20,
+      "max": 85,
+      "step": 1,
+      "unit": "deg",
+      "default": 68,
+      "info": "How far pieces turn away while they hang. Higher is closer to edge-on."
+    },
+    {
+      "type": "range",
+      "id": "angle_vary",
+      "label": "Natural variation",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "unit": "deg",
+      "default": 4,
+      "info": "Small differences between pieces, so the row looks hung by hand."
+    },
+    {
+      "type": "range",
+      "id": "face_room",
+      "label": "Room around the piece in front",
+      "min": 60,
+      "max": 110,
+      "step": 2,
+      "unit": "%",
+      "default": 86,
+      "info": "How far neighbours stand aside. Match it to how much of the photo the garment fills."
+    },
+    {
+      "type": "range",
+      "id": "front_scale",
+      "label": "Piece in front grows to",
+      "min": 100,
+      "max": 140,
+      "step": 2,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "depth",
+      "label": "3D depth",
+      "min": 500,
+      "max": 2000,
+      "step": 20,
+      "unit": "px",
+      "default": 1120,
+      "info": "Lower exaggerates the perspective."
+    },
+    {
+      "type": "range",
+      "id": "depth_fade",
+      "label": "Fade pieces turned away",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "wall_shadow",
+      "label": "Shadow",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 35,
+      "info": "Needs cut-outs, or photos with a transparent background."
+    },
+    {
+      "type": "range",
+      "id": "shadow_blur",
+      "label": "Shadow softness",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50,
+      "visible_if": "{{ section.settings.knock_out_white and section.settings.cut_out }}"
+    },
+    {
+      "type": "range",
+      "id": "shadow_distance",
+      "label": "Shadow distance",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50,
+      "visible_if": "{{ section.settings.knock_out_white and section.settings.cut_out }}"
+    },
+    {
+      "type": "range",
+      "id": "far_side",
+      "label": "Garment thickness",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 40,
+      "info": "How far the far side of a cut-out shows as it turns.",
+      "visible_if": "{{ section.settings.knock_out_white and section.settings.cut_out }}"
+    },
+    {
+      "type": "range",
+      "id": "far_side_brightness",
+      "label": "Far side brightness",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 60,
+      "visible_if": "{{ section.settings.knock_out_white and section.settings.cut_out }}"
+    },
+    {
+      "type": "range",
+      "id": "cut_tolerance",
+      "label": "Cut-out sensitivity",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "default": 4,
+      "info": "Raise it if a grey-white background stays around photos. Lower it if pale garments get holes.",
+      "visible_if": "{{ section.settings.knock_out_white and section.settings.cut_out }}"
+    },
+    {
       "type": "header",
-      "content": "Labels"
+      "content": "Hangers and tags"
+    },
+    {
+      "type": "select",
+      "id": "hanger_style",
+      "label": "Hanger",
+      "options": [
+        {
+          "value": "wire",
+          "label": "Wire outline"
+        },
+        {
+          "value": "wood",
+          "label": "Wood"
+        },
+        {
+          "value": "matte",
+          "label": "Matte"
+        },
+        {
+          "value": "none",
+          "label": "None (photos include a hanger)"
+        }
+      ],
+      "default": "wire"
+    },
+    {
+      "type": "color",
+      "id": "hanger_color",
+      "label": "Hanger color",
+      "info": "Leave empty for a color that suits the hanger.",
+      "visible_if": "{{ section.settings.hanger_style != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "hanger_width",
+      "label": "Hanger width",
+      "min": 30,
+      "max": 80,
+      "step": 2,
+      "unit": "%",
+      "default": 46,
+      "visible_if": "{{ section.settings.hanger_style != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "hanger_line",
+      "label": "Hanger line weight",
+      "min": 50,
+      "max": 250,
+      "step": 10,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ section.settings.hanger_style != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "hook_color",
+      "label": "Hook color",
+      "info": "Wood and matte hangers. Leave empty for a metal hook.",
+      "visible_if": "{{ section.settings.hanger_style == 'wood' or section.settings.hanger_style == 'matte' }}"
+    },
+    {
+      "type": "select",
+      "id": "hang_tag",
+      "label": "Hang tag",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "price",
+          "label": "Price"
+        },
+        {
+          "value": "custom",
+          "label": "Text from each block"
+        }
+      ],
+      "default": "none",
+      "info": "\"Text from each block\" falls back to the price."
+    },
+    {
+      "type": "range",
+      "id": "tag_size",
+      "label": "Tag size",
+      "min": 70,
+      "max": 180,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ section.settings.hang_tag != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "tag_color",
+      "label": "Tag color",
+      "visible_if": "{{ section.settings.hang_tag != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "tag_text_color",
+      "label": "Tag text color",
+      "visible_if": "{{ section.settings.hang_tag != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "Motion"
+    },
+    {
+      "type": "select",
+      "id": "feel",
+      "label": "Feel",
+      "options": [
+        {
+          "value": "soft",
+          "label": "Soft and slow"
+        },
+        {
+          "value": "balanced",
+          "label": "Balanced"
+        },
+        {
+          "value": "snappy",
+          "label": "Quick and springy"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "balanced",
+      "info": "Visitors with Reduce Motion on, and the theme editor, see no animation."
+    },
+    {
+      "type": "range",
+      "id": "turn_speed",
+      "label": "Turn speed",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "visible_if": "{{ section.settings.feel == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "turn_bounce",
+      "label": "Turn bounce",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 30,
+      "visible_if": "{{ section.settings.feel == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "slide_speed",
+      "label": "Slide speed",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "visible_if": "{{ section.settings.feel == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "slide_bounce",
+      "label": "Slide bounce",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 15,
+      "visible_if": "{{ section.settings.feel == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "swing",
+      "label": "Hanger swing",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "%",
+      "default": 100,
+      "info": "0% stops the swinging."
+    },
+    {
+      "type": "range",
+      "id": "swing_seconds",
+      "label": "Swing length",
+      "min": 1,
+      "max": 6,
+      "step": 0.5,
+      "unit": "s",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "drape",
+      "label": "Cloth drape",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50,
+      "info": "How far the cloth trails its hanger as it swings."
+    },
+    {
+      "type": "range",
+      "id": "brush",
+      "label": "How hard neighbours get brushed",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "select",
+      "id": "entrance",
+      "label": "Entrance",
+      "options": [
+        {
+          "value": "brush",
+          "label": "A hand brushes the rail"
+        },
+        {
+          "value": "slide",
+          "label": "Slide along the rail"
+        },
+        {
+          "value": "drop",
+          "label": "Drop onto the rail"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "brush"
+    },
+    {
+      "type": "range",
+      "id": "entrance_stagger",
+      "label": "Entrance stagger",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "ms",
+      "default": 60,
+      "visible_if": "{{ section.settings.entrance != 'none' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Turn pieces automatically",
+      "default": false,
+      "info": "Pauses under the pointer and stops once a visitor takes hold of the rack. Off on phones, where the rail scrolls."
+    },
+    {
+      "type": "range",
+      "id": "autoplay_seconds",
+      "label": "Seconds per piece",
+      "min": 1,
+      "max": 10,
+      "step": 0.5,
+      "unit": "s",
+      "default": 3,
+      "visible_if": "{{ section.settings.autoplay }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "editor_motion",
+      "label": "Preview motion in the theme editor",
+      "default": true,
+      "info": "So you can feel your settings while editing. The entrance only plays on the live store."
+    },
+    {
+      "type": "header",
+      "content": "Interaction"
+    },
+    {
+      "type": "select",
+      "id": "turn_on",
+      "label": "Turn a piece to the front on",
+      "options": [
+        {
+          "value": "hover",
+          "label": "Hover"
+        },
+        {
+          "value": "click",
+          "label": "Click"
+        }
+      ],
+      "default": "hover",
+      "info": "With Click, the first click turns the piece and the second acts on it."
+    },
+    {
+      "type": "range",
+      "id": "leave_delay",
+      "label": "Delay before a piece turns back",
+      "min": 0,
+      "max": 1000,
+      "step": 20,
+      "unit": "ms",
+      "default": 140
+    },
+    {
+      "type": "select",
+      "id": "click_action",
+      "label": "Clicking a piece",
+      "options": [
+        {
+          "value": "focus",
+          "label": "Lifts it into a focused view"
+        },
+        {
+          "value": "product",
+          "label": "Goes to the product page"
+        }
+      ],
+      "default": "focus"
+    },
+    {
+      "type": "checkbox",
+      "id": "allow_drag",
+      "label": "Let visitors drag hangers along the rail",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "coast_ms",
+      "label": "How long a thrown hanger coasts",
+      "min": 100,
+      "max": 2000,
+      "step": 50,
+      "unit": "ms",
+      "default": 700,
+      "visible_if": "{{ section.settings.allow_drag }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_label",
+      "label": "Name the piece under the rail",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "label_price",
+      "label": "Add the price to the name",
+      "default": false,
+      "visible_if": "{{ section.settings.show_label }}"
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Name size",
+      "min": 70,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ section.settings.show_label }}"
+    },
+    {
+      "type": "select",
+      "id": "label_case",
+      "label": "Name case",
+      "options": [
+        {
+          "value": "none",
+          "label": "As written"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ section.settings.show_label }}"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Name color",
+      "visible_if": "{{ section.settings.show_label }}"
+    },
+    {
+      "type": "header",
+      "content": "Focused view"
+    },
+    {
+      "type": "select",
+      "id": "focus_layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "beside",
+          "label": "Details beside the piece"
+        },
+        {
+          "value": "below",
+          "label": "Details below the piece"
+        }
+      ],
+      "default": "beside",
+      "info": "Phones always use Below.",
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "select",
+      "id": "details_side",
+      "label": "Details side",
+      "options": [
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        }
+      ],
+      "default": "right",
+      "visible_if": "{{ section.settings.click_action == 'focus' and section.settings.focus_layout == 'beside' }}"
+    },
+    {
+      "type": "range",
+      "id": "details_width",
+      "label": "Details width",
+      "min": 14,
+      "max": 40,
+      "step": 1,
+      "unit": "rem",
+      "default": 24,
+      "visible_if": "{{ section.settings.click_action == 'focus' and section.settings.focus_layout == 'beside' }}"
+    },
+    {
+      "type": "range",
+      "id": "name_size",
+      "label": "Product name size",
+      "min": 70,
+      "max": 220,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "range",
+      "id": "focus_size",
+      "label": "Piece size",
+      "min": 90,
+      "max": 160,
+      "step": 5,
+      "unit": "%",
+      "default": 115,
+      "info": "Larger sizes reserve more height in the section.",
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "range",
+      "id": "rail_fade",
+      "label": "Rest of the rail stays visible at",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "default": 8,
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "range",
+      "id": "lift_ms",
+      "label": "Lift duration",
+      "min": 300,
+      "max": 1400,
+      "step": 20,
+      "unit": "ms",
+      "default": 760,
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "range",
+      "id": "lift_arc",
+      "label": "Lift arc height",
+      "min": 0,
+      "max": 300,
+      "step": 10,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "range",
+      "id": "lift_lean",
+      "label": "Lift lean",
+      "min": 0,
+      "max": 12,
+      "step": 0.5,
+      "unit": "deg",
+      "default": 2,
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "spin_drag",
+      "label": "Drag the piece to spin it",
+      "default": true,
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sides",
+      "label": "Show Front / Back buttons",
+      "default": true,
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show previous / next arrows",
+      "default": true,
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "select",
+      "id": "arrow_style",
+      "label": "Arrow style",
+      "options": [
+        {
+          "value": "circle",
+          "label": "Circle"
+        },
+        {
+          "value": "plain",
+          "label": "Plain"
+        }
+      ],
+      "default": "circle",
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "range",
+      "id": "arrow_size",
+      "label": "Arrow size",
+      "min": 2,
+      "max": 4,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 2.5,
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true,
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show description",
+      "default": true,
+      "info": "The block's description, or the start of the product's.",
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "range",
+      "id": "description_words",
+      "label": "Description length",
+      "min": 8,
+      "max": 60,
+      "step": 2,
+      "unit": "wd",
+      "default": 28,
+      "visible_if": "{{ section.settings.click_action == 'focus' and section.settings.show_description }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show colorway tags",
+      "default": true,
+      "info": "From the custom.color_siblings metafield.",
+      "visible_if": "{{ section.settings.click_action == 'focus' }}"
+    },
+    {
+      "type": "header",
+      "content": "Button and labels"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show the button",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "Button style",
+      "options": [
+        {
+          "value": "outline",
+          "label": "Outline"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "text",
+          "label": "Text only"
+        }
+      ],
+      "default": "outline",
+      "visible_if": "{{ section.settings.show_cta }}"
+    },
+    {
+      "type": "select",
+      "id": "cta_align",
+      "label": "Button alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Right"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.show_cta }}"
+    },
+    {
+      "type": "range",
+      "id": "cta_gap",
+      "label": "Space above button",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.show_cta }}"
+    },
+    {
+      "type": "range",
+      "id": "cta_size",
+      "label": "Button text size",
+      "min": 80,
+      "max": 180,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ section.settings.show_cta }}"
+    },
+    {
+      "type": "range",
+      "id": "cta_radius",
+      "label": "Button corners",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 60,
+      "visible_if": "{{ section.settings.show_cta }}"
+    },
+    {
+      "type": "color",
+      "id": "cta_color",
+      "label": "Button color",
+      "info": "Leave empty to follow the color scheme.",
+      "visible_if": "{{ section.settings.show_cta }}"
+    },
+    {
+      "type": "color",
+      "id": "cta_text_color",
+      "label": "Button contrast color",
+      "info": "Text on the filled part, and the arrow.",
+      "visible_if": "{{ section.settings.show_cta }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "cta_name",
+      "label": "Name the chosen product in the button",
+      "default": true,
+      "visible_if": "{{ section.settings.show_cta }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "cta_sizes",
+      "label": "Show live sizes in the button",
+      "default": true,
+      "visible_if": "{{ section.settings.show_cta }}"
     },
     {
       "type": "text",
       "id": "cta_label",
       "label": "Button label",
-      "default": "See availability"
+      "default": "See availability",
+      "visible_if": "{{ section.settings.show_cta }}"
     },
     {
       "type": "text",
@@ -264,6 +1565,88 @@
       "default": "Back to rack"
     },
     {
+      "type": "text",
+      "id": "soldout_label",
+      "label": "Sold out label",
+      "default": "Sold out"
+    },
+    {
+      "type": "header",
+      "content": "Phones"
+    },
+    {
+      "type": "range",
+      "id": "spacing_mobile",
+      "label": "Hanging spacing on phones",
+      "min": 20,
+      "max": 70,
+      "step": 2,
+      "unit": "%",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "focus_size_mobile",
+      "label": "Focused piece size on phones",
+      "min": 80,
+      "max": 140,
+      "step": 5,
+      "unit": "%",
+      "default": 115
+    },
+    {
+      "type": "range",
+      "id": "description_lines_mobile",
+      "label": "Description lines on phones",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "default": 3,
+      "info": "0 hides the description."
+    },
+    {
+      "type": "range",
+      "id": "swing_mobile",
+      "label": "Hanger swing on phones",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "select",
+      "id": "snap_mobile",
+      "label": "Scrolling the rail",
+      "options": [
+        {
+          "value": "mandatory",
+          "label": "Always stop on a piece"
+        },
+        {
+          "value": "proximity",
+          "label": "Stop when close to a piece"
+        },
+        {
+          "value": "none",
+          "label": "Free scrolling"
+        }
+      ],
+      "default": "mandatory"
+    },
+    {
+      "type": "checkbox",
+      "id": "rail_mobile",
+      "label": "Show the rail on phones",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "arrows_mobile",
+      "label": "Show previous / next arrows on phones",
+      "default": true
+    },
+    {
       "type": "header",
       "content": "Layout"
     },
@@ -278,10 +1661,22 @@
       "id": "content_width",
       "label": "Content width",
       "options": [
-        { "value": "inherit", "label": "Theme default" },
-        { "value": "narrow", "label": "Narrow" },
-        { "value": "wide", "label": "Wide" },
-        { "value": "full", "label": "Full width" }
+        {
+          "value": "inherit",
+          "label": "Theme default"
+        },
+        {
+          "value": "narrow",
+          "label": "Narrow"
+        },
+        {
+          "value": "wide",
+          "label": "Wide"
+        },
+        {
+          "value": "full",
+          "label": "Full width"
+        }
       ],
       "default": "inherit"
     },
@@ -290,8 +1685,14 @@
       "id": "spacing_mode",
       "label": "Section spacing",
       "options": [
-        { "value": "inherit", "label": "Theme default" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "inherit",
+          "label": "Theme default"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "inherit"
     },
@@ -344,12 +1745,19 @@
     {
       "type": "piece",
       "name": "Hang a product",
-      "limit": 16,
+      "limit": 20,
       "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "info": "Shown under the rail. Defaults to the product's title."
+        },
         {
           "type": "product",
           "id": "product",
-          "label": "Product"
+          "label": "Product",
+          "info": "Optional. Links the piece to the shop and shows its price and sizes."
         },
         {
           "type": "image_picker",
@@ -358,10 +1766,65 @@
           "info": "Optional. Defaults to the product's first photo. Cut-outs on white look best."
         },
         {
+          "type": "text",
+          "id": "front_asset",
+          "label": "Front photo file in the theme",
+          "info": "Used when no front photo is picked above: the name of a file in the theme's assets folder."
+        },
+        {
           "type": "image_picker",
           "id": "back_image",
           "label": "Back photo",
           "info": "Optional. Defaults to the product's second photo when that option is on."
+        },
+        {
+          "type": "image_picker",
+          "id": "side_image",
+          "label": "Side photo",
+          "info": "Optional. A photo taken side-on, shown while the piece hangs. Must share the front photo's framing."
+        },
+        {
+          "type": "text",
+          "id": "tag_text",
+          "label": "Hang tag text",
+          "info": "Used when the section's Hang tag is set to \"Text from each block\"."
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "info": "Optional. Replaces the product's description in the focused view."
+        },
+        {
+          "type": "text",
+          "id": "details",
+          "label": "Details",
+          "info": "Optional. Short facts for the focused view, separated by commas: 240 gsm, Regular fit."
+        },
+        {
+          "type": "header",
+          "content": "Fit on the hanger"
+        },
+        {
+          "type": "range",
+          "id": "piece_scale",
+          "label": "Size of this piece",
+          "min": 60,
+          "max": 140,
+          "step": 2,
+          "unit": "%",
+          "default": 100,
+          "info": "Evens out photos framed differently."
+        },
+        {
+          "type": "range",
+          "id": "collar_adjust",
+          "label": "Raise or lower this piece",
+          "min": -30,
+          "max": 30,
+          "step": 1,
+          "unit": "%",
+          "default": 0
         }
       ]
     }
@@ -369,10 +1832,40 @@
   "presets": [
     {
       "name": "Clothes rack"
+    },
+    {
+      "name": "Clothes rack: showroom",
+      "settings": {
+        "rack_style": "freestanding",
+        "room_style": "room",
+        "hanger_style": "wood",
+        "cut_out": true,
+        "rail_span": "fit",
+        "rail_thickness": 8,
+        "garment_size": 30,
+        "spacing": 32,
+        "face_room": 74,
+        "collar_overlap": 31
+      }
+    },
+    {
+      "name": "Clothes rack: brass boutique",
+      "settings": {
+        "rail_finish": "brass",
+        "rail_thickness": 8,
+        "rail_ends": "caps",
+        "hanger_style": "wood",
+        "hang_tag": "price",
+        "feel": "soft",
+        "backdrop_glow": 50
+      }
     }
   ],
   "disabled_on": {
-    "groups": ["header", "footer"]
+    "groups": [
+      "header",
+      "footer"
+    ]
   }
 }
 {% endschema %}

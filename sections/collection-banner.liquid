@@ -26,7 +26,7 @@
     assign image_priority = 'high'
   endif
 -%}
-<div class="collection-banner full-width color-{{ section.settings.color_scheme }}{% if image %} collection-banner--image{% else %} collection-banner--editorial{% endif %}" data-layout="{{ section.settings.layout }}" data-height="{{ section.settings.height }}" data-phone-height="{{ section.settings.height_mobile }}" data-image-colors="{{ section.settings.image_colors }}" style="--banner-tint:{{ section.settings.tint_strength | default: 100 | divided_by: 100.0 }};">
+<div class="collection-banner full-width{% if section.settings.page_width != 'page' %} collection-banner--edge{% endif %} color-{{ section.settings.color_scheme }}{% if image %} collection-banner--image{% else %} collection-banner--editorial{% endif %}" data-layout="{{ section.settings.layout }}" data-height="{{ section.settings.height }}" data-phone-height="{{ section.settings.height_mobile }}" data-image-colors="{{ section.settings.image_colors }}" style="--banner-tint:{{ section.settings.tint_strength | default: 100 | divided_by: 100.0 }};">
   {%- if image -%}
     <nk-parallax class="collection-banner__media" strength="{{ section.settings.parallax | default: 12 }}">
       <div class="collection-banner__media-inner" data-parallax-media>
@@ -58,7 +58,7 @@
         play_on_load: true
       %}
       {% if section.settings.show_count != false %}<nk-reveal entrance="rise" delay="0.16" duration="0.7">
-        <span class="collection-banner__count spec">
+        <span class="collection-banner__count spec" data-count="{{ collection.all_products_count }}">
           {{- 'collection.product_count' | t: count: collection.all_products_count -}}
         </span>
       </nk-reveal>{% endif %}
@@ -74,7 +74,7 @@
     {%- if related != blank and related.links.size > 0 -%}
       <nk-reveal entrance="rise" delay="0.28" duration="0.75">
         <nk-category-rail><nav class="collection-banner__nav" aria-label="{{ 'collection.categories' | t }}" data-lenis-prevent>
-          <button type="button" class="icon-button" data-category-step="-1" aria-label="{{ 'collection.previous_categories' | t }}" hidden>←</button>
+          <button type="button" class="icon-button" data-category-step="-1" aria-label="{{ 'collection.previous_categories' | t }}" hidden>{% render 'icon', name: 'arrow-left', size: 18 %}</button>
           <ul role="list">
             {%- for link in related.links -%}
               <li>
@@ -84,13 +84,13 @@
               </li>
             {%- endfor -%}
           </ul>
-          <button type="button" class="icon-button" data-category-step="1" aria-label="{{ 'collection.next_categories' | t }}" hidden>→</button>
+          <button type="button" class="icon-button" data-category-step="1" aria-label="{{ 'collection.next_categories' | t }}" hidden>{% render 'icon', name: 'arrow-right', size: 18 %}</button>
         </nav></nk-category-rail>
       </nk-reveal>
     {%- elsif collections.size > 1 and section.settings.navigation != 'menu' -%}
       <nk-reveal entrance="rise" delay="0.28" duration="0.75">
         <nk-category-rail><nav class="collection-banner__nav" aria-label="{{ 'collection.categories' | t }}" data-lenis-prevent>
-          <button type="button" class="icon-button" data-category-step="-1" aria-label="{{ 'collection.previous_categories' | t }}" hidden>←</button>
+          <button type="button" class="icon-button" data-category-step="-1" aria-label="{{ 'collection.previous_categories' | t }}" hidden>{% render 'icon', name: 'arrow-left', size: 18 %}</button>
           <ul role="list">
             <li>
               <a
@@ -122,7 +122,7 @@
               {%- endif -%}
             {%- endfor -%}
           </ul>
-          <button type="button" class="icon-button" data-category-step="1" aria-label="{{ 'collection.next_categories' | t }}" hidden>→</button>
+          <button type="button" class="icon-button" data-category-step="1" aria-label="{{ 'collection.next_categories' | t }}" hidden>{% render 'icon', name: 'arrow-right', size: 18 %}</button>
         </nav></nk-category-rail>
       </nk-reveal>
     {%- endif -%}
@@ -372,6 +372,155 @@
     opacity: 0.65;
     font-variant-numeric: tabular-nums;
   }
+
+  /* ---- Text header: a quiet page title over the grid, not a banner. ---- */
+  .collection-banner--editorial .collection-banner__content {
+    gap: 0;
+    padding: clamp(28px, 4vw, 52px) 0 clamp(20px, 2.6vw, 28px);
+  }
+  .collection-banner--editorial .collection-banner__heading-row {
+    margin-top: 14px;
+    gap: 6px 14px;
+  }
+  .collection-banner--editorial .collection-banner__title {
+    font-size: clamp(2.25rem, 4.6vw, 3.75rem);
+    line-height: 1;
+  }
+  /* The filter bar repeats the number in a box; here it reads as a quiet aside. */
+  .collection-banner--editorial .collection-banner__count {
+    padding: 0;
+    border: 0;
+    color: var(--nk-color-text-muted);
+    opacity: 1;
+    letter-spacing: 0.14em;
+  }
+  .collection-banner--editorial .collection-banner__description {
+    margin-top: 14px;
+  }
+  .collection-banner--editorial .collection-banner__nav {
+    margin-top: clamp(20px, 2.4vw, 28px);
+  }
+
+  /* ---- Category rail: pills scroll under soft edges, arrows sit together at the end. ---- */
+  .collection-banner__nav { gap: 6px; }
+  .collection-banner__nav ul {
+    order: 1;
+    gap: 6px;
+    padding: 0;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    scroll-padding-inline: 24px;
+    --fade-start: 0px;
+    --fade-end: 0px;
+    mask-image: linear-gradient(90deg, transparent, #000 var(--fade-start), #000 calc(100% - var(--fade-end)), transparent);
+    transition: --fade-start 200ms, --fade-end 200ms;
+  }
+  .collection-banner__nav ul::-webkit-scrollbar { display: none; }
+  nk-category-rail[data-more-start] .collection-banner__nav ul { --fade-start: 40px; }
+  nk-category-rail[data-more-end] .collection-banner__nav ul { --fade-end: 40px; }
+
+  .collection-banner__nav > button[data-category-step] {
+    flex: 0 0 40px;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
+    border: 1px solid var(--nk-color-line);
+    border-radius: 50%;
+    font-size: 1rem;
+    line-height: 1;
+    transition: border-color 200ms var(--nk-ease-out), opacity 200ms var(--nk-ease-out);
+  }
+  .collection-banner__nav > [data-category-step='-1'] { order: 2; margin-inline-start: 8px; }
+  .collection-banner__nav > [data-category-step='1'] { order: 3; }
+  .collection-banner__nav > button[data-category-step]:disabled { opacity: 0.3; cursor: default; }
+  @media (hover: hover) {
+    .collection-banner__nav > button[data-category-step]:not(:disabled):hover { border-color: currentColor; }
+  }
+  .collection-banner--image .collection-banner__nav > button[data-category-step] { border-color: rgb(250 248 245 / 0.4); }
+
+  .collection-banner__pill {
+    min-height: 40px;
+    padding: 0 18px;
+    border-radius: 999px;
+  }
+  .collection-banner__pill[aria-current='page'] .collection-banner__pill-count { opacity: 0.6; }
+
+  /* Phones: swipe the rail edge to edge; the arrows would only crowd it. */
+  @media (max-width: 749px) {
+    .collection-banner__nav > button[data-category-step] { display: none; }
+    .collection-banner__nav ul {
+      margin-inline: calc(var(--nk-gutter) * -1);
+      padding-inline: var(--nk-gutter);
+      scroll-padding-inline: var(--nk-gutter);
+    }
+    nk-category-rail[data-more-start] .collection-banner__nav ul { --fade-start: 24px; }
+    nk-category-rail[data-more-end] .collection-banner__nav ul { --fade-end: 24px; }
+  }
+
+  @property --fade-start { syntax: '<length>'; inherits: false; initial-value: 0px; }
+  @property --fade-end { syntax: '<length>'; inherits: false; initial-value: 0px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .collection-banner__nav ul { scroll-behavior: auto; transition: none; }
+  }
+  /* Edge to edge: the header lines up with the grid below, a slim margin from the screen edges. */
+  .collection-banner--edge .collection-banner__content { width: calc(100% - var(--nk-gutter) * 2); max-width: none; }
+
+  /* ---- Text header, W&R style: plain Inter, normal case, no pills. ---- */
+  .collection-banner--editorial .collection-banner__breadcrumbs { display: none; }
+  .collection-banner--editorial .collection-banner__heading-row { margin-top: 0; gap: 4px; align-items: flex-start; flex-wrap: nowrap; }
+  .collection-banner--editorial .collection-banner__title {
+    font-family: var(--nk-font-body);
+    font-size: clamp(1.5rem, 1.9vw, 1.875rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  /* The count sits up beside the title, like a footnote. */
+  .collection-banner--editorial .collection-banner__count {
+    padding: 0;
+    font-family: var(--nk-font-body);
+    font-size: 1rem;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--nk-color-text-muted);
+    translate: 0 -0.35em;
+  }
+  .collection-banner--editorial .collection-banner__count { font-size: 0; }
+  .collection-banner--editorial .collection-banner__count::after { content: attr(data-count); font-size: 1rem; }
+  /* Categories: plain words, the current one underlined. */
+  .collection-banner__nav ul { gap: 0 4px; }
+  .collection-banner .collection-banner__pill {
+    min-height: 40px;
+    padding: 0 9px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--nk-color-text);
+    font-family: var(--nk-font-body);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .collection-banner .collection-banner__nav li:first-child .collection-banner__pill { padding-inline-start: 0; }
+  .collection-banner .collection-banner__pill-count { display: none; }
+  .collection-banner .collection-banner__pill > span:first-child {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 9px;
+    transition: text-decoration-color 200ms ease;
+  }
+  @media (hover: hover) {
+    .collection-banner .collection-banner__pill:hover > span:first-child { text-decoration-color: var(--nk-color-line); }
+  }
+  .collection-banner .collection-banner__pill[aria-current='page'] { background: none; border: 0; color: var(--nk-color-text); }
+  .collection-banner .collection-banner__pill[aria-current='page'] > span:first-child { text-decoration-color: currentColor; }
+  /* Just the title, as on the old storefront: plain, regular weight. */
+  .collection-banner--editorial .collection-banner__title { font-weight: 400; font-size: clamp(1.375rem, 1.6vw, 1.625rem); }
+  .collection-banner--editorial .collection-banner__content { padding-block: clamp(32px, 4vw, 56px) 12px; }
 {% endstylesheet %}
 
 {% schema %}
@@ -465,6 +614,16 @@
         }
       ],
       "default": "words"
+    },
+    {
+      "type": "select",
+      "id": "page_width",
+      "label": "Page width",
+      "options": [
+        { "value": "full", "label": "Edge to edge" },
+        { "value": "page", "label": "Page width" }
+      ],
+      "default": "full"
     },
     {
       "type": "select",

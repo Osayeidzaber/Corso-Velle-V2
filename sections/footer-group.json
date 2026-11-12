@@ -54,17 +54,17 @@
       ],
       "settings": {
         "show_payment_icons": true,
-        "reveal": true,
+        "reveal": false,
         "color_scheme": "scheme-2",
-        "show_newsletter": true,
+        "show_newsletter": false,
         "newsletter_eyebrow": "A note from us",
         "newsletter_heading": "Good things, first.",
-        "show_wordmark": true,
+        "show_wordmark": false,
         "invert_logo": true,
         "background": "#432d23",
         "ink": "#f5ecdf",
         "accent": "#d7ae83",
-        "animate_beam": true
+        "animate_beam": false
       }
     }
   },

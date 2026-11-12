@@ -7,6 +7,10 @@
 {%- assign card_style = section.blocks | where: 'type', 'card_style' | first -%}
 {%- assign card_options = card_style.settings | default: section.settings -%}
 {%- assign products = section.settings.products | default: featured.products -%}
+{%- comment -%} Newest first: the collection's latest additions lead, whatever order is set in the admin. {%- endcomment -%}
+{%- if section.settings.product_order == 'newest' and section.settings.products == blank and featured != blank -%}
+  {%- assign products = featured.products | sort: 'created_at' | reverse -%}
+{%- endif -%}
 {%- if products.size > 0 or request.design_mode -%}
   {%- liquid
     assign eyebrow = section.settings.eyebrow
@@ -25,6 +29,9 @@
     assign view_all_url = section.settings.link
     if view_all_url == blank and section.settings.products == blank
       assign view_all_url = featured.url
+      if section.settings.product_order == 'newest'
+        assign view_all_url = featured.url | append: '?sort_by=created-descending'
+      endif
     endif
     assign description = section.settings.description
     if description == blank and section.settings.show_collection_description and featured.description != blank
@@ -65,7 +72,7 @@
         {%- if view_all_url != blank and section.settings.show_view_all -%}
           <nk-reveal mode="fade" delay="0.14">
             <a class="button button--secondary featured-collection__cta" href="{{ view_all_url }}" data-magnetic>
-              {{- view_all_label | escape }}{% if total_count > 0 and section.settings.show_count != false %} ({{ total_count }}){% endif %} →
+              {{- view_all_label | escape }}{% if total_count > 0 and section.settings.show_count != false %} ({{ total_count }}){% endif %} {% render 'icon', name: 'arrow-right', size: 14, class: 'icon--inline' %}
             </a>
           </nk-reveal>
         {%- endif -%}
@@ -286,6 +293,17 @@
       "max": 16,
       "step": 1,
       "default": 8
+    },
+    {
+      "type": "select",
+      "id": "product_order",
+      "label": "Product order",
+      "options": [
+        { "value": "collection", "label": "Collection order" },
+        { "value": "newest", "label": "Newest first" }
+      ],
+      "default": "collection",
+      "info": "Newest first always leads with the latest products added to the collection."
     },
     {
       "type": "select",

@@ -88,6 +88,13 @@
               <span class="facets__count">({{ active_count }})</span>
             {%- endif -%}
           </button>
+          {%- comment -%} One quiet trigger per filter (Availability, Price…), as on the old storefront;
+            each opens the filter drawer at that group. {%- endcomment -%}
+          {%- for filter in results.filters -%}
+            <button type="button" class="facets__filter-trigger" data-nk-open="{{ drawer_id }}" data-open-group="{{ forloop.index0 }}" aria-haspopup="dialog" aria-controls="{{ drawer_id }}">
+              <span>{{ filter.label | escape }}</span>{% render 'icon', name: 'chevron-down', size: 12 %}
+            </button>
+          {%- endfor -%}
         {%- endif -%}
 
         {%- if show_sort and results.sort_options.size > 0 -%}
@@ -106,6 +113,7 @@
             <details class="facets__sort-menu" data-sort-menu>
               <summary data-focus-key="facets-sort-menu">
                 <span class="facets__sort-menu-label">{{ 'facets.sort_by' | t }}</span>
+                <span class="facets__sort-menu-short">{{ 'facets.sort' | t }}</span>
                 <span class="facets__sort-menu-value">
                   {%- for option in results.sort_options -%}
                     {%- if option.value == sort_by -%}{{ option.name | escape }}{%- endif -%}
@@ -118,7 +126,7 @@
                   <li>
                     <button type="button" data-facets-sort-value="{{ option.value | escape }}" aria-pressed="{% if option.value == sort_by %}true{% else %}false{% endif %}">
                       <span>{{ option.name | escape }}</span>
-                      <span aria-hidden="true" class="facets__sort-check">✓</span>
+                      <span aria-hidden="true" class="facets__sort-check">{% render 'icon', name: 'check', size: 14 %}</span>
                     </button>
                   </li>
                 {%- endfor -%}
@@ -131,7 +139,7 @@
         {%- endif -%}
       </div>
 
-      <p class="facets__results spec text-muted" data-results-label>{{ 'collection.product_count' | t: count: count }}</p>
+      <p class="facets__results spec text-muted" data-results-label><span class="facets__results-long">{{ 'collection.product_count' | t: count: count }}</span><span class="facets__results-short">{{ 'collection.item_count' | t: count: count }}</span></p>
 
       {%- if show_layout_switch -%}
         <div class="facets__layout-switch" role="group" aria-label="Grid layout">

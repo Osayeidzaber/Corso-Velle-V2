@@ -9,167 +9,6 @@
  */
 {
   "sections": {
-    "hero": {
-      "type": "hero",
-      "blocks": {
-        "eyebrow": {
-          "type": "eyebrow",
-          "settings": {
-            "text": "Corso Velle · Collection 2026",
-            "shine": false,
-            "size": 100
-          }
-        },
-        "heading": {
-          "type": "heading",
-          "settings": {
-            "heading": "Timeless Basics",
-            "heading_italic": "'26",
-            "size": 100,
-            "size_mobile": 100,
-            "italic_style": "none",
-            "entrance": "cut",
-            "hover": "none",
-            "text_style": "none"
-          }
-        },
-        "text": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Refined everyday essentials, designed for effortless, modern dressing.</p>",
-            "size": 100,
-            "width": 42
-          }
-        },
-        "buttons": {
-          "type": "buttons",
-          "settings": {
-            "label_1": "Shop the collection",
-            "link_1": "shopify://collections/timeless-basics-26",
-            "style_1": "solid",
-            "arrow": false,
-            "label_2": "All products",
-            "link_2": "shopify://collections/all",
-            "style_2": "outline",
-            "corners": "inherit",
-            "size": "medium",
-            "alignment": "auto",
-            "arrangement": "row",
-            "full_width_mobile": false,
-            "gap": 14,
-            "offset": 0
-          }
-        }
-      },
-      "block_order": [
-        "eyebrow",
-        "heading",
-        "text",
-        "buttons"
-      ],
-      "settings": {
-        "scroll_exit": true,
-        "video_autoplay": true,
-        "video_url": "https://corsovelle.com/cdn/shop/videos/c/vp/a2036364d55d46f887841a201374b3f2/a2036364d55d46f887841a201374b3f2.HD-1080p-7.2Mbps-91045694.mp4",
-        "poster_url": "https://corsovelle.com/cdn/shop/files/preview_images/a2036364d55d46f887841a201374b3f2.thumbnail.0000000000_2000x.jpg",
-        "collection": "timeless-basics-26",
-        "video_url_mobile": "",
-        "poster_url_mobile": "",
-        "slide_autoplay": true,
-        "slide_interval": 6,
-        "slide_transition": "fade",
-        "slide_dots": true,
-        "height_mobile": "inherit",
-        "media_fit": "cover",
-        "tint_direction": "bottom",
-        "layout": "overlay",
-        "media_position": "left",
-        "height": "full",
-        "position": "bottom-left",
-        "position_mobile": "same",
-        "text_align": "auto",
-        "content_width": 1100,
-        "block_gap": 22,
-        "parallax": 14,
-        "show_scroll_cue": false,
-        "scrim_style": "solid",
-        "scrim": 35,
-        "color_scheme": "scheme-2",
-        "type_style": "signature",
-        "custom_heading_font": false,
-        "heading_font": "newsreader_n4",
-        "custom_text_font": false,
-        "text_font": "inter_n4",
-        "entrance": "fade-up"
-      }
-    },
-    "band": {
-      "type": "message-band",
-      "blocks": {
-        "m1": {
-          "type": "message",
-          "settings": {
-            "text": "Shirts",
-            "link": "shopify://collections/shirts"
-          }
-        },
-        "m2": {
-          "type": "message",
-          "settings": {
-            "text": "Shackets",
-            "link": "shopify://collections/shackets"
-          }
-        },
-        "m3": {
-          "type": "message",
-          "settings": {
-            "text": "Knit polo",
-            "link": "shopify://collections/knit-polo"
-          }
-        },
-        "m4": {
-          "type": "message",
-          "settings": {
-            "text": "Linen",
-            "link": "shopify://collections/linen"
-          }
-        },
-        "m5": {
-          "type": "message",
-          "settings": {
-            "text": "Jeans",
-            "link": "shopify://collections/jeans-1"
-          }
-        },
-        "m6": {
-          "type": "message",
-          "settings": {
-            "text": "Footwear",
-            "link": "shopify://collections/footwear"
-          }
-        }
-      },
-      "block_order": [
-        "m1",
-        "m2",
-        "m3",
-        "m4",
-        "m5",
-        "m6"
-      ],
-      "settings": {
-        "rows": "2",
-        "size": 88,
-        "speed": 40,
-        "scroll_react": true,
-        "outline_second": true,
-        "color_scheme": "scheme-3",
-        "direction": "left",
-        "layout": "ticker",
-        "mobile_scale": "55",
-        "static_mobile": true
-      }
-    },
     "rack": {
       "type": "clothes-rack",
       "settings": {
@@ -178,12 +17,12 @@
         "limit": 7,
         "back_from_second": true,
         "knock_out_white": true,
-        "garment_size": 16,
-        "spacing": 30,
+        "garment_size": 24,
+        "spacing": 34,
         "collar_overlap": 22,
         "cta_label": "See availability",
         "front_label": "Front",
-        "back_label": "Back",
+        "back_label": "Model",
         "close_label": "Back to rack",
         "color_scheme": "scheme-1",
         "content_width": "inherit",
@@ -191,8 +30,127 @@
         "padding_top": 72,
         "padding_bottom": 72,
         "padding_top_small": 48,
-        "padding_bottom_small": 48
-      }
+        "padding_bottom_small": 48,
+        "cut_out": true,
+        "rail_span": "fit",
+        "rail_fade": 0
+      },
+      "blocks": {
+        "piece_1": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-01.webp",
+            "product": "the-velle-signature-shirt"
+          }
+        },
+        "piece_2": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-02.webp",
+            "product": "the-checkered-shirt"
+          }
+        },
+        "piece_3": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-03.webp",
+            "product": "the-portofino-shirt"
+          }
+        },
+        "piece_4": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-04.webp",
+            "product": "evyan-embroidered-shirt"
+          }
+        },
+        "piece_5": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-05.webp",
+            "product": "ornate-shacket"
+          }
+        },
+        "piece_6": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-06.webp",
+            "product": "amaya-embroidered-shacket"
+          }
+        },
+        "piece_7": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-07.webp",
+            "product": "libre-embroidered-shirt"
+          }
+        },
+        "piece_8": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-08.webp",
+            "product": "bellagio-knit-polo"
+          }
+        },
+        "piece_9": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-09.webp",
+            "product": "andre-linen-shirt"
+          }
+        },
+        "piece_10": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-10.webp",
+            "product": "azure-embroidered-shirt"
+          }
+        },
+        "piece_11": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-11.webp",
+            "product": "siena-embroidered-shirt"
+          }
+        },
+        "piece_12": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-12.webp",
+            "product": "meisen-embroidered-shacket"
+          }
+        },
+        "piece_13": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-13.webp",
+            "product": "andre-linen-shirt-1"
+          }
+        },
+        "piece_14": {
+          "type": "piece",
+          "settings": {
+            "front_asset": "rail-14.webp",
+            "product": "bellagio-knit-polo-1"
+          }
+        }
+      },
+      "block_order": [
+        "piece_1",
+        "piece_2",
+        "piece_3",
+        "piece_4",
+        "piece_5",
+        "piece_6",
+        "piece_7",
+        "piece_8",
+        "piece_9",
+        "piece_10",
+        "piece_11",
+        "piece_12",
+        "piece_13",
+        "piece_14"
+      ]
     },
     "arrivals": {
       "type": "featured-collection",
@@ -203,28 +161,28 @@
         "description": "",
         "show_collection_description": true,
         "collection": "all-products",
-        "limit": 12,
-        "layout": "carousel",
-        "carousel_effect": "liquid",
-        "carousel_purchase": true,
+        "limit": 8,
+        "layout": "grid",
+        "carousel_effect": "native",
+        "carousel_purchase": false,
         "carousel_intro": "rise",
         "carousel_center_products": 4,
-        "carousel_autoplay": true,
+        "carousel_autoplay": false,
         "carousel_interval": 1.5,
         "carousel_speed": 35,
-        "columns_mobile": "1",
-        "columns_desktop": 3,
+        "columns_mobile": "2",
+        "columns_desktop": 4,
         "show_view_all": true,
         "color_scheme": "scheme-1",
         "products": [],
         "grid_style": "regular",
-        "grid_gap": 8,
+        "grid_gap": 4,
         "grid_gap_mobile": 8,
         "heading_alignment": "left",
         "show_count": true,
         "link": "",
         "link_label": "View all",
-        "content_width": "inherit",
+        "content_width": "full",
         "spacing_mode": "inherit",
         "padding_top": 72,
         "padding_bottom": 72,
@@ -232,8 +190,9 @@
         "padding_bottom_small": 48,
         "carousel_card_width": "regular",
         "carousel_gap": "regular",
-        "carousel_emphasis": true,
-        "carousel_arrows": true
+        "carousel_emphasis": false,
+        "carousel_arrows": true,
+        "product_order": "newest"
       }
     },
     "tabs": {
@@ -288,12 +247,12 @@
         "t5"
       ],
       "settings": {
-        "eyebrow": "New season",
-        "heading": "Just",
-        "heading_italic": "landed",
+        "eyebrow": "",
+        "heading": "",
+        "heading_italic": "",
         "entrance": "cut",
         "limit": 8,
-        "columns_desktop": 3,
+        "columns_desktop": 4,
         "color_scheme": "scheme-1",
         "card_appearance": "inherit",
         "card_ratio": "inherit",
@@ -304,10 +263,10 @@
         "card_badges": "inherit",
         "card_sizes": "inherit",
         "tab_style": "underline",
-        "columns_mobile": "1",
-        "grid_gap": 8,
+        "columns_mobile": "2",
+        "grid_gap": 4,
         "transitions": true,
-        "content_width": "inherit",
+        "content_width": "full",
         "spacing_mode": "inherit",
         "padding_top": 72,
         "padding_bottom": 72,
@@ -392,28 +351,28 @@
         "c5"
       ],
       "settings": {
-        "eyebrow": "Shop by category",
-        "heading": "The",
-        "heading_italic": "wardrobe",
+        "eyebrow": "",
+        "heading": "Shop by category",
+        "heading_italic": "",
         "link_label": "Shop all",
         "link": "shopify://collections/all",
         "color_scheme": "scheme-1",
         "layout": "bento",
-        "columns": 4,
-        "mobile_layout": "stacked",
+        "columns": 5,
+        "mobile_layout": "two",
         "image_ratio": "standard",
-        "gap": 16,
+        "gap": 4,
         "card_palette": "studio",
         "card_style": "overlay",
         "card_outline": false,
         "card_radius": 0,
-        "image_fit": "contain",
-        "show_index": true,
-        "show_count": true,
-        "show_description": true,
+        "image_fit": "cover",
+        "show_index": false,
+        "show_count": false,
+        "show_description": false,
         "menu_limit": 4,
-        "heading_entrance": "fold",
-        "content_width": "inherit",
+        "heading_entrance": "fade",
+        "content_width": "full",
         "spacing_mode": "inherit",
         "padding_top": 72,
         "padding_bottom": 72,
@@ -507,7 +466,7 @@
         "start_height": 58,
         "length": "long",
         "scrim": 40,
-        "color_scheme": "scheme-3",
+        "color_scheme": "scheme-4",
         "video_autoplay": true,
         "alignment": "center",
         "static_height": "regular",
@@ -538,13 +497,13 @@
         "color_scheme": "scheme-1",
         "products": [],
         "grid_style": "regular",
-        "grid_gap": 8,
+        "grid_gap": 4,
         "grid_gap_mobile": 8,
         "heading_alignment": "left",
         "show_count": true,
         "link": "",
         "link_label": "View all",
-        "content_width": "inherit",
+        "content_width": "full",
         "spacing_mode": "inherit",
         "padding_top": 72,
         "padding_bottom": 72,
@@ -559,46 +518,651 @@
     "strip": {
       "type": "accordion-gallery",
       "settings": {
-        "eyebrow": "The collection, in focus",
+        "eyebrow": "",
         "heading": "Explore the collection",
-        "heading_size": 76,
-        "description": "Everyday pieces. A closer look at the details.",
+        "heading_size": 44,
+        "description": "",
         "collection": "timeless-basics-26",
         "limit": 5,
         "light_text_panels": "",
-        "height": 580,
+        "height": 640,
         "expand_ratio": 4,
-        "gap": 10,
+        "gap": 4,
         "radius": 0,
         "details_height": 168,
         "image_fit": "cover",
         "mobile_height": 510,
         "mobile_collapsed": 76,
-        "label_size": 30,
-        "title_size": 34,
-        "show_numbers": true,
+        "label_size": 22,
+        "title_size": 28,
+        "show_numbers": false,
         "show_price": true,
         "show_link": true,
         "link_label": "Shop the piece",
         "color_scheme": "scheme-1",
-        "text_color": "#432d23",
-        "panel_color": "#eee9e1",
-        "label_color": "#432d23",
-        "label_light_color": "#fff9f0",
+        "text_color": "#141312",
+        "panel_color": "#f3f3f3",
+        "label_color": "#141312",
+        "label_light_color": "#ffffff",
         "details_color": "#432d23",
-        "details_text_color": "#fff9f0",
+        "details_text_color": "#f5ecdf",
         "start_panel": 1,
         "open_on_hover": true,
         "hover_delay": 160,
         "click_through": true,
         "speed": 1200
       }
+    },
+    "try_the_look": {
+      "type": "try-the-look",
+      "blocks": {
+        "look_1": {
+          "type": "look",
+          "settings": {
+            "name": "Bruno Suede",
+            "photo_asset": "runway-cv-dsc03722.webp"
+          }
+        },
+        "look_2": {
+          "type": "look",
+          "settings": {
+            "name": "Oatmeal Shacket",
+            "photo_asset": "runway-cv-dsc03585.webp"
+          }
+        },
+        "look_3": {
+          "type": "look",
+          "settings": {
+            "name": "Camello Knit",
+            "photo_asset": "runway-cv-dsc03763.webp"
+          }
+        },
+        "look_4": {
+          "type": "look",
+          "settings": {
+            "name": "Napoleon Leather",
+            "photo_asset": "runway-cv-dsc03636.webp"
+          }
+        },
+        "look_5": {
+          "type": "look",
+          "settings": {
+            "name": "The Alps Knit",
+            "photo_asset": "runway-cv-dsc03808.webp"
+          }
+        },
+        "look_6": {
+          "type": "look",
+          "settings": {
+            "name": "Alpine Knit",
+            "photo_asset": "runway-cv-dsc03785.webp"
+          }
+        },
+        "look_7": {
+          "type": "look",
+          "settings": {
+            "name": "Office Hours Sweatshirt",
+            "photo_asset": "runway-cv-dsc03921.webp"
+          }
+        },
+        "look_8": {
+          "type": "look",
+          "settings": {
+            "name": "Eight Ball Hoodie",
+            "photo_asset": "runway-cv-dsc03838.webp"
+          }
+        },
+        "look_9": {
+          "type": "look",
+          "settings": {
+            "name": "Twin Crane Sweatshirt",
+            "photo_asset": "runway-cv-dsc03850.webp"
+          }
+        },
+        "look_10": {
+          "type": "look",
+          "settings": {
+            "name": "Golden Crane Hoodie",
+            "photo_asset": "runway-cv-dsc03992.webp"
+          }
+        },
+        "look_11": {
+          "type": "look",
+          "settings": {
+            "name": "Washed Hoodie",
+            "photo_asset": "runway-cv-dsc03982.webp"
+          }
+        },
+        "look_1_piece_1": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 30,
+            "pin_y": 42,
+            "product": "bruno-suede-leather-jacket"
+          }
+        },
+        "look_1_piece_2": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 30,
+            "product": "classic-white-rib-tank"
+          }
+        },
+        "look_1_piece_3": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 78,
+            "product": "puro-linen-trouser"
+          }
+        },
+        "look_2_piece_1": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 30,
+            "pin_y": 40,
+            "product": "oatmeal-shacket"
+          }
+        },
+        "look_2_piece_2": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 30,
+            "product": "classic-white-rib-tank"
+          }
+        },
+        "look_2_piece_3": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 78,
+            "product": "firenze-gurkha-flared-trouser-1"
+          }
+        },
+        "look_3_piece_1": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 34,
+            "product": "camello-knit-sweater"
+          }
+        },
+        "look_3_piece_2": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 74,
+            "product": "puro-linen-shorts"
+          }
+        },
+        "look_3_piece_3": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 62,
+            "pin_y": 90
+          }
+        },
+        "look_4_piece_1": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 34,
+            "product": "napoleon-faux-leather-jacket-2"
+          }
+        },
+        "look_4_piece_2": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 78,
+            "product": "firenze-gurkha-flared-trouser-1"
+          }
+        },
+        "look_4_piece_3": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 62,
+            "pin_y": 90
+          }
+        },
+        "look_5_piece_1": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 34,
+            "product": "alps-knit-sweater"
+          }
+        },
+        "look_5_piece_2": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 78,
+            "product": "firenze-gurkha-flared-trouser-1"
+          }
+        },
+        "look_5_piece_3": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 62,
+            "pin_y": 90
+          }
+        },
+        "look_6_piece_1": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 34,
+            "product": "alpine-knit-sweater"
+          }
+        },
+        "look_6_piece_2": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 78,
+            "product": "firenze-gurkha-flared-trouser"
+          }
+        },
+        "look_6_piece_3": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 62,
+            "pin_y": 90
+          }
+        },
+        "look_7_piece_1": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 34,
+            "product": "overtime-sweatshirt"
+          }
+        },
+        "look_7_piece_2": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 78,
+            "product": "firenze-gurkha-flared-trouser-1"
+          }
+        },
+        "look_7_piece_3": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 62,
+            "pin_y": 90
+          }
+        },
+        "look_8_piece_1": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 34,
+            "product": "velle-eight-ball-hoodie"
+          }
+        },
+        "look_8_piece_2": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 74,
+            "product": "puro-linen-shorts"
+          }
+        },
+        "look_8_piece_3": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 62,
+            "pin_y": 90
+          }
+        },
+        "look_9_piece_1": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 34,
+            "product": "dune-sweatshirt"
+          }
+        },
+        "look_9_piece_2": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 78,
+            "product": "kumo-baggy-jeans"
+          }
+        },
+        "look_9_piece_3": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 62,
+            "pin_y": 90
+          }
+        },
+        "look_10_piece_1": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 34,
+            "product": "velle-golden-crane-hoodie"
+          }
+        },
+        "look_10_piece_2": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 78,
+            "product": "firenze-gurkha-flared-trouser"
+          }
+        },
+        "look_10_piece_3": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 62,
+            "pin_y": 90
+          }
+        },
+        "look_11_piece_1": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 34,
+            "product": "velle-washed-hoodie"
+          }
+        },
+        "look_11_piece_2": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 50,
+            "pin_y": 78,
+            "product": "firenze-gurkha-flared-trouser-1"
+          }
+        },
+        "look_11_piece_3": {
+          "type": "piece",
+          "settings": {
+            "pin_x": 62,
+            "pin_y": 90
+          }
+        }
+      },
+      "block_order": [
+        "look_1",
+        "look_1_piece_1",
+        "look_1_piece_2",
+        "look_1_piece_3",
+        "look_2",
+        "look_2_piece_1",
+        "look_2_piece_2",
+        "look_2_piece_3",
+        "look_3",
+        "look_3_piece_1",
+        "look_3_piece_2",
+        "look_3_piece_3",
+        "look_4",
+        "look_4_piece_1",
+        "look_4_piece_2",
+        "look_4_piece_3",
+        "look_5",
+        "look_5_piece_1",
+        "look_5_piece_2",
+        "look_5_piece_3",
+        "look_6",
+        "look_6_piece_1",
+        "look_6_piece_2",
+        "look_6_piece_3",
+        "look_7",
+        "look_7_piece_1",
+        "look_7_piece_2",
+        "look_7_piece_3",
+        "look_8",
+        "look_8_piece_1",
+        "look_8_piece_2",
+        "look_8_piece_3",
+        "look_9",
+        "look_9_piece_1",
+        "look_9_piece_2",
+        "look_9_piece_3",
+        "look_10",
+        "look_10_piece_1",
+        "look_10_piece_2",
+        "look_10_piece_3",
+        "look_11",
+        "look_11_piece_1",
+        "look_11_piece_2",
+        "look_11_piece_3"
+      ],
+      "settings": {
+        "model_height": 90,
+        "spacing": 21,
+        "ground_shadow": false,
+        "side_blur": 1,
+        "far_fade": 30,
+        "side_fade": 10,
+        "photo_fade": 20,
+        "eyebrow": "",
+        "heading": "",
+        "text": "",
+        "heading_size": 64,
+        "heading_size_phone": 36,
+        "intro_align": "center",
+        "button_label": "",
+        "button_link": "shopify://collections/timeless-basics-26",
+        "stage_height": 90,
+        "custom_cursor": false,
+        "show_backdrop": false,
+        "trail": 0,
+        "mouse_lean": 0,
+        "spacing_mode": "custom",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "padding_top_small": 0,
+        "padding_bottom_small": 0,
+        "heading_tag": "h1",
+        "stage_height_phone": 80,
+        "show_arrows": true,
+        "show_name": true,
+        "show_play": false,
+        "show_bar_price": true,
+        "hint": "",
+        "swipe_hint": "",
+        "arrows_phone": true,
+        "visible_sides": 3,
+        "side_scale": 88,
+        "start_look": 4,
+        "spacing_phone": 64
+      }
+    },
+    "film": {
+      "type": "hero",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Timeless Basics",
+            "heading_italic": "'26",
+            "size": 60,
+            "size_mobile": 80,
+            "italic_style": "none",
+            "entrance": "none",
+            "hover": "none",
+            "text_style": "none"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Refined everyday essentials, designed for effortless, modern dressing.</p>",
+            "size": 100,
+            "width": 42
+          }
+        },
+        "buttons": {
+          "type": "buttons",
+          "settings": {
+            "label_1": "Shop the collection",
+            "link_1": "shopify://collections/timeless-basics-26",
+            "style_1": "solid",
+            "arrow": false,
+            "label_2": "",
+            "link_2": "",
+            "style_2": "outline",
+            "corners": "inherit",
+            "size": "medium",
+            "alignment": "auto",
+            "arrangement": "row",
+            "full_width_mobile": false,
+            "gap": 14,
+            "offset": 0
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "text",
+        "buttons"
+      ],
+      "settings": {
+        "scroll_exit": false,
+        "video_autoplay": true,
+        "video_url": "https://corsovelle.com/cdn/shop/videos/c/vp/a2036364d55d46f887841a201374b3f2/a2036364d55d46f887841a201374b3f2.HD-1080p-7.2Mbps-91045694.mp4",
+        "poster_url": "https://corsovelle.com/cdn/shop/files/preview_images/a2036364d55d46f887841a201374b3f2.thumbnail.0000000000_2000x.jpg",
+        "collection": "timeless-basics-26",
+        "video_url_mobile": "",
+        "poster_url_mobile": "",
+        "slide_autoplay": true,
+        "slide_interval": 6,
+        "slide_transition": "fade",
+        "slide_dots": true,
+        "height_mobile": "inherit",
+        "media_fit": "cover",
+        "tint_direction": "bottom",
+        "layout": "overlay",
+        "media_position": "left",
+        "height": "medium",
+        "position": "bottom-left",
+        "position_mobile": "same",
+        "text_align": "auto",
+        "content_width": 1100,
+        "block_gap": 22,
+        "parallax": 0,
+        "show_scroll_cue": false,
+        "scrim_style": "solid",
+        "scrim": 45,
+        "color_scheme": "scheme-2",
+        "type_style": "signature",
+        "custom_heading_font": false,
+        "heading_font": "newsreader_n4",
+        "custom_text_font": false,
+        "text_font": "inter_n4",
+        "entrance": "fade-up"
+      }
+    },
+    "nine_to_five": {
+      "type": "hero",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "9 TO 5",
+            "heading_italic": "",
+            "size": 90,
+            "size_mobile": 80,
+            "italic_style": "none",
+            "entrance": "none",
+            "hover": "none",
+            "text_style": "none"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Tailoring that keeps office hours. Soft-shouldered jackets, pleated trousers and clean ribbed tees, cut to carry you from the first meeting to the last train home.</p>",
+            "size": 100,
+            "width": 34
+          }
+        },
+        "buttons": {
+          "type": "buttons",
+          "settings": {
+            "label_1": "Shop the edit",
+            "link_1": "shopify://collections/nine-to-five-winter-26",
+            "style_1": "solid",
+            "arrow": true,
+            "label_2": "",
+            "link_2": "",
+            "style_2": "outline",
+            "corners": "inherit",
+            "size": "medium",
+            "alignment": "auto",
+            "arrangement": "row",
+            "full_width_mobile": false,
+            "gap": 14,
+            "offset": 0
+          }
+        },
+        "eyebrow": {
+          "type": "eyebrow",
+          "settings": {
+            "text": "Nine to Five · Winter '26",
+            "shine": false,
+            "size": 100
+          }
+        }
+      },
+      "block_order": [
+        "eyebrow",
+        "heading",
+        "text",
+        "buttons"
+      ],
+      "settings": {
+        "scroll_exit": false,
+        "video_autoplay": true,
+        "video_url": "https://cdn.shopify.com/videos/c/o/v/f6415f5140f5420f9869c19055a2bac7.mov",
+        "poster_url": "",
+        "collection": "nine-to-five-winter-26",
+        "video_url_mobile": "",
+        "poster_url_mobile": "",
+        "slide_autoplay": true,
+        "slide_interval": 6,
+        "slide_transition": "fade",
+        "slide_dots": true,
+        "height_mobile": "inherit",
+        "media_fit": "cover",
+        "tint_direction": "bottom",
+        "layout": "split",
+        "media_position": "left",
+        "height": "full",
+        "position": "center-left",
+        "position_mobile": "same",
+        "text_align": "auto",
+        "content_width": 560,
+        "block_gap": 26,
+        "parallax": 0,
+        "show_scroll_cue": false,
+        "scrim_style": "solid",
+        "scrim": 45,
+        "color_scheme": "scheme-2",
+        "type_style": "signature",
+        "custom_heading_font": false,
+        "heading_font": "newsreader_n4",
+        "custom_text_font": false,
+        "text_font": "inter_n4",
+        "entrance": "text",
+        "video_focus": "top",
+        "split_phone": true
+      }
     }
   },
   "order": [
-    "hero",
-    "band",
+    "try_the_look",
     "rack",
+    "nine_to_five",
+    "film",
     "arrivals",
     "tabs",
     "categories",

@@ -16,39 +16,54 @@
     "type_body_font": "inter_n4",
     "type_spec_font": "inter_n5",
     "heading_case": "none",
-    "body_size": "15",
+    "heading_tracking": "natural",
+    "heading_leading": "editorial",
+    "label_tracking": "editorial",
+    "body_size": "14",
     "page_width": "1440px",
     "section_spacing": "112",
     "corner_radius": "0",
-    "card_image_ratio": "1 / 1",
-    "card_show_sizes": true,
+    "card_image_ratio": "4 / 5",
+    "card_image_fit": "cover",
+    "card_show_sizes": false,
     "motion_level": "standard",
     "motion_mobile": "full",
     "cart_after_add": "drawer",
     "color_schemes": {
       "scheme-1": {
         "settings": {
-          "background": "#FAF8F5",
-          "surface": "#EDE6DA",
-          "text": "#1E1915",
-          "text_muted": "#6B6157",
-          "line": "#DED5C8",
-          "accent": "#432D23",
-          "accent_text": "#F5ECDF"
+          "background": "#FFFFFF",
+          "surface": "#F3F3F3",
+          "text": "#141312",
+          "text_muted": "#66615B",
+          "line": "#E4E4E4",
+          "accent": "#141312",
+          "accent_text": "#F6F3EC"
         }
       },
       "scheme-2": {
         "settings": {
-          "background": "#1E1915",
-          "surface": "#2B241F",
-          "text": "#F2EBE0",
-          "text_muted": "#B6AA9C",
-          "line": "#3A322B",
-          "accent": "#E7C9A0",
-          "accent_text": "#1E1915"
+          "background": "#141312",
+          "surface": "#211F1C",
+          "text": "#F1EEE8",
+          "text_muted": "#ACA69D",
+          "line": "#35322E",
+          "accent": "#F1ECE1",
+          "accent_text": "#141312"
         }
       },
       "scheme-3": {
+        "settings": {
+          "background": "#3F4434",
+          "surface": "#4C5240",
+          "text": "#F4F1E8",
+          "text_muted": "#CBCDB9",
+          "line": "#5D634F",
+          "accent": "#F1ECE1",
+          "accent_text": "#31352A"
+        }
+      },
+      "scheme-4": {
         "settings": {
           "background": "#432D23",
           "surface": "#523A2E",
@@ -148,7 +163,34 @@
     ],
     "size_chart_11_table": "Size,Chest,Body Length,Shoulder,Sleeve Length\nM,41,26.00,18.00,9.50\nL,43,27.00,19.00,9.50\nXL,45,28.00,20.00,9.50",
     "size_chart_11_unit": "in",
-    "size_chart_11_basis": "Polo"
+    "size_chart_11_basis": "Polo",
+    "size_chart_12_basis": "Sweater",
+    "size_chart_12_table": "Size,Chest,Length,Shoulder,Sleeves\nS,42,23,20,23\nM,44,24,21,23.5\nL,46,25,22,24\nXL,48,26,23,24.5",
+    "size_chart_12_unit": "in",
+    "size_chart_12_products": [
+      "alpine-knit-sweater",
+      "alps-knit-sweater",
+      "camello-knit-sweater"
+    ],
+    "size_chart_13_basis": "Jacket",
+    "size_chart_13_table": "Size,Chest,Length,Shoulder,Sleeves\nS,42,24,20,23\nM,45,25,21,23.5\nL,48,26,22,24\nXL,51,27,23,24.5",
+    "size_chart_13_unit": "in",
+    "size_chart_13_products": [
+      "napoleon-faux-leather-jacket-2",
+      "bruno-suede-leather-jacket",
+      "oatmeal-shacket"
+    ],
+    "size_chart_14_basis": "Hoodie",
+    "size_chart_14_table": "Size,Chest,Length\nM,42,27\nL,44,28\nXL,46,29\nXXL,48,30",
+    "size_chart_14_unit": "in",
+    "size_chart_14_note": "Expected deviation ±1 inch.",
+    "size_chart_14_tags": "hoodie\nafter-hours",
+    "size_chart_14_products": [
+      "overtime-sweatshirt",
+      "dune-sweatshirt"
+    ],
+    "size_chart_12_titles": "Sweater",
+    "size_chart_14_titles": "Sweatshirt\nHoodie"
   },
   "presets": {
     "Riviera": {

@@ -137,7 +137,7 @@
           {%- endfor -%}
         </ul>
       {%- endif -%}
-      {% if section.settings.show_back_to_top != false %}<a class="footer__top" href="#MainContent">{{ 'footer.back_to_top' | t }} <span aria-hidden="true">↑</span></a>{% endif %}
+      {% if section.settings.show_back_to_top != false %}<a class="footer__top" href="#MainContent">{{ 'footer.back_to_top' | t }} {% render 'icon', name: 'arrow-up', size: 14, class: 'icon--inline' %}</a>{% endif %}
       {%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
         <ul class="footer__payments" role="list" aria-label="{{ 'footer.payment_methods' | t }}">
           {%- for type in shop.enabled_payment_types -%}
