@@ -601,7 +601,7 @@
         "look_7": {
           "type": "look",
           "settings": {
-            "name": "Overtime Sweatshirt",
+            "name": "Office Hours Sweatshirt",
             "photo_asset": "runway-cv-dsc03921.webp"
           }
         },
@@ -615,21 +615,21 @@
         "look_9": {
           "type": "look",
           "settings": {
-            "name": "Dune Sweatshirt",
+            "name": "Twin Crane Sweatshirt",
             "photo_asset": "runway-cv-dsc03850.webp"
           }
         },
         "look_10": {
           "type": "look",
           "settings": {
-            "name": "Crane Hoodie",
+            "name": "Golden Crane Hoodie",
             "photo_asset": "runway-cv-dsc03992.webp"
           }
         },
         "look_11": {
           "type": "look",
           "settings": {
-            "name": "Washed Nine to Five",
+            "name": "Washed Hoodie",
             "photo_asset": "runway-cv-dsc03982.webp"
           }
         },
@@ -844,14 +844,16 @@
           "type": "piece",
           "settings": {
             "pin_x": 50,
-            "pin_y": 28
+            "pin_y": 34,
+            "product": "velle-golden-crane-hoodie"
           }
         },
         "look_10_piece_2": {
           "type": "piece",
           "settings": {
             "pin_x": 50,
-            "pin_y": 74
+            "pin_y": 78,
+            "product": "firenze-gurkha-flared-trouser"
           }
         },
         "look_10_piece_3": {
@@ -865,14 +867,16 @@
           "type": "piece",
           "settings": {
             "pin_x": 50,
-            "pin_y": 28
+            "pin_y": 34,
+            "product": "velle-washed-hoodie"
           }
         },
         "look_11_piece_2": {
           "type": "piece",
           "settings": {
             "pin_x": 50,
-            "pin_y": 74
+            "pin_y": 78,
+            "product": "firenze-gurkha-flared-trouser-1"
           }
         },
         "look_11_piece_3": {
