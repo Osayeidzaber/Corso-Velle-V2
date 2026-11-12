@@ -58,7 +58,7 @@
           "settings": {
             "heading": "Shipping + exchange",
             "content": "",
-            "policy_source": "shipping_exchange"
+            "policy_source": "policy_links"
           }
         },
         "model_info": {

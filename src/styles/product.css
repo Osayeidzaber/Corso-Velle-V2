@@ -1503,11 +1503,34 @@ html.nk-anim .product__media[data-layout='slider'][data-media-count]:not([data-m
 
 /* Size picker: our boxed row, with the size guide as a small pill beside the label. */
 .product-section[data-layout='split'] .option__header { align-items: center; margin-bottom: 10px; }
-.product-section[data-layout='split'] .size-guide-link {
-  padding: 6px 12px;
+.option__guides { display: inline-flex; align-items: center; gap: 14px; }
+.size-chart-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 12px;
+  border: 1px solid var(--nk-color-line);
   border-radius: 999px;
-  background: var(--split-backdrop);
-  text-decoration: none;
+  background: none;
+  color: var(--nk-color-text);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: border-color var(--nk-dur-instant);
+}
+@media (hover: hover) { .size-chart-button:hover { border-color: currentColor; } }
+.product-section[data-layout='split'] .size-chart-button { border-color: transparent; background: var(--split-backdrop); }
+/* "Need help?" reads as a quiet text link, not a button. */
+.option__guides > * { white-space: nowrap; }
+.size-guide-link.size-guide-link--help,
+.product-section[data-layout] .size-guide-link.size-guide-link--help {
+  min-height: 28px;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-transform: none;
+  letter-spacing: 0;
 }
 .product-section[data-layout='split'] .option__values--size { border-color: var(--nk-color-text); }
 .product-section[data-layout='split'] .option__values--size .option__value label { min-height: 52px; }
@@ -1638,7 +1661,7 @@ html.nk-anim .product__media[data-layout='slider'][data-media-count]:not([data-m
 .product-section[data-layout='split'] .product__title,
 .product-section[data-layout='split'] .product__price .price { font-size: 1.0625rem; }
 .product-section[data-layout='split'] .option__legend .spec { font-size: 0.8125rem; }
-.product-section[data-layout='split'] .size-guide-link { padding: 9px 16px; font-size: 0.75rem; }
+.product-section[data-layout='split'] .size-chart-button { padding: 7px 14px; }
 .product-section[data-layout='split'] .option__values--size { padding-inline: 12px; }
 .product-section[data-layout='split'] .option__values--size .option__value label {
   min-height: 88px;
@@ -1677,3 +1700,7 @@ html.nk-anim .product__media[data-layout='slider'][data-media-count]:not([data-m
 @media (min-width: 990px) {
   .product-section[data-layout='split'] .gallery__controls { padding-inline: 20px; }
 }
+
+/* Shipping + exchange as plain links to the full policies. */
+.policy-links { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.policy-links a { text-decoration: underline; text-underline-offset: 4px; }

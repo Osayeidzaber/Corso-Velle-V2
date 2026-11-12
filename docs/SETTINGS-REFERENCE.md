@@ -2256,7 +2256,7 @@ Supported block: **Collapsible row** (`accordion`).
 
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
-| `policy_source` — Content source | `select` | `custom` | `custom`: Custom content or page; `shipping_exchange`: Shopify shipping and refund policies; Policies stay synchronized with Settings > Policies in Shopify Admin. |
+| `policy_source` — Content source | `select` | `custom` | `custom`: Custom content or page; `shipping_exchange`: Shopify shipping and refund policies; `policy_links`: Links to shipping and refund policies; Policies stay synchronized with Settings > Policies in Shopify Admin. |
 | `heading` — Heading | `text` | `Fabric & care` |  |
 | `open` — Open by default | `checkbox` | `false` |  |
 | `content` — Content | `richtext` | Not specified |  |
