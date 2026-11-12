@@ -1166,8 +1166,8 @@
   },
   "order": [
     "try_the_look",
-    "rack",
     "nine_to_five",
+    "rack",
     "film",
     "arrivals",
     "tabs",
