@@ -1153,6 +1153,210 @@
         "split_phone": true,
         "space_below": 56
       }
+    },
+    "reviews": {
+      "type": "reviews-wall",
+      "blocks": {
+        "review_1": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>Your product was very good and very authentic. Your product is actually very comfortable and of very good quality.</p>",
+            "name": "Md Istiak",
+            "product": "the-velle-signature-shirt",
+            "product_2": "firenze-gurkha-flared-trouser"
+          }
+        },
+        "review_2": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>So far, I’m pretty happy with the quality and finishing. The overall look is also really good. I had a size issue, but the exchange was done within two days without any hassle, which I really appreciate.</p>",
+            "name": "Mahmudul Hasan",
+            "product": "heritage-suede-penny-loafer"
+          }
+        },
+        "review_3": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>I’m very happy with it. The quality is excellent, and the fabric looks and feels just as good as it did in the pictures. Overall, I’ve had a great experience with your brand.</p>",
+            "name": "Mohammed Rihan",
+            "product": "siena-embroidered-shirt"
+          }
+        },
+        "review_4": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>The tee is actually very nice and fits perfectly. It’s super comfy and I love the design.</p>",
+            "name": "Ahmed Namir",
+            "product": "velle-crane-tee",
+            "product_2": "velle-rodeo-estate-tee"
+          }
+        },
+        "review_5": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>I really liked the fabric quality and the designs, they were both excellent. Keep up the great work!</p>",
+            "name": "Joarder AB",
+            "product": "the-checkered-shirt",
+            "product_2": "azure-embroidered-shirt"
+          }
+        },
+        "review_6": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>Speaking of the quality and services, you people just nailed it. I liked the vibe and every other thing about the brand, so curated. Altogether very very satisfied.</p>",
+            "name": "Galib Saimum",
+            "product": "azure-embroidered-shirt"
+          }
+        },
+        "review_7": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>I’m really happy with my purchase. The product was great, and I’m satisfied with the overall experience.</p>",
+            "name": "Abdullah Redwan",
+            "product": "andre-linen-shirt"
+          }
+        },
+        "review_8": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>The fit is good, fabric is comfortable and I like the design.</p>",
+            "name": "Al Amin Dhali",
+            "product": "velle-crane-tee",
+            "product_2": "the-velle-signature-shirt"
+          }
+        },
+        "review_9": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>I’m quite satisfied with the product, the quality was good and I liked it. I had a good experience with Corso Velle.</p>",
+            "name": "Yousha Ishmam",
+            "product": "velle-rodeo-estate-tee"
+          }
+        },
+        "review_10": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>I got the large size, thank you so much for the support. It was too good 😊 I would love to purchase from you guys.</p>",
+            "name": "Sania Akter Santa",
+            "product": "ornate-shacket"
+          }
+        },
+        "review_11": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>Good product quality and packaging. Wish you guys best.</p>",
+            "name": "Rakesh Mitra",
+            "product": "velle-rodeo-estate-tee"
+          }
+        },
+        "review_12": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>The shirt is so cool and comfy. I am satisfied with the purchase.</p>",
+            "name": "Rafeed",
+            "product": "azure-embroidered-shirt"
+          }
+        },
+        "review_13": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>Yes, I'm extremely satisfied. The fabric is very lightweight and comfortable. Perfect for the humid weather. The prints are also amazing.</p>",
+            "name": "Ebaadi Kanchan",
+            "product": "velle-crane-tee"
+          }
+        },
+        "review_14": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>That was absolutely nuts!! I wore this and went to a party, and I got so many compliments!</p>",
+            "name": "Shafayet Jamil",
+            "product": "ornate-shacket"
+          }
+        },
+        "review_15": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>Products quality are really good.</p>",
+            "name": "Nahid Fardin",
+            "product": "puro-linen-shorts"
+          }
+        },
+        "review_16": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>I am 6ft and 85kg. I thought the t-shirt would come too short, but it's all perfect. I loved the quality.</p>",
+            "name": "Md Saeed",
+            "product": "velle-rodeo-estate-tee",
+            "product_2": "andre-linen-shirt"
+          }
+        },
+        "review_17": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>The product quality was great! Thanks a lot.</p>",
+            "name": "Zahin Ishaan",
+            "product": "andre-linen-shirt"
+          }
+        },
+        "review_18": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>I’m very satisfied with the quality and overall experience. Keep up the great work.</p>",
+            "name": "Mostafa Ishmam",
+            "product": "bellagio-knit-polo"
+          }
+        },
+        "review_19": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>This linen is actually insane. The fit, texture, everything just hits different. I got so many compliments wearing this too. Y’all really cooked with this one fr. Love it 🤌🏻</p>",
+            "name": "Kawser Ahmed",
+            "product": "andre-linen-shirt"
+          }
+        },
+        "review_20": {
+          "type": "quote",
+          "settings": {
+            "quote": "<p>Received it today. The quality is great. Thanks for your service.</p>",
+            "name": "Md Shahjahan",
+            "product": "libre-embroidered-shirt"
+          }
+        }
+      },
+      "block_order": [
+        "review_1",
+        "review_2",
+        "review_3",
+        "review_4",
+        "review_5",
+        "review_6",
+        "review_7",
+        "review_8",
+        "review_9",
+        "review_10",
+        "review_11",
+        "review_12",
+        "review_13",
+        "review_14",
+        "review_15",
+        "review_16",
+        "review_17",
+        "review_18",
+        "review_19",
+        "review_20"
+      ],
+      "settings": {
+        "heading": "Worn & loved",
+        "layout": "cards",
+        "columns": "3",
+        "alignment": "left",
+        "card_style": "bordered",
+        "height": 620,
+        "speed": 45,
+        "move_on_phones": true,
+        "color_scheme": "scheme-1",
+        "cards_direction": "left"
+      }
     }
   },
   "order": [
@@ -1167,6 +1371,7 @@
     "story",
     "expand",
     "featured",
-    "strip"
+    "strip",
+    "reviews"
   ]
 }

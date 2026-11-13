@@ -2333,6 +2333,22 @@
     "name": "Social media",
     "settings": [
       {
+        "type": "header",
+        "content": "Homepage when shared"
+      },
+      {
+        "type": "text",
+        "id": "seo_home_title",
+        "label": "Homepage title",
+        "info": "Optional. Replaces the title from Online Store > Preferences on the homepage: browser tab, search results and link previews."
+      },
+      {
+        "type": "textarea",
+        "id": "seo_home_description",
+        "label": "Homepage description",
+        "info": "Optional. Replaces the meta description from Preferences on the homepage."
+      },
+      {
         "type": "url",
         "id": "social_instagram",
         "label": "Instagram"
