@@ -1734,3 +1734,9 @@ html.nk-anim .product__media[data-layout='slider'][data-media-count]:not([data-m
   .product-section .product__info { padding-bottom: 16px; }
   .product-recommendations.section-spacing { padding-top: 32px; }
 }
+
+/* Photo arrows: computer only (mouse). Phones and tablets swipe; the "1 / 5" counter stays hidden. */
+.gallery__controls [data-ref='counter'] { display: none; }
+@media (hover: none), (pointer: coarse) {
+  .gallery__controls { display: none !important; }
+}
