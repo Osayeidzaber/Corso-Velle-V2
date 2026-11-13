@@ -2771,6 +2771,7 @@ Excluded contexts: `{"groups":["header","footer"]}`.
 | `card_style` — Review cards | `select` | `bordered` | `bordered`: Bordered; `flat`: Minimal |
 | `height` — Moving wall height | `range` | `520` | 320–800px, step 20; Shown when `{{ section.settings.layout == 'wall' }}` |
 | `speed` — Speed | `range` | `25` | 10–80px, step 5; Shown when `{{ section.settings.layout == 'wall' }}` |
+| `move_on_phones` — Keep moving on phones | `checkbox` | `false` | Shown when `{{ section.settings.layout == 'wall' }}` |
 | `color_scheme` — Color scheme | `color_scheme` | `scheme-1` |  |
 
 Supported block: **Review** (`quote`).
@@ -2780,6 +2781,7 @@ Supported block: **Review** (`quote`).
 | `quote` — Review text | `richtext` | Not specified |  |
 | `name` — Name | `text` | Not specified |  |
 | `product` — Product reviewed | `product` | Not specified |  |
+| `product_2` — Second product (optional) | `product` | Not specified |  |
 
 Add-menu presets:
 
