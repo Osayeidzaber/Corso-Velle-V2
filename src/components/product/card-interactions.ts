@@ -174,34 +174,68 @@ export function installCardInteractions(): void {
 }
 
 /**
- * Phones and tablets have no hover, so the second photo a card shows on hover never appears.
- * There, the first tap on a card's photo shows its second photo (data-in-view, card.css) and the
- * next tap opens the product. The name and price open it straight away. One card at a time.
+ * Phones and tablets have no hover, so touch stands in for it: pressing a card's photo shows its
+ * second photo (data-in-view, card.css) for as long as the finger stays down, like a hover, and
+ * releasing eases back to the first. A normal tap still opens the product straight away.
+ * A long press does not open the native link menu. One card at a time.
  * Returns a no-op kept for the caller's DOM watcher.
  */
 function installTouchReveal(): () => void {
   const touch = typeof matchMedia === 'function' ? matchMedia('(hover: none)') : null;
   if (!touch) return () => {};
   let shown: HTMLElement | null = null;
+  let pressTimer = 0;
+  let pressed = false;
+
+  const hide = () => {
+    window.clearTimeout(pressTimer);
+    pressTimer = 0;
+    shown?.removeAttribute('data-in-view');
+    shown = null;
+  };
+
+  document.addEventListener(
+    'pointerdown',
+    (event) => {
+      if (event.pointerType === 'mouse' || !touch.matches) return;
+      const media = (event.target as Element).closest<HTMLElement>('.card .card__media--has-second');
+      const card = media?.closest<HTMLElement>('.card');
+      if (!card) return;
+      if (shown && shown !== card) hide();
+      pressed = false;
+      // Short delay so a quick tap or the start of a scroll doesn't flash the second photo.
+      window.clearTimeout(pressTimer);
+      pressTimer = window.setTimeout(() => {
+        pressed = true;
+        card.setAttribute('data-in-view', '');
+        shown = card;
+      }, 120);
+    },
+    { passive: true },
+  );
+
+  // Releasing, scrolling away or a cancelled touch eases back to the first photo.
+  for (const type of ['pointerup', 'pointercancel'] as const) {
+    document.addEventListener(type, (event) => { if (event.pointerType !== 'mouse') hide(); }, { passive: true });
+  }
+  window.addEventListener('scroll', hide, { passive: true });
+
+  // A press long enough to show the photo was a "hover", not a tap: don't navigate or open menus.
   document.addEventListener(
     'click',
     (event) => {
-      if (!touch.matches) return;
-      const media = (event.target as Element).closest<HTMLElement>('.card .card__media--has-second');
-      if (!media) return;
-      const card = media.closest<HTMLElement>('.card');
-      if (!card) return;
-      // Second tap on a card already showing its second photo: let the link open the product.
-      if (card.hasAttribute('data-in-view')) return;
-      // First tap: show the second photo instead of navigating.
-      event.preventDefault();
-      event.stopPropagation();
-      if (shown && shown !== card) shown.removeAttribute('data-in-view');
-      card.setAttribute('data-in-view', '');
-      shown = card;
+      if (!pressed) return;
+      pressed = false;
+      if ((event.target as Element).closest('.card .card__media--has-second')) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
     },
     true,
   );
+  document.addEventListener('contextmenu', (event) => {
+    if (touch.matches && (event.target as Element).closest('.card .card__media--has-second')) event.preventDefault();
+  });
   return () => {};
 }
 

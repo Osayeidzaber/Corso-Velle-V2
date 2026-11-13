@@ -115,11 +115,13 @@
     opacity: 1; clip-path: inset(0); transform: none; filter: blur(0);
   }
 }
-/* Touch: tapping the photo flips to the second one and back (card-interactions.ts). */
+/* Touch: pressing the photo shows the second one, releasing eases back (card-interactions.ts). */
 @media (hover: none) {
   .card[data-in-view] .card__media--has-second .card__secondary {
     opacity: 1; clip-path: inset(0); transform: none; filter: blur(0);
   }
+  .card .card__media--has-second { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+  .card .card__media--has-second img { -webkit-user-drag: none; }
 }
 /* Hold the primary photo while the video buffers, even during keyboard focus. */
 html.nk-anim .card--has-video:not([data-video-failed]) .card__media--has-second .card__secondary {
