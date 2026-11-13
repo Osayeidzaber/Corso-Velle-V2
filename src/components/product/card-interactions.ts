@@ -177,64 +177,78 @@ export function installCardInteractions(): void {
  * Phones and tablets have no hover, so touch stands in for it: pressing a card's photo shows its
  * second photo (data-in-view, card.css) for as long as the finger stays down, like a hover, and
  * releasing eases back to the first. A normal tap still opens the product straight away.
- * A long press does not open the native link menu. One card at a time.
- * Returns a no-op kept for the caller's DOM watcher.
+ * Uses touch events, not pointer events: phones fire pointercancel on a long press (link drag,
+ * context menu), which would snap the photo back while the finger is still down.
+ * One card at a time. Returns a no-op kept for the caller's DOM watcher.
  */
 function installTouchReveal(): () => void {
-  const touch = typeof matchMedia === 'function' ? matchMedia('(hover: none)') : null;
-  if (!touch) return () => {};
+  if (typeof window === 'undefined' || !('ontouchstart' in window)) return () => {};
+  const SELECTOR = '.card .card__media--has-second';
+  const DELAY = 120; // a quick tap never flashes the second photo
+  const MOVE = 10; // px of finger travel that means "scrolling", not holding
   let shown: HTMLElement | null = null;
-  let pressTimer = 0;
-  let pressed = false;
+  let timer = 0;
+  let startX = 0;
+  let startY = 0;
+  let held = false;
 
   const hide = () => {
-    window.clearTimeout(pressTimer);
-    pressTimer = 0;
+    window.clearTimeout(timer);
+    timer = 0;
     shown?.removeAttribute('data-in-view');
     shown = null;
   };
 
   document.addEventListener(
-    'pointerdown',
+    'touchstart',
     (event) => {
-      if (event.pointerType === 'mouse' || !touch.matches) return;
-      const media = (event.target as Element).closest<HTMLElement>('.card .card__media--has-second');
-      const card = media?.closest<HTMLElement>('.card');
+      if (event.touches.length !== 1) { hide(); return; }
+      const card = (event.target as Element).closest?.(SELECTOR)?.closest<HTMLElement>('.card');
       if (!card) return;
-      if (shown && shown !== card) hide();
-      pressed = false;
-      // Short delay so a quick tap or the start of a scroll doesn't flash the second photo.
-      window.clearTimeout(pressTimer);
-      pressTimer = window.setTimeout(() => {
-        pressed = true;
+      hide();
+      held = false;
+      const first = event.touches[0]!;
+      startX = first.clientX;
+      startY = first.clientY;
+      timer = window.setTimeout(() => {
+        held = true;
         card.setAttribute('data-in-view', '');
         shown = card;
-      }, 120);
+      }, DELAY);
     },
     { passive: true },
   );
 
-  // Releasing, scrolling away or a cancelled touch eases back to the first photo.
-  for (const type of ['pointerup', 'pointercancel'] as const) {
-    document.addEventListener(type, (event) => { if (event.pointerType !== 'mouse') hide(); }, { passive: true });
-  }
-  window.addEventListener('scroll', hide, { passive: true });
+  document.addEventListener(
+    'touchmove',
+    (event) => {
+      if (!timer && !shown) return;
+      const t = event.touches[0];
+      if (!t) return;
+      if (Math.abs(t.clientX - startX) > MOVE || Math.abs(t.clientY - startY) > MOVE) { held = false; hide(); }
+    },
+    { passive: true },
+  );
 
-  // A press long enough to show the photo was a "hover", not a tap: don't navigate or open menus.
+  document.addEventListener('touchend', hide, { passive: true });
+  document.addEventListener('touchcancel', () => { held = false; hide(); }, { passive: true });
+
+  // A press long enough to show the photo was a "hover", not a tap: don't open the product.
   document.addEventListener(
     'click',
     (event) => {
-      if (!pressed) return;
-      pressed = false;
-      if ((event.target as Element).closest('.card .card__media--has-second')) {
+      if (!held) return;
+      held = false;
+      if ((event.target as Element).closest?.(SELECTOR)) {
         event.preventDefault();
         event.stopPropagation();
       }
     },
     true,
   );
+  // No long-press menu or link preview over card photos.
   document.addEventListener('contextmenu', (event) => {
-    if (touch.matches && (event.target as Element).closest('.card .card__media--has-second')) event.preventDefault();
+    if ((event.target as Element).closest?.(SELECTOR)) event.preventDefault();
   });
   return () => {};
 }

@@ -121,7 +121,8 @@
     opacity: 1; clip-path: inset(0); transform: none; filter: blur(0);
   }
   .card .card__media--has-second { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
-  .card .card__media--has-second img { -webkit-user-drag: none; }
+  .card .card__media--has-second :is(img, a) { -webkit-user-drag: none; }
+  .card .card__media--has-second a { -webkit-touch-callout: none; }
 }
 /* Hold the primary photo while the video buffers, even during keyboard focus. */
 html.nk-anim .card--has-video:not([data-video-failed]) .card__media--has-second .card__secondary {
