@@ -906,7 +906,7 @@ Excluded contexts: `{"groups":["header","footer"]}`.
 
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
-| `eyebrow` — Eyebrow | `text` | `New arrivals` |  |
+| `eyebrow` — Eyebrow | `text` | `New Arrivals` |  |
 | `heading` — Heading | `text` | `Just` |  |
 | `heading_italic` — Heading (italic part) | `text` | `landed` |  |
 | `entrance` — Heading entrance | `select` | `cut` | `none`: None; `cut`: Editorial masked reveal; `rise`: Rise word by word (Split Text); `blur`: Blur in word by word (Text Effect); `fold`: Paper fold (Fold Text); `flip`: Flip up; `skew`: Skew in; `pop`: Pop; `fade`: Fade |
