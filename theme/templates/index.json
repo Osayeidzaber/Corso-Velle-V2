@@ -1347,14 +1347,15 @@
       ],
       "settings": {
         "heading": "Worn & loved",
-        "layout": "wall",
+        "layout": "cards",
         "columns": "3",
         "alignment": "left",
         "card_style": "bordered",
         "height": 620,
-        "speed": 25,
+        "speed": 45,
         "move_on_phones": true,
-        "color_scheme": "scheme-1"
+        "color_scheme": "scheme-1",
+        "cards_direction": "left"
       }
     }
   },

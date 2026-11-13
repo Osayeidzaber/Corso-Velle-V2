@@ -2765,13 +2765,14 @@ Excluded contexts: `{"groups":["header","footer"]}`.
 | Setting ID / label | Type | Schema default | Choices / range / help |
 | --- | --- | --- | --- |
 | `heading` — Heading | `text` | `What customers say` |  |
-| `layout` — Layout | `select` | `wall` | `wall`: Moving wall; `grid`: Static grid; Phones, reduced motion and the editor show all reviews statically. Moving columns travel together so one pause button controls the wall. |
+| `layout` — Layout | `select` | `wall` | `wall`: Moving wall; `cards`: Moving cards (side to side); `grid`: Static grid; Phones, reduced motion and the editor show all reviews statically. Moving columns travel together so one pause button controls the wall. |
 | `columns` — Columns (desktop) | `select` | `2` | `1`: 1; `2`: 2; `3`: 3 |
 | `alignment` — Text alignment | `select` | `left` | `left`: Left; `center`: Center |
 | `card_style` — Review cards | `select` | `bordered` | `bordered`: Bordered; `flat`: Minimal |
 | `height` — Moving wall height | `range` | `520` | 320–800px, step 20; Shown when `{{ section.settings.layout == 'wall' }}` |
-| `speed` — Speed | `range` | `25` | 10–80px, step 5; Shown when `{{ section.settings.layout == 'wall' }}` |
-| `move_on_phones` — Keep moving on phones | `checkbox` | `false` | Shown when `{{ section.settings.layout == 'wall' }}` |
+| `speed` — Speed | `range` | `25` | 10–80px, step 5; Shown when `{{ section.settings.layout != 'grid' }}` |
+| `cards_direction` — Card direction | `select` | `left` | `left`: Left; `right`: Right; Shown when `{{ section.settings.layout == 'cards' }}` |
+| `move_on_phones` — Keep moving on phones | `checkbox` | `false` | Shown when `{{ section.settings.layout != 'grid' }}` |
 | `color_scheme` — Color scheme | `color_scheme` | `scheme-1` |  |
 
 Supported block: **Review** (`quote`).
