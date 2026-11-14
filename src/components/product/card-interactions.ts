@@ -174,82 +174,50 @@ export function installCardInteractions(): void {
 }
 
 /**
- * Phones and tablets have no hover, so touch stands in for it: pressing a card's photo shows its
- * second photo (data-in-view, card.css) for as long as the finger stays down, like a hover, and
- * releasing eases back to the first. A normal tap still opens the product straight away.
- * Uses touch events, not pointer events: phones fire pointercancel on a long press (link drag,
- * context menu), which would snap the photo back while the finger is still down.
- * One card at a time. Returns a no-op kept for the caller's DOM watcher.
+ * Phones and tablets have no hover, so the first tap stands in for it: tapping a card's photo
+ * switches to its second photo (data-in-view, card.css) and keeps it there; tapping that photo
+ * again opens the product. Tapping another card, or scrolling away, switches the first one back.
+ * The title and price always open the product straight away. One card at a time.
+ * Returns a no-op kept for the caller's DOM watcher.
  */
 function installTouchReveal(): () => void {
   if (typeof window === 'undefined' || !('ontouchstart' in window)) return () => {};
   const SELECTOR = '.card .card__media--has-second';
-  const DELAY = 120; // a quick tap never flashes the second photo
-  const MOVE = 16; // px of finger travel that means "scrolling", not holding
   let shown: HTMLElement | null = null;
-  let timer = 0;
-  let startX = 0;
-  let startY = 0;
-  let held = false;
+  let lastTouch = 0;
 
   const hide = () => {
-    window.clearTimeout(timer);
-    timer = 0;
     shown?.removeAttribute('data-in-view');
     shown = null;
   };
 
-  document.addEventListener(
-    'touchstart',
-    (event) => {
-      if (event.touches.length !== 1) { hide(); return; }
-      const card = (event.target as Element).closest?.(SELECTOR)?.closest<HTMLElement>('.card');
-      if (!card) return;
-      hide();
-      held = false;
-      const first = event.touches[0]!;
-      startX = first.clientX;
-      startY = first.clientY;
-      timer = window.setTimeout(() => {
-        timer = 0;
-        held = true;
-        card.setAttribute('data-in-view', '');
-        shown = card;
-      }, DELAY);
-    },
-    { passive: true },
-  );
+  document.addEventListener('touchstart', () => { lastTouch = Date.now(); }, { passive: true, capture: true });
 
-  document.addEventListener(
-    'touchmove',
-    (event) => {
-      if (!timer && !shown) return;
-      const t = event.touches[0];
-      if (!t) return;
-      if (Math.abs(t.clientX - startX) > MOVE || Math.abs(t.clientY - startY) > MOVE) { held = false; hide(); }
-    },
-    { passive: true },
-  );
-
-  document.addEventListener('touchend', hide, { passive: true });
-  // Android cancels a long press (context menu / link drag) while the finger is still down:
-  // keep the second photo up until the next touch or a scroll instead of snapping back.
-  document.addEventListener('touchcancel', () => { if (!held) hide(); }, { passive: true });
-  window.addEventListener('scroll', () => { if (shown && !timer) hide(); }, { passive: true });
-
-  // A press long enough to show the photo was a "hover", not a tap: don't open the product.
   document.addEventListener(
     'click',
     (event) => {
-      if (!held) return;
-      held = false;
-      if ((event.target as Element).closest?.(SELECTOR)) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
+      // Only taps: a mouse click on a touch laptop still opens the product.
+      if (Date.now() - lastTouch > 800) return;
+      const media = (event.target as Element).closest?.(SELECTOR);
+      const card = media?.closest<HTMLElement>('.card') ?? null;
+      if (!card) { hide(); return; }
+      if (card === shown) return; // second tap: let the link open the product
+      event.preventDefault();
+      event.stopPropagation();
+      hide();
+      card.setAttribute('data-in-view', '');
+      shown = card;
     },
     true,
   );
+
+  // Scrolling the shown card well out of view switches it back.
+  window.addEventListener('scroll', () => {
+    if (!shown) return;
+    const r = shown.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > window.innerHeight) hide();
+  }, { passive: true });
+
   // No long-press menu or link preview over card photos.
   document.addEventListener('contextmenu', (event) => {
     if ((event.target as Element).closest?.(SELECTOR)) event.preventDefault();
