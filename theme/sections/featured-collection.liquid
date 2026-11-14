@@ -206,7 +206,7 @@
               const next = [...grid.querySelectorAll('li[data-more][hidden]')].slice(0, Number(button.dataset.loadMore) || 8);
               next.forEach((item, i) => {
                 item.hidden = false;
-                item.style.animationDelay = (i * 60) + 'ms';
+                item.style.animationDelay = (i * 25) + 'ms';
                 item.classList.add('is-loaded');
               });
               if (!grid.querySelector('li[data-more][hidden]')) button.closest('.featured-collection__more').remove();
@@ -226,8 +226,8 @@
 {%- endif -%}
 
 {% stylesheet %}
-  .featured-collection .product-grid > li.is-loaded { animation: featured-more .7s cubic-bezier(.2,.7,.2,1) both; }
-  @keyframes featured-more { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .featured-collection .product-grid > li.is-loaded { animation: featured-more .3s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes featured-more { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .featured-collection .product-grid > li.is-loaded { animation: none; } }
   .featured-collection__more { display: flex; justify-content: center; margin-top: clamp(32px, 5vw, 56px); }
   .featured-collection .product-grid { column-gap: var(--grid-gap-mobile, 8px); }

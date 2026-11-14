@@ -29,7 +29,7 @@ export class NkStagger extends NkElement {
 
   async #start(): Promise<void> {
     const connection = this.signal;
-    const { gsap, ScrollTrigger, motionTempo, motionStagger } = await import('../../motion/gsap');
+    const { gsap, ScrollTrigger } = await import('../../motion/gsap');
     if (!this.connectionIsCurrent(connection)) return;
     const items = [...this.querySelectorAll<HTMLElement>('[data-stagger-item]')];
     if (!items.length) {
@@ -61,12 +61,13 @@ export class NkStagger extends NkElement {
             const elements = batch as HTMLElement[];
             // A row rises and fades in one card after another. It starts at the bottom edge of
             // the screen (start: 'top 92%'), so the brief fade from 0 never hides a card in view.
-            gsap.fromTo(elements, { y: fadeOnlyMotion() ? 0 : 40, opacity: 0 }, {
+            // Kept short and small so fast scrolling never waits on cards still rising in.
+            gsap.fromTo(elements, { y: fadeOnlyMotion() ? 0 : 12, opacity: 0 }, {
               y: 0,
               opacity: 1,
-              duration: 0.95 * motionTempo(),
-              ease: 'expo.out',
-              stagger: { each: Math.max(0.07, motionStagger()), amount: Math.min(0.42, Math.max(0, elements.length - 1) * Math.max(0.07, motionStagger())) },
+              duration: 0.4,
+              ease: 'power2.out',
+              stagger: { each: 0.03, amount: Math.min(0.12, Math.max(0, elements.length - 1) * 0.03) },
               overwrite: true,
               clearProps: 'transform,opacity',
             });
