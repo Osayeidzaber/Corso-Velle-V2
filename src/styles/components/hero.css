@@ -1050,3 +1050,7 @@ nk-hero-slides[data-transition='slide'] .hero__slide:not([data-active]):has(~ .h
   .hero__text--desktop { display: none; }
   .hero__text--phone { display: block; }
 }
+
+/* No visible play/pause control over hero videos or slides; they still pause off screen. */
+.hero .background-video__toggle,
+.hero .hero__slide-pause { display: none !important; }

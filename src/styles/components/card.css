@@ -115,11 +115,13 @@
     opacity: 1; clip-path: inset(0); transform: none; filter: blur(0);
   }
 }
-/* Touch: pressing the photo shows the second one, releasing eases back (card-interactions.ts). */
-@media (hover: none) {
-  .card[data-in-view] .card__media--has-second .card__secondary {
-    opacity: 1; clip-path: inset(0); transform: none; filter: blur(0);
-  }
+/* Touch: pressing the photo shows the second one, releasing eases back (card-interactions.ts).
+   Not behind (hover: none): many Android phones report hover support. Only touch sets the flag. */
+.card[data-in-view] .card__media--has-second .card__secondary {
+  opacity: 1; clip-path: inset(0); transform: none; filter: blur(0);
+  transition-duration: 300ms;
+}
+@media (hover: none), (pointer: coarse) {
   .card .card__media--has-second { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
   .card .card__media--has-second :is(img, a) { -webkit-user-drag: none; }
   .card .card__media--has-second a { -webkit-touch-callout: none; }

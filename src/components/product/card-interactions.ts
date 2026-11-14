@@ -185,7 +185,7 @@ function installTouchReveal(): () => void {
   if (typeof window === 'undefined' || !('ontouchstart' in window)) return () => {};
   const SELECTOR = '.card .card__media--has-second';
   const DELAY = 120; // a quick tap never flashes the second photo
-  const MOVE = 10; // px of finger travel that means "scrolling", not holding
+  const MOVE = 16; // px of finger travel that means "scrolling", not holding
   let shown: HTMLElement | null = null;
   let timer = 0;
   let startX = 0;
@@ -211,6 +211,7 @@ function installTouchReveal(): () => void {
       startX = first.clientX;
       startY = first.clientY;
       timer = window.setTimeout(() => {
+        timer = 0;
         held = true;
         card.setAttribute('data-in-view', '');
         shown = card;
@@ -231,7 +232,10 @@ function installTouchReveal(): () => void {
   );
 
   document.addEventListener('touchend', hide, { passive: true });
-  document.addEventListener('touchcancel', () => { held = false; hide(); }, { passive: true });
+  // Android cancels a long press (context menu / link drag) while the finger is still down:
+  // keep the second photo up until the next touch or a scroll instead of snapping back.
+  document.addEventListener('touchcancel', () => { if (!held) hide(); }, { passive: true });
+  window.addEventListener('scroll', () => { if (shown && !timer) hide(); }, { passive: true });
 
   // A press long enough to show the photo was a "hover", not a tap: don't open the product.
   document.addEventListener(
