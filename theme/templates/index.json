@@ -1128,7 +1128,7 @@
         "slide_transition": "fade",
         "slide_dots": true,
         "height_mobile": "inherit",
-        "media_fit": "cover",
+        "media_fit": "contain",
         "tint_direction": "bottom",
         "layout": "split",
         "media_position": "left",
