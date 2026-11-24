@@ -189,6 +189,11 @@
       "overtime-sweatshirt",
       "dune-sweatshirt"
     ],
+    "size_chart_15_basis": "Jacket",
+    "size_chart_15_table": "Size,Length,Chest,Sleeve\nM,25,42,23\nL,26,44,23.5\nXL,27,46,24\nXXL,28,48,24.5",
+    "size_chart_15_unit": "in",
+    "size_chart_15_titles": "Snow\nLorenzo",
+    "size_chart_15_products": [],
     "size_chart_12_titles": "Sweater",
     "size_chart_14_titles": "Sweatshirt\nHoodie",
     "seo_home_title": "Corso Velle — Nine to Five, Winter '26",

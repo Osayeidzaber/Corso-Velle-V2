@@ -1719,6 +1719,80 @@
         "type": "text",
         "id": "size_chart_14_note",
         "label": "Size guide note"
+      },
+      {
+        "type": "header",
+        "content": "Chart 15"
+      },
+      {
+        "type": "collection_list",
+        "id": "size_chart_15_collections",
+        "label": "Apply to collections",
+        "limit": 50
+      },
+      {
+        "type": "product_list",
+        "id": "size_chart_15_products",
+        "label": "Apply to specific products",
+        "limit": 50,
+        "info": "Use a separate chart for products with different measurements."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_15_tags",
+        "label": "Apply to product tags",
+        "info": "One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_15_titles",
+        "label": "Apply to product names containing",
+        "info": "One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_15_handle",
+        "label": "Reusable chart handle",
+        "info": "Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_chart_15_image",
+        "label": "Size chart picture",
+        "info": "Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority."
+      },
+      {
+        "type": "textarea",
+        "id": "size_chart_15_table",
+        "label": "Measurements",
+        "info": "First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified."
+      },
+      {
+        "type": "select",
+        "id": "size_chart_15_unit",
+        "label": "Unit",
+        "options": [
+          {
+            "value": "cm",
+            "label": "Centimetres"
+          },
+          {
+            "value": "in",
+            "label": "Inches"
+          }
+        ],
+        "default": "cm"
+      },
+      {
+        "type": "text",
+        "id": "size_chart_15_basis",
+        "label": "Measurement basis",
+        "info": "For example: garment measured flat, or body measurements. State the actual method."
+      },
+      {
+        "type": "text",
+        "id": "size_chart_15_note",
+        "label": "Size guide note"
       }
     ]
   },

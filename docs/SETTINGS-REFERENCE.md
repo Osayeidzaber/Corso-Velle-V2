@@ -254,6 +254,16 @@ Color scheme fields for `color_schemes`:
 | `size_chart_14_unit` — Unit | `select` | `cm` | `cm`: Centimetres; `in`: Inches |
 | `size_chart_14_basis` — Measurement basis | `text` | Not specified | For example: garment measured flat, or body measurements. State the actual method. |
 | `size_chart_14_note` — Size guide note | `text` | Not specified |  |
+| `size_chart_15_collections` — Apply to collections | `collection_list` | Not specified | Picker limit 50 |
+| `size_chart_15_products` — Apply to specific products | `product_list` | Not specified | Picker limit 50; Use a separate chart for products with different measurements. |
+| `size_chart_15_tags` — Apply to product tags | `textarea` | Not specified | One exact tag per line; any match applies. Case-insensitive. Blank tags are ignored. Product and collection assignments take priority. |
+| `size_chart_15_titles` — Apply to product names containing | `textarea` | Not specified | One word or phrase per line, e.g. Sweatshirt. Not case-sensitive. Used after specific products, collections and tags. |
+| `size_chart_15_handle` — Reusable chart handle | `text` | Not specified | Copy the size_chart entry handle from Admin > Content > Metaobjects. Edit that entry to update all assigned products. A usable reusable chart overrides Measurements below; blank, missing or empty entries use the CSV fallback. |
+| `size_chart_15_image` — Size chart picture | `image_picker` | Not specified | Optional picture shown in the size guide. Works without a measurement table. Add image alt text in Shopify Files. A reusable chart picture takes priority. |
+| `size_chart_15_table` — Measurements | `textarea` | Not specified | First line: Size,Chest,Length (or your headings). Then one comma-separated row per size. Enter only verified values, using the same size labels as product variants. Leave blank until verified. |
+| `size_chart_15_unit` — Unit | `select` | `cm` | `cm`: Centimetres; `in`: Inches |
+| `size_chart_15_basis` — Measurement basis | `text` | Not specified | For example: garment measured flat, or body measurements. State the actual method. |
+| `size_chart_15_note` — Size guide note | `text` | Not specified |  |
 
 #### Cart
 
